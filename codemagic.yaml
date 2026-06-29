@@ -13,7 +13,6 @@ workflows:
         bundle_identifier: com.alchono.app
       groups:
         - Ios_signing
-        - supabase_credentials  # must contain EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY
       node: latest
       xcode: latest
       cocoapods: default
@@ -22,6 +21,8 @@ workflows:
         # newArchEnabled: true is set in app.json; this env var keeps Xcode
         # and any native scripts consistent with that choice (SDK 52 / RN 0.76).
         RCT_NEW_ARCH_ENABLED: "1"
+        EXPO_PUBLIC_SUPABASE_URL: https://kvvzygcndijxboyslirt.supabase.co
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv
 
     scripts:
       - name: Print iOS signing assets detected by Codemagic
