@@ -1,0 +1,43 @@
+import React from 'react';
+import { View, Text } from 'react-native';
+import { MaskIconSmall } from '@/components/icons/MaskIcon';
+import { useAuthStore } from '@/store/authStore';
+import { useStreak } from '@/hooks/useInsights';
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+export function GreetingHeader() {
+  const profile = useAuthStore((s) => s.profile);
+  const { data: streakData } = useStreak();
+  const name = profile?.username ?? profile?.full_name ?? 'there';
+  const streak = streakData?.streak ?? 0;
+
+  return (
+    <View className="px-6 pt-4 pb-2">
+      <View className="flex-row items-center justify-between mb-1">
+        <View className="flex-row items-center gap-2">
+          <MaskIconSmall size={20} color="#B77A33" />
+          <Text className="text-text-muted text-xs font-medium tracking-widest uppercase">
+            Alchono
+          </Text>
+        </View>
+        {streak > 0 && (
+          <View className="flex-row items-center gap-1.5 bg-accent/15 border border-accent/25 rounded-full px-3 py-1">
+            <Text className="text-accent text-xs font-semibold">
+              {streak} {streak === 1 ? 'day' : 'days'}
+            </Text>
+          </View>
+        )}
+      </View>
+      <Text className="text-text-primary text-3xl font-bold tracking-tight mt-3">
+        {getGreeting()},{'\n'}
+        <Text className="text-accent">{name}.</Text>
+      </Text>
+    </View>
+  );
+}

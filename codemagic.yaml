@@ -1,0 +1,123 @@
+workflows:
+  ios-release:
+    name: iOS Release Build
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      groups:
+        - supabase_credentials
+        - ios_credentials
+      vars:
+        EXPO_PUBLIC_SUPABASE_URL: $EXPO_PUBLIC_SUPABASE_URL
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: $EXPO_PUBLIC_SUPABASE_ANON_KEY
+        NODE_VERSION: "20.11.0"
+    triggering:
+      events:
+        - push
+        - tag
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: release/*
+          include: true
+    cache:
+      cache_paths:
+        - $HOME/.npm
+        - $CM_BUILD_DIR/node_modules
+    scripts:
+      - name: Set Node version
+        script: |
+          nvm install $NODE_VERSION
+          nvm use $NODE_VERSION
+          node --version
+          npm --version
+      - name: Install dependencies
+        script: npm ci
+      - name: TypeScript check
+        script: npx tsc --noEmit
+      - name: Expo Prebuild iOS
+        script: |
+          npx expo prebuild --platform ios --clean
+      - name: Install CocoaPods
+        script: |
+          cd ios && pod install
+      - name: Build iOS Release
+        script: |
+          xcode-project use-profiles
+          cd ios
+          xcodebuild \
+            -workspace Alchono.xcworkspace \
+            -scheme Alchono \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath $CM_BUILD_DIR/Alchono.xcarchive \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=$APPLE_TEAM_ID
+          xcodebuild \
+            -exportArchive \
+            -archivePath $CM_BUILD_DIR/Alchono.xcarchive \
+            -exportPath $CM_BUILD_DIR/ios \
+            -exportOptionsPlist $CM_BUILD_DIR/ios/ExportOptions.plist
+    artifacts:
+      - $CM_BUILD_DIR/ios/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - developer@alchono.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+
+  ios-development:
+    name: iOS Development (Simulator)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      vars:
+        EXPO_PUBLIC_SUPABASE_URL: $EXPO_PUBLIC_SUPABASE_URL
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: $EXPO_PUBLIC_SUPABASE_ANON_KEY
+        NODE_VERSION: "20.11.0"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: develop
+          include: true
+        - pattern: feature/*
+          include: true
+    cache:
+      cache_paths:
+        - $HOME/.npm
+        - $CM_BUILD_DIR/node_modules
+    scripts:
+      - name: Set Node version
+        script: |
+          nvm install $NODE_VERSION
+          nvm use $NODE_VERSION
+      - name: Install dependencies
+        script: npm ci
+      - name: TypeScript check
+        script: npx tsc --noEmit
+      - name: Expo Prebuild iOS
+        script: |
+          npx expo prebuild --platform ios --clean
+      - name: Install CocoaPods
+        script: |
+          cd ios && pod install
+      - name: Build for Simulator
+        script: |
+          cd ios
+          xcodebuild build \
+            -workspace Alchono.xcworkspace \
+            -scheme Alchono \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty
+    artifacts:
+      - $CM_BUILD_DIR/ios/build/**/*.app
