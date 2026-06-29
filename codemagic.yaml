@@ -48,7 +48,7 @@ workflows:
 
       - name: Install dependencies
         script: |
-          npm install
+          npm install --legacy-peer-deps
 
       - name: Set unique build number
         script: |
