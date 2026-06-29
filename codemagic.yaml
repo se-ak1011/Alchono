@@ -1,123 +1,126 @@
 workflows:
-  ios-release:
-    name: iOS Release Build
+  expo-ios:
+    name: Expo iOS
+    max_build_duration: 60
     instance_type: mac_mini_m2
-    max_build_duration: 120
+
+    integrations:
+      app_store_connect: codemagicFlutter
+
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.alchono.app
       groups:
-        - supabase_credentials
-        - ios_credentials
+        - Ios_signing
+        - supabase_credentials  # must contain EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY
+      node: latest
+      xcode: latest
+      cocoapods: default
       vars:
-        EXPO_PUBLIC_SUPABASE_URL: $EXPO_PUBLIC_SUPABASE_URL
-        EXPO_PUBLIC_SUPABASE_ANON_KEY: $EXPO_PUBLIC_SUPABASE_ANON_KEY
-        NODE_VERSION: "20.11.0"
-    triggering:
-      events:
-        - push
-        - tag
-      branch_patterns:
-        - pattern: main
-          include: true
-        - pattern: release/*
-          include: true
-    cache:
-      cache_paths:
-        - $HOME/.npm
-        - $CM_BUILD_DIR/node_modules
+        IOS_BUNDLE_IDENTIFIER: com.alchono.app
+        # newArchEnabled: true is set in app.json; this env var keeps Xcode
+        # and any native scripts consistent with that choice (SDK 52 / RN 0.76).
+        RCT_NEW_ARCH_ENABLED: "1"
+
     scripts:
-      - name: Set Node version
+      - name: Print iOS signing assets detected by Codemagic
         script: |
-          nvm install $NODE_VERSION
-          nvm use $NODE_VERSION
-          node --version
-          npm --version
+          echo "== Code signing identities (name + SHA-1) =="
+          security find-identity -v -p codesigning || true
+
+          echo
+          echo "== Provisioning profiles available =="
+          PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          if [[ -d "$PROFILE_DIR" ]]; then
+            find "$PROFILE_DIR" -name "*.mobileprovision" -maxdepth 1 | while read -r profile; do
+              echo
+              echo "Profile file: $(basename "$profile")"
+              security cms -D -i "$profile" > /tmp/codemagic_profile.plist
+              /usr/libexec/PlistBuddy -c "Print :Name" /tmp/codemagic_profile.plist || true
+              /usr/libexec/PlistBuddy -c "Print :UUID" /tmp/codemagic_profile.plist || true
+              /usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /tmp/codemagic_profile.plist || true
+            done
+          else
+            echo "No provisioning profiles directory found at $PROFILE_DIR"
+          fi
+
       - name: Install dependencies
-        script: npm ci
-      - name: TypeScript check
-        script: npx tsc --noEmit
-      - name: Expo Prebuild iOS
+        script: |
+          npm install
+
+      - name: Set unique build number
+        script: |
+          # Unix timestamp — always higher than the last upload so App Store
+          # Connect never rejects a build for a duplicate CFBundleVersion.
+          echo "ALCHONO_BUILD_NUMBER=$(date +%s)" >> $CM_ENV
+
+      - name: Expo prebuild iOS
         script: |
           npx expo prebuild --platform ios --clean
-      - name: Install CocoaPods
+
+      - name: Set iOS build number
         script: |
-          cd ios && pod install
-      - name: Build iOS Release
-        script: |
-          xcode-project use-profiles
+          # app.json has a static buildNumber; overwrite it in the generated
+          # Xcode project so every Codemagic build gets a unique value.
           cd ios
-          xcodebuild \
-            -workspace Alchono.xcworkspace \
-            -scheme Alchono \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath $CM_BUILD_DIR/Alchono.xcarchive \
-            archive \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM=$APPLE_TEAM_ID
-          xcodebuild \
-            -exportArchive \
-            -archivePath $CM_BUILD_DIR/Alchono.xcarchive \
-            -exportPath $CM_BUILD_DIR/ios \
-            -exportOptionsPlist $CM_BUILD_DIR/ios/ExportOptions.plist
+          agvtool new-version -all "$ALCHONO_BUILD_NUMBER"
+
+      - name: Validate App Store Connect secrets
+        script: |
+          export APP_STORE_CONNECT_KEY_IDENTIFIER="${APP_STORE_CONNECT_KEY_IDENTIFIER:-${APP_STORE_CONNECT_KEY_ID:-}}"
+          REQUIRED_VARS=(
+            APP_STORE_CONNECT_KEY_IDENTIFIER
+            APP_STORE_CONNECT_ISSUER_ID
+            APP_STORE_CONNECT_PRIVATE_KEY
+            IOS_BUNDLE_IDENTIFIER
+          )
+          for VAR_NAME in "${REQUIRED_VARS[@]}"; do
+            if [[ -z "${!VAR_NAME:-}" ]]; then
+              echo "Missing required Codemagic secret: $VAR_NAME"
+              exit 1
+            fi
+          done
+          echo "App Store Connect secrets detected."
+
+      - name: Set up code signing
+        script: |
+          export APP_STORE_CONNECT_KEY_IDENTIFIER="${APP_STORE_CONNECT_KEY_IDENTIFIER:-${APP_STORE_CONNECT_KEY_ID:-}}"
+          keychain initialize
+          app-store-connect fetch-signing-files "$IOS_BUNDLE_IDENTIFIER" \
+            --type IOS_APP_STORE \
+            --create \
+            --certificate-key-password "${CERTIFICATE_PRIVATE_KEY_PASSWORD:-}" || true
+          keychain add-certificates
+
+          echo "== Certificates in keychain after setup =="
+          security find-identity -v -p codesigning || true
+
+          echo "== Provisioning profiles installed =="
+          PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          ls -1 "$PROFILE_DIR" 2>/dev/null || echo "No profiles directory found"
+
+          cd ios
+          # Apply profiles — without --warn-only so the build fails loudly if no profile is found
+          xcode-project use-profiles
+
+      - name: Install iOS pods
+        script: |
+          cd ios
+          pod install --repo-update
+
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace ios/*.xcworkspace \
+            --scheme Alchono \
+            --config Release
+
     artifacts:
-      - $CM_BUILD_DIR/ios/*.ipa
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
     publishing:
-      email:
-        recipients:
-          - developer@alchono.com
-        notify:
-          success: true
-          failure: true
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-
-  ios-development:
-    name: iOS Development (Simulator)
-    instance_type: mac_mini_m2
-    max_build_duration: 60
-    environment:
-      vars:
-        EXPO_PUBLIC_SUPABASE_URL: $EXPO_PUBLIC_SUPABASE_URL
-        EXPO_PUBLIC_SUPABASE_ANON_KEY: $EXPO_PUBLIC_SUPABASE_ANON_KEY
-        NODE_VERSION: "20.11.0"
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: develop
-          include: true
-        - pattern: feature/*
-          include: true
-    cache:
-      cache_paths:
-        - $HOME/.npm
-        - $CM_BUILD_DIR/node_modules
-    scripts:
-      - name: Set Node version
-        script: |
-          nvm install $NODE_VERSION
-          nvm use $NODE_VERSION
-      - name: Install dependencies
-        script: npm ci
-      - name: TypeScript check
-        script: npx tsc --noEmit
-      - name: Expo Prebuild iOS
-        script: |
-          npx expo prebuild --platform ios --clean
-      - name: Install CocoaPods
-        script: |
-          cd ios && pod install
-      - name: Build for Simulator
-        script: |
-          cd ios
-          xcodebuild build \
-            -workspace Alchono.xcworkspace \
-            -scheme Alchono \
-            -configuration Debug \
-            -destination "generic/platform=iOS Simulator" \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty
-    artifacts:
-      - $CM_BUILD_DIR/ios/build/**/*.app
