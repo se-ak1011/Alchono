@@ -38,8 +38,11 @@ export class ErrorBoundary extends React.Component<
           <Text className="text-text-primary text-xl font-semibold mb-2 text-center">
             Something went wrong
           </Text>
-          <Text className="text-text-secondary text-sm text-center mb-6 leading-relaxed">
-            We ran into an unexpected issue. Your data is safe.
+          <Text className="text-danger text-xs text-center mb-2 px-2" selectable>
+            {this.state.error?.name}: {this.state.error?.message}
+          </Text>
+          <Text className="text-text-muted text-xs text-center mb-6 px-2" selectable>
+            {this.state.error?.stack?.slice(0, 300)}
           </Text>
           <Pressable
             onPress={this.reset}
