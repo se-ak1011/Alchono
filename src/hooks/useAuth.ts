@@ -6,13 +6,33 @@ export function useAuthListener() {
   const { setSession, setProfile, setInitialized } = useAuthStore();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    let initialized = false;
+    const markInitialized = () => {
+      if (!initialized) {
+        initialized = true;
+        setInitialized(true);
       }
-      setInitialized(true);
-    });
+    };
+
+    // Safety net: always escape the splash screen within 8 seconds even if
+    // AsyncStorage or the network hangs on cold launch.
+    const fallbackTimer = setTimeout(markInitialized, 8000);
+
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        }
+      })
+      .catch(() => {
+        // Storage or network error — proceed to login screen
+      })
+      .finally(() => {
+        clearTimeout(fallbackTimer);
+        markInitialized();
+      });
 
     const {
       data: { subscription },
@@ -25,16 +45,23 @@ export function useAuthListener() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   async function fetchProfile(userId: string) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    setProfile(data);
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      setProfile(data);
+    } catch {
+      // Non-fatal — user can still reach the app, profile loads on next nav
+    }
   }
 }
 
