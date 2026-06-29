@@ -26,7 +26,6 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const { session, profile, isInitialized } = useAuthStore();
   const router = useRouter();
   const segments = useSegments();
-  useAuthListener();
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -68,7 +67,7 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -76,13 +75,28 @@ export default function RootLayout() {
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);
 
-  useEffect(() => {
-    if (fontsLoaded && isInitialized) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, isInitialized]);
+  // Start auth init immediately — parallel with font loading, not after it.
+  useAuthListener();
 
-  if (!fontsLoaded) return null;
+  useEffect(() => {
+    // Proceed if fonts are ready (or errored — fall back to system fonts)
+    // and auth has initialised. Either way, always hide within 10s.
+    const ready = (fontsLoaded || !!fontError) && isInitialized;
+    if (ready) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, fontError, isInitialized]);
+
+  useEffect(() => {
+    // Absolute safety net: never stay on the splash screen past 10 seconds.
+    const timer = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {});
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Wait for fonts (or a font error) before rendering — avoids FOUC.
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <ErrorBoundary>
