@@ -4,9 +4,8 @@ import {
   Text,
   ScrollView,
   Pressable,
-  Alert,
 } from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { MaskIcon } from '@/components/icons/MaskIcon';
@@ -53,7 +52,6 @@ const STEPS = [
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState(0);
-  const [loading, setLoading] = useState(false);
   const { user, profile, setProfile } = useAuthStore();
   const currentStep = STEPS[step];
 
@@ -61,26 +59,21 @@ export default function OnboardingScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     if ((currentStep as any).isLast) {
-      setLoading(true);
-      try {
-        // Mark onboarding complete first — this is the critical path
-        await supabase
-          .from('profiles')
-          .update({ onboarding_completed: true })
-          .eq('id', user!.id);
+      // Update the store first — AuthGate navigates to /(tabs) immediately
+      setProfile({ ...profile!, onboarding_completed: true });
 
-        // Update the auth store so AuthGate navigates to /(tabs) immediately
-        setProfile({ ...profile!, onboarding_completed: true });
+      // Persist to Supabase in background — not awaited
+      supabase
+        .from('profiles')
+        .update({ onboarding_completed: true })
+        .eq('id', user!.id)
+        .then(() => {})
+        .catch(() => {});
 
-        // Push notification registration is non-blocking — failure is fine
-        registerForPushNotifications()
-          .then((token) => { if (token && user) return savePushToken(user.id, token); })
-          .catch(() => {});
-      } catch (err) {
-        console.error('Onboarding error:', err);
-      } finally {
-        setLoading(false);
-      }
+      // Push notification registration also in background
+      registerForPushNotifications()
+        .then((token) => { if (token && user) return savePushToken(user.id, token); })
+        .catch(() => {});
     } else {
       setStep((s) => s + 1);
     }
@@ -135,7 +128,6 @@ export default function OnboardingScreen() {
           variant="primary"
           size="lg"
           fullWidth
-          loading={loading}
           onPress={handleNext}
         />
         {step < STEPS.length - 1 && (
