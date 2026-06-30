@@ -28,7 +28,6 @@ export function DrinkingSession() {
   const router = useRouter();
   const [duration, setDuration] = useState('');
   const [showQuestion, setShowQuestion] = useState(false);
-  const [notSureAck, setNotSureAck] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
   const promptDismissed = drinkingPromptDismissedDate === today;
@@ -148,12 +147,6 @@ export function DrinkingSession() {
 
   if (promptDismissed) return null;
 
-  const handleNotSure = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setNotSureAck(true);
-    setTimeout(() => setNotSureAck(false), 2500);
-  };
-
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Card>
@@ -163,14 +156,6 @@ export function DrinkingSession() {
         <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
           Just this moment. No pressure.
         </Text>
-
-        {notSureAck && (
-          <Animated.View entering={FadeIn.duration(200)} className="mb-3">
-            <Text className="text-text-muted text-sm text-center">
-              Take it one moment at a time.
-            </Text>
-          </Animated.View>
-        )}
 
         <View className="gap-2">
           <Pressable
@@ -187,12 +172,15 @@ export function DrinkingSession() {
           </Pressable>
 
           <Pressable
-            onPress={handleNotSure}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push('/session/urge');
+            }}
             className="flex-row items-center gap-2 bg-surface-2 rounded-xl px-4 py-3 border border-white/8 active:bg-white/5"
           >
-            <Text className="text-base">🟡</Text>
+            <Text className="text-base">🌊</Text>
             <Text className="text-text-primary text-sm font-medium">
-              Not sure yet
+              I feel like drinking
             </Text>
           </Pressable>
 

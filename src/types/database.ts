@@ -18,6 +18,7 @@ export interface Database {
           is_mentor: boolean;
           mentor_recovery_level: string | null;
           onboarding_completed: boolean;
+          preferences: Json | null;
         };
         Insert: {
           id: string;
@@ -33,6 +34,7 @@ export interface Database {
           is_mentor?: boolean;
           mentor_recovery_level?: string | null;
           onboarding_completed?: boolean;
+          preferences?: Json | null;
         };
         Update: {
           id?: string;
@@ -47,6 +49,7 @@ export interface Database {
           is_mentor?: boolean;
           mentor_recovery_level?: string | null;
           onboarding_completed?: boolean;
+          preferences?: Json | null;
         };
       };
       daily_checkins: {

@@ -66,6 +66,16 @@ export const PAUSE_ACTIONS = [
   { icon: '🍷', label: 'Continue drinking', value: 'continue' },
 ] as const;
 
+export type UserPreferences = {
+  familyMembers: string[];   // 'partner' | 'children' | 'parents'
+  hasPets: boolean;
+  petName: string;
+  hasJob: boolean;
+  workShift: 'morning' | 'day' | 'evening' | 'night' | null;
+  drinksAtWork: boolean;
+  city: string;
+};
+
 export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant';

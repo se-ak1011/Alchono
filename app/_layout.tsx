@@ -60,6 +60,10 @@ function RootLayoutNav() {
           name="support/sos"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
+        <Stack.Screen
+          name="session/urge"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
     </AuthGate>
