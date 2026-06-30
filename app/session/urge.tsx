@@ -25,7 +25,7 @@ function buildPrompts(prefs: UserPreferences | null): string[] {
     list.push('Think of your children. They need you present.');
   }
   if (prefs?.familyMembers?.includes('partner')) {
-    list.push('Think of your partner. You're in this together.');
+    list.push("Think of your partner. You're in this together.");
   }
   if (prefs?.familyMembers?.includes('parents')) {
     list.push('Your parents want to see you well.');
