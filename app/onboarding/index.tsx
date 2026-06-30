@@ -13,7 +13,6 @@ import { MaskIcon } from '@/components/icons/MaskIcon';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
-import { queryClient } from '@/lib/queryClient';
 import {
   registerForPushNotifications,
   savePushToken,
@@ -55,7 +54,7 @@ export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuthStore();
+  const { user, profile, setProfile } = useAuthStore();
   const currentStep = STEPS[step];
 
   const handleNext = async () => {
@@ -64,17 +63,19 @@ export default function OnboardingScreen() {
     if ((currentStep as any).isLast) {
       setLoading(true);
       try {
-        const token = await registerForPushNotifications();
-        if (token && user) {
-          await savePushToken(user.id, token);
-        }
-
+        // Mark onboarding complete first — this is the critical path
         await supabase
           .from('profiles')
           .update({ onboarding_completed: true })
           .eq('id', user!.id);
 
-        queryClient.invalidateQueries({ queryKey: ['profile'] });
+        // Update the auth store so AuthGate navigates to /(tabs) immediately
+        setProfile({ ...profile!, onboarding_completed: true });
+
+        // Push notification registration is non-blocking — failure is fine
+        registerForPushNotifications()
+          .then((token) => { if (token && user) return savePushToken(user.id, token); })
+          .catch(() => {});
       } catch (err) {
         console.error('Onboarding error:', err);
       } finally {
