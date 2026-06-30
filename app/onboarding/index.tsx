@@ -32,41 +32,36 @@ const STEPS = [
     id: 'how',
     title: "How it works.",
     body: "A daily check-in takes under ten seconds. When you notice you're drinking, log it. Alchono tracks the patterns so you don't have to.",
-    emoji: '✍️',
   },
   {
     id: 'support',
     title: "You're not alone.",
     body: "AI support is available any time. Anonymous community. Verified mentors who've been where you are.",
-    emoji: '🤝',
   },
   {
     id: 'circle',
     title: "Your circle.",
     body: "Helps us personalise your support. Skip anything you'd rather not share.",
-    emoji: '❤️',
     custom: true,
   },
   {
     id: 'rhythm',
     title: "Your daily rhythm.",
     body: "We'll avoid interrupting you at the wrong moments.",
-    emoji: '⏰',
     custom: true,
   },
   {
     id: 'notifications',
     title: "Gentle reminders.",
     body: "Alchono will check in once a day. Nothing pushy. You control what you receive.",
-    emoji: '🔔',
     isLast: true,
   },
 ] as const;
 
 const FAMILY_OPTIONS = [
-  { key: 'partner', label: 'Partner', emoji: '👫' },
-  { key: 'children', label: 'Children', emoji: '👶' },
-  { key: 'parents', label: 'Parents (I live with them)', emoji: '🏠' },
+  { key: 'partner',  label: 'Partner' },
+  { key: 'children', label: 'Children' },
+  { key: 'parents',  label: 'Parents (I live with them)' },
 ] as const;
 
 const SHIFT_OPTIONS = [
@@ -138,22 +133,22 @@ function CircleStep({
           Family
         </Text>
         <View style={{ gap: 8 }}>
-          {FAMILY_OPTIONS.map(({ key, label, emoji }) => {
+          {FAMILY_OPTIONS.map(({ key, label }) => {
             const selected = prefs.familyMembers.includes(key);
             return (
               <Pressable
                 key={key}
                 onPress={() => toggleFamily(key)}
-                className={`flex-row items-center gap-3 rounded-xl px-4 py-3 border ${
+                className={`flex-row items-center gap-3 rounded-lg px-4 py-3.5 border ${
                   selected
-                    ? 'bg-accent/15 border-accent/40'
+                    ? 'bg-surface border-white/25'
                     : 'bg-surface border-white/8'
                 }`}
               >
-                <Text className="text-xl">{emoji}</Text>
+                <Text className="text-text-muted text-xs w-3">{selected ? '◆' : '◇'}</Text>
                 <Text
                   className={`text-sm font-medium ${
-                    selected ? 'text-accent' : 'text-text-primary'
+                    selected ? 'text-text-primary' : 'text-text-secondary'
                   }`}
                 >
                   {label}
@@ -235,15 +230,15 @@ function RhythmStep({
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         onChange({ workShift: selected ? null : key });
                       }}
-                      className={`px-4 py-2 rounded-xl border ${
+                      className={`px-4 py-2 rounded-lg border ${
                         selected
-                          ? 'bg-accent/15 border-accent/40'
+                          ? 'bg-surface border-white/25'
                           : 'bg-surface border-white/8'
                       }`}
                     >
                       <Text
                         className={`text-sm font-medium ${
-                          selected ? 'text-accent' : 'text-text-primary'
+                          selected ? 'text-text-primary' : 'text-text-muted'
                         }`}
                       >
                         {label}
@@ -360,12 +355,10 @@ export default function OnboardingScreen() {
             entering={FadeInDown.duration(400).springify()}
             style={{ flex: 1, justifyContent: 'center' }}
           >
-            {(currentStep as any).mask ? (
-              <View className="items-center mb-8">
-                <SoulIcon size={80} gradient />
+            {(currentStep as any).mask && (
+              <View className="items-center mb-10">
+                <SoulIcon size={72} gradient />
               </View>
-            ) : (
-              <Text className="text-6xl mb-8 text-center">{(currentStep as any).emoji}</Text>
             )}
 
             <Text className="text-text-primary text-3xl font-bold tracking-tight mb-4 leading-tight">

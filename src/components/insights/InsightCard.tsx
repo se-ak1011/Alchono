@@ -6,31 +6,25 @@ interface InsightCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  icon?: string;
+  symbol?: string;
   trend?: 'up' | 'down' | 'neutral';
 }
 
 const trendConfig = {
-  up: { symbol: '↑', color: 'text-accent' },
-  down: { symbol: '↓', color: 'text-danger' },
+  up:      { symbol: '↑', color: 'text-accent' },
+  down:    { symbol: '↓', color: 'text-danger' },
   neutral: { symbol: '→', color: 'text-text-muted' },
 };
 
-export function InsightCard({
-  title,
-  value,
-  subtitle,
-  icon,
-  trend,
-}: InsightCardProps) {
+export function InsightCard({ title, value, subtitle, symbol, trend }: InsightCardProps) {
   return (
     <Card className="flex-1">
-      <View className="flex-row items-start justify-between mb-2">
-        {icon && <Text className="text-2xl">{icon}</Text>}
+      <View className="flex-row items-start justify-between mb-3">
+        {symbol && (
+          <Text className="text-text-muted text-xs font-semibold">{symbol}</Text>
+        )}
         {trend && (
-          <Text
-            className={`text-sm font-semibold ${trendConfig[trend].color}`}
-          >
+          <Text className={`text-xs font-semibold ${trendConfig[trend].color}`}>
             {trendConfig[trend].symbol}
           </Text>
         )}
@@ -38,11 +32,11 @@ export function InsightCard({
       <Text className="text-text-primary text-2xl font-bold tracking-tight">
         {value}
       </Text>
-      <Text className="text-text-secondary text-sm font-medium mt-0.5">
+      <Text className="text-text-muted text-xs font-semibold tracking-wider uppercase mt-1">
         {title}
       </Text>
       {subtitle && (
-        <Text className="text-text-muted text-xs mt-1">{subtitle}</Text>
+        <Text className="text-text-muted text-xs mt-0.5">{subtitle}</Text>
       )}
     </Card>
   );

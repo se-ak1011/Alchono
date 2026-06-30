@@ -10,10 +10,10 @@ import { MentorList } from '@/components/support/MentorList';
 type Tab = 'coach' | 'community' | 'mentors' | 'resources';
 
 const SUPPORT_STATES = [
-  { key: 'talk',     icon: '💬', label: 'I just need to talk',  tab: 'coach' as Tab },
-  { key: 'urge',     icon: '🌊', label: "I'm having an urge",   tab: 'coach' as Tab },
-  { key: 'drinking', icon: '🟠', label: "I'm drinking now",     tab: 'coach' as Tab },
-  { key: 'through',  icon: '✅', label: 'I got through it',     tab: 'community' as Tab },
+  { key: 'talk',     label: 'Just need to talk',  tab: 'coach' as Tab },
+  { key: 'urge',     label: 'Feeling the urge',   tab: 'coach' as Tab },
+  { key: 'drinking', label: 'Drinking now',        tab: 'coach' as Tab },
+  { key: 'through',  label: 'Got through it',      tab: 'community' as Tab },
 ] as const;
 
 const TABS: { key: Tab; label: string }[] = [
@@ -54,16 +54,15 @@ export default function SupportScreen() {
             <Pressable
               key={state.key}
               onPress={() => handleStateSelect(state)}
-              className={`flex-row items-center gap-2 px-3 py-2.5 rounded-xl border ${
+              className={`px-3 py-2.5 rounded-lg border ${
                 activeState === state.key
-                  ? 'bg-accent/20 border-accent/40'
+                  ? 'bg-surface border-white/25'
                   : 'bg-surface border-white/8'
               }`}
             >
-              <Text className="text-base">{state.icon}</Text>
               <Text
                 className={`text-sm font-medium ${
-                  activeState === state.key ? 'text-accent' : 'text-text-secondary'
+                  activeState === state.key ? 'text-text-primary' : 'text-text-muted'
                 }`}
               >
                 {state.label}

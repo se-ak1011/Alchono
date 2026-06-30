@@ -139,19 +139,19 @@ export default function InsightsScreen() {
               <InsightCard
                 title="Check-ins"
                 value={checkinDays}
-                icon="✍️"
+                symbol="◆"
                 subtitle={`of ${period} days`}
               />
               <InsightCard
                 title="Alcohol-free"
                 value={alcoholFreeDays}
-                icon="🆓"
+                symbol="○"
                 subtitle="days"
               />
               <InsightCard
                 title="Pauses"
                 value={totalPauses}
-                icon="⏸️"
+                symbol="—"
                 subtitle="taken"
               />
             </View>

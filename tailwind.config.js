@@ -27,8 +27,8 @@ module.exports = {
         bold: ['Inter_700Bold', 'System'],
       },
       borderRadius: {
-        '2xl': '16px',
-        '3xl': '24px',
+        '2xl': '8px',
+        '3xl': '12px',
       },
     },
   },

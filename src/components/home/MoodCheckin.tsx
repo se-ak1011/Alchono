@@ -28,32 +28,27 @@ export function MoodCheckin() {
     return (
       <Animated.View entering={FadeIn.duration(400)}>
         <Card className="mx-6 mt-2">
-          <Text className="text-text-secondary text-sm font-medium mb-3">
-            Today's check-in
+          <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+            Check-in
           </Text>
           <View className="flex-row flex-wrap gap-2">
             {logged.length > 0
               ? logged.map((option) => (
                   <View
                     key={option.value}
-                    className="flex-row items-center gap-1.5 bg-surface-2 rounded-full px-3 py-1.5"
+                    className="bg-surface-2 rounded-lg px-3 py-1.5 border border-white/8"
                   >
-                    <Text className="text-base">{option.emoji}</Text>
-                    <Text className="text-text-primary text-sm font-medium">
+                    <Text className="text-text-primary text-sm font-medium capitalize">
                       {option.label}
                     </Text>
                   </View>
                 ))
               : (
-                <View className="flex-row items-center gap-2">
-                  <Text className="text-2xl">{todayCheckin.mood_emoji}</Text>
-                  <Text className="text-text-primary text-base font-semibold capitalize">
-                    {todayCheckin.mood}
-                  </Text>
-                </View>
+                <Text className="text-text-primary text-sm font-medium capitalize">
+                  {todayCheckin.mood}
+                </Text>
               )}
           </View>
-          <Text className="text-text-muted text-xs mt-2">Logged today</Text>
         </Card>
       </Animated.View>
     );
@@ -84,11 +79,8 @@ export function MoodCheckin() {
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-2">
       <Card elevated>
-        <Text className="text-text-primary text-base font-semibold mb-1">
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-4">
           How are you feeling?
-        </Text>
-        <Text className="text-text-secondary text-sm mb-4">
-          Select all that apply.
         </Text>
         <View className="flex-row flex-wrap gap-2 mb-3">
           {MOOD_OPTIONS.map((option) => (
@@ -103,7 +95,7 @@ export function MoodCheckin() {
         {selected.size > 0 && (
           <Animated.View entering={FadeIn.duration(200)}>
             <Button
-              title="Log how I'm feeling"
+              title="Log check-in"
               variant="primary"
               size="sm"
               fullWidth
@@ -135,20 +127,21 @@ function MoodChip({
     <Animated.View style={animatedStyle}>
       <Pressable
         onPressIn={() => {
-          scale.value = withSpring(0.92, { damping: 12, stiffness: 350 });
+          scale.value = withSpring(0.93, { damping: 12, stiffness: 350 });
         }}
         onPressOut={() => {
           scale.value = withSpring(1, { damping: 12, stiffness: 350 });
         }}
         onPress={onPress}
-        className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl border ${
-          selected ? 'bg-accent/20 border-accent/50' : 'bg-surface-2 border-white/8'
+        className={`px-3 py-2 rounded-lg border ${
+          selected
+            ? 'bg-surface border-white/30'
+            : 'bg-surface-2 border-white/5'
         }`}
       >
-        <Text className="text-xl">{option.emoji}</Text>
         <Text
           className={`text-sm font-medium ${
-            selected ? 'text-accent' : 'text-text-secondary'
+            selected ? 'text-text-primary' : 'text-text-muted'
           }`}
         >
           {option.label}

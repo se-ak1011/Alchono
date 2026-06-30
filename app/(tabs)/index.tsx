@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
+import { HomeFeed } from '@/components/home/HomeFeed';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useYesterdaySession } from '@/hooks/useJournal';
 import { useAppStore } from '@/store/appStore';
@@ -24,9 +25,12 @@ function MorningReflectionPrompt() {
 
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
-      <Card className="border border-accent/20">
+      <Card className="border border-white/10">
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+          Yesterday
+        </Text>
         <Text className="text-text-primary font-semibold mb-1">
-          How was yesterday?
+          How did it go?
         </Text>
         <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
           A moment of reflection can change everything.
@@ -34,15 +38,15 @@ function MorningReflectionPrompt() {
         <View className="flex-row gap-2">
           <Pressable
             onPress={dismissMorningReflection}
-            className="flex-1 items-center py-2.5 rounded-xl bg-surface-2 border border-white/8"
+            className="flex-1 items-center py-2.5 rounded-lg bg-surface border border-white/8 active:border-white/20"
           >
-            <Text className="text-text-secondary text-sm font-medium">Not now</Text>
+            <Text className="text-text-muted text-sm font-medium">Not now</Text>
           </Pressable>
           <Pressable
             onPress={() => router.push('/session/morning-reflection')}
-            className="flex-1 items-center py-2.5 rounded-xl bg-accent/20 border border-accent/40"
+            className="flex-1 items-center py-2.5 rounded-lg bg-accent active:bg-accent-dark"
           >
-            <Text className="text-accent text-sm font-semibold">Reflect</Text>
+            <Text className="text-white text-sm font-semibold">Reflect</Text>
           </Pressable>
         </View>
       </Card>
@@ -55,12 +59,13 @@ export default function HomeScreen() {
     <SafeArea>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: 48 }}
       >
         <GreetingHeader />
         <MoodCheckin />
         <MorningReflectionPrompt />
         <DrinkingSession />
+        <HomeFeed />
       </ScrollView>
       <PauseModal />
     </SafeArea>

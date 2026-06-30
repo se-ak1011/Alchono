@@ -57,17 +57,17 @@ export function DrinkingSession() {
   if (activeSession) {
     return (
       <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3 gap-3">
-        <Card className="border border-accent/20">
+        <Card className="border border-white/10">
           <View className="flex-row items-center justify-between mb-3">
             <View>
-              <Text className="text-text-secondary text-sm font-medium">
-                Riding it out.
+              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+                Session active
               </Text>
-              <Text className="text-text-primary text-xl font-semibold mt-0.5">
+              <Text className="text-text-primary text-xl font-semibold mt-1">
                 {duration}
               </Text>
             </View>
-            <View className="w-2 h-2 rounded-full bg-accent" />
+            <View className="w-1.5 h-1.5 rounded-full bg-accent" />
           </View>
 
           {showQuestion && (
@@ -150,24 +150,21 @@ export function DrinkingSession() {
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Card>
-        <Text className="text-text-primary text-base font-semibold mb-1">
-          How's today looking?
-        </Text>
-        <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
-          Just this moment. No pressure.
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-4">
+          Today
         </Text>
 
-        <View className="gap-2">
+        <View className="gap-1.5">
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               dismissDrinkingPrompt();
             }}
-            className="flex-row items-center gap-2 bg-surface-2 rounded-xl px-4 py-3 border border-white/8 active:bg-white/5"
+            className="flex-row items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border border-white/8 active:border-white/20"
           >
-            <Text className="text-base">🟢</Text>
+            <Text className="text-text-muted text-xs w-3">○</Text>
             <Text className="text-text-primary text-sm font-medium">
-              Staying alcohol-free
+              Alcohol-free today
             </Text>
           </Pressable>
 
@@ -176,11 +173,11 @@ export function DrinkingSession() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/session/urge');
             }}
-            className="flex-row items-center gap-2 bg-surface-2 rounded-xl px-4 py-3 border border-white/8 active:bg-white/5"
+            className="flex-row items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border border-white/8 active:border-white/20"
           >
-            <Text className="text-base">🌊</Text>
+            <Text className="text-text-muted text-xs w-3">≈</Text>
             <Text className="text-text-primary text-sm font-medium">
-              I feel like drinking
+              Feeling the urge
             </Text>
           </Pressable>
 
@@ -189,13 +186,13 @@ export function DrinkingSession() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               startSession();
             }}
-            className="flex-row items-center gap-2 bg-accent/15 rounded-xl px-4 py-3 border border-accent/30 active:bg-accent/25"
+            className="flex-row items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border border-white/15 active:border-white/30"
           >
             {isStarting
               ? <Text className="text-text-muted text-sm">Starting…</Text>
               : <>
-                  <Text className="text-base">🟠</Text>
-                  <Text className="text-accent text-sm font-medium">
+                  <Text className="text-text-secondary text-xs w-3">●</Text>
+                  <Text className="text-text-primary text-sm font-medium">
                     Already drinking
                   </Text>
                 </>
