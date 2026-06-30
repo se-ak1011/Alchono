@@ -11,7 +11,7 @@ import {
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { MaskIcon } from '@/components/icons/MaskIcon';
+import { SoulIcon } from '@/components/icons/SoulIcon';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
@@ -362,7 +362,7 @@ export default function OnboardingScreen() {
           >
             {(currentStep as any).mask ? (
               <View className="items-center mb-8">
-                <MaskIcon size={72} gradient />
+                <SoulIcon size={80} gradient />
               </View>
             ) : (
               <Text className="text-6xl mb-8 text-center">{(currentStep as any).emoji}</Text>
