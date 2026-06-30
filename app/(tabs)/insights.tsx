@@ -105,7 +105,7 @@ export default function InsightsScreen() {
             Patterns
           </Text>
           <Text className="text-text-secondary text-sm mt-1">
-            Understanding yourself.
+            Your record.
           </Text>
         </View>
 

@@ -25,7 +25,7 @@ const STEPS = [
   {
     id: 'welcome',
     title: "This is your space.",
-    body: "Alchono exists to help you understand yourself — not to judge you. Everything here stays private.",
+    body: "No lectures. No labels. Just a record of what's happening, so you can see it clearly.",
     mask: true,
   },
   {
@@ -36,24 +36,24 @@ const STEPS = [
   {
     id: 'support',
     title: "You're not alone.",
-    body: "AI support is available any time. Anonymous community. Verified mentors who've been where you are.",
+    body: "AI support available any time. Anonymous community. People who've been where you are.",
   },
   {
     id: 'circle',
-    title: "Your circle.",
-    body: "Helps us personalise your support. Skip anything you'd rather not share.",
+    title: "People at home.",
+    body: "So we know what's at stake. You don't have to fill this in.",
     custom: true,
   },
   {
     id: 'rhythm',
-    title: "Your daily rhythm.",
-    body: "We'll avoid interrupting you at the wrong moments.",
+    title: "Your hours.",
+    body: "So we don't ping you in the middle of a shift.",
     custom: true,
   },
   {
     id: 'notifications',
-    title: "Gentle reminders.",
-    body: "Alchono will check in once a day. Nothing pushy. You control what you receive.",
+    title: "Notifications.",
+    body: "One check-in a day. You can turn it off.",
     isLast: true,
   },
 ] as const;
@@ -355,11 +355,12 @@ export default function OnboardingScreen() {
             entering={FadeInDown.duration(400).springify()}
             style={{ flex: 1, justifyContent: 'center' }}
           >
-            {(currentStep as any).mask && (
-              <View className="items-center mb-10">
-                <SoulIcon size={72} gradient />
-              </View>
-            )}
+            <View className={(currentStep as any).mask ? 'items-center mb-10' : 'items-start mb-6'}>
+              <SoulIcon
+                size={(currentStep as any).mask ? 72 : 28}
+                gradient={(currentStep as any).mask}
+              />
+            </View>
 
             <Text className="text-text-primary text-3xl font-bold tracking-tight mb-4 leading-tight">
               {currentStep.title}

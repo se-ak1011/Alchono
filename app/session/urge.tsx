@@ -144,7 +144,7 @@ export default function UrgeScreen() {
               Before you decide.
             </Text>
             <Text className="text-text-secondary text-sm mb-6">
-              Sit with these for a moment.
+              Read these.
             </Text>
 
             <View style={{ gap: 12, marginBottom: 32 }}>
@@ -177,23 +177,23 @@ export default function UrgeScreen() {
         {phase === 'decision' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
             <Text className="text-text-primary text-2xl font-bold tracking-tight mb-1">
-              How are you feeling now?
+              Did it pass?
             </Text>
             <Text className="text-text-secondary text-sm mb-8">
-              No judgement either way.
+              Honest answer.
             </Text>
 
             <View style={{ gap: 12 }}>
               <Pressable
                 onPress={handleUrgePassed}
-                className="bg-accent/15 rounded-2xl border border-accent/30 active:bg-accent/25"
+                className="bg-surface rounded-2xl border border-white/20 active:border-white/40"
                 style={{ paddingHorizontal: 20, paddingVertical: 20 }}
               >
-                <Text className="text-accent text-base font-semibold mb-1">
-                  The urge passed 💪
+                <Text className="text-text-primary text-base font-semibold mb-1">
+                  The urge passed.
                 </Text>
                 <Text className="text-text-muted text-sm">
-                  That took strength. Well done.
+                  Good. Keep going.
                 </Text>
               </Pressable>
 
@@ -203,7 +203,7 @@ export default function UrgeScreen() {
                 style={{ paddingHorizontal: 20, paddingVertical: 20 }}
               >
                 <Text className="text-text-primary text-base font-semibold mb-1">
-                  I'm going to drink anyway
+                  I'm going to drink anyway.
                 </Text>
                 <Text className="text-text-muted text-sm">
                   We'll be here. Session logged.

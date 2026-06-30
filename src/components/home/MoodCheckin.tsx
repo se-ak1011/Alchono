@@ -80,7 +80,7 @@ export function MoodCheckin() {
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-2">
       <Card elevated>
         <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-4">
-          How are you feeling?
+          How are you?
         </Text>
         <View className="flex-row flex-wrap gap-2 mb-3">
           {MOOD_OPTIONS.map((option) => (

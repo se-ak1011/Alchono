@@ -47,7 +47,7 @@ export default function SupportScreen() {
       {/* What's happening right now */}
       <View className="px-6 mb-4">
         <Text className="text-text-muted text-xs font-medium tracking-wide uppercase mb-3">
-          What's happening right now?
+          Right now?
         </Text>
         <View className="flex-row flex-wrap gap-2">
           {SUPPORT_STATES.map((state) => (
@@ -105,10 +105,10 @@ export default function SupportScreen() {
 
 function ResourcesPlaceholder() {
   const RESOURCES = [
-    { icon: '📞', title: 'Crisis lines', description: 'Immediate phone support, 24/7.' },
-    { icon: '🤝', title: 'Local meetings', description: 'AA, SMART Recovery, and more near you.' },
-    { icon: '💊', title: 'Treatment options', description: 'Detox, rehab, and outpatient programmes.' },
-    { icon: '📖', title: 'Self-help tools', description: 'Guided exercises and reading.' },
+    { icon: '—', title: 'Crisis lines', description: 'Immediate phone support, 24/7.' },
+    { icon: '○', title: 'Local meetings', description: 'AA, SMART Recovery, and more near you.' },
+    { icon: '◇', title: 'Treatment options', description: 'Detox, rehab, and outpatient programmes.' },
+    { icon: '→', title: 'Self-help tools', description: 'Guided exercises and reading.' },
   ];
 
   return (
@@ -122,7 +122,7 @@ function ResourcesPlaceholder() {
             key={r.title}
             className="flex-row items-start gap-4 bg-surface rounded-2xl px-4 py-4 mb-3 border border-white/5"
           >
-            <Text className="text-2xl mt-0.5">{r.icon}</Text>
+            <Text className="text-text-muted text-sm font-semibold w-4 mt-0.5">{r.icon}</Text>
             <View className="flex-1">
               <Text className="text-text-primary font-semibold text-sm mb-0.5">
                 {r.title}

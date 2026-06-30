@@ -33,7 +33,7 @@ function MorningReflectionPrompt() {
           How did it go?
         </Text>
         <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
-          A moment of reflection can change everything.
+          Worth a look.
         </Text>
         <View className="flex-row gap-2">
           <Pressable
