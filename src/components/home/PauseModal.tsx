@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, Animated as RNAnimated } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
@@ -15,7 +15,7 @@ export function PauseModal() {
   const { mutate: incrementPause } = useIncrementPause();
   const [phase, setPhase] = useState<'countdown' | 'action'>('countdown');
   const [seconds, setSeconds] = useState(PAUSE_SECONDS);
-  const progress = RNAnimated.useRef(new RNAnimated.Value(0)).current;
+  const progress = useRef(new RNAnimated.Value(0)).current;
 
   useEffect(() => {
     if (!pauseModalVisible) {
