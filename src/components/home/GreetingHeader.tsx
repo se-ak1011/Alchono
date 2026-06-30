@@ -4,11 +4,25 @@ import { MaskIconSmall } from '@/components/icons/MaskIcon';
 import { useAuthStore } from '@/store/authStore';
 import { useStreak } from '@/hooks/useInsights';
 
+const GREETINGS = {
+  early:     ["Still up?", "Late night.", "Hey."],
+  morning:   ["Morning.", "You're here.", "Hey, morning."],
+  afternoon: ["Hey.", "You're here.", "Glad you checked in."],
+  evening:   ["Evening.", "Hey.", "Still here."],
+  night:     ["Hey.", "One more day.", "Glad you're here."],
+} as const;
+
 function getGreeting(): string {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
+  const day = new Date().getDay();
+  let bucket: keyof typeof GREETINGS;
+  if (hour < 5) bucket = 'early';
+  else if (hour < 11) bucket = 'morning';
+  else if (hour < 17) bucket = 'afternoon';
+  else if (hour < 21) bucket = 'evening';
+  else bucket = 'night';
+  const opts = GREETINGS[bucket];
+  return opts[day % opts.length];
 }
 
 export function GreetingHeader() {
@@ -35,7 +49,7 @@ export function GreetingHeader() {
         )}
       </View>
       <Text className="text-text-primary text-3xl font-bold tracking-tight mt-3">
-        {getGreeting()},{'\n'}
+        {getGreeting()}{'\n'}
         <Text className="text-accent">{name}.</Text>
       </Text>
     </View>

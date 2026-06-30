@@ -45,9 +45,11 @@ export function useInsights(days = 30) {
 
       for (const c of checkins) {
         const date = c.created_at.split('T')[0];
+        // Store only the first mood value so charts that expect a single string still work
+        const primaryMood = c.mood?.split(',')[0] ?? c.mood;
         dateMap.set(date, {
           date,
-          mood: c.mood,
+          mood: primaryMood,
           hadSession: false,
           triggers: [],
         });
@@ -120,6 +122,24 @@ export function useStreak() {
         (Date.now() - lastSessionDate.getTime()) / (1000 * 60 * 60 * 24),
       );
       return { streak: daysSince, lastSessionDate };
+    },
+    enabled: !!userId,
+  });
+}
+
+export function useTotalPauses(days: number) {
+  const userId = useAuthStore((s) => s.user?.id);
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  return useQuery({
+    queryKey: ['total-pauses', userId, days],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('drinking_sessions')
+        .select('paused_count')
+        .eq('user_id', userId!)
+        .gte('started_at', since);
+      return (data ?? []).reduce((sum, s) => sum + (s.paused_count ?? 0), 0);
     },
     enabled: !!userId,
   });

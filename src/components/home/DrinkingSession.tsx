@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
@@ -23,9 +24,14 @@ export function DrinkingSession() {
   const { data: activeSession } = useActiveSession();
   const { mutate: startSession, isPending: isStarting } = useStartSession();
   const { mutate: endSession, isPending: isEnding } = useEndSession();
-  const { setPauseModalVisible } = useAppStore();
+  const { setPauseModalVisible, drinkingPromptDismissedDate, dismissDrinkingPrompt } = useAppStore();
+  const router = useRouter();
   const [duration, setDuration] = useState('');
   const [showQuestion, setShowQuestion] = useState(false);
+  const [notSureAck, setNotSureAck] = useState(false);
+
+  const today = new Date().toISOString().split('T')[0];
+  const promptDismissed = drinkingPromptDismissedDate === today;
 
   useEffect(() => {
     if (!activeSession) return;
@@ -51,12 +57,12 @@ export function DrinkingSession() {
 
   if (activeSession) {
     return (
-      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3 gap-3">
         <Card className="border border-accent/20">
           <View className="flex-row items-center justify-between mb-3">
             <View>
               <Text className="text-text-secondary text-sm font-medium">
-                Session active
+                Riding it out.
               </Text>
               <Text className="text-text-primary text-xl font-semibold mt-0.5">
                 {duration}
@@ -71,7 +77,7 @@ export function DrinkingSession() {
               className="bg-surface-2 rounded-xl p-3 mb-3 border border-white/5"
             >
               <Text className="text-text-primary text-sm font-medium mb-2">
-                Still drinking?
+                Still going?
               </Text>
               <View className="flex-row gap-2">
                 <Button
@@ -101,9 +107,7 @@ export function DrinkingSession() {
               variant="secondary"
               size="sm"
               className="flex-1"
-              onPress={() => {
-                setPauseModalVisible(true);
-              }}
+              onPress={() => setPauseModalVisible(true)}
             />
             <Button
               title="End session"
@@ -130,35 +134,85 @@ export function DrinkingSession() {
             />
           </View>
         </Card>
+
+        <Button
+          title="I need support"
+          variant="accent"
+          size="md"
+          fullWidth
+          onPress={() => router.push('/support/sos')}
+        />
       </Animated.View>
     );
   }
+
+  if (promptDismissed) return null;
+
+  const handleNotSure = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setNotSureAck(true);
+    setTimeout(() => setNotSureAck(false), 2500);
+  };
 
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Card>
         <Text className="text-text-primary text-base font-semibold mb-1">
-          Are you drinking today?
+          How's today looking?
         </Text>
         <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
-          No judgment. Just awareness.
+          Just this moment. No pressure.
         </Text>
-        <View className="flex-row gap-3">
-          <Button
-            title="Not today"
-            variant="secondary"
-            size="sm"
-            className="flex-1"
-            onPress={() => {}}
-          />
-          <Button
-            title="Yes"
-            variant="accent"
-            size="sm"
-            className="flex-1"
-            loading={isStarting}
-            onPress={() => startSession()}
-          />
+
+        {notSureAck && (
+          <Animated.View entering={FadeIn.duration(200)} className="mb-3">
+            <Text className="text-text-muted text-sm text-center">
+              Take it one moment at a time.
+            </Text>
+          </Animated.View>
+        )}
+
+        <View className="gap-2">
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              dismissDrinkingPrompt();
+            }}
+            className="flex-row items-center gap-2 bg-surface-2 rounded-xl px-4 py-3 border border-white/8 active:bg-white/5"
+          >
+            <Text className="text-base">🟢</Text>
+            <Text className="text-text-primary text-sm font-medium">
+              Staying alcohol-free
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={handleNotSure}
+            className="flex-row items-center gap-2 bg-surface-2 rounded-xl px-4 py-3 border border-white/8 active:bg-white/5"
+          >
+            <Text className="text-base">🟡</Text>
+            <Text className="text-text-primary text-sm font-medium">
+              Not sure yet
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              startSession();
+            }}
+            className="flex-row items-center gap-2 bg-accent/15 rounded-xl px-4 py-3 border border-accent/30 active:bg-accent/25"
+          >
+            {isStarting
+              ? <Text className="text-text-muted text-sm">Starting…</Text>
+              : <>
+                  <Text className="text-base">🟠</Text>
+                  <Text className="text-accent text-sm font-medium">
+                    Already drinking
+                  </Text>
+                </>
+            }
+          </Pressable>
         </View>
       </Card>
     </Animated.View>

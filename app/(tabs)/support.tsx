@@ -1,21 +1,37 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
-import { SosButton } from '@/components/support/SosButton';
 import { AiCoachChat } from '@/components/support/AiCoachChat';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { MentorList } from '@/components/support/MentorList';
 
-type Tab = 'coach' | 'community' | 'mentors';
+type Tab = 'coach' | 'community' | 'mentors' | 'resources';
+
+const SUPPORT_STATES = [
+  { key: 'talk',     icon: '💬', label: 'I just need to talk',  tab: 'coach' as Tab },
+  { key: 'urge',     icon: '🌊', label: "I'm having an urge",   tab: 'coach' as Tab },
+  { key: 'drinking', icon: '🟠', label: "I'm drinking now",     tab: 'coach' as Tab },
+  { key: 'through',  icon: '✅', label: 'I got through it',     tab: 'community' as Tab },
+] as const;
 
 const TABS: { key: Tab; label: string }[] = [
-  { key: 'coach', label: 'AI Coach' },
+  { key: 'coach',     label: 'AI Coach' },
   { key: 'community', label: 'Community' },
-  { key: 'mentors', label: 'Mentors' },
+  { key: 'mentors',   label: 'Mentors' },
+  { key: 'resources', label: 'Resources' },
 ];
 
 export default function SupportScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('coach');
+  const [activeState, setActiveState] = useState<string | null>(null);
+
+  const handleStateSelect = (state: typeof SUPPORT_STATES[number]) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveState(state.key);
+    setActiveTab(state.tab);
+  };
 
   return (
     <SafeArea bottom={false}>
@@ -28,7 +44,34 @@ export default function SupportScreen() {
         </Text>
       </View>
 
-      <SosButton />
+      {/* What's happening right now */}
+      <View className="px-6 mb-4">
+        <Text className="text-text-muted text-xs font-medium tracking-wide uppercase mb-3">
+          What's happening right now?
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          {SUPPORT_STATES.map((state) => (
+            <Pressable
+              key={state.key}
+              onPress={() => handleStateSelect(state)}
+              className={`flex-row items-center gap-2 px-3 py-2.5 rounded-xl border ${
+                activeState === state.key
+                  ? 'bg-accent/20 border-accent/40'
+                  : 'bg-surface border-white/8'
+              }`}
+            >
+              <Text className="text-base">{state.icon}</Text>
+              <Text
+                className={`text-sm font-medium ${
+                  activeState === state.key ? 'text-accent' : 'text-text-secondary'
+                }`}
+              >
+                {state.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
 
       {/* Sub-navigation */}
       <View className="flex-row mx-6 mb-4 bg-surface rounded-xl p-1">
@@ -52,10 +95,47 @@ export default function SupportScreen() {
       </View>
 
       <View className="flex-1">
-        {activeTab === 'coach' && <AiCoachChat />}
+        {activeTab === 'coach'     && <AiCoachChat />}
         {activeTab === 'community' && <CommunityFeed />}
-        {activeTab === 'mentors' && <MentorList />}
+        {activeTab === 'mentors'   && <MentorList />}
+        {activeTab === 'resources' && <ResourcesPlaceholder />}
       </View>
     </SafeArea>
+  );
+}
+
+function ResourcesPlaceholder() {
+  const RESOURCES = [
+    { icon: '📞', title: 'Crisis lines', description: 'Immediate phone support, 24/7.' },
+    { icon: '🤝', title: 'Local meetings', description: 'AA, SMART Recovery, and more near you.' },
+    { icon: '💊', title: 'Treatment options', description: 'Detox, rehab, and outpatient programmes.' },
+    { icon: '📖', title: 'Self-help tools', description: 'Guided exercises and reading.' },
+  ];
+
+  return (
+    <ScrollView
+      contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Animated.View entering={FadeIn.duration(400)}>
+        {RESOURCES.map((r) => (
+          <View
+            key={r.title}
+            className="flex-row items-start gap-4 bg-surface rounded-2xl px-4 py-4 mb-3 border border-white/5"
+          >
+            <Text className="text-2xl mt-0.5">{r.icon}</Text>
+            <View className="flex-1">
+              <Text className="text-text-primary font-semibold text-sm mb-0.5">
+                {r.title}
+              </Text>
+              <Text className="text-text-secondary text-sm leading-relaxed">
+                {r.description}
+              </Text>
+              <Text className="text-text-muted text-xs mt-2">Coming soon</Text>
+            </View>
+          </View>
+        ))}
+      </Animated.View>
+    </ScrollView>
   );
 }

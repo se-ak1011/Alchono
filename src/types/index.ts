@@ -20,12 +20,16 @@ export type MoodOption = {
 };
 
 export const MOOD_OPTIONS: MoodOption[] = [
-  { emoji: '😊', label: 'Good', value: 'good' },
-  { emoji: '😐', label: 'Okay', value: 'okay' },
-  { emoji: '😔', label: 'Struggling', value: 'struggling' },
-  { emoji: '😡', label: 'Angry', value: 'angry' },
+  { emoji: '🙂', label: 'Fine', value: 'fine' },
+  { emoji: '😐', label: 'Meh', value: 'meh' },
+  { emoji: '😔', label: 'Low', value: 'low' },
   { emoji: '😰', label: 'Anxious', value: 'anxious' },
+  { emoji: '😡', label: 'Angry', value: 'angry' },
   { emoji: '🥱', label: 'Exhausted', value: 'exhausted' },
+  { emoji: '😞', label: 'Lonely', value: 'lonely' },
+  { emoji: '😤', label: 'Frustrated', value: 'frustrated' },
+  { emoji: '💪', label: 'Determined', value: 'determined' },
+  { emoji: '😊', label: 'Hopeful', value: 'hopeful' },
 ];
 
 export const JOURNAL_TRIGGERS = [
