@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#151718"
+      "backgroundColor": "#0E0F10"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -29,7 +29,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#151718"
+        "backgroundColor": "#0E0F10"
       },
       "package": "com.alchono.app",
       "versionCode": 1,
@@ -50,7 +50,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#B77A33",
+          "color": "#C4C9D0",
           "sounds": []
         }
       ],
@@ -58,9 +58,9 @@
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 400,
           "resizeMode": "contain",
-          "backgroundColor": "#151718"
+          "backgroundColor": "#0E0F10"
         }
       ],
       "expo-font"
