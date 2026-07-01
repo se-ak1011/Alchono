@@ -8,6 +8,7 @@ import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { HomeFeed } from '@/components/home/HomeFeed';
+import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useYesterdaySession } from '@/hooks/useJournal';
 import { useAppStore } from '@/store/appStore';
@@ -62,6 +63,7 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: 48 }}
       >
         <GreetingHeader />
+        <AnchorsCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
         <DrinkingSession />

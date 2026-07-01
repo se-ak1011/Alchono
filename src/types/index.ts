@@ -66,6 +66,12 @@ export const PAUSE_ACTIONS = [
   { icon: '●', label: 'Continue drinking', value: 'continue' },
 ] as const;
 
+export type Goal = {
+  id: string;
+  text: string;
+  addedAt: string;
+};
+
 export type UserPreferences = {
   familyMembers: string[];   // 'partner' | 'children' | 'parents'
   partnerName: string;
@@ -76,6 +82,7 @@ export type UserPreferences = {
   workShift: 'morning' | 'day' | 'evening' | 'night' | null;
   drinksAtWork: boolean;
   city: string;
+  goals: Goal[];
 };
 
 export type ChatMessage = {
