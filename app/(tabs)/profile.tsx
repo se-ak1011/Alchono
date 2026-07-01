@@ -6,14 +6,13 @@ import { Avatar } from '@/components/ui/Avatar';
 import { SettingsSection } from '@/components/profile/SettingsSection';
 import { NotificationSettings } from '@/components/profile/NotificationSettings';
 import { useAuthStore } from '@/store/authStore';
-import { useSignOut } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { headingShadow } from '@/styles';
 
 export default function ProfileScreen() {
   const profile = useAuthStore((s) => s.profile);
   const user = useAuthStore((s) => s.user);
-  const signOut = useSignOut();
+  const reset = useAuthStore((s) => s.reset);
   const router = useRouter();
 
   const handleSignOut = () => {
@@ -22,7 +21,11 @@ export default function ProfileScreen() {
       {
         text: 'Sign out',
         style: 'destructive',
-        onPress: () => signOut(),
+        onPress: async () => {
+          reset();
+          router.replace('/(auth)/login');
+          supabase.auth.signOut().catch(() => {});
+        },
       },
     ]);
   };
@@ -37,10 +40,10 @@ export default function ProfileScreen() {
           text: 'Delete everything',
           style: 'destructive',
           onPress: async () => {
-            await supabase.functions.invoke('delete-account', {
-              body: { userId: user?.id },
-            });
-            await signOut();
+            supabase.functions.invoke('delete-account', { body: { userId: user?.id } }).catch(() => {});
+            reset();
+            router.replace('/(auth)/login');
+            supabase.auth.signOut().catch(() => {});
           },
         },
       ],

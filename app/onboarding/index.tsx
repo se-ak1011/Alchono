@@ -352,14 +352,13 @@ export default function OnboardingScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     if ((currentStep as any).isLast) {
-      setProfile({ ...profile!, onboarding_completed: true });
-
-      supabase
+      const { data: updated } = await supabase
         .from('profiles')
         .update({ onboarding_completed: true, preferences: prefs as any })
         .eq('id', user!.id)
-        .then(() => {})
-        .catch(() => {});
+        .select()
+        .single();
+      setProfile(updated ?? { ...profile!, onboarding_completed: true });
 
       registerForPushNotifications()
         .then((token) => { if (token && user) return savePushToken(user.id, token); })

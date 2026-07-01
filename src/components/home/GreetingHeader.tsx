@@ -29,7 +29,7 @@ function getGreeting(): string {
 export function GreetingHeader() {
   const profile = useAuthStore((s) => s.profile);
   const { data: streakData } = useStreak();
-  const name = profile?.username ?? profile?.full_name ?? 'there';
+  const name = profile?.username ?? profile?.full_name ?? null;
   const streak = streakData?.streak ?? 0;
 
   return (
@@ -50,8 +50,8 @@ export function GreetingHeader() {
         )}
       </View>
       <Text className="text-text-primary text-3xl font-semibold tracking-tight mt-3" style={headingShadow}>
-        {getGreeting()}{'\n'}
-        <Text className="text-text-primary">{name}.</Text>
+        {getGreeting()}
+        {name ? `\n${name}.` : ''}
       </Text>
     </View>
   );
