@@ -52,6 +52,29 @@ export interface Database {
           preferences?: Json | null;
         };
       };
+      goals: {
+        Row: {
+          id: string;
+          user_id: string;
+          text: string;
+          target_date: string | null;
+          completed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          text: string;
+          target_date?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          text?: string;
+          target_date?: string | null;
+          completed_at?: string | null;
+        };
+      };
       daily_checkins: {
         Row: {
           id: string;

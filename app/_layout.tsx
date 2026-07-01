@@ -64,6 +64,7 @@ function RootLayoutNav() {
           name="session/urge"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
+        <Stack.Screen name="goals/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </AuthGate>

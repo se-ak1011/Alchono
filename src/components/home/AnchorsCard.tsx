@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { useAuthStore } from '@/store/authStore';
-import { useGoals } from '@/hooks/useGoals';
+import { useGoals, formatTargetDate, daysUntil } from '@/hooks/useGoals';
 import type { UserPreferences } from '@/types';
 
 const DAILY_ANCHORS = [
@@ -36,29 +36,32 @@ function buildNames(prefs: UserPreferences | null): string | null {
 }
 
 export function AnchorsCard() {
+  const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
   const prefs = profile?.preferences as UserPreferences | null;
-  const { goals, addGoal, removeGoal } = useGoals();
-  const [adding, setAdding] = useState(false);
-  const [input, setInput] = useState('');
-  const inputRef = useRef<TextInput>(null);
+  const { data: allGoals = [] } = useGoals();
 
   const names = buildNames(prefs);
+  const activeGoals = allGoals.filter((g) => !g.completed_at);
+  const preview = activeGoals.slice(0, 3);
+  const overflow = activeGoals.length - preview.length;
 
-  const handleAdd = () => {
-    if (!input.trim()) { setAdding(false); return; }
-    addGoal(input.trim());
-    setInput('');
-    setAdding(false);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  };
+  if (!names && activeGoals.length === 0) {
+    return (
+      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+        <Pressable onPress={() => router.push('/goals')} className="py-2">
+          <Text className="text-text-muted text-sm">+ What are you building towards?</Text>
+        </Pressable>
+      </Animated.View>
+    );
+  }
 
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Card className="border border-white/5">
         {/* People */}
         {names && (
-          <View className={goals.length > 0 || adding ? 'mb-4' : ''}>
+          <View className={activeGoals.length > 0 ? 'mb-4' : ''}>
             <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
               Reasons
             </Text>
@@ -72,71 +75,49 @@ export function AnchorsCard() {
         )}
 
         {/* Divider */}
-        {names && (goals.length > 0 || adding) && (
+        {names && activeGoals.length > 0 && (
           <View className="h-px bg-white/5 mb-4" />
         )}
 
-        {/* Goals */}
-        {goals.length > 0 && (
-          <View className={adding ? 'mb-3' : 'mb-1'}>
-            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-              Looking forward to
-            </Text>
-            {goals.map((goal, i) => (
-              <Animated.View
-                key={goal.id}
-                entering={FadeInDown.duration(300).delay(i * 40)}
-                className="flex-row items-center gap-3 mb-2.5"
-              >
-                <Text className="text-text-muted text-xs w-3">—</Text>
-                <Text className="text-text-secondary text-sm flex-1 leading-relaxed">
-                  {goal.text}
-                </Text>
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    removeGoal(goal.id);
-                  }}
-                  hitSlop={12}
-                >
-                  <Text className="text-text-muted text-base leading-none">×</Text>
-                </Pressable>
-              </Animated.View>
-            ))}
+        {/* Goals preview */}
+        {preview.length > 0 && (
+          <View>
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+                Looking forward to
+              </Text>
+              <Pressable onPress={() => router.push('/goals')} hitSlop={8}>
+                <Text className="text-text-muted text-xs">Manage →</Text>
+              </Pressable>
+            </View>
+            {preview.map((goal) => {
+              const days = goal.target_date ? daysUntil(goal.target_date) : null;
+              return (
+                <View key={goal.id} className="flex-row items-center gap-3 mb-2.5">
+                  <Text className="text-text-muted text-xs w-3">—</Text>
+                  <Text className="text-text-secondary text-sm flex-1 leading-relaxed">
+                    {goal.text}
+                  </Text>
+                  {days !== null && (
+                    <Text className={`text-xs font-medium ${days < 14 ? 'text-text-secondary' : 'text-text-muted'}`}>
+                      {days <= 0 ? 'now' : `${days}d`}
+                    </Text>
+                  )}
+                </View>
+              );
+            })}
+            {overflow > 0 && (
+              <Pressable onPress={() => router.push('/goals')} className="mt-1">
+                <Text className="text-text-muted text-xs">+{overflow} more →</Text>
+              </Pressable>
+            )}
           </View>
         )}
 
-        {/* Add goal */}
-        {adding ? (
-          <TextInput
-            ref={inputRef}
-            autoFocus
-            placeholder="Something to look forward to…"
-            placeholderTextColor="#4B5563"
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={handleAdd}
-            onBlur={() => { if (!input.trim()) setAdding(false); }}
-            returnKeyType="done"
-            style={{
-              color: '#F0F2F4',
-              fontSize: 14,
-              paddingVertical: 8,
-              borderBottomWidth: 1,
-              borderBottomColor: 'rgba(255,255,255,0.1)',
-            }}
-          />
-        ) : (
-          <Pressable
-            onPress={() => setAdding(true)}
-            hitSlop={8}
-            className="mt-1"
-          >
-            <Text className="text-text-muted text-sm">
-              {goals.length === 0 && !names
-                ? '+ What are you building towards?'
-                : '+ Add something good'}
-            </Text>
+        {/* Empty goals state */}
+        {activeGoals.length === 0 && (
+          <Pressable onPress={() => router.push('/goals')} hitSlop={8}>
+            <Text className="text-text-muted text-sm">+ Add something to look forward to</Text>
           </Pressable>
         )}
       </Card>

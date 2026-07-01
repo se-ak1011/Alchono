@@ -1,48 +1,80 @@
-import { useCallback } from 'react';
-import { useAuthStore } from '@/store/authStore';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/store/authStore';
 import type { Goal } from '@/types';
 
 export function useGoals() {
-  const profile = useAuthStore((s) => s.profile);
-  const setProfile = useAuthStore((s) => s.setProfile);
-  const prefs = (profile?.preferences as any) ?? {};
-  const goals: Goal[] = Array.isArray(prefs.goals) ? prefs.goals : [];
-
-  const persist = useCallback(
-    (next: Goal[]) => {
-      if (!profile) return;
-      const nextPrefs = { ...prefs, goals: next };
-      setProfile({ ...profile, preferences: nextPrefs });
-      supabase
-        .from('profiles')
-        .update({ preferences: nextPrefs })
-        .eq('id', profile.id)
-        .then(() => {})
-        .catch(() => {});
+  const userId = useAuthStore((s) => s.user?.id);
+  return useQuery({
+    queryKey: ['goals', userId],
+    queryFn: async (): Promise<Goal[]> => {
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('user_id', userId!)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data ?? [];
     },
-    [profile, prefs, setProfile],
-  );
+    enabled: !!userId,
+  });
+}
 
-  const addGoal = useCallback(
-    (text: string) => {
-      if (!text.trim()) return;
-      const goal: Goal = {
-        id: Date.now().toString(),
-        text: text.trim(),
-        addedAt: new Date().toISOString(),
-      };
-      persist([...goals, goal]);
+export function useAddGoal() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ text, targetDate }: { text: string; targetDate?: string | null }) => {
+      const { data, error } = await supabase
+        .from('goals')
+        .insert({ user_id: userId!, text, target_date: targetDate ?? null })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
     },
-    [goals, persist],
-  );
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
 
-  const removeGoal = useCallback(
-    (id: string) => {
-      persist(goals.filter((g) => g.id !== id));
+export function useCompleteGoal() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('goals')
+        .update({ completed_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
     },
-    [goals, persist],
-  );
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
 
-  return { goals, addGoal, removeGoal };
+export function useDeleteGoal() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('goals')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
+
+export function formatTargetDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+}
+
+export function daysUntil(dateStr: string): number {
+  const d = new Date(dateStr + 'T12:00:00');
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.ceil((d.getTime() - now.getTime()) / 86400000);
 }
