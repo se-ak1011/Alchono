@@ -55,9 +55,9 @@ function buildActions(prefs: UserPreferences | null): Action[] {
   list.push({ id: 'walk', label: 'Step outside for 5 minutes', subtitle: 'Movement breaks the moment.' });
   list.push({
     id: 'game',
-    label: 'Do the word search',
+    label: 'Play a game',
     subtitle: 'Give your mind something else to do.',
-    navigate: '/session/word-search',
+    navigate: '/session/games',
   });
 
   return list;
