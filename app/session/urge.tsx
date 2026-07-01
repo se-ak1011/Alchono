@@ -13,6 +13,7 @@ import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
 import { useAuthStore } from '@/store/authStore';
+import { headingShadow } from '@/styles';
 import type { UserPreferences } from '@/types';
 
 const BREATH_MS = 4000;
@@ -123,7 +124,7 @@ export default function UrgeScreen() {
               />
             </View>
 
-            <Text className="text-text-primary text-2xl font-semibold mb-2">
+            <Text className="text-text-primary text-2xl font-semibold mb-2" style={headingShadow}>
               {isIn ? 'Breathe in…' : 'Breathe out…'}
             </Text>
             <Text className="text-text-muted text-sm mb-10">
@@ -138,7 +139,7 @@ export default function UrgeScreen() {
 
         {phase === 'prompts' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
-            <Text className="text-text-primary text-2xl font-bold tracking-tight mb-1">
+            <Text className="text-text-primary text-2xl font-semibold tracking-tight mb-1" style={headingShadow}>
               Before you decide.
             </Text>
             <Text className="text-text-secondary text-sm mb-6">
@@ -174,7 +175,7 @@ export default function UrgeScreen() {
 
         {phase === 'decision' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
-            <Text className="text-text-primary text-2xl font-bold tracking-tight mb-1">
+            <Text className="text-text-primary text-2xl font-semibold tracking-tight mb-1" style={headingShadow}>
               Did it pass?
             </Text>
             <Text className="text-text-secondary text-sm mb-8">

@@ -69,7 +69,7 @@ export function PauseModal() {
             Just 60 seconds. Notice how you feel right now.
           </Text>
           <View className="items-center py-6">
-            <Text className="text-8xl font-bold text-text-primary tabular-nums">
+            <Text className="text-8xl font-semibold text-text-primary tabular-nums">
               {seconds}
             </Text>
             <Text className="text-text-secondary text-sm mt-2">seconds</Text>

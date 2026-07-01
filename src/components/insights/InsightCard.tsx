@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Card } from '@/components/ui/Card';
+import { headingShadow } from '@/styles';
 
 interface InsightCardProps {
   title: string;
@@ -29,7 +30,7 @@ export function InsightCard({ title, value, subtitle, symbol, trend }: InsightCa
           </Text>
         )}
       </View>
-      <Text className="text-text-primary text-2xl font-bold tracking-tight">
+      <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
         {value}
       </Text>
       <Text className="text-text-muted text-xs font-semibold tracking-wider uppercase mt-1">

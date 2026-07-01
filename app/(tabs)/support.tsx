@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
+import { headingShadow } from '@/styles';
 import { AiCoachChat } from '@/components/support/AiCoachChat';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { MentorList } from '@/components/support/MentorList';
@@ -36,7 +37,7 @@ export default function SupportScreen() {
   return (
     <SafeArea bottom={false}>
       <View className="px-6 pt-4 pb-3">
-        <Text className="text-text-primary text-2xl font-bold tracking-tight">
+        <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
           Support
         </Text>
         <Text className="text-text-secondary text-sm mt-1">

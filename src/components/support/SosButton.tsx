@@ -39,7 +39,7 @@ export function SosButton() {
         >
           <View className="flex-row items-center gap-4">
             <View className="w-12 h-12 rounded-lg bg-white/6 border border-white/12 items-center justify-center">
-              <Text className="text-text-muted text-xl font-bold">SOS</Text>
+              <Text className="text-text-muted text-xl font-semibold">SOS</Text>
             </View>
             <View className="flex-1">
               <Text className="text-text-primary text-lg font-semibold">

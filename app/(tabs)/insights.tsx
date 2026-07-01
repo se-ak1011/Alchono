@@ -8,6 +8,7 @@ import { MoodChart } from '@/components/insights/MoodChart';
 import { PatternChart } from '@/components/insights/PatternChart';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
+import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
 
@@ -101,7 +102,7 @@ export default function InsightsScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         <View className="px-6 pt-4 pb-3">
-          <Text className="text-text-primary text-2xl font-bold tracking-tight">
+          <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
             Patterns
           </Text>
           <Text className="text-text-secondary text-sm mt-1">

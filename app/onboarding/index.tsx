@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { SoulIcon } from '@/components/icons/SoulIcon';
 import { Button } from '@/components/ui/Button';
+import { headingShadow } from '@/styles';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
 import {
@@ -404,7 +405,7 @@ export default function OnboardingScreen() {
               </View>
             )}
 
-            <Text className="text-text-primary text-3xl font-bold tracking-tight mb-4 leading-tight">
+            <Text className="text-text-primary text-3xl font-semibold tracking-tight mb-4 leading-tight" style={headingShadow}>
               {currentStep.title}
             </Text>
             <Text className="text-text-secondary text-base leading-relaxed mb-6">

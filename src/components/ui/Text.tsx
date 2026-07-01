@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
+import { headingShadow } from '@/styles';
 
 type Variant = 'heading' | 'title' | 'subtitle' | 'body' | 'caption' | 'label';
 type Color = 'primary' | 'secondary' | 'accent' | 'muted' | 'white';
@@ -11,7 +12,7 @@ interface TextProps extends RNTextProps {
 }
 
 const variantClasses: Record<Variant, string> = {
-  heading: 'text-3xl font-bold tracking-tight',
+  heading: 'text-3xl font-semibold tracking-tight',
   title: 'text-xl font-semibold tracking-tight',
   subtitle: 'text-lg font-medium',
   body: 'text-base font-sans',
@@ -32,11 +33,14 @@ export function Text({
   color = 'primary',
   className = '',
   children,
+  style,
   ...rest
 }: TextProps) {
+  const shadowStyle = variant === 'heading' || variant === 'title' ? headingShadow : undefined;
   return (
     <RNText
       className={`${variantClasses[variant]} ${colorClasses[color]} ${className}`}
+      style={shadowStyle ? [shadowStyle, style] : style}
       {...rest}
     >
       {children}

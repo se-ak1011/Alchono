@@ -8,6 +8,7 @@ import { NotificationSettings } from '@/components/profile/NotificationSettings'
 import { useAuthStore } from '@/store/authStore';
 import { useSignOut } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
+import { headingShadow } from '@/styles';
 
 export default function ProfileScreen() {
   const profile = useAuthStore((s) => s.profile);
@@ -72,7 +73,7 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         <View className="px-6 pt-4 pb-6">
-          <Text className="text-text-primary text-2xl font-bold tracking-tight mb-4">
+          <Text className="text-text-primary text-2xl font-semibold tracking-tight mb-4" style={headingShadow}>
             Profile
           </Text>
           <View className="flex-row items-center gap-4">

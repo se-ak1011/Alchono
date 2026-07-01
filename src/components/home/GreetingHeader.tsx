@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { SoulIconSmall } from '@/components/icons/SoulIcon';
+import { headingShadow } from '@/styles';
 import { useAuthStore } from '@/store/authStore';
 import { useStreak } from '@/hooks/useInsights';
 
@@ -48,7 +49,7 @@ export function GreetingHeader() {
           </View>
         )}
       </View>
-      <Text className="text-text-primary text-3xl font-bold tracking-tight mt-3">
+      <Text className="text-text-primary text-3xl font-semibold tracking-tight mt-3" style={headingShadow}>
         {getGreeting()}{'\n'}
         <Text className="text-text-primary">{name}.</Text>
       </Text>
