@@ -77,9 +77,9 @@ export default function InsightsScreen() {
   const { data: totalPauses = 0 } = useTotalPauses(period);
   const { width } = useWindowDimensions();
 
-  const sessionDays  = insights?.filter((d) => d.hadSession).length ?? 0;
-  const checkinDays  = insights?.filter((d) => d.mood).length ?? 0;
-  const alcoholFreeDays = Math.max(0, period - sessionDays);
+  const sessionDays     = insights?.filter((d) => d.hadSession).length ?? 0;
+  const checkinDays     = insights?.filter((d) => d.mood).length ?? 0;
+  const alcoholFreeDays = insights?.filter((d) => !d.hadSession).length ?? 0;
 
   const triggerCounts = insights?.reduce<Record<string, number>>((acc, d) => {
     for (const t of d.triggers) {
@@ -146,7 +146,7 @@ export default function InsightsScreen() {
                 title="Alcohol-free"
                 value={alcoholFreeDays}
                 symbol="○"
-                subtitle="days"
+                subtitle="recorded days"
               />
               <InsightCard
                 title="Pauses"

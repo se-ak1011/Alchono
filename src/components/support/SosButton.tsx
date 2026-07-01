@@ -35,11 +35,11 @@ export function SosButton() {
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           onPress={handlePress}
-          className="bg-surface rounded-2xl p-5 border border-white/8 active:border-accent/30"
+          className="bg-surface rounded-2xl p-5 border border-white/8 active:border-white/20"
         >
           <View className="flex-row items-center gap-4">
-            <View className="w-12 h-12 rounded-full bg-accent/15 border border-accent/30 items-center justify-center">
-              <Text className="text-2xl">🤝</Text>
+            <View className="w-12 h-12 rounded-lg bg-white/6 border border-white/12 items-center justify-center">
+              <Text className="text-text-muted text-xl font-bold">SOS</Text>
             </View>
             <View className="flex-1">
               <Text className="text-text-primary text-lg font-semibold">

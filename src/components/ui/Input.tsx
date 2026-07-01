@@ -36,7 +36,7 @@ export const Input = forwardRef<TextInput, InputProps>(
             ref={ref}
             className="flex-1 text-text-primary text-base font-sans"
             placeholderTextColor="#5E6472"
-            selectionColor="#B77A33"
+            selectionColor="#9CA3AF"
             {...rest}
           />
           {rightIcon && <View className="ml-3">{rightIcon}</View>}

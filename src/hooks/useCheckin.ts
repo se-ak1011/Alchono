@@ -60,6 +60,36 @@ export function useSubmitCheckin() {
   });
 }
 
+export function useUpdateCheckin() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const today = new Date().toISOString().split('T')[0];
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      mood,
+      emoji,
+    }: {
+      id: string;
+      mood: string;
+      emoji: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('daily_checkins')
+        .update({ mood, mood_emoji: emoji })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['checkin', userId, today] });
+      queryClient.invalidateQueries({ queryKey: ['insights', userId] });
+    },
+  });
+}
+
 export function useRecentCheckins(days = 7) {
   const userId = useAuthStore((s) => s.user?.id);
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)

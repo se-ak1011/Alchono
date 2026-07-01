@@ -48,7 +48,7 @@ export function CommunityFeed() {
           multiline
           maxLength={280}
           className="text-text-primary text-sm leading-relaxed min-h-[60px]"
-          selectionColor="#B77A33"
+          selectionColor="#9CA3AF"
         />
         <View className="flex-row items-center justify-between mt-3">
           <Text className="text-text-muted text-xs">Anonymous post</Text>
@@ -124,7 +124,7 @@ export function CommunityFeed() {
         )}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator size="small" color="#B77A33" className="mt-4" />
+            <ActivityIndicator size="small" color="#9CA3AF" className="mt-4" />
           ) : null
         }
         ListEmptyComponent={

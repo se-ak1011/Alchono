@@ -7,7 +7,7 @@ interface IconProps {
   strokeWidth?: number;
 }
 
-export function HomeIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 }: IconProps) {
+export function HomeIcon({ size = 24, color = '#9CA3AF', strokeWidth = 1.75 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -21,7 +21,7 @@ export function HomeIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 }: I
   );
 }
 
-export function SupportIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 }: IconProps) {
+export function SupportIcon({ size = 24, color = '#9CA3AF', strokeWidth = 1.75 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -35,7 +35,7 @@ export function SupportIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 }
   );
 }
 
-export function InsightsIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 }: IconProps) {
+export function InsightsIcon({ size = 24, color = '#9CA3AF', strokeWidth = 1.75 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Line x1="18" y1="20" x2="18" y2="10" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
@@ -45,7 +45,7 @@ export function InsightsIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 
   );
 }
 
-export function ProfileIcon({ size = 24, color = '#B8BCC3', strokeWidth = 1.75 }: IconProps) {
+export function ProfileIcon({ size = 24, color = '#9CA3AF', strokeWidth = 1.75 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="8" r="4" stroke={color} strokeWidth={strokeWidth} />

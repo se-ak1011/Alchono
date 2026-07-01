@@ -104,7 +104,7 @@ export function PauseModal() {
                 }}
                 className="flex-row items-center gap-3 bg-surface-2 rounded-xl px-4 py-3.5 border border-white/5 active:bg-white/5"
               >
-                <Text className="text-xl">{action.icon}</Text>
+                <Text className="text-text-muted text-sm w-4">{action.icon}</Text>
                 <Text className="text-text-primary font-medium text-sm flex-1">
                   {action.label}
                 </Text>

@@ -59,15 +59,17 @@ export const MENTOR_LEVELS = [
 ] as const;
 
 export const PAUSE_ACTIONS = [
-  { icon: '💧', label: 'Drink water', value: 'water' },
-  { icon: '🚶', label: 'Walk outside', value: 'walk' },
-  { icon: '🌬️', label: 'Breathing exercise', value: 'breathe' },
-  { icon: '💬', label: 'Message someone', value: 'message' },
-  { icon: '🍷', label: 'Continue drinking', value: 'continue' },
+  { icon: '○', label: 'Drink water', value: 'water' },
+  { icon: '→', label: 'Walk outside', value: 'walk' },
+  { icon: '≈', label: 'Breathing exercise', value: 'breathe' },
+  { icon: '◇', label: 'Message someone', value: 'message' },
+  { icon: '●', label: 'Continue drinking', value: 'continue' },
 ] as const;
 
 export type UserPreferences = {
   familyMembers: string[];   // 'partner' | 'children' | 'parents'
+  partnerName: string;
+  childrenNames: string;
   hasPets: boolean;
   petName: string;
   hasJob: boolean;

@@ -12,7 +12,6 @@ import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
-import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 import type { UserPreferences } from '@/types';
 
@@ -22,17 +21,19 @@ const TOTAL_HALF_CYCLES = 6; // 3 full cycles
 function buildPrompts(prefs: UserPreferences | null): string[] {
   const list: string[] = [];
   if (prefs?.familyMembers?.includes('children')) {
-    list.push('Think of your children. They need you present.');
+    const names = prefs.childrenNames?.trim();
+    list.push(names ? `Think of ${names}.` : 'Think of your kids. They need you present.');
   }
   if (prefs?.familyMembers?.includes('partner')) {
-    list.push("Think of your partner. You're in this together.");
+    const name = prefs.partnerName?.trim();
+    list.push(name ? `Think of ${name}.` : "Think of your partner. You're in this together.");
   }
   if (prefs?.familyMembers?.includes('parents')) {
     list.push('Your parents want to see you well.');
   }
   if (prefs?.hasPets) {
     const name = prefs.petName?.trim() || 'your pet';
-    list.push(`Go check on ${name}. They're glad you're here.`);
+    list.push(`Go check on ${name}.`);
   }
   list.push('Drink a glass of water. Just that.');
   list.push('The urge will pass. They always do.');
@@ -43,8 +44,6 @@ export default function UrgeScreen() {
   const router = useRouter();
   const { profile } = useAuthStore();
   const { mutate: startSession } = useStartSession();
-  const { dismissDrinkingPrompt } = useAppStore();
-
   const prefs = (profile as any)?.preferences as UserPreferences | null;
 
   const [phase, setPhase] = useState<'breathing' | 'prompts' | 'decision'>('breathing');
@@ -77,7 +76,6 @@ export default function UrgeScreen() {
 
   const handleUrgePassed = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    dismissDrinkingPrompt();
     router.back();
   };
 
@@ -117,7 +115,7 @@ export default function UrgeScreen() {
                     width: 160,
                     height: 160,
                     borderRadius: 80,
-                    backgroundColor: '#B77A33',
+                    backgroundColor: '#9CA3AF',
                     position: 'absolute',
                   },
                   circleStyle,

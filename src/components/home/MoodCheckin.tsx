@@ -10,16 +10,18 @@ import * as Haptics from 'expo-haptics';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { MOOD_OPTIONS, type MoodOption } from '@/types';
-import { useTodayCheckin, useSubmitCheckin } from '@/hooks/useCheckin';
+import { useTodayCheckin, useSubmitCheckin, useUpdateCheckin } from '@/hooks/useCheckin';
 
 export function MoodCheckin() {
   const { data: todayCheckin, isLoading } = useTodayCheckin();
-  const { mutate: submitCheckin, isPending } = useSubmitCheckin();
+  const { mutate: submitCheckin, isPending: isSubmitting } = useSubmitCheckin();
+  const { mutate: updateCheckin, isPending: isUpdating } = useUpdateCheckin();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [editing, setEditing] = useState(false);
 
   if (isLoading) return null;
 
-  if (todayCheckin) {
+  if (todayCheckin && !editing) {
     const moodValues = todayCheckin.mood.split(',').map((m) => m.trim());
     const logged = moodValues
       .map((v) => MOOD_OPTIONS.find((o) => o.value === v))
@@ -28,9 +30,22 @@ export function MoodCheckin() {
     return (
       <Animated.View entering={FadeIn.duration(400)}>
         <Card className="mx-6 mt-2">
-          <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-            Check-in
-          </Text>
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              Check-in
+            </Text>
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                const current = new Set(moodValues.filter(Boolean));
+                setSelected(current);
+                setEditing(true);
+              }}
+              hitSlop={8}
+            >
+              <Text className="text-text-muted text-xs">Update</Text>
+            </Pressable>
+          </View>
           <View className="flex-row flex-wrap gap-2">
             {logged.length > 0
               ? logged.map((option) => (
@@ -73,15 +88,33 @@ export function MoodCheckin() {
     const mood = selectedOptions.map((o) => o.value).join(',');
     const emoji = selectedOptions.map((o) => o.emoji).join('');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    submitCheckin({ mood, emoji });
+
+    if (editing && todayCheckin) {
+      updateCheckin(
+        { id: todayCheckin.id, mood, emoji },
+        { onSuccess: () => setEditing(false) },
+      );
+    } else {
+      submitCheckin({ mood, emoji });
+    }
   };
 
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-2">
       <Card elevated>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-4">
-          How are you?
-        </Text>
+        <View className="flex-row items-center justify-between mb-4">
+          <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+            How are you?
+          </Text>
+          {editing && (
+            <Pressable
+              onPress={() => setEditing(false)}
+              hitSlop={8}
+            >
+              <Text className="text-text-muted text-xs">Cancel</Text>
+            </Pressable>
+          )}
+        </View>
         <View className="flex-row flex-wrap gap-2 mb-3">
           {MOOD_OPTIONS.map((option) => (
             <MoodChip
@@ -95,11 +128,11 @@ export function MoodCheckin() {
         {selected.size > 0 && (
           <Animated.View entering={FadeIn.duration(200)}>
             <Button
-              title="Log check-in"
+              title={editing ? 'Save' : 'Log check-in'}
               variant="primary"
               size="sm"
               fullWidth
-              loading={isPending}
+              loading={isSubmitting || isUpdating}
               onPress={handleSubmit}
             />
           </Animated.View>

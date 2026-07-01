@@ -179,7 +179,7 @@ export default function MorningReflectionScreen() {
               numberOfLines={5}
               textAlignVertical="top"
               className="bg-surface rounded-2xl px-4 py-4 text-text-primary text-sm leading-relaxed min-h-[120px] border border-white/5"
-              selectionColor="#B77A33"
+              selectionColor="#9CA3AF"
             />
             <View className="mt-6">
               <Button

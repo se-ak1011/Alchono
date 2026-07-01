@@ -78,7 +78,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           returnKeyType="send"
           blurOnSubmit
           className="flex-1 bg-surface rounded-2xl px-4 py-3 text-text-primary text-sm max-h-28"
-          selectionColor="#B77A33"
+          selectionColor="#9CA3AF"
         />
         <Pressable
           onPress={handleSend}

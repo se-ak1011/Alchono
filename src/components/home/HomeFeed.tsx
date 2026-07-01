@@ -56,7 +56,7 @@ export function HomeFeed() {
           multiline
           maxLength={280}
           style={{ color: '#F6F5F2', fontSize: 14, lineHeight: 20, minHeight: 44 }}
-          selectionColor="#B77A33"
+          selectionColor="#9CA3AF"
         />
         {newPost.trim().length > 0 && (
           <View className="flex-row items-center justify-between mt-2 pt-2 border-t border-white/5">

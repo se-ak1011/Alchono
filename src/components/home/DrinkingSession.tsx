@@ -24,13 +24,13 @@ export function DrinkingSession() {
   const { data: activeSession } = useActiveSession();
   const { mutate: startSession, isPending: isStarting } = useStartSession();
   const { mutate: endSession, isPending: isEnding } = useEndSession();
-  const { setPauseModalVisible, drinkingPromptDismissedDate, dismissDrinkingPrompt } = useAppStore();
+  const { setPauseModalVisible, alcoholFreeTodayDate, setAlcoholFreeToday, clearAlcoholFreeToday } = useAppStore();
   const router = useRouter();
   const [duration, setDuration] = useState('');
   const [showQuestion, setShowQuestion] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
-  const promptDismissed = drinkingPromptDismissedDate === today;
+  const alcoholFreeMarked = alcoholFreeTodayDate === today;
 
   useEffect(() => {
     if (!activeSession) return;
@@ -67,7 +67,7 @@ export function DrinkingSession() {
                 {duration}
               </Text>
             </View>
-            <View className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <View className="w-1.5 h-1.5 rounded-full bg-white/60" />
           </View>
 
           {showQuestion && (
@@ -88,7 +88,7 @@ export function DrinkingSession() {
                 />
                 <Button
                   title="No, I'm done"
-                  variant="accent"
+                  variant="secondary"
                   size="sm"
                   className="flex-1"
                   onPress={() => {
@@ -117,7 +117,7 @@ export function DrinkingSession() {
               onPress={() => {
                 Alert.alert(
                   'End session?',
-                  'That takes awareness. Well done.',
+                  'That takes awareness.',
                   [
                     { text: 'Keep going', style: 'cancel' },
                     {
@@ -136,7 +136,7 @@ export function DrinkingSession() {
 
         <Button
           title="I need support"
-          variant="accent"
+          variant="secondary"
           size="md"
           fullWidth
           onPress={() => router.push('/support/sos')}
@@ -144,8 +144,6 @@ export function DrinkingSession() {
       </Animated.View>
     );
   }
-
-  if (promptDismissed) return null;
 
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
@@ -158,14 +156,25 @@ export function DrinkingSession() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              dismissDrinkingPrompt();
+              if (alcoholFreeMarked) {
+                clearAlcoholFreeToday();
+              } else {
+                setAlcoholFreeToday();
+              }
             }}
-            className="flex-row items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border border-white/8 active:border-white/20"
+            className={`flex-row items-center gap-3 rounded-lg px-4 py-3.5 border ${
+              alcoholFreeMarked
+                ? 'bg-surface border-white/25'
+                : 'bg-surface border-white/8 active:border-white/20'
+            }`}
           >
-            <Text className="text-text-muted text-xs w-3">○</Text>
+            <Text className="text-text-muted text-xs w-3">{alcoholFreeMarked ? '◆' : '○'}</Text>
             <Text className="text-text-primary text-sm font-medium">
               Alcohol-free today
             </Text>
+            {alcoholFreeMarked && (
+              <Text className="text-text-muted text-xs ml-auto">tap to undo</Text>
+            )}
           </Pressable>
 
           <Pressable

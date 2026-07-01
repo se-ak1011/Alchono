@@ -31,15 +31,15 @@ const variantClasses: Record<Variant, string> = {
   secondary: 'bg-surface-2 active:bg-surface border border-white/10',
   ghost: 'bg-transparent active:bg-white/5',
   danger: 'bg-danger active:bg-danger-light',
-  accent: 'bg-accent/20 border border-accent/40 active:bg-accent/30',
+  accent: 'bg-white/8 border border-white/15 active:bg-white/12',
 };
 
 const textClasses: Record<Variant, string> = {
-  primary: 'text-white font-semibold',
+  primary: 'text-[#0E0F10] font-semibold',
   secondary: 'text-text-primary font-medium',
   ghost: 'text-text-secondary font-medium',
   danger: 'text-white font-semibold',
-  accent: 'text-accent font-semibold',
+  accent: 'text-text-secondary font-semibold',
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -96,7 +96,7 @@ export function Button({
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={variant === 'ghost' ? '#B8BCC3' : '#F6F5F2'}
+            color={variant === 'primary' ? '#0E0F10' : variant === 'ghost' ? '#9CA3AF' : '#F0F2F4'}
           />
         ) : (
           <>

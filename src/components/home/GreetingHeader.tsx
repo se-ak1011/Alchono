@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { MaskIconSmall } from '@/components/icons/MaskIcon';
+import { SoulIconSmall } from '@/components/icons/SoulIcon';
 import { useAuthStore } from '@/store/authStore';
 import { useStreak } from '@/hooks/useInsights';
 
@@ -35,14 +35,14 @@ export function GreetingHeader() {
     <View className="px-6 pt-4 pb-2">
       <View className="flex-row items-center justify-between mb-1">
         <View className="flex-row items-center gap-2">
-          <MaskIconSmall size={20} color="#B77A33" />
+          <SoulIconSmall size={20} />
           <Text className="text-text-muted text-xs font-medium tracking-widest uppercase">
             Alchono
           </Text>
         </View>
         {streak > 0 && (
-          <View className="flex-row items-center gap-1.5 bg-accent/15 border border-accent/25 rounded-full px-3 py-1">
-            <Text className="text-accent text-xs font-semibold">
+          <View className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1">
+            <Text className="text-text-secondary text-xs font-semibold">
               {streak} {streak === 1 ? 'day' : 'days'}
             </Text>
           </View>
@@ -50,7 +50,7 @@ export function GreetingHeader() {
       </View>
       <Text className="text-text-primary text-3xl font-bold tracking-tight mt-3">
         {getGreeting()}{'\n'}
-        <Text className="text-accent">{name}.</Text>
+        <Text className="text-text-primary">{name}.</Text>
       </Text>
     </View>
   );

@@ -91,7 +91,7 @@ function ToggleRow({
           width: 46,
           height: 26,
           borderRadius: 13,
-          backgroundColor: value ? '#B77A33' : '#242729',
+          backgroundColor: value ? '#C4C9D0' : '#1E2022',
           justifyContent: 'center',
           alignItems: value ? 'flex-end' : 'flex-start',
           paddingHorizontal: 3,
@@ -136,24 +136,65 @@ function CircleStep({
           {FAMILY_OPTIONS.map(({ key, label }) => {
             const selected = prefs.familyMembers.includes(key);
             return (
-              <Pressable
-                key={key}
-                onPress={() => toggleFamily(key)}
-                className={`flex-row items-center gap-3 rounded-lg px-4 py-3.5 border ${
-                  selected
-                    ? 'bg-surface border-white/25'
-                    : 'bg-surface border-white/8'
-                }`}
-              >
-                <Text className="text-text-muted text-xs w-3">{selected ? '◆' : '◇'}</Text>
-                <Text
-                  className={`text-sm font-medium ${
-                    selected ? 'text-text-primary' : 'text-text-secondary'
+              <View key={key}>
+                <Pressable
+                  onPress={() => toggleFamily(key)}
+                  className={`flex-row items-center gap-3 rounded-lg px-4 py-3.5 border ${
+                    selected
+                      ? 'bg-surface border-white/25'
+                      : 'bg-surface border-white/8'
                   }`}
                 >
-                  {label}
-                </Text>
-              </Pressable>
+                  <Text className="text-text-muted text-xs w-3">{selected ? '◆' : '◇'}</Text>
+                  <Text
+                    className={`text-sm font-medium ${
+                      selected ? 'text-text-primary' : 'text-text-secondary'
+                    }`}
+                  >
+                    {label}
+                  </Text>
+                </Pressable>
+                {selected && key === 'partner' && (
+                  <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6 }}>
+                    <TextInput
+                      value={prefs.partnerName}
+                      onChangeText={(t) => onChange({ partnerName: t })}
+                      placeholder="Their name?"
+                      placeholderTextColor="#5E6472"
+                      style={{
+                        backgroundColor: '#161718',
+                        borderRadius: 8,
+                        paddingHorizontal: 16,
+                        paddingVertical: 12,
+                        color: '#F0F2F4',
+                        fontSize: 14,
+                        borderWidth: 1,
+                        borderColor: 'rgba(255,255,255,0.08)',
+                      }}
+                    />
+                  </Animated.View>
+                )}
+                {selected && key === 'children' && (
+                  <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6 }}>
+                    <TextInput
+                      value={prefs.childrenNames}
+                      onChangeText={(t) => onChange({ childrenNames: t })}
+                      placeholder="Their names?"
+                      placeholderTextColor="#5E6472"
+                      style={{
+                        backgroundColor: '#161718',
+                        borderRadius: 8,
+                        paddingHorizontal: 16,
+                        paddingVertical: 12,
+                        color: '#F0F2F4',
+                        fontSize: 14,
+                        borderWidth: 1,
+                        borderColor: 'rgba(255,255,255,0.08)',
+                      }}
+                    />
+                  </Animated.View>
+                )}
+              </View>
             );
           })}
         </View>
@@ -179,11 +220,11 @@ function CircleStep({
               placeholder="What's their name?"
               placeholderTextColor="#5E6472"
               style={{
-                backgroundColor: '#1D2023',
+                backgroundColor: '#161718',
                 borderRadius: 12,
                 paddingHorizontal: 16,
                 paddingVertical: 12,
-                color: '#F6F5F2',
+                color: '#F0F2F4',
                 fontSize: 14,
                 borderWidth: 1,
                 borderColor: 'rgba(255,255,255,0.08)',
@@ -270,11 +311,11 @@ function RhythmStep({
           placeholder="City or area (optional — for local resources)"
           placeholderTextColor="#5E6472"
           style={{
-            backgroundColor: '#1D2023',
+            backgroundColor: '#161718',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
-            color: '#F6F5F2',
+            color: '#F0F2F4',
             fontSize: 14,
             borderWidth: 1,
             borderColor: 'rgba(255,255,255,0.08)',
@@ -291,6 +332,8 @@ export default function OnboardingScreen() {
   const { user, profile, setProfile } = useAuthStore();
   const [prefs, setPrefs] = useState<UserPreferences>({
     familyMembers: [],
+    partnerName: '',
+    childrenNames: '',
     hasPets: false,
     petName: '',
     hasJob: false,
@@ -328,7 +371,7 @@ export default function OnboardingScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: '#151718' }}
+      style={{ flex: 1, backgroundColor: '#0E0F10' }}
     >
       <View
         style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom + 16 }}
@@ -355,12 +398,11 @@ export default function OnboardingScreen() {
             entering={FadeInDown.duration(400).springify()}
             style={{ flex: 1, justifyContent: 'center' }}
           >
-            <View className={(currentStep as any).mask ? 'items-center mb-10' : 'items-start mb-6'}>
-              <SoulIcon
-                size={(currentStep as any).mask ? 72 : 28}
-                gradient={(currentStep as any).mask}
-              />
-            </View>
+            {(currentStep as any).mask && (
+              <View className="items-center mb-10">
+                <SoulIcon size={72} />
+              </View>
+            )}
 
             <Text className="text-text-primary text-3xl font-bold tracking-tight mb-4 leading-tight">
               {currentStep.title}

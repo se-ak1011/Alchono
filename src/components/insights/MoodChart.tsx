@@ -12,12 +12,12 @@ const MOOD_SCORE: Record<string, number> = {
 };
 
 const MOOD_COLOR: Record<string, string> = {
-  good: '#B77A33',
-  okay: '#8A6830',
-  struggling: '#5E3A1A',
-  angry: '#6B2D2D',
-  anxious: '#4A4A6B',
-  exhausted: '#3A4A5E',
+  good: '#9CA3AF',
+  okay: '#6B7280',
+  struggling: '#374151',
+  angry: '#4B1D1D',
+  anxious: '#1D2B3A',
+  exhausted: '#2D3748',
 };
 
 interface DataPoint {
@@ -55,7 +55,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
               y1={y}
               x2={CHART_PADDING.left + chartW}
               y2={y}
-              stroke="#1D2023"
+              stroke="#1E2022"
               strokeWidth={1}
             />
           );
@@ -67,7 +67,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
           const score = point.mood ? MOOD_SCORE[point.mood] ?? 3 : 0;
           const barH = Math.max(4, (score / 5) * chartH);
           const y = CHART_PADDING.top + chartH - barH;
-          const color = point.mood ? MOOD_COLOR[point.mood] ?? '#B77A33' : '#1D2023';
+          const color = point.mood ? MOOD_COLOR[point.mood] ?? '#9CA3AF' : '#1E2022';
 
           return (
             <React.Fragment key={point.date}>
@@ -87,7 +87,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
                   width={4}
                   height={4}
                   rx={2}
-                  fill="#B77A33"
+                  fill="#9CA3AF"
                   opacity={0.6}
                 />
               )}
