@@ -22,22 +22,20 @@ import {
 } from '@/lib/notifications';
 import type { UserPreferences } from '@/types';
 
+const WELCOME_BULLETS = [
+  'Check in in under 10 seconds.',
+  'Spot drinking patterns automatically.',
+  'AI support whenever you need it.',
+  'Anonymous community if you want it.',
+  'No lectures. No judgement.',
+];
+
 const STEPS = [
   {
     id: 'welcome',
     title: "This is your space.",
-    body: "No lectures. No labels. Just a record of what's happening, so you can see it clearly.",
+    subtitle: "Private. Compassionate. Yours.",
     mask: true,
-  },
-  {
-    id: 'how',
-    title: "How it works.",
-    body: "A daily check-in takes under ten seconds. When you notice you're drinking, log it. Alchono tracks the patterns so you don't have to.",
-  },
-  {
-    id: 'support',
-    title: "You're not alone.",
-    body: "AI support available any time. Anonymous community. People who've been where you are.",
   },
   {
     id: 'circle',
@@ -50,11 +48,6 @@ const STEPS = [
     title: "Your hours.",
     body: "So we don't ping you in the middle of a shift.",
     custom: true,
-  },
-  {
-    id: 'notifications',
-    title: "Notifications.",
-    body: "One check-in a day. You can turn it off.",
     isLast: true,
   },
 ] as const;
@@ -404,12 +397,34 @@ export default function OnboardingScreen() {
               </View>
             )}
 
-            <Text className="text-text-primary text-3xl font-semibold tracking-tight mb-4 leading-tight" style={headingShadow}>
+            <Text className="text-text-primary text-3xl font-semibold tracking-tight mb-2 leading-tight" style={headingShadow}>
               {currentStep.title}
             </Text>
-            <Text className="text-text-secondary text-base leading-relaxed mb-6">
-              {currentStep.body}
-            </Text>
+
+            {(currentStep as any).subtitle && (
+              <Text className="text-text-secondary text-base mb-6">
+                {(currentStep as any).subtitle}
+              </Text>
+            )}
+
+            {currentStep.id === 'welcome' && (
+              <View style={{ gap: 14, marginTop: 8 }}>
+                {WELCOME_BULLETS.map((bullet) => (
+                  <View key={bullet} className="flex-row items-start gap-3">
+                    <Text className="text-text-muted text-sm mt-0.5">—</Text>
+                    <Text className="text-text-secondary text-base flex-1 leading-relaxed">
+                      {bullet}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {(currentStep as any).body && (
+              <Text className="text-text-secondary text-base leading-relaxed mb-6">
+                {(currentStep as any).body}
+              </Text>
+            )}
 
             {currentStep.id === 'circle' && (
               <CircleStep prefs={prefs} onChange={updatePrefs} />
@@ -420,7 +435,7 @@ export default function OnboardingScreen() {
           </Animated.View>
         </ScrollView>
 
-        <View className="px-6 gap-3 mt-4">
+        <View className="px-6 mt-4">
           <Button
             title={(currentStep as any).isLast ? "Let's go" : 'Continue'}
             variant="primary"
@@ -428,14 +443,6 @@ export default function OnboardingScreen() {
             fullWidth
             onPress={handleNext}
           />
-          {step < STEPS.length - 1 && (
-            <Pressable
-              onPress={() => setStep(STEPS.length - 1)}
-              className="items-center py-2"
-            >
-              <Text className="text-text-muted text-sm">Skip intro</Text>
-            </Pressable>
-          )}
         </View>
       </View>
     </KeyboardAvoidingView>
