@@ -327,7 +327,7 @@ export default function WordSearchScreen() {
         {allFound ? (
           <Animated.View entering={FadeIn.duration(400)}>
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.push('/session/post-game')}
               style={{
                 backgroundColor: '#C4C9D0',
                 borderRadius: 16,

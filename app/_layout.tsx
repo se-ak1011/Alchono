@@ -70,6 +70,7 @@ function RootLayoutNav() {
         <Stack.Screen name="session/memory-match" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/simon" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/stroop" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="session/post-game" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </AuthGate>

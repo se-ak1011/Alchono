@@ -259,7 +259,7 @@ export default function MemoryMatchScreen() {
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.push('/session/post-game')}
               style={{ paddingVertical: 8, alignItems: 'center' }}
             >
               <Text style={{ color: '#6B7280', fontSize: 13 }}>Done</Text>
