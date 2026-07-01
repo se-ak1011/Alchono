@@ -26,29 +26,29 @@ function MorningReflectionPrompt() {
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
       <Card className="border border-white/10">
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+        <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-2">
           Yesterday
         </Text>
-        <Text className="text-text-primary font-semibold mb-1">
+        <Text className="text-text-primary text-lg font-semibold mb-1">
           How did it go?
         </Text>
-        <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
+        <Text className="text-text-secondary text-base mb-5 leading-relaxed">
           Worth a look.
         </Text>
         <View className="flex-row gap-2">
           <Pressable
             onPress={dismissMorningReflection}
-            className="flex-1 items-center py-2.5 rounded-lg bg-surface border border-white/8 active:border-white/20"
+            className="flex-1 items-center py-3 rounded-xl bg-surface border border-white/8 active:border-white/20"
           >
-            <Text className="text-text-muted text-sm font-medium">Not now</Text>
+            <Text className="text-text-muted text-base font-medium">Not now</Text>
           </Pressable>
           <Pressable
             onPress={() => router.push('/session/morning-reflection')}
-            className="flex-1 items-center py-2.5 rounded-lg bg-accent active:bg-accent-dark"
+            className="flex-1 items-center py-3 rounded-xl bg-accent active:bg-accent-dark"
           >
-            <Text className="text-white text-sm font-semibold">Reflect</Text>
+            <Text className="text-white text-base font-semibold">Reflect</Text>
           </Pressable>
         </View>
       </Card>
@@ -59,19 +59,19 @@ function MorningReflectionPrompt() {
 function DailyGameCard() {
   const router = useRouter();
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
       <Pressable
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/session/games');
         }}
-        className="flex-row items-center justify-between px-4 py-3 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+        className="flex-row items-center justify-between px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
       >
         <View>
-          <Text className="text-text-secondary text-sm font-medium">Games</Text>
-          <Text className="text-text-muted text-xs mt-0.5">3–5 minutes. Give your mind something else.</Text>
+          <Text className="text-text-secondary text-base font-medium">Games</Text>
+          <Text className="text-text-muted text-sm mt-0.5">3–5 minutes. Give your mind something else.</Text>
         </View>
-        <Text className="text-text-muted text-xs">→</Text>
+        <Text className="text-text-muted text-base">→</Text>
       </Pressable>
     </Animated.View>
   );

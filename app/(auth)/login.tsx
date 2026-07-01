@@ -63,11 +63,11 @@ export default function LoginScreen() {
         <View className="flex-1 px-6 justify-center">
           <Animated.View entering={FadeInDown.duration(500).delay(100)}>
             <View className="items-center mb-10">
-              <SoulIcon size={52} />
-              <Text className="text-text-primary text-3xl font-semibold tracking-tight mt-4" style={headingShadow}>
+              <SoulIcon size={64} />
+              <Text className="text-text-primary text-4xl font-semibold tracking-tight mt-4" style={headingShadow}>
                 Welcome back.
               </Text>
-              <Text className="text-text-secondary text-base mt-2 text-center">
+              <Text className="text-text-secondary text-lg mt-2 text-center">
                 Your journey continues here.
               </Text>
             </View>
@@ -128,12 +128,12 @@ export default function LoginScreen() {
             entering={FadeInDown.duration(500).delay(400)}
             className="flex-row justify-center mt-6"
           >
-            <Text className="text-text-secondary text-sm">
+            <Text className="text-text-secondary text-base">
               New here?{' '}
             </Text>
             <Link href="/(auth)/signup" asChild>
               <Pressable>
-                <Text className="text-accent text-sm font-semibold">
+                <Text className="text-accent text-base font-semibold">
                   Create account
                 </Text>
               </Pressable>

@@ -20,12 +20,12 @@ export const Input = forwardRef<TextInput, InputProps>(
     return (
       <View className="w-full">
         {label && (
-          <Text className="text-text-secondary text-sm font-medium mb-2">
+          <Text className="text-text-secondary text-base font-medium mb-2">
             {label}
           </Text>
         )}
         <View
-          className={`flex-row items-center bg-surface-2 border rounded-2xl px-4 py-3.5 ${
+          className={`flex-row items-center bg-surface-2 border rounded-2xl px-4 py-4 ${
             error
               ? 'border-danger'
               : 'border-white/10 focus:border-accent'
@@ -34,7 +34,7 @@ export const Input = forwardRef<TextInput, InputProps>(
           {leftIcon && <View className="mr-3">{leftIcon}</View>}
           <TextInput
             ref={ref}
-            className="flex-1 text-text-primary text-base font-sans"
+            className="flex-1 text-text-primary text-lg font-sans"
             placeholderTextColor="#5E6472"
             selectionColor="#9CA3AF"
             {...rest}
@@ -42,10 +42,10 @@ export const Input = forwardRef<TextInput, InputProps>(
           {rightIcon && <View className="ml-3">{rightIcon}</View>}
         </View>
         {error && (
-          <Text className="text-danger text-sm mt-1.5">{error}</Text>
+          <Text className="text-danger text-base mt-1.5">{error}</Text>
         )}
         {hint && !error && (
-          <Text className="text-text-muted text-sm mt-1.5">{hint}</Text>
+          <Text className="text-text-muted text-base mt-1.5">{hint}</Text>
         )}
       </View>
     );

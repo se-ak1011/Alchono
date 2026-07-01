@@ -44,7 +44,6 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
 
   const handleUrge = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    // Auto-send so the AI is already composing a reply when they come back
     sendMessage("I'm having an urge to drink right now. I need help getting through it.");
     router.push('/session/urge');
   };
@@ -66,7 +65,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           isTyping ? (
             <View className="flex-row justify-start mb-3">
               <View className="bg-surface rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
-                <Text className="text-text-secondary text-base">···</Text>
+                <Text className="text-text-secondary text-lg">···</Text>
               </View>
             </View>
           ) : null
@@ -76,16 +75,16 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
       {/* Urge quick-action — always visible, above input */}
       <Pressable
         onPress={handleUrge}
-        className="mx-4 mb-2 flex-row items-center justify-between bg-surface-2 rounded-xl px-4 py-3 border border-white/10 active:border-white/25"
+        className="mx-4 mb-2 flex-row items-center justify-between bg-surface-2 rounded-xl px-5 py-4 border border-white/10 active:border-white/25"
       >
-        <Text className="text-text-primary text-sm font-medium">
+        <Text className="text-text-primary text-base font-medium">
           I'm having an urge right now
         </Text>
-        <Text className="text-text-muted text-xs">→</Text>
+        <Text className="text-text-muted text-sm">→</Text>
       </Pressable>
 
       <View
-        className="flex-row items-end gap-2 px-4 py-3 border-t border-white/5 bg-bg"
+        className="flex-row items-end gap-3 px-4 py-3 border-t border-white/5 bg-bg"
         style={{ paddingBottom: Math.max(insets.bottom, 8) }}
       >
         <TextInput
@@ -98,19 +97,19 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           onSubmitEditing={handleSend}
           returnKeyType="send"
           blurOnSubmit
-          className="flex-1 bg-surface rounded-2xl px-4 py-3 text-text-primary text-sm max-h-28"
+          className="flex-1 bg-surface rounded-2xl px-4 py-3.5 text-text-primary text-base max-h-28"
           selectionColor="#9CA3AF"
         />
         <Pressable
           onPress={handleSend}
           disabled={!input.trim() || isTyping}
-          className={`w-10 h-10 rounded-full items-center justify-center ${
+          className={`w-12 h-12 rounded-full items-center justify-center ${
             input.trim() && !isTyping
               ? 'bg-accent active:bg-accent-dark'
               : 'bg-surface-2'
           }`}
         >
-          <Text className="text-white text-base">↑</Text>
+          <Text className="text-white text-lg">↑</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -123,17 +122,17 @@ function ChatBubble({ message }: { message: ChatMessage }) {
   return (
     <Animated.View
       entering={FadeInDown.duration(300).springify()}
-      className={`flex-row mb-3 ${isUser ? 'justify-end' : 'justify-start'}`}
+      className={`flex-row mb-4 ${isUser ? 'justify-end' : 'justify-start'}`}
     >
       <View
-        className={`max-w-xs px-4 py-3 rounded-2xl ${
+        className={`max-w-xs px-4 py-3.5 rounded-2xl ${
           isUser
             ? 'bg-accent rounded-tr-sm'
             : 'bg-surface rounded-tl-sm'
         }`}
       >
         <Text
-          className={`text-sm leading-relaxed ${
+          className={`text-base leading-relaxed ${
             isUser ? 'text-white' : 'text-text-primary'
           }`}
         >

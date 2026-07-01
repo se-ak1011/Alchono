@@ -65,14 +65,14 @@ export function PauseModal() {
     >
       {phase === 'countdown' ? (
         <Animated.View entering={FadeIn.duration(300)}>
-          <Text className="text-text-secondary text-sm mb-6 leading-relaxed">
+          <Text className="text-text-secondary text-base mb-6 leading-relaxed">
             Just 60 seconds. Notice how you feel right now.
           </Text>
           <View className="items-center py-6">
             <Text className="text-8xl font-semibold text-text-primary tabular-nums">
               {seconds}
             </Text>
-            <Text className="text-text-secondary text-sm mt-2">seconds</Text>
+            <Text className="text-text-secondary text-base mt-2">seconds</Text>
           </View>
           <View className="h-1 bg-surface-2 rounded-full mb-6 overflow-hidden">
             <RNAnimated.View
@@ -85,16 +85,16 @@ export function PauseModal() {
               }}
             />
           </View>
-          <Pressable onPress={handleClose} className="items-center py-2">
-            <Text className="text-text-muted text-sm">Skip</Text>
+          <Pressable onPress={handleClose} className="items-center py-3">
+            <Text className="text-text-muted text-base">Skip</Text>
           </Pressable>
         </Animated.View>
       ) : (
         <Animated.View entering={FadeIn.duration(300)}>
-          <Text className="text-text-secondary text-sm mb-4 leading-relaxed">
+          <Text className="text-text-secondary text-base mb-5 leading-relaxed">
             Choose one thing. No pressure either way.
           </Text>
-          <View className="gap-2 mb-4">
+          <View className="gap-3 mb-4">
             {PAUSE_ACTIONS.map((action) => (
               <Pressable
                 key={action.value}
@@ -102,10 +102,10 @@ export function PauseModal() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                   handleClose();
                 }}
-                className="flex-row items-center gap-3 bg-surface-2 rounded-xl px-4 py-3.5 border border-white/5 active:bg-white/5"
+                className="flex-row items-center gap-4 bg-surface-2 rounded-xl px-4 py-4 border border-white/5 active:bg-white/5"
               >
-                <Text className="text-text-muted text-sm w-4">{action.icon}</Text>
-                <Text className="text-text-primary font-medium text-sm flex-1">
+                <Text className="text-text-muted text-base w-5">{action.icon}</Text>
+                <Text className="text-text-primary font-medium text-base flex-1">
                   {action.label}
                 </Text>
               </Pressable>

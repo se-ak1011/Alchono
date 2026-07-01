@@ -56,26 +56,26 @@ export function DrinkingSession() {
 
   if (activeSession) {
     return (
-      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3 gap-3">
+      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4 gap-3">
         <Card className="border border-white/10">
           <View className="flex-row items-center justify-between mb-3">
             <View>
-              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
                 Session active
               </Text>
-              <Text className="text-text-primary text-xl font-semibold mt-1">
+              <Text className="text-text-primary text-2xl font-semibold mt-1">
                 {duration}
               </Text>
             </View>
-            <View className="w-1.5 h-1.5 rounded-full bg-white/60" />
+            <View className="w-2 h-2 rounded-full bg-white/60" />
           </View>
 
           {showQuestion && (
             <Animated.View
               entering={FadeInDown.duration(400)}
-              className="bg-surface-2 rounded-xl p-3 mb-3 border border-white/5"
+              className="bg-surface-2 rounded-xl p-4 mb-3 border border-white/5"
             >
-              <Text className="text-text-primary text-sm font-medium mb-2">
+              <Text className="text-text-primary text-base font-medium mb-3">
                 Still going?
               </Text>
               <View className="flex-row gap-2">
@@ -146,13 +146,13 @@ export function DrinkingSession() {
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
       <Card>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-4">
+        <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">
           Today
         </Text>
 
-        <View className="gap-1.5">
+        <View className="gap-2">
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -162,18 +162,18 @@ export function DrinkingSession() {
                 setAlcoholFreeToday();
               }
             }}
-            className={`flex-row items-center gap-3 rounded-lg px-4 py-3.5 border ${
+            className={`flex-row items-center gap-4 rounded-xl px-4 py-4 border ${
               alcoholFreeMarked
                 ? 'bg-surface border-white/25'
                 : 'bg-surface border-white/8 active:border-white/20'
             }`}
           >
-            <Text className="text-text-muted text-xs w-3">{alcoholFreeMarked ? '◆' : '○'}</Text>
-            <Text className="text-text-primary text-sm font-medium">
+            <Text className="text-text-muted text-sm w-3">{alcoholFreeMarked ? '◆' : '○'}</Text>
+            <Text className="text-text-primary text-base font-medium">
               Alcohol-free today
             </Text>
             {alcoholFreeMarked && (
-              <Text className="text-text-muted text-xs ml-auto">tap to undo</Text>
+              <Text className="text-text-muted text-sm ml-auto">tap to undo</Text>
             )}
           </Pressable>
 
@@ -182,10 +182,10 @@ export function DrinkingSession() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push('/session/urge');
             }}
-            className="flex-row items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border border-white/8 active:border-white/20"
+            className="flex-row items-center gap-4 bg-surface rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
           >
-            <Text className="text-text-muted text-xs w-3">≈</Text>
-            <Text className="text-text-primary text-sm font-medium">
+            <Text className="text-text-muted text-sm w-3">≈</Text>
+            <Text className="text-text-primary text-base font-medium">
               Feeling the urge
             </Text>
           </Pressable>
@@ -195,13 +195,13 @@ export function DrinkingSession() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               startSession();
             }}
-            className="flex-row items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border border-white/15 active:border-white/30"
+            className="flex-row items-center gap-4 bg-surface rounded-xl px-4 py-4 border border-white/15 active:border-white/30"
           >
             {isStarting
-              ? <Text className="text-text-muted text-sm">Starting…</Text>
+              ? <Text className="text-text-muted text-base">Starting…</Text>
               : <>
-                  <Text className="text-text-secondary text-xs w-3">●</Text>
-                  <Text className="text-text-primary text-sm font-medium">
+                  <Text className="text-text-secondary text-sm w-3">●</Text>
+                  <Text className="text-text-primary text-base font-medium">
                     Already drinking
                   </Text>
                 </>

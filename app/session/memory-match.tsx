@@ -13,8 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
 const EMOJIS = ['🌊', '💪', '☀️', '🌿', '🎯', '💙', '🏃', '🌟'];
-const CARD_SIZE = 72;
-const CARD_GAP = 10;
+const CARD_SIZE = 76;
+const CARD_GAP = 12;
 
 function seededRng(seed: number) {
   let s = ((seed >>> 0) || 1) & 0xffffffff;
@@ -75,7 +75,7 @@ function MemoryCard({
           {
             width: CARD_SIZE,
             height: CARD_SIZE,
-            borderRadius: 14,
+            borderRadius: 16,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: displaying
@@ -94,9 +94,9 @@ function MemoryCard({
         ]}
       >
         {displaying ? (
-          <Text style={{ fontSize: 28 }}>{emoji}</Text>
+          <Text style={{ fontSize: 32 }}>{emoji}</Text>
         ) : (
-          <Text style={{ fontSize: 16, color: '#2A2F38' }}>◇</Text>
+          <Text style={{ fontSize: 18, color: '#2A2F38' }}>◇</Text>
         )}
       </Animated.View>
     </Pressable>
@@ -196,20 +196,20 @@ export default function MemoryMatchScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 14 }}>←</Text>
+          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
               color: '#F0F2F4',
-              fontSize: 20,
+              fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
             }}
           >
             {complete ? 'All matched.' : 'Memory Match.'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 13, marginTop: 2 }}>
+          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
             {complete
               ? `${moves} moves. Not bad.`
               : `${moves} moves · ${pairsFound} of ${EMOJIS.length} pairs`}
@@ -242,32 +242,32 @@ export default function MemoryMatchScreen() {
       {/* Footer */}
       <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 8 }}>
         {complete ? (
-          <Animated.View entering={FadeIn.duration(400)} style={{ gap: 10 }}>
+          <Animated.View entering={FadeIn.duration(400)} style={{ gap: 12 }}>
             <Pressable
               onPress={resetGame}
               style={{
                 backgroundColor: '#C4C9D0',
-                borderRadius: 16,
-                paddingVertical: 14,
+                borderRadius: 18,
+                paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
               <Text
-                style={{ color: '#0E0F10', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#0E0F10', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/session/post-game')}
-              style={{ paddingVertical: 8, alignItems: 'center' }}
+              style={{ paddingVertical: 10, alignItems: 'center' }}
             >
-              <Text style={{ color: '#6B7280', fontSize: 13 }}>Done</Text>
+              <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>
             </Pressable>
           </Animated.View>
         ) : (
           <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Text style={{ color: '#6B7280', fontSize: 13, textAlign: 'center' }}>Back</Text>
+            <Text style={{ color: '#6B7280', fontSize: 15, textAlign: 'center' }}>Back</Text>
           </Pressable>
         )}
       </View>

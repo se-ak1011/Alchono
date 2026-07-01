@@ -48,27 +48,27 @@ export function AnchorsCard() {
 
   if (!names && activeGoals.length === 0) {
     return (
-      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
         <Pressable onPress={() => router.push('/goals')} className="py-2">
-          <Text className="text-text-muted text-sm">+ What are you building towards?</Text>
+          <Text className="text-text-muted text-base">+ What are you building towards?</Text>
         </Pressable>
       </Animated.View>
     );
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
       <Card className="border border-white/5">
         {/* People */}
         {names && (
-          <View className={activeGoals.length > 0 ? 'mb-4' : ''}>
-            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+          <View className={activeGoals.length > 0 ? 'mb-5' : ''}>
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-2">
               Reasons
             </Text>
-            <Text className="text-text-primary text-lg font-semibold mb-1.5">
+            <Text className="text-text-primary text-2xl font-semibold mb-2">
               {names}.
             </Text>
-            <Text className="text-text-secondary text-sm leading-relaxed">
+            <Text className="text-text-secondary text-base leading-relaxed">
               {getDailyAnchor()}
             </Text>
           </View>
@@ -76,30 +76,30 @@ export function AnchorsCard() {
 
         {/* Divider */}
         {names && activeGoals.length > 0 && (
-          <View className="h-px bg-white/5 mb-4" />
+          <View className="h-px bg-white/5 mb-5" />
         )}
 
         {/* Goals preview */}
         {preview.length > 0 && (
           <View>
             <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
                 Looking forward to
               </Text>
               <Pressable onPress={() => router.push('/goals')} hitSlop={8}>
-                <Text className="text-text-muted text-xs">Manage →</Text>
+                <Text className="text-text-muted text-sm">Manage →</Text>
               </Pressable>
             </View>
             {preview.map((goal) => {
               const days = goal.target_date ? daysUntil(goal.target_date) : null;
               return (
-                <View key={goal.id} className="flex-row items-center gap-3 mb-2.5">
-                  <Text className="text-text-muted text-xs w-3">—</Text>
-                  <Text className="text-text-secondary text-sm flex-1 leading-relaxed">
+                <View key={goal.id} className="flex-row items-center gap-3 mb-3">
+                  <Text className="text-text-muted text-sm w-3">—</Text>
+                  <Text className="text-text-secondary text-base flex-1 leading-relaxed">
                     {goal.text}
                   </Text>
                   {days !== null && (
-                    <Text className={`text-xs font-medium ${days < 14 ? 'text-text-secondary' : 'text-text-muted'}`}>
+                    <Text className={`text-sm font-medium ${days < 14 ? 'text-text-secondary' : 'text-text-muted'}`}>
                       {days <= 0 ? 'now' : `${days}d`}
                     </Text>
                   )}
@@ -108,7 +108,7 @@ export function AnchorsCard() {
             })}
             {overflow > 0 && (
               <Pressable onPress={() => router.push('/goals')} className="mt-1">
-                <Text className="text-text-muted text-xs">+{overflow} more →</Text>
+                <Text className="text-text-muted text-sm">+{overflow} more →</Text>
               </Pressable>
             )}
           </View>
@@ -117,7 +117,7 @@ export function AnchorsCard() {
         {/* Empty goals state */}
         {activeGoals.length === 0 && (
           <Pressable onPress={() => router.push('/goals')} hitSlop={8}>
-            <Text className="text-text-muted text-sm">+ Add something to look forward to</Text>
+            <Text className="text-text-muted text-base">+ Add something to look forward to</Text>
           </Pressable>
         )}
       </Card>

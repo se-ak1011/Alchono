@@ -39,7 +39,7 @@ export function MentorList() {
               />
               <View className="flex-1">
                 <View className="flex-row items-center gap-2 mb-1">
-                  <Text className="text-text-primary font-semibold text-sm">
+                  <Text className="text-text-primary font-semibold text-base">
                     {(item as any).profiles?.username ?? 'Mentor'}
                   </Text>
                   <Badge
@@ -47,21 +47,21 @@ export function MentorList() {
                     variant="accent"
                   />
                 </View>
-                <Text className="text-text-secondary text-xs">
+                <Text className="text-text-secondary text-sm">
                   {item.total_sessions} sessions · Available now
                 </Text>
               </View>
               <View className="w-2 h-2 rounded-full bg-accent mt-1" />
             </View>
             {item.bio && (
-              <Text className="text-text-secondary text-sm leading-relaxed mb-3">
+              <Text className="text-text-secondary text-base leading-relaxed mb-4">
                 {item.bio}
               </Text>
             )}
             <Button
               title={requestedId === item.id ? 'Request sent' : 'Connect'}
               variant={requestedId === item.id ? 'secondary' : 'accent'}
-              size="sm"
+              size="md"
               fullWidth
               disabled={requestedId === item.id || isPending}
               onPress={async () => {
@@ -89,7 +89,7 @@ export function MentorList() {
       )}
       ListEmptyComponent={
         <View className="py-12 items-center">
-          <Text className="text-text-muted text-sm text-center">
+          <Text className="text-text-muted text-base text-center">
             No mentors available right now.{'\n'}Check back soon.
           </Text>
         </View>

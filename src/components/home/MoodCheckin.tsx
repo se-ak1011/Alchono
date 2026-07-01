@@ -29,9 +29,9 @@ export function MoodCheckin() {
 
     return (
       <Animated.View entering={FadeIn.duration(400)}>
-        <Card className="mx-6 mt-2">
+        <Card className="mx-6 mt-3">
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
               Check-in
             </Text>
             <Pressable
@@ -43,7 +43,7 @@ export function MoodCheckin() {
               }}
               hitSlop={8}
             >
-              <Text className="text-text-muted text-xs">Update</Text>
+              <Text className="text-text-muted text-sm">Update</Text>
             </Pressable>
           </View>
           <View className="flex-row flex-wrap gap-2">
@@ -51,15 +51,15 @@ export function MoodCheckin() {
               ? logged.map((option) => (
                   <View
                     key={option.value}
-                    className="bg-surface-2 rounded-lg px-3 py-1.5 border border-white/8"
+                    className="bg-surface-2 rounded-xl px-4 py-2 border border-white/8"
                   >
-                    <Text className="text-text-primary text-sm font-medium capitalize">
+                    <Text className="text-text-primary text-base font-medium capitalize">
                       {option.label}
                     </Text>
                   </View>
                 ))
               : (
-                <Text className="text-text-primary text-sm font-medium capitalize">
+                <Text className="text-text-primary text-base font-medium capitalize">
                   {todayCheckin.mood}
                 </Text>
               )}
@@ -100,10 +100,10 @@ export function MoodCheckin() {
   };
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-2">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Card elevated>
         <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+          <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
             How are you?
           </Text>
           {editing && (
@@ -111,11 +111,11 @@ export function MoodCheckin() {
               onPress={() => setEditing(false)}
               hitSlop={8}
             >
-              <Text className="text-text-muted text-xs">Cancel</Text>
+              <Text className="text-text-muted text-sm">Cancel</Text>
             </Pressable>
           )}
         </View>
-        <View className="flex-row flex-wrap gap-2 mb-3">
+        <View className="flex-row flex-wrap gap-2 mb-4">
           {MOOD_OPTIONS.map((option) => (
             <MoodChip
               key={option.value}
@@ -130,7 +130,7 @@ export function MoodCheckin() {
             <Button
               title={editing ? 'Save' : 'Log check-in'}
               variant="primary"
-              size="sm"
+              size="md"
               fullWidth
               loading={isSubmitting || isUpdating}
               onPress={handleSubmit}
@@ -166,14 +166,14 @@ function MoodChip({
           scale.value = withSpring(1, { damping: 12, stiffness: 350 });
         }}
         onPress={onPress}
-        className={`px-3 py-2 rounded-lg border ${
+        className={`px-4 py-2.5 rounded-xl border ${
           selected
             ? 'bg-surface border-white/30'
             : 'bg-surface-2 border-white/5'
         }`}
       >
         <Text
-          className={`text-sm font-medium ${
+          className={`text-base font-medium ${
             selected ? 'text-text-primary' : 'text-text-muted'
           }`}
         >

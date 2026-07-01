@@ -122,7 +122,7 @@ export default function UrgeScreen() {
     <SafeArea bottom={false}>
       <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text className="text-text-muted text-sm">Close</Text>
+          <Text className="text-text-muted text-base">Close</Text>
         </Pressable>
       </View>
 
@@ -137,17 +137,17 @@ export default function UrgeScreen() {
             entering={FadeIn.duration(400)}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 520 }}
           >
-            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-12">
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-12">
               Just breathe
             </Text>
 
-            <View style={{ width: 240, height: 240, alignItems: 'center', justifyContent: 'center', marginBottom: 48 }}>
+            <View style={{ width: 280, height: 280, alignItems: 'center', justifyContent: 'center', marginBottom: 48 }}>
               <Animated.View
                 style={[
                   {
-                    width: 160,
-                    height: 160,
-                    borderRadius: 80,
+                    width: 200,
+                    height: 200,
+                    borderRadius: 100,
                     backgroundColor: '#9CA3AF',
                     position: 'absolute',
                   },
@@ -156,15 +156,15 @@ export default function UrgeScreen() {
               />
             </View>
 
-            <Text className="text-text-primary text-2xl font-semibold mb-2" style={headingShadow}>
+            <Text className="text-text-primary text-3xl font-semibold mb-2" style={headingShadow}>
               {isIn ? 'Breathe in…' : 'Breathe out…'}
             </Text>
-            <Text className="text-text-muted text-sm mb-10">
+            <Text className="text-text-muted text-base mb-10">
               {breathsLeft} {breathsLeft === 1 ? 'breath' : 'breaths'} left
             </Text>
 
             <Pressable onPress={() => setPhase('actions')} hitSlop={12}>
-              <Text className="text-text-muted text-sm">Skip</Text>
+              <Text className="text-text-muted text-base">Skip</Text>
             </Pressable>
           </Animated.View>
         )}
@@ -173,16 +173,16 @@ export default function UrgeScreen() {
         {phase === 'actions' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
             <Text
-              className="text-text-primary text-2xl font-semibold tracking-tight mb-1"
+              className="text-text-primary text-3xl font-semibold tracking-tight mb-1"
               style={headingShadow}
             >
               Do one of these.
             </Text>
-            <Text className="text-text-secondary text-sm mb-6">
+            <Text className="text-text-secondary text-base mb-6">
               Tick it off when done.
             </Text>
 
-            <View style={{ gap: 10, marginBottom: 32 }}>
+            <View style={{ gap: 12, marginBottom: 32 }}>
               {actions.map((action, i) => {
                 const done = ticked.has(action.id);
                 const isGame = !!action.navigate;
@@ -200,30 +200,30 @@ export default function UrgeScreen() {
                         }
                         toggleTick(action.id);
                       }}
-                      className={`flex-row items-center gap-4 bg-surface rounded-2xl px-4 py-4 border ${
+                      className={`flex-row items-center gap-4 bg-surface rounded-2xl px-5 py-5 border ${
                         done ? 'border-white/20' : 'border-white/8'
                       }`}
                       style={{ opacity: done ? 0.7 : 1 }}
                     >
                       <Text
-                        className={`text-sm w-3 ${done ? 'text-text-secondary' : 'text-text-muted'}`}
+                        className={`text-base w-3 ${done ? 'text-text-secondary' : 'text-text-muted'}`}
                       >
                         {done ? '◆' : '◇'}
                       </Text>
                       <View className="flex-1">
                         <Text
-                          className={`text-sm font-medium leading-snug ${
+                          className={`text-base font-medium leading-snug ${
                             done ? 'text-text-secondary' : 'text-text-primary'
                           }`}
                         >
                           {action.label}
                         </Text>
-                        <Text className="text-text-muted text-xs mt-0.5">
+                        <Text className="text-text-muted text-sm mt-0.5">
                           {action.subtitle}
                         </Text>
                       </View>
                       {isGame && (
-                        <Text className="text-text-muted text-xs">→</Text>
+                        <Text className="text-text-muted text-sm">→</Text>
                       )}
                     </Pressable>
                   </Animated.View>
@@ -248,12 +248,12 @@ export default function UrgeScreen() {
         {phase === 'decision' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
             <Text
-              className="text-text-primary text-2xl font-semibold tracking-tight mb-1"
+              className="text-text-primary text-3xl font-semibold tracking-tight mb-1"
               style={headingShadow}
             >
               Did it pass?
             </Text>
-            <Text className="text-text-secondary text-sm mb-8">
+            <Text className="text-text-secondary text-base mb-8">
               Honest answer.
             </Text>
 
@@ -261,12 +261,12 @@ export default function UrgeScreen() {
               <Pressable
                 onPress={handleUrgePassed}
                 className="bg-surface rounded-2xl border border-white/20 active:border-white/40"
-                style={{ paddingHorizontal: 20, paddingVertical: 20 }}
+                style={{ paddingHorizontal: 20, paddingVertical: 22 }}
               >
-                <Text className="text-text-primary text-base font-semibold mb-1">
+                <Text className="text-text-primary text-lg font-semibold mb-1">
                   The urge passed.
                 </Text>
-                <Text className="text-text-muted text-sm">
+                <Text className="text-text-muted text-base">
                   Good. Keep going.
                 </Text>
               </Pressable>
@@ -274,12 +274,12 @@ export default function UrgeScreen() {
               <Pressable
                 onPress={handleDrinkAnyway}
                 className="bg-surface rounded-2xl border border-white/8 active:bg-surface-2"
-                style={{ paddingHorizontal: 20, paddingVertical: 20 }}
+                style={{ paddingHorizontal: 20, paddingVertical: 22 }}
               >
-                <Text className="text-text-primary text-base font-semibold mb-1">
+                <Text className="text-text-primary text-lg font-semibold mb-1">
                   I'm going to drink anyway.
                 </Text>
-                <Text className="text-text-muted text-sm">
+                <Text className="text-text-muted text-base">
                   We'll be here. Session logged.
                 </Text>
               </Pressable>

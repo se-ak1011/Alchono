@@ -52,33 +52,33 @@ export default function GamesScreen() {
     >
       <Animated.View
         entering={FadeIn.duration(300)}
-        style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24 }}
+        style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 28 }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 4 }}>
           <Pressable onPress={() => router.back()} hitSlop={12}>
-            <Text style={{ color: '#6B7280', fontSize: 14 }}>←</Text>
+            <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
           </Pressable>
           <View>
             <Text
               style={{
                 color: '#F0F2F4',
-                fontSize: 20,
+                fontSize: 26,
                 fontFamily: 'Inter_600SemiBold',
                 ...headingShadow,
               }}
             >
               Games.
             </Text>
-            <Text style={{ color: '#6B7280', fontSize: 13, marginTop: 2 }}>
+            <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
               3–5 minutes. Give your mind something else.
             </Text>
           </View>
         </View>
       </Animated.View>
 
-      <View style={{ flexDirection: 'row', gap: 12, paddingHorizontal: 24 }}>
+      <View style={{ flexDirection: 'row', gap: 14, paddingHorizontal: 24 }}>
         {/* Left column */}
-        <View style={{ flex: 1, gap: 12 }}>
+        <View style={{ flex: 1, gap: 14 }}>
           {GAMES.filter((_, i) => i % 2 === 0).map((game, i) => (
             <Animated.View key={game.id} entering={FadeInDown.duration(300).delay(i * 80)}>
               <Pressable
@@ -88,27 +88,27 @@ export default function GamesScreen() {
                 }}
                 style={{
                   backgroundColor: '#161718',
-                  borderRadius: 20,
-                  padding: 20,
+                  borderRadius: 22,
+                  padding: 22,
                   borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.06)',
-                  minHeight: 130,
+                  borderColor: 'rgba(255,255,255,0.08)',
+                  minHeight: 155,
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ color: '#3D4450', fontSize: 24 }}>{game.symbol}</Text>
+                <Text style={{ color: '#3D4450', fontSize: 30 }}>{game.symbol}</Text>
                 <View style={{ marginTop: 20 }}>
                   <Text
                     style={{
                       color: '#F0F2F4',
-                      fontSize: 14,
+                      fontSize: 17,
                       fontFamily: 'Inter_600SemiBold',
-                      marginBottom: 4,
+                      marginBottom: 5,
                     }}
                   >
                     {game.name}
                   </Text>
-                  <Text style={{ color: '#6B7280', fontSize: 12, lineHeight: 16 }}>
+                  <Text style={{ color: '#6B7280', fontSize: 14, lineHeight: 19 }}>
                     {game.desc}
                   </Text>
                 </View>
@@ -118,7 +118,7 @@ export default function GamesScreen() {
         </View>
 
         {/* Right column */}
-        <View style={{ flex: 1, gap: 12 }}>
+        <View style={{ flex: 1, gap: 14 }}>
           {GAMES.filter((_, i) => i % 2 === 1).map((game, i) => (
             <Animated.View key={game.id} entering={FadeInDown.duration(300).delay(i * 80 + 40)}>
               <Pressable
@@ -128,27 +128,27 @@ export default function GamesScreen() {
                 }}
                 style={{
                   backgroundColor: '#161718',
-                  borderRadius: 20,
-                  padding: 20,
+                  borderRadius: 22,
+                  padding: 22,
                   borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.06)',
-                  minHeight: 130,
+                  borderColor: 'rgba(255,255,255,0.08)',
+                  minHeight: 155,
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ color: '#3D4450', fontSize: 24 }}>{game.symbol}</Text>
+                <Text style={{ color: '#3D4450', fontSize: 30 }}>{game.symbol}</Text>
                 <View style={{ marginTop: 20 }}>
                   <Text
                     style={{
                       color: '#F0F2F4',
-                      fontSize: 14,
+                      fontSize: 17,
                       fontFamily: 'Inter_600SemiBold',
-                      marginBottom: 4,
+                      marginBottom: 5,
                     }}
                   >
                     {game.name}
                   </Text>
-                  <Text style={{ color: '#6B7280', fontSize: 12, lineHeight: 16 }}>
+                  <Text style={{ color: '#6B7280', fontSize: 14, lineHeight: 19 }}>
                     {game.desc}
                   </Text>
                 </View>

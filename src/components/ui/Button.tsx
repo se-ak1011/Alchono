@@ -43,15 +43,15 @@ const textClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: 'px-4 py-2 rounded-lg',
-  md: 'px-5 py-3.5 rounded-lg',
-  lg: 'px-6 py-4 rounded-lg',
+  sm: 'px-5 py-3 rounded-xl',
+  md: 'px-6 py-4 rounded-xl',
+  lg: 'px-7 py-5 rounded-2xl',
 };
 
 const textSizeClasses: Record<Size, string> = {
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
+  sm: 'text-base',
+  md: 'text-lg',
+  lg: 'text-xl',
 };
 
 export function Button({

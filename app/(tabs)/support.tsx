@@ -37,11 +37,11 @@ export default function SupportScreen() {
 
   return (
     <SafeArea bottom={false}>
-      <View className="px-6 pt-4 pb-3">
-        <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+      <View className="px-6 pt-5 pb-3">
+        <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
           Support
         </Text>
-        <Text className="text-text-secondary text-sm mt-1">
+        <Text className="text-text-secondary text-base mt-1">
           You're not doing this alone.
         </Text>
       </View>
@@ -52,22 +52,22 @@ export default function SupportScreen() {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
           router.push('/session/urge');
         }}
-        className="mx-6 mb-5 flex-row items-center justify-between bg-surface-2 rounded-2xl px-5 py-4 border border-white/15 active:border-white/35"
+        className="mx-6 mb-5 flex-row items-center justify-between bg-surface-2 rounded-2xl px-5 py-5 border border-white/15 active:border-white/35"
       >
         <View className="flex-1">
-          <Text className="text-text-primary text-sm font-semibold">
+          <Text className="text-text-primary text-base font-semibold">
             I'm having an urge
           </Text>
-          <Text className="text-text-muted text-xs mt-0.5">
+          <Text className="text-text-muted text-sm mt-1">
             The app will take it from here.
           </Text>
         </View>
-        <Text className="text-text-muted text-base">→</Text>
+        <Text className="text-text-muted text-lg">→</Text>
       </Pressable>
 
       {/* What else is happening */}
       <View className="px-6 mb-4">
-        <Text className="text-text-muted text-xs font-medium tracking-wide uppercase mb-3">
+        <Text className="text-text-muted text-sm font-medium tracking-wide uppercase mb-3">
           Right now?
         </Text>
         <View className="flex-row flex-wrap gap-2">
@@ -75,14 +75,14 @@ export default function SupportScreen() {
             <Pressable
               key={state.key}
               onPress={() => handleStateSelect(state)}
-              className={`px-3 py-2.5 rounded-lg border ${
+              className={`px-4 py-3 rounded-xl border ${
                 activeState === state.key
                   ? 'bg-surface border-white/25'
                   : 'bg-surface border-white/8'
               }`}
             >
               <Text
-                className={`text-sm font-medium ${
+                className={`text-base font-medium ${
                   activeState === state.key ? 'text-text-primary' : 'text-text-muted'
                 }`}
               >
@@ -99,12 +99,12 @@ export default function SupportScreen() {
           <Pressable
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
-            className={`flex-1 py-2 rounded-lg items-center ${
+            className={`flex-1 py-2.5 rounded-lg items-center ${
               activeTab === tab.key ? 'bg-surface-2' : ''
             }`}
           >
             <Text
-              className={`text-xs font-semibold ${
+              className={`text-sm font-semibold ${
                 activeTab === tab.key ? 'text-text-primary' : 'text-text-muted'
               }`}
             >
@@ -141,17 +141,17 @@ function ResourcesPlaceholder() {
         {RESOURCES.map((r) => (
           <View
             key={r.title}
-            className="flex-row items-start gap-4 bg-surface rounded-2xl px-4 py-4 mb-3 border border-white/5"
+            className="flex-row items-start gap-4 bg-surface rounded-2xl px-5 py-5 mb-3 border border-white/5"
           >
-            <Text className="text-text-muted text-sm font-semibold w-4 mt-0.5">{r.icon}</Text>
+            <Text className="text-text-muted text-base font-semibold w-5 mt-0.5">{r.icon}</Text>
             <View className="flex-1">
-              <Text className="text-text-primary font-semibold text-sm mb-0.5">
+              <Text className="text-text-primary font-semibold text-base mb-1">
                 {r.title}
               </Text>
-              <Text className="text-text-secondary text-sm leading-relaxed">
+              <Text className="text-text-secondary text-base leading-relaxed">
                 {r.description}
               </Text>
-              <Text className="text-text-muted text-xs mt-2">Coming soon</Text>
+              <Text className="text-text-muted text-sm mt-2">Coming soon</Text>
             </View>
           </View>
         ))}

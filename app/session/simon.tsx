@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
 const COLORS = ['#5B8DD9', '#5DB87D', '#D9A84A', '#B56FB8'] as const;
-const BTN_SIZE = 138;
+const BTN_SIZE = 150;
 const DELAY = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 type Phase = 'idle' | 'watching' | 'inputting' | 'failed';
@@ -45,7 +45,7 @@ function SimonButton({
           {
             width: BTN_SIZE,
             height: BTN_SIZE,
-            borderRadius: 22,
+            borderRadius: 24,
             backgroundColor: COLORS[index],
           },
           animStyle,
@@ -66,7 +66,6 @@ export default function SimonScreen() {
   const [highlighted, setHighlighted] = useState<number | null>(null);
   const [best, setBest] = useState(0);
 
-  // Refs so callbacks always see current values without stale closures
   const sequenceRef = useRef<number[]>([]);
   const userInputRef = useRef<number[]>([]);
 
@@ -105,7 +104,6 @@ export default function SimonScreen() {
     (index: number) => {
       if (phase !== 'inputting') return;
 
-      // Flash button
       setHighlighted(index);
       setTimeout(() => setHighlighted(null), 200);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -177,20 +175,20 @@ export default function SimonScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 14 }}>←</Text>
+          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
               color: '#F0F2F4',
-              fontSize: 20,
+              fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
             }}
           >
             Pattern.
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 13, marginTop: 2 }}>
+          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
             {statusText()}
           </Text>
         </View>
@@ -198,7 +196,7 @@ export default function SimonScreen() {
           <Text
             style={{
               color: '#4B5563',
-              fontSize: 13,
+              fontSize: 15,
               fontFamily: 'Inter_600SemiBold',
             }}
           >
@@ -213,8 +211,8 @@ export default function SimonScreen() {
           style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
-            gap: 12,
-            width: 2 * BTN_SIZE + 12,
+            gap: 14,
+            width: 2 * BTN_SIZE + 14,
           }}
         >
           {COLORS.map((_, i) => (
@@ -237,9 +235,9 @@ export default function SimonScreen() {
               onPress={restart}
               style={{
                 backgroundColor: '#1E2022',
-                borderRadius: 16,
-                paddingHorizontal: 40,
-                paddingVertical: 14,
+                borderRadius: 18,
+                paddingHorizontal: 44,
+                paddingVertical: 18,
                 borderWidth: 1,
                 borderColor: 'rgba(255,255,255,0.1)',
               }}
@@ -247,7 +245,7 @@ export default function SimonScreen() {
               <Text
                 style={{
                   color: '#F0F2F4',
-                  fontSize: 15,
+                  fontSize: 17,
                   fontFamily: 'Inter_600SemiBold',
                   textAlign: 'center',
                 }}
@@ -262,7 +260,7 @@ export default function SimonScreen() {
       {/* Footer */}
       <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Text style={{ color: '#6B7280', fontSize: 13, textAlign: 'center' }}>Back</Text>
+          <Text style={{ color: '#6B7280', fontSize: 15, textAlign: 'center' }}>Back</Text>
         </Pressable>
       </View>
     </View>

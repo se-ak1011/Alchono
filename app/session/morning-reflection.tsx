@@ -67,9 +67,9 @@ export default function MorningReflectionScreen() {
     >
       <View className="flex-row items-center px-6 mb-6">
         <Pressable onPress={() => router.back()} className="mr-4">
-          <Text className="text-text-secondary text-base">✕</Text>
+          <Text className="text-text-secondary text-xl">✕</Text>
         </Pressable>
-        <Text className="text-text-primary text-lg font-semibold">
+        <Text className="text-text-primary text-xl font-semibold">
           Morning reflection
         </Text>
       </View>
@@ -80,10 +80,10 @@ export default function MorningReflectionScreen() {
       >
         {step === 'triggers' && (
           <Animated.View entering={FadeInDown.duration(400)}>
-            <Text className="text-text-primary text-xl font-semibold mb-2">
+            <Text className="text-text-primary text-2xl font-semibold mb-2">
               What happened yesterday?
             </Text>
-            <Text className="text-text-secondary text-sm mb-5 leading-relaxed">
+            <Text className="text-text-secondary text-base mb-6 leading-relaxed">
               Select anything that felt relevant. No judgement.
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -91,14 +91,14 @@ export default function MorningReflectionScreen() {
                 <Pressable
                   key={trigger}
                   onPress={() => toggleTrigger(trigger)}
-                  className={`px-4 py-2.5 rounded-xl border ${
+                  className={`px-5 py-3 rounded-xl border ${
                     selectedTriggers.includes(trigger)
                       ? 'bg-accent/20 border-accent/50'
                       : 'bg-surface border-white/8'
                   }`}
                 >
                   <Text
-                    className={`text-sm font-medium ${
+                    className={`text-base font-medium ${
                       selectedTriggers.includes(trigger)
                         ? 'text-accent'
                         : 'text-text-secondary'
@@ -109,10 +109,11 @@ export default function MorningReflectionScreen() {
                 </Pressable>
               ))}
             </View>
-            <View className="mt-6">
+            <View className="mt-8">
               <Button
                 title="Continue"
                 variant="primary"
+                size="lg"
                 fullWidth
                 onPress={() => setStep('impact')}
               />
@@ -122,10 +123,10 @@ export default function MorningReflectionScreen() {
 
         {step === 'impact' && (
           <Animated.View entering={FadeInDown.duration(400)}>
-            <Text className="text-text-primary text-xl font-semibold mb-2">
+            <Text className="text-text-primary text-2xl font-semibold mb-2">
               Did alcohol affect anyone?
             </Text>
-            <Text className="text-text-secondary text-sm mb-5 leading-relaxed">
+            <Text className="text-text-secondary text-base mb-6 leading-relaxed">
               Honest awareness, nothing more.
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -133,14 +134,14 @@ export default function MorningReflectionScreen() {
                 <Pressable
                   key={person}
                   onPress={() => toggleAffected(person)}
-                  className={`px-4 py-2.5 rounded-xl border ${
+                  className={`px-5 py-3 rounded-xl border ${
                     selectedAffected.includes(person)
                       ? 'bg-accent/20 border-accent/50'
                       : 'bg-surface border-white/8'
                   }`}
                 >
                   <Text
-                    className={`text-sm font-medium ${
+                    className={`text-base font-medium ${
                       selectedAffected.includes(person)
                         ? 'text-accent'
                         : 'text-text-secondary'
@@ -151,10 +152,11 @@ export default function MorningReflectionScreen() {
                 </Pressable>
               ))}
             </View>
-            <View className="mt-6">
+            <View className="mt-8">
               <Button
                 title="Continue"
                 variant="primary"
+                size="lg"
                 fullWidth
                 onPress={() => setStep('notes')}
               />
@@ -164,10 +166,10 @@ export default function MorningReflectionScreen() {
 
         {step === 'notes' && (
           <Animated.View entering={FadeInDown.duration(400)}>
-            <Text className="text-text-primary text-xl font-semibold mb-2">
+            <Text className="text-text-primary text-2xl font-semibold mb-2">
               Anything else?
             </Text>
-            <Text className="text-text-secondary text-sm mb-5 leading-relaxed">
+            <Text className="text-text-secondary text-base mb-6 leading-relaxed">
               Optional. Just for you.
             </Text>
             <TextInput
@@ -178,13 +180,14 @@ export default function MorningReflectionScreen() {
               multiline
               numberOfLines={5}
               textAlignVertical="top"
-              className="bg-surface rounded-2xl px-4 py-4 text-text-primary text-sm leading-relaxed min-h-[120px] border border-white/5"
+              className="bg-surface rounded-2xl px-5 py-5 text-text-primary text-base leading-relaxed min-h-[140px] border border-white/5"
               selectionColor="#9CA3AF"
             />
-            <View className="mt-6">
+            <View className="mt-8">
               <Button
                 title="Save reflection"
                 variant="primary"
+                size="lg"
                 fullWidth
                 loading={isPending}
                 onPress={handleSubmit}

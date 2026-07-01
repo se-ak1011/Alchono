@@ -24,7 +24,6 @@ export function CommunityFeed() {
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const [newPost, setNewPost] = useState('');
-  const [posting, setPosting] = useState(false);
 
   const posts = data?.pages.flat() ?? [];
 
@@ -39,7 +38,7 @@ export function CommunityFeed() {
   return (
     <View className="flex-1">
       {/* Compose box */}
-      <View className="mx-4 mb-4 bg-surface rounded-2xl p-4 border border-white/5">
+      <View className="mx-4 mb-4 bg-surface rounded-2xl p-5 border border-white/5">
         <TextInput
           value={newPost}
           onChangeText={setNewPost}
@@ -47,15 +46,15 @@ export function CommunityFeed() {
           placeholderTextColor="#5E6472"
           multiline
           maxLength={280}
-          className="text-text-primary text-sm leading-relaxed min-h-[60px]"
+          className="text-text-primary text-base leading-relaxed min-h-[64px]"
           selectionColor="#9CA3AF"
         />
         <View className="flex-row items-center justify-between mt-3">
-          <Text className="text-text-muted text-xs">Anonymous post</Text>
+          <Text className="text-text-muted text-sm">Anonymous post</Text>
           <Pressable
             onPress={handlePost}
             disabled={!newPost.trim() || isPending}
-            className={`px-4 py-2 rounded-xl ${
+            className={`px-5 py-2.5 rounded-xl ${
               newPost.trim() && !isPending ? 'bg-accent' : 'bg-surface-2'
             }`}
           >
@@ -84,10 +83,10 @@ export function CommunityFeed() {
               <View className="flex-row items-start gap-3 mb-3">
                 <Avatar username={item.is_anonymous ? 'A' : (item as any).profiles?.username} size="sm" />
                 <View className="flex-1">
-                  <Text className="text-text-secondary text-xs font-medium">
+                  <Text className="text-text-secondary text-sm font-medium">
                     {item.is_anonymous ? 'Anonymous' : (item as any).profiles?.username ?? 'Member'}
                   </Text>
-                  <Text className="text-text-muted text-xs mt-0.5">
+                  <Text className="text-text-muted text-sm mt-0.5">
                     {new Date(item.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric',
                       month: 'short',
@@ -95,7 +94,7 @@ export function CommunityFeed() {
                   </Text>
                 </View>
               </View>
-              <Text className="text-text-primary text-sm leading-relaxed mb-3">
+              <Text className="text-text-primary text-base leading-relaxed mb-4">
                 {item.content}
               </Text>
               <View className="flex-row gap-3">
@@ -109,11 +108,11 @@ export function CommunityFeed() {
                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         react({ postId: item.id, reaction: key, currentReactions: reactions });
                       }}
-                      className="flex-row items-center gap-1 bg-surface-2 rounded-lg px-2.5 py-1.5 active:bg-white/10"
+                      className="flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 active:bg-white/10"
                     >
                       <Text className="text-base">{emoji}</Text>
                       {count > 0 && (
-                        <Text className="text-text-muted text-xs">{count}</Text>
+                        <Text className="text-text-muted text-sm">{count}</Text>
                       )}
                     </Pressable>
                   );
@@ -129,7 +128,7 @@ export function CommunityFeed() {
         }
         ListEmptyComponent={
           <View className="py-12 items-center">
-            <Text className="text-text-muted text-sm text-center">
+            <Text className="text-text-muted text-base text-center">
               Be the first to share something.{'\n'}This is a safe space.
             </Text>
           </View>

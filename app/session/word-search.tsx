@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
 const GRID_SIZE = 9;
-const CELL_SIZE = 36;
+const CELL_SIZE = 40;
 const WORDS = ['CALM', 'HOPE', 'FREE', 'PEACE', 'BRAVE', 'CLEAR', 'STILL', 'REST'];
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -207,20 +207,20 @@ export default function WordSearchScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 14 }}>←</Text>
+          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
               color: '#F0F2F4',
-              fontSize: 20,
+              fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
             }}
           >
             {allFound ? 'All found.' : 'Daily word search.'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 13, marginTop: 2 }}>
+          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
             {allFound
               ? 'Good. Keep going.'
               : `${foundWords.size} of ${placedWords.length} found — drag to select`}
@@ -245,8 +245,8 @@ export default function WordSearchScreen() {
               key={word}
               entering={FadeInDown.duration(300).delay(i * 40)}
               style={{
-                paddingHorizontal: 10,
-                paddingVertical: 5,
+                paddingHorizontal: 12,
+                paddingVertical: 7,
                 borderRadius: 8,
                 backgroundColor: found ? '#1E2022' : '#161718',
                 borderWidth: 1,
@@ -256,7 +256,7 @@ export default function WordSearchScreen() {
               <Text
                 style={{
                   color: found ? '#6B7280' : '#F0F2F4',
-                  fontSize: 12,
+                  fontSize: 14,
                   fontFamily: 'Inter_600SemiBold',
                   letterSpacing: 1.5,
                   textDecorationLine: found ? 'line-through' : 'none',
@@ -307,7 +307,7 @@ export default function WordSearchScreen() {
                             : isSel
                               ? '#D0D5DC'
                               : '#3D4450',
-                          fontSize: 15,
+                          fontSize: 17,
                           fontFamily: 'Inter_600SemiBold',
                         }}
                       >
@@ -330,15 +330,15 @@ export default function WordSearchScreen() {
               onPress={() => router.push('/session/post-game')}
               style={{
                 backgroundColor: '#C4C9D0',
-                borderRadius: 16,
-                paddingVertical: 14,
+                borderRadius: 18,
+                paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
               <Text
                 style={{
                   color: '#0E0F10',
-                  fontSize: 15,
+                  fontSize: 17,
                   fontFamily: 'Inter_600SemiBold',
                 }}
               >
@@ -351,7 +351,7 @@ export default function WordSearchScreen() {
             <Text
               style={{
                 color: '#6B7280',
-                fontSize: 13,
+                fontSize: 15,
                 textAlign: 'center',
               }}
             >

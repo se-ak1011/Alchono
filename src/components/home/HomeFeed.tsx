@@ -37,17 +37,17 @@ export function HomeFeed() {
   };
 
   return (
-    <View className="mx-6 mt-6">
+    <View className="mx-6 mt-8">
       {/* Section header */}
-      <View className="flex-row items-center gap-3 mb-4">
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+      <View className="flex-row items-center gap-3 mb-5">
+        <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
           Community
         </Text>
         <View className="flex-1 h-px bg-white/5" />
       </View>
 
       {/* Compose */}
-      <View className="bg-surface rounded-lg border border-white/8 p-3 mb-4">
+      <View className="bg-surface rounded-xl border border-white/8 p-4 mb-5">
         <TextInput
           value={newPost}
           onChangeText={setNewPost}
@@ -55,20 +55,20 @@ export function HomeFeed() {
           placeholderTextColor="#5E6472"
           multiline
           maxLength={280}
-          style={{ color: '#F6F5F2', fontSize: 14, lineHeight: 20, minHeight: 44 }}
+          style={{ color: '#F6F5F2', fontSize: 16, lineHeight: 24, minHeight: 52 }}
           selectionColor="#9CA3AF"
         />
         {newPost.trim().length > 0 && (
-          <View className="flex-row items-center justify-between mt-2 pt-2 border-t border-white/5">
-            <Text className="text-text-muted text-xs">Anonymous</Text>
+          <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-white/5">
+            <Text className="text-text-muted text-sm">Anonymous</Text>
             <Pressable
               onPress={handlePost}
               disabled={isPosting}
-              className="bg-accent/90 rounded px-3 py-1.5 active:bg-accent-dark"
+              className="bg-accent/90 rounded-lg px-4 py-2 active:bg-accent-dark"
             >
               {isPosting
                 ? <ActivityIndicator size="small" color="#F6F5F2" />
-                : <Text className="text-white text-xs font-semibold tracking-wide">POST</Text>
+                : <Text className="text-white text-sm font-semibold tracking-wide">POST</Text>
               }
             </Pressable>
           </View>
@@ -80,12 +80,12 @@ export function HomeFeed() {
         <ActivityIndicator size="small" color="#5E6472" style={{ marginVertical: 24 }} />
       ) : posts.length === 0 ? (
         <View className="py-10 items-center">
-          <Text className="text-text-muted text-sm text-center">
+          <Text className="text-text-muted text-base text-center">
             Be the first to post.
           </Text>
         </View>
       ) : (
-        <View style={{ gap: 10 }}>
+        <View style={{ gap: 12 }}>
           {posts.map((post, index) => {
             const reactions = (post.reactions as Record<string, number>) ?? {};
             return (
@@ -94,21 +94,21 @@ export function HomeFeed() {
                 entering={FadeInDown.duration(300).delay(index * 40).springify()}
               >
                 <Card elevated>
-                  <View className="flex-row items-start gap-3 mb-2">
+                  <View className="flex-row items-start gap-3 mb-3">
                     <Avatar
                       username={post.is_anonymous ? 'A' : (post as any).profiles?.username}
                       size="sm"
                     />
                     <View className="flex-1">
-                      <Text className="text-text-muted text-xs font-medium">
+                      <Text className="text-text-muted text-sm font-medium">
                         {post.is_anonymous ? 'Anonymous' : ((post as any).profiles?.username ?? 'Member')}
                       </Text>
                     </View>
-                    <Text className="text-text-muted text-xs">
+                    <Text className="text-text-muted text-sm">
                       {new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </Text>
                   </View>
-                  <Text className="text-text-primary text-sm leading-relaxed mb-3">
+                  <Text className="text-text-primary text-base leading-relaxed mb-4">
                     {post.content}
                   </Text>
                   <View className="flex-row gap-2">
@@ -121,11 +121,11 @@ export function HomeFeed() {
                             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             react({ postId: post.id, reaction: key, currentReactions: reactions });
                           }}
-                          className="flex-row items-center gap-1 bg-surface-2 rounded px-2.5 py-1 border border-white/5 active:border-white/15"
+                          className="flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-1.5 border border-white/5 active:border-white/15"
                         >
-                          <Text className="text-text-secondary text-sm">{label}</Text>
+                          <Text className="text-text-secondary text-base">{label}</Text>
                           {count > 0 && (
-                            <Text className="text-text-muted text-xs">{count}</Text>
+                            <Text className="text-text-muted text-sm">{count}</Text>
                           )}
                         </Pressable>
                       );

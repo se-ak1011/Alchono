@@ -18,7 +18,7 @@ const COLORS = [
 type ColorEntry = typeof COLORS[number];
 
 const TOTAL_ROUNDS = 20;
-const CIRCLE_SIZE = 60;
+const CIRCLE_SIZE = 72;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -32,7 +32,7 @@ function shuffle<T>(arr: T[]): T[] {
 type Round = {
   wordName: string;
   inkHex: string;
-  options: string[]; // 4 hex values
+  options: string[];
 };
 
 function makeRound(): Round {
@@ -112,27 +112,27 @@ export default function StroopScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 14 }}>←</Text>
+          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
               color: '#F0F2F4',
-              fontSize: 20,
+              fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
             }}
           >
             {complete ? 'Done.' : 'Colour Match.'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 13, marginTop: 2 }}>
+          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
             {complete
               ? `${score} of ${TOTAL_ROUNDS} correct`
               : 'Tap the ink colour, not the word'}
           </Text>
         </View>
         {!complete && (
-          <Text style={{ color: '#4B5563', fontSize: 13, fontFamily: 'Inter_600SemiBold' }}>
+          <Text style={{ color: '#4B5563', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
             {round + 1}/{TOTAL_ROUNDS}
           </Text>
         )}
@@ -174,37 +174,37 @@ export default function StroopScreen() {
           <Text
             style={{
               color: '#F0F2F4',
-              fontSize: 80,
+              fontSize: 92,
               fontFamily: 'Inter_700Bold',
-              lineHeight: 88,
+              lineHeight: 100,
             }}
           >
             {score}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 4, marginBottom: 48 }}>
+          <Text style={{ color: '#6B7280', fontSize: 17, marginTop: 4, marginBottom: 48 }}>
             out of {TOTAL_ROUNDS}
           </Text>
-          <View style={{ gap: 10, width: '100%' }}>
+          <View style={{ gap: 12, width: '100%' }}>
             <Pressable
               onPress={restart}
               style={{
                 backgroundColor: '#C4C9D0',
-                borderRadius: 16,
-                paddingVertical: 14,
+                borderRadius: 18,
+                paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
               <Text
-                style={{ color: '#0E0F10', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#0E0F10', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>
             </Pressable>
             <Pressable
               onPress={() => router.push('/session/post-game')}
-              style={{ paddingVertical: 10, alignItems: 'center' }}
+              style={{ paddingVertical: 12, alignItems: 'center' }}
             >
-              <Text style={{ color: '#6B7280', fontSize: 13 }}>Done</Text>
+              <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>
             </Pressable>
           </View>
         </Animated.View>
@@ -225,7 +225,7 @@ export default function StroopScreen() {
               entering={FadeIn.duration(150)}
               style={{
                 color: current.inkHex,
-                fontSize: 54,
+                fontSize: 66,
                 fontFamily: 'Inter_700Bold',
                 letterSpacing: 8,
               }}
@@ -239,7 +239,7 @@ export default function StroopScreen() {
                 entering={ZoomIn.duration(180)}
                 style={{
                   color: feedback === 'correct' ? '#81C784' : '#E57373',
-                  fontSize: 20,
+                  fontSize: 24,
                   marginTop: 14,
                 }}
               >
@@ -252,7 +252,7 @@ export default function StroopScreen() {
           <Animated.View
             key={`options-${round}`}
             entering={FadeIn.duration(150)}
-            style={{ flexDirection: 'row', gap: 16 }}
+            style={{ flexDirection: 'row', gap: 20 }}
           >
             {current.options.map((hex) => {
               const isSelected = selected === hex;

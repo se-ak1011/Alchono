@@ -30,9 +30,9 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
       style={{
         backgroundColor: '#161718',
         borderTopWidth: 1,
-        borderTopColor: 'rgba(255,255,255,0.05)',
+        borderTopColor: 'rgba(255,255,255,0.06)',
         paddingBottom: insets.bottom,
-        paddingTop: 8,
+        paddingTop: 10,
         paddingHorizontal: 8,
         flexDirection: 'row',
       }}
@@ -91,16 +91,16 @@ function TabItem({
       }}
       style={{ flex: 1, alignItems: 'center' }}
     >
-      <Animated.View style={[animatedStyle, { alignItems: 'center', paddingVertical: 4 }]}>
+      <Animated.View style={[animatedStyle, { alignItems: 'center', paddingVertical: 6 }]}>
         <tab.Icon
-          size={22}
+          size={26}
           color={isFocused ? '#C4C9D0' : '#5E6472'}
           strokeWidth={isFocused ? 2 : 1.75}
         />
         <Text
           style={{
-            fontSize: 10,
-            marginTop: 3,
+            fontSize: 12,
+            marginTop: 4,
             fontFamily: isFocused ? 'Inter_600SemiBold' : 'Inter_400Regular',
             color: isFocused ? '#C4C9D0' : '#5E6472',
           }}

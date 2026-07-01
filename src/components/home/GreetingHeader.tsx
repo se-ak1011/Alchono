@@ -33,23 +33,23 @@ export function GreetingHeader() {
   const streak = streakData?.streak ?? 0;
 
   return (
-    <View className="px-6 pt-4 pb-2">
-      <View className="flex-row items-center justify-between mb-1">
+    <View className="px-6 pt-5 pb-2">
+      <View className="flex-row items-center justify-between mb-2">
         <View className="flex-row items-center gap-2">
-          <SoulIconSmall size={20} />
-          <Text className="text-text-muted text-xs font-medium tracking-widest uppercase">
+          <SoulIconSmall size={28} />
+          <Text className="text-text-muted text-sm font-medium tracking-widest uppercase">
             Alchono
           </Text>
         </View>
         {streak > 0 && (
-          <View className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1">
-            <Text className="text-text-secondary text-xs font-semibold">
+          <View className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1.5">
+            <Text className="text-text-secondary text-sm font-semibold">
               {streak} {streak === 1 ? 'day' : 'days'}
             </Text>
           </View>
         )}
       </View>
-      <Text className="text-text-primary text-3xl font-semibold tracking-tight mt-3" style={headingShadow}>
+      <Text className="text-text-primary text-4xl font-semibold tracking-tight mt-3" style={headingShadow}>
         {getGreeting()}
         {name ? `\n${name}.` : ''}
       </Text>

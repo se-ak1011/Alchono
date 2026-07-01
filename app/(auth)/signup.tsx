@@ -64,11 +64,11 @@ export default function SignupScreen() {
         <View className="flex-1 px-6 justify-center">
           <Animated.View entering={FadeInDown.duration(500).delay(100)}>
             <View className="items-center mb-10">
-              <SoulIcon size={52} />
-              <Text className="text-text-primary text-3xl font-semibold tracking-tight mt-4" style={headingShadow}>
+              <SoulIcon size={64} />
+              <Text className="text-text-primary text-4xl font-semibold tracking-tight mt-4" style={headingShadow}>
                 Start here.
               </Text>
-              <Text className="text-text-secondary text-base mt-2 text-center leading-relaxed">
+              <Text className="text-text-secondary text-lg mt-2 text-center leading-relaxed">
                 Private. Compassionate. Yours.
               </Text>
             </View>
@@ -158,7 +158,7 @@ export default function SignupScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInDown.duration(500).delay(350)}>
-            <Text className="text-text-muted text-xs text-center leading-relaxed mb-4">
+            <Text className="text-text-muted text-sm text-center leading-relaxed mb-4">
               Your data is private and never sold. You can export or delete everything at any time.
             </Text>
           </Animated.View>
@@ -167,10 +167,10 @@ export default function SignupScreen() {
             entering={FadeInDown.duration(500).delay(400)}
             className="flex-row justify-center"
           >
-            <Text className="text-text-secondary text-sm">Already have an account? </Text>
+            <Text className="text-text-secondary text-base">Already have an account? </Text>
             <Link href="/(auth)/login" asChild>
               <Pressable>
-                <Text className="text-accent text-sm font-semibold">Sign in</Text>
+                <Text className="text-accent text-base font-semibold">Sign in</Text>
               </Pressable>
             </Link>
           </Animated.View>

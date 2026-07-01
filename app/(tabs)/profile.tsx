@@ -75,8 +75,8 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
-        <View className="px-6 pt-4 pb-6">
-          <Text className="text-text-primary text-2xl font-semibold tracking-tight mb-4" style={headingShadow}>
+        <View className="px-6 pt-5 pb-6">
+          <Text className="text-text-primary text-3xl font-semibold tracking-tight mb-5" style={headingShadow}>
             Profile
           </Text>
           <View className="flex-row items-center gap-4">
@@ -86,10 +86,10 @@ export default function ProfileScreen() {
               size="lg"
             />
             <View>
-              <Text className="text-text-primary text-lg font-semibold">
+              <Text className="text-text-primary text-xl font-semibold">
                 {profile?.username ?? 'Anonymous'}
               </Text>
-              <Text className="text-text-muted text-sm mt-0.5">
+              <Text className="text-text-muted text-base mt-0.5">
                 {user?.email}
               </Text>
             </View>
@@ -128,7 +128,7 @@ export default function ProfileScreen() {
         />
 
         <View className="mx-6 mt-2">
-          <Text className="text-text-muted text-xs text-center leading-relaxed">
+          <Text className="text-text-muted text-sm text-center leading-relaxed">
             Alchono · Your data is private and never sold.{'\n'}
             v1.0.0
           </Text>

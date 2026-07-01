@@ -23,7 +23,7 @@ export function Card({ children, className = '', onPress, elevated = false, ...r
     transform: [{ scale: scale.value }],
   }));
 
-  const baseClass = `bg-surface rounded-2xl p-4 ${elevated ? 'border border-white/5' : ''} ${className}`;
+  const baseClass = `bg-surface rounded-2xl p-5 ${elevated ? 'border border-white/5' : ''} ${className}`;
 
   if (onPress) {
     return (
