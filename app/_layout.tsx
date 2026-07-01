@@ -65,6 +65,7 @@ function RootLayoutNav() {
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
         <Stack.Screen name="goals/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="session/word-search" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </AuthGate>

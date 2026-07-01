@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, View, Text, Pressable } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Card } from '@/components/ui/Card';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
@@ -55,6 +56,27 @@ function MorningReflectionPrompt() {
   );
 }
 
+function DailyGameCard() {
+  const router = useRouter();
+  return (
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+      <Pressable
+        onPress={async () => {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/session/word-search');
+        }}
+        className="flex-row items-center justify-between px-4 py-3 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+      >
+        <View>
+          <Text className="text-text-secondary text-sm font-medium">Daily word search</Text>
+          <Text className="text-text-muted text-xs mt-0.5">Find the words. Clear your head.</Text>
+        </View>
+        <Text className="text-text-muted text-xs">→</Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 export default function HomeScreen() {
   return (
     <SafeArea>
@@ -64,6 +86,7 @@ export default function HomeScreen() {
       >
         <GreetingHeader />
         <AnchorsCard />
+        <DailyGameCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
         <DrinkingSession />

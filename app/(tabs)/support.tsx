@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
 import { AiCoachChat } from '@/components/support/AiCoachChat';
@@ -12,7 +13,6 @@ type Tab = 'coach' | 'community' | 'mentors' | 'resources';
 
 const SUPPORT_STATES = [
   { key: 'talk',     label: 'Just need to talk',  tab: 'coach' as Tab },
-  { key: 'urge',     label: 'Feeling the urge',   tab: 'coach' as Tab },
   { key: 'drinking', label: 'Drinking now',        tab: 'coach' as Tab },
   { key: 'through',  label: 'Got through it',      tab: 'community' as Tab },
 ] as const;
@@ -25,6 +25,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 export default function SupportScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('coach');
   const [activeState, setActiveState] = useState<string | null>(null);
 
@@ -45,7 +46,26 @@ export default function SupportScreen() {
         </Text>
       </View>
 
-      {/* What's happening right now */}
+      {/* Urge — always elevated, separate from everything else */}
+      <Pressable
+        onPress={() => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          router.push('/session/urge');
+        }}
+        className="mx-6 mb-5 flex-row items-center justify-between bg-surface-2 rounded-2xl px-5 py-4 border border-white/15 active:border-white/35"
+      >
+        <View className="flex-1">
+          <Text className="text-text-primary text-sm font-semibold">
+            I'm having an urge
+          </Text>
+          <Text className="text-text-muted text-xs mt-0.5">
+            The app will take it from here.
+          </Text>
+        </View>
+        <Text className="text-text-muted text-base">→</Text>
+      </Pressable>
+
+      {/* What else is happening */}
       <View className="px-6 mb-4">
         <Text className="text-text-muted text-xs font-medium tracking-wide uppercase mb-3">
           Right now?

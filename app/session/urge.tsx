@@ -17,27 +17,49 @@ import { headingShadow } from '@/styles';
 import type { UserPreferences } from '@/types';
 
 const BREATH_MS = 4000;
-const TOTAL_HALF_CYCLES = 6; // 3 full cycles
+const TOTAL_HALF_CYCLES = 6;
 
-function buildPrompts(prefs: UserPreferences | null): string[] {
-  const list: string[] = [];
-  if (prefs?.familyMembers?.includes('children')) {
-    const names = prefs.childrenNames?.trim();
-    list.push(names ? `Think of ${names}.` : 'Think of your kids. They need you present.');
-  }
+type Action = { id: string; label: string; subtitle: string; navigate?: string };
+
+function buildActions(prefs: UserPreferences | null): Action[] {
+  const list: Action[] = [];
+
   if (prefs?.familyMembers?.includes('partner')) {
     const name = prefs.partnerName?.trim();
-    list.push(name ? `Think of ${name}.` : "Think of your partner. You're in this together.");
+    list.push({
+      id: 'partner',
+      label: name ? `Message ${name}` : 'Message your partner',
+      subtitle: 'They want to hear from you.',
+    });
   }
-  if (prefs?.familyMembers?.includes('parents')) {
-    list.push('Your parents want to see you well.');
+
+  if (prefs?.familyMembers?.includes('children')) {
+    const names = prefs.childrenNames?.trim();
+    list.push({
+      id: 'kids',
+      label: names ? `Check in with ${names}` : 'Check in with your kids',
+      subtitle: 'Be present for a moment.',
+    });
   }
+
   if (prefs?.hasPets) {
     const name = prefs.petName?.trim() || 'your pet';
-    list.push(`Go check on ${name}.`);
+    list.push({
+      id: 'pet',
+      label: `Take ${name} outside`,
+      subtitle: 'Fresh air. Movement. Shift the state.',
+    });
   }
-  list.push('Drink a glass of water. Just that.');
-  list.push('The urge will pass. They always do.');
+
+  list.push({ id: 'water', label: 'Drink a glass of water', subtitle: 'Just that. Nothing else.' });
+  list.push({ id: 'walk', label: 'Step outside for 5 minutes', subtitle: 'Movement breaks the moment.' });
+  list.push({
+    id: 'game',
+    label: 'Do the word search',
+    subtitle: 'Give your mind something else to do.',
+    navigate: '/session/word-search',
+  });
+
   return list;
 }
 
@@ -47,8 +69,9 @@ export default function UrgeScreen() {
   const { mutate: startSession } = useStartSession();
   const prefs = (profile as any)?.preferences as UserPreferences | null;
 
-  const [phase, setPhase] = useState<'breathing' | 'prompts' | 'decision'>('breathing');
+  const [phase, setPhase] = useState<'breathing' | 'actions' | 'decision'>('breathing');
   const [halfCycle, setHalfCycle] = useState(0);
+  const [ticked, setTicked] = useState<Set<string>>(new Set());
 
   const circleScale = useSharedValue(0.6);
   const circleOpacity = useSharedValue(0.35);
@@ -63,7 +86,7 @@ export default function UrgeScreen() {
   useEffect(() => {
     if (phase !== 'breathing') return;
     if (halfCycle >= TOTAL_HALF_CYCLES) {
-      setPhase('prompts');
+      setPhase('actions');
       return;
     }
     circleScale.value = withTiming(isIn ? 1.4 : 0.6, { duration: BREATH_MS });
@@ -72,8 +95,17 @@ export default function UrgeScreen() {
     return () => clearTimeout(t);
   }, [phase, halfCycle]);
 
-  const prompts = buildPrompts(prefs);
+  const actions = buildActions(prefs);
   const breathsLeft = Math.ceil((TOTAL_HALF_CYCLES - halfCycle) / 2);
+
+  const toggleTick = (id: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setTicked((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   const handleUrgePassed = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -99,6 +131,7 @@ export default function UrgeScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Breathing phase */}
         {phase === 'breathing' && (
           <Animated.View
             entering={FadeIn.duration(400)}
@@ -108,7 +141,6 @@ export default function UrgeScreen() {
               Just breathe
             </Text>
 
-            {/* Animated circle */}
             <View style={{ width: 240, height: 240, alignItems: 'center', justifyContent: 'center', marginBottom: 48 }}>
               <Animated.View
                 style={[
@@ -131,33 +163,72 @@ export default function UrgeScreen() {
               {breathsLeft} {breathsLeft === 1 ? 'breath' : 'breaths'} left
             </Text>
 
-            <Pressable onPress={() => setPhase('prompts')} hitSlop={12}>
+            <Pressable onPress={() => setPhase('actions')} hitSlop={12}>
               <Text className="text-text-muted text-sm">Skip</Text>
             </Pressable>
           </Animated.View>
         )}
 
-        {phase === 'prompts' && (
+        {/* Action cards phase */}
+        {phase === 'actions' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
-            <Text className="text-text-primary text-2xl font-semibold tracking-tight mb-1" style={headingShadow}>
-              Before you decide.
+            <Text
+              className="text-text-primary text-2xl font-semibold tracking-tight mb-1"
+              style={headingShadow}
+            >
+              Do one of these.
             </Text>
             <Text className="text-text-secondary text-sm mb-6">
-              Read these.
+              Tick it off when done.
             </Text>
 
-            <View style={{ gap: 12, marginBottom: 32 }}>
-              {prompts.map((prompt, i) => (
-                <Animated.View
-                  key={i}
-                  entering={FadeInDown.duration(400).delay(i * 80)}
-                  className="bg-surface rounded-2xl px-4 py-4 border border-white/5"
-                >
-                  <Text className="text-text-primary text-sm leading-relaxed">
-                    {prompt}
-                  </Text>
-                </Animated.View>
-              ))}
+            <View style={{ gap: 10, marginBottom: 32 }}>
+              {actions.map((action, i) => {
+                const done = ticked.has(action.id);
+                const isGame = !!action.navigate;
+                return (
+                  <Animated.View
+                    key={action.id}
+                    entering={FadeInDown.duration(300).delay(i * 50)}
+                  >
+                    <Pressable
+                      onPress={() => {
+                        if (isGame) {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          router.push(action.navigate as any);
+                          return;
+                        }
+                        toggleTick(action.id);
+                      }}
+                      className={`flex-row items-center gap-4 bg-surface rounded-2xl px-4 py-4 border ${
+                        done ? 'border-white/20' : 'border-white/8'
+                      }`}
+                      style={{ opacity: done ? 0.7 : 1 }}
+                    >
+                      <Text
+                        className={`text-sm w-3 ${done ? 'text-text-secondary' : 'text-text-muted'}`}
+                      >
+                        {done ? '◆' : '◇'}
+                      </Text>
+                      <View className="flex-1">
+                        <Text
+                          className={`text-sm font-medium leading-snug ${
+                            done ? 'text-text-secondary' : 'text-text-primary'
+                          }`}
+                        >
+                          {action.label}
+                        </Text>
+                        <Text className="text-text-muted text-xs mt-0.5">
+                          {action.subtitle}
+                        </Text>
+                      </View>
+                      {isGame && (
+                        <Text className="text-text-muted text-xs">→</Text>
+                      )}
+                    </Pressable>
+                  </Animated.View>
+                );
+              })}
             </View>
 
             <Button
@@ -173,9 +244,13 @@ export default function UrgeScreen() {
           </Animated.View>
         )}
 
+        {/* Decision phase */}
         {phase === 'decision' && (
           <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
-            <Text className="text-text-primary text-2xl font-semibold tracking-tight mb-1" style={headingShadow}>
+            <Text
+              className="text-text-primary text-2xl font-semibold tracking-tight mb-1"
+              style={headingShadow}
+            >
               Did it pass?
             </Text>
             <Text className="text-text-secondary text-sm mb-8">

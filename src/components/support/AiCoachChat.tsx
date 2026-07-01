@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAiCoach } from '@/hooks/useAiCoach';
 import type { ChatMessage } from '@/types';
@@ -19,6 +20,7 @@ interface AiCoachChatProps {
 }
 
 export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
+  const router = useRouter();
   const { messages, isTyping, sendMessage } = useAiCoach(sessionType);
   const [input, setInput] = useState('');
   const flatListRef = useRef<FlatList>(null);
@@ -38,6 +40,13 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
     setInput('');
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await sendMessage(text);
+  };
+
+  const handleUrge = async () => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    // Auto-send so the AI is already composing a reply when they come back
+    sendMessage("I'm having an urge to drink right now. I need help getting through it.");
+    router.push('/session/urge');
   };
 
   return (
@@ -63,6 +72,18 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           ) : null
         }
       />
+
+      {/* Urge quick-action — always visible, above input */}
+      <Pressable
+        onPress={handleUrge}
+        className="mx-4 mb-2 flex-row items-center justify-between bg-surface-2 rounded-xl px-4 py-3 border border-white/10 active:border-white/25"
+      >
+        <Text className="text-text-primary text-sm font-medium">
+          I'm having an urge right now
+        </Text>
+        <Text className="text-text-muted text-xs">→</Text>
+      </Pressable>
+
       <View
         className="flex-row items-end gap-2 px-4 py-3 border-t border-white/5 bg-bg"
         style={{ paddingBottom: Math.max(insets.bottom, 8) }}
