@@ -12,7 +12,7 @@ export default function PostGameScreen() {
 
   const handleUrgePassed = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.navigate('/(tabs)' as any);
+    router.replace('/(tabs)' as any);
   };
 
   const handlePlayAnother = () => {
