@@ -6,14 +6,23 @@ import { Avatar } from '@/components/ui/Avatar';
 import { SettingsSection } from '@/components/profile/SettingsSection';
 import { NotificationSettings } from '@/components/profile/NotificationSettings';
 import { useAuthStore } from '@/store/authStore';
+import { useAppStore } from '@/store/appStore';
 import { supabase } from '@/lib/supabase';
+import { queryClient } from '@/lib/queryClient';
 import { headingShadow } from '@/styles';
 
 export default function ProfileScreen() {
   const profile = useAuthStore((s) => s.profile);
   const user = useAuthStore((s) => s.user);
-  const reset = useAuthStore((s) => s.reset);
+  const resetAuth = useAuthStore((s) => s.reset);
+  const resetApp = useAppStore((s) => s.reset);
   const router = useRouter();
+
+  const clearAllState = () => {
+    queryClient.clear();
+    resetApp();
+    resetAuth();
+  };
 
   const handleSignOut = () => {
     Alert.alert('Sign out?', 'You can sign back in at any time.', [
@@ -22,10 +31,8 @@ export default function ProfileScreen() {
         text: 'Sign out',
         style: 'destructive',
         onPress: async () => {
-          // Sign out from Supabase first so AsyncStorage is cleared before we
-          // reset local state — prevents re-login on next app launch.
           await supabase.auth.signOut().catch(() => {});
-          reset();
+          clearAllState();
           router.replace('/(auth)/login');
         },
       },
@@ -42,12 +49,14 @@ export default function ProfileScreen() {
           text: 'Delete everything',
           style: 'destructive',
           onPress: async () => {
-            // Invoke the edge function while the session is still active.
-            await supabase.functions
-              .invoke('delete-account', { body: { userId: user?.id } })
-              .catch(() => {});
-            // Then clear local state and revoke the session.
-            reset();
+            const { error } = await supabase.functions.invoke('delete-account', {
+              body: { userId: user?.id },
+            });
+            if (error) {
+              Alert.alert('Error', 'Could not delete your account. Please try again or contact support.');
+              return;
+            }
+            clearAllState();
             await supabase.auth.signOut().catch(() => {});
             router.replace('/(auth)/login');
           },

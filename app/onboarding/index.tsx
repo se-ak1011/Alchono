@@ -11,6 +11,7 @@ import {
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { SoulIcon } from '@/components/icons/SoulIcon';
 import { Button } from '@/components/ui/Button';
 import { headingShadow } from '@/styles';
@@ -381,6 +382,7 @@ function RhythmStep({
 }
 
 export default function OnboardingScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState(0);
   const { user, profile, setProfile } = useAuthStore();
@@ -413,11 +415,19 @@ export default function OnboardingScreen() {
         .eq('id', user!.id)
         .select()
         .single();
-      setProfile(updated ?? { ...profile!, onboarding_completed: true });
+
+      // Always include preferences in the local profile so the app reflects
+      // them immediately, even if the DB round-trip returned null.
+      setProfile(updated ?? { ...profile!, onboarding_completed: true, preferences: prefs as any });
 
       registerForPushNotifications()
         .then((token) => { if (token && user) return savePushToken(user.id, token); })
         .catch(() => {});
+
+      // Navigate directly rather than relying on the AuthGate useEffect to
+      // detect the onboarding_completed change — that observer is indirect and
+      // can miss the transition on slow devices.
+      router.replace('/(tabs)');
     } else {
       setStep((s) => s + 1);
     }

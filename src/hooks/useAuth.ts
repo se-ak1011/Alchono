@@ -1,9 +1,12 @@
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
+import { useAppStore } from '@/store/appStore';
+import { queryClient } from '@/lib/queryClient';
 
 export function useAuthListener() {
   const { setSession, setProfile, setInitialized } = useAuthStore();
+  const resetAppStore = useAppStore((s) => s.reset);
 
   useEffect(() => {
     let initialized = false;
@@ -37,6 +40,11 @@ export function useAuthListener() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Clear all cached query data and app-level state on every auth transition
+      // so stale data from a previous account never bleeds into the new session.
+      queryClient.clear();
+      resetAppStore();
+
       setSession(session);
       if (session?.user) {
         await fetchProfile(session.user.id);
