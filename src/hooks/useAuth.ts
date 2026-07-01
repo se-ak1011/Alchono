@@ -40,17 +40,24 @@ export function useAuthListener() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Clear all cached query data and app-level state on every auth transition
-      // so stale data from a previous account never bleeds into the new session.
-      queryClient.clear();
-      resetAppStore();
-
+      // Always update the session so the JWT stays current.
       setSession(session);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
+
+      if (event === 'SIGNED_IN') {
+        // Clear stale data from a previous account before loading the new one.
+        queryClient.clear();
+        resetAppStore();
+        if (session?.user) await fetchProfile(session.user.id);
+      } else if (event === 'SIGNED_OUT') {
+        queryClient.clear();
+        resetAppStore();
         setProfile(null);
       }
+      // TOKEN_REFRESHED / INITIAL_SESSION / USER_UPDATED: just update the JWT
+      // (setSession above). Do NOT re-fetch the profile — that would race with
+      // any in-progress profile write (e.g. onboarding completion) and could
+      // overwrite onboarding_completed:true with the stale DB value, causing
+      // AuthGate to bounce the user back to onboarding.
     });
 
     return () => {

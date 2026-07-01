@@ -409,24 +409,35 @@ export default function OnboardingScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     if ((currentStep as any).isLast) {
+      // Save onboarding_completed first — this is the flag AuthGate checks.
+      // Keeping it separate means a missing preferences column can never block it.
       const { data: updated } = await supabase
         .from('profiles')
-        .update({ onboarding_completed: true, preferences: prefs as any })
+        .update({ onboarding_completed: true })
         .eq('id', user!.id)
         .select()
         .single();
 
-      // Always include preferences in the local profile so the app reflects
-      // them immediately, even if the DB round-trip returned null.
-      setProfile(updated ?? { ...profile!, onboarding_completed: true, preferences: prefs as any });
+      // Save preferences in the background — non-blocking.
+      supabase
+        .from('profiles')
+        .update({ preferences: prefs as any })
+        .eq('id', user!.id)
+        .then(() => {})
+        .catch(() => {});
+
+      // Update local state immediately so AuthGate and the rest of the app
+      // reflect preferences without waiting for a DB round-trip.
+      setProfile(
+        updated
+          ? { ...updated, preferences: prefs as any }
+          : { ...profile!, onboarding_completed: true, preferences: prefs as any }
+      );
 
       registerForPushNotifications()
         .then((token) => { if (token && user) return savePushToken(user.id, token); })
         .catch(() => {});
 
-      // Navigate directly rather than relying on the AuthGate useEffect to
-      // detect the onboarding_completed change — that observer is indirect and
-      // can miss the transition on slow devices.
       router.replace('/(tabs)');
     } else {
       setStep((s) => s + 1);
