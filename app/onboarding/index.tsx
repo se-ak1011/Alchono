@@ -65,6 +65,71 @@ const SHIFT_OPTIONS = [
   { key: 'night', label: 'Night' },
 ] as const;
 
+const CHILDREN_COUNTS = [
+  { value: 1, label: '1' },
+  { value: 2, label: '2' },
+  { value: 3, label: '3' },
+  { value: 4, label: '4+' },
+];
+
+const PET_COUNTS = [
+  { value: 1, label: '1' },
+  { value: 2, label: '2' },
+  { value: 3, label: '3+' },
+];
+
+function CountPicker({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: { value: number; label: string }[];
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <View style={{ marginTop: 8 }}>
+      <Text className="text-text-muted text-sm mb-2">{label}</Text>
+      <View className="flex-row gap-2">
+        {options.map((opt) => {
+          const selected = value === opt.value;
+          return (
+            <Pressable
+              key={opt.value}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                onChange(opt.value);
+              }}
+              style={{
+                width: 52,
+                height: 44,
+                borderRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: selected ? '#C4C9D0' : '#161718',
+                borderWidth: 1,
+                borderColor: selected ? '#C4C9D0' : 'rgba(255,255,255,0.08)',
+              }}
+            >
+              <Text
+                style={{
+                  color: selected ? '#0E0F10' : '#9CA3AF',
+                  fontSize: 15,
+                  fontFamily: 'Inter_600SemiBold',
+                }}
+              >
+                {opt.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 function ToggleRow({
   label,
   value,
@@ -103,6 +168,17 @@ function ToggleRow({
     </Pressable>
   );
 }
+
+const nameInputStyle = {
+  backgroundColor: '#161718',
+  borderRadius: 8,
+  paddingHorizontal: 16,
+  paddingVertical: 12,
+  color: '#F0F2F4',
+  fontSize: 15,
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.08)',
+} as const;
 
 function CircleStep({
   prefs,
@@ -148,6 +224,7 @@ function CircleStep({
                     {label}
                   </Text>
                 </Pressable>
+
                 {selected && key === 'partner' && (
                   <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6 }}>
                     <TextInput
@@ -155,36 +232,29 @@ function CircleStep({
                       onChangeText={(t) => onChange({ partnerName: t })}
                       placeholder="Their name?"
                       placeholderTextColor="#5E6472"
-                      style={{
-                        backgroundColor: '#161718',
-                        borderRadius: 8,
-                        paddingHorizontal: 16,
-                        paddingVertical: 12,
-                        color: '#F0F2F4',
-                        fontSize: 14,
-                        borderWidth: 1,
-                        borderColor: 'rgba(255,255,255,0.08)',
-                      }}
+                      style={nameInputStyle}
                     />
                   </Animated.View>
                 )}
+
                 {selected && key === 'children' && (
-                  <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6 }}>
+                  <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6, gap: 8 }}>
+                    <CountPicker
+                      label="How many?"
+                      options={CHILDREN_COUNTS}
+                      value={prefs.childrenCount}
+                      onChange={(v) => onChange({ childrenCount: v })}
+                    />
                     <TextInput
                       value={prefs.childrenNames}
                       onChangeText={(t) => onChange({ childrenNames: t })}
-                      placeholder="Their names?"
+                      placeholder={
+                        prefs.childrenCount === 1
+                          ? "Their name?"
+                          : "Their names? (e.g. Emma, Jake)"
+                      }
                       placeholderTextColor="#5E6472"
-                      style={{
-                        backgroundColor: '#161718',
-                        borderRadius: 8,
-                        paddingHorizontal: 16,
-                        paddingVertical: 12,
-                        color: '#F0F2F4',
-                        fontSize: 14,
-                        borderWidth: 1,
-                        borderColor: 'rgba(255,255,255,0.08)',
-                      }}
+                      style={[nameInputStyle, { marginTop: 4 }]}
                     />
                   </Animated.View>
                 )}
@@ -203,26 +273,25 @@ function CircleStep({
           value={prefs.hasPets}
           onToggle={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onChange({ hasPets: !prefs.hasPets, petName: '' });
+            onChange({ hasPets: !prefs.hasPets, petName: '', petCount: 1 });
           }}
         />
         {prefs.hasPets && (
-          <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 8 }}>
+          <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 8, gap: 8 }}>
+            <CountPicker
+              label="How many?"
+              options={PET_COUNTS}
+              value={prefs.petCount}
+              onChange={(v) => onChange({ petCount: v })}
+            />
             <TextInput
               value={prefs.petName}
               onChangeText={(t) => onChange({ petName: t })}
-              placeholder="What's their name?"
+              placeholder={
+                prefs.petCount === 1 ? "What's their name?" : "What are their names?"
+              }
               placeholderTextColor="#5E6472"
-              style={{
-                backgroundColor: '#161718',
-                borderRadius: 12,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                color: '#F0F2F4',
-                fontSize: 14,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.08)',
-              }}
+              style={[nameInputStyle, { borderRadius: 12, marginTop: 4 }]}
             />
           </Animated.View>
         )}
@@ -304,16 +373,7 @@ function RhythmStep({
           onChangeText={(t) => onChange({ city: t })}
           placeholder="City or area (optional — for local resources)"
           placeholderTextColor="#5E6472"
-          style={{
-            backgroundColor: '#161718',
-            borderRadius: 12,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            color: '#F0F2F4',
-            fontSize: 14,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
-          }}
+          style={nameInputStyle}
         />
       </View>
     </View>
@@ -328,8 +388,10 @@ export default function OnboardingScreen() {
     familyMembers: [],
     partnerName: '',
     childrenNames: '',
+    childrenCount: 1,
     hasPets: false,
     petName: '',
+    petCount: 1,
     hasJob: false,
     workShift: null,
     drinksAtWork: false,

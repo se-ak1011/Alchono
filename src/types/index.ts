@@ -72,8 +72,10 @@ export type UserPreferences = {
   familyMembers: string[];   // 'partner' | 'children' | 'parents'
   partnerName: string;
   childrenNames: string;
+  childrenCount: number;     // 1, 2, 3, or 4 (meaning 4+)
   hasPets: boolean;
   petName: string;
+  petCount: number;          // 1, 2, or 3 (meaning 3+)
   hasJob: boolean;
   workShift: 'morning' | 'day' | 'evening' | 'night' | null;
   drinksAtWork: boolean;

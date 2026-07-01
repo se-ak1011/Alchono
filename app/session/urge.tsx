@@ -35,15 +35,18 @@ function buildActions(prefs: UserPreferences | null): Action[] {
 
   if (prefs?.familyMembers?.includes('children')) {
     const names = prefs.childrenNames?.trim();
+    const count = prefs.childrenCount ?? 1;
+    const fallback = count === 1 ? 'your child' : 'your kids';
     list.push({
       id: 'kids',
-      label: names ? `Check in with ${names}` : 'Check in with your kids',
+      label: `Check in with ${names || fallback}`,
       subtitle: 'Be present for a moment.',
     });
   }
 
   if (prefs?.hasPets) {
-    const name = prefs.petName?.trim() || 'your pet';
+    const petCount = prefs.petCount ?? 1;
+    const name = prefs.petName?.trim() || (petCount === 1 ? 'your pet' : 'your pets');
     list.push({
       id: 'pet',
       label: `Take ${name} outside`,

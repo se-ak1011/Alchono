@@ -22,9 +22,11 @@ export default function ProfileScreen() {
         text: 'Sign out',
         style: 'destructive',
         onPress: async () => {
+          // Sign out from Supabase first so AsyncStorage is cleared before we
+          // reset local state — prevents re-login on next app launch.
+          await supabase.auth.signOut().catch(() => {});
           reset();
           router.replace('/(auth)/login');
-          supabase.auth.signOut().catch(() => {});
         },
       },
     ]);
@@ -40,10 +42,14 @@ export default function ProfileScreen() {
           text: 'Delete everything',
           style: 'destructive',
           onPress: async () => {
-            supabase.functions.invoke('delete-account', { body: { userId: user?.id } }).catch(() => {});
+            // Invoke the edge function while the session is still active.
+            await supabase.functions
+              .invoke('delete-account', { body: { userId: user?.id } })
+              .catch(() => {});
+            // Then clear local state and revoke the session.
             reset();
+            await supabase.auth.signOut().catch(() => {});
             router.replace('/(auth)/login');
-            supabase.auth.signOut().catch(() => {});
           },
         },
       ],

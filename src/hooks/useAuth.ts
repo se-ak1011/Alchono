@@ -82,10 +82,12 @@ export function useSignUp() {
     if (error) throw error;
 
     if (data.user) {
-      await supabase.from('profiles').insert({
-        id: data.user.id,
-        username,
-      });
+      // The handle_new_user trigger may have already created the profile row.
+      // Use upsert so the username is saved regardless of trigger timing.
+      const { error: upsertError } = await supabase
+        .from('profiles')
+        .upsert({ id: data.user.id, username }, { onConflict: 'id' });
+      if (upsertError) throw upsertError;
     }
     return data;
   };
