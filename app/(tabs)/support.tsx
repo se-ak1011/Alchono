@@ -135,7 +135,12 @@ export default function SupportScreen() {
 
       <View className="flex-1">
         {activeTab === 'coach'     && <AiCoachChat />}
-        {activeTab === 'community' && <CommunityFeed />}
+        {activeTab === 'community' && (
+          <CommunityFeed
+            onTalkToAi={() => setActiveTab('coach')}
+            onFindMentor={() => setActiveTab('mentors')}
+          />
+        )}
         {activeTab === 'mentors'   && <MentorList />}
         {activeTab === 'resources' && <ResourcesPlaceholder />}
       </View>

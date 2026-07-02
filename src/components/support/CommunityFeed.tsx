@@ -19,11 +19,18 @@ const REACTIONS = [
   { key: 'handshake' as const, emoji: '🤝' },
 ];
 
-export function CommunityFeed() {
+export function CommunityFeed({
+  onTalkToAi,
+  onFindMentor,
+}: {
+  onTalkToAi?: () => void;
+  onFindMentor?: () => void;
+}) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommunityFeed();
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const [newPost, setNewPost] = useState('');
+  const [justPosted, setJustPosted] = useState(false);
 
   const posts = data?.pages.flat() ?? [];
 
@@ -31,7 +38,12 @@ export function CommunityFeed() {
     if (!newPost.trim() || isPending) return;
     createPost(
       { content: newPost.trim(), isAnonymous: true },
-      { onSuccess: () => setNewPost('') },
+      {
+        onSuccess: () => {
+          setNewPost('');
+          setJustPosted(true);
+        },
+      },
     );
   };
 
@@ -41,7 +53,10 @@ export function CommunityFeed() {
       <View className="mx-4 mb-4 bg-surface rounded-2xl p-5 border border-white/5">
         <TextInput
           value={newPost}
-          onChangeText={setNewPost}
+          onChangeText={(t) => {
+            setNewPost(t);
+            if (justPosted) setJustPosted(false);
+          }}
           placeholder="Share something with the community…"
           placeholderTextColor="#5E6472"
           multiline
@@ -49,6 +64,11 @@ export function CommunityFeed() {
           className="text-text-primary text-base leading-relaxed min-h-[64px]"
           selectionColor="#9CA3AF"
         />
+        {!!newPost.trim() && (
+          <Text className="text-text-muted text-sm mt-2 leading-relaxed">
+            People can send ❤️ 👏 🤝 — but nobody can reply to posts.
+          </Text>
+        )}
         <View className="flex-row items-center justify-between mt-3">
           <Text className="text-text-muted text-sm">Anonymous post</Text>
           <Pressable
@@ -66,6 +86,49 @@ export function CommunityFeed() {
           </Pressable>
         </View>
       </View>
+
+      {/* Post-share nudge — posting is a shout, this offers a conversation too */}
+      {justPosted && (
+        <Animated.View
+          entering={FadeInDown.duration(300)}
+          className="mx-4 mb-4 bg-surface rounded-2xl p-5 border border-white/10"
+        >
+          <View className="flex-row items-start justify-between mb-1">
+            <Text className="text-text-primary text-base font-semibold flex-1 pr-3">
+              Shared. That took something.
+            </Text>
+            <Pressable onPress={() => setJustPosted(false)} hitSlop={12}>
+              <Text className="text-text-muted text-base">✕</Text>
+            </Pressable>
+          </View>
+          <Text className="text-text-secondary text-sm leading-relaxed mb-4">
+            Reactions will come. And if you'd rather have an actual
+            conversation right now, that's here too:
+          </Text>
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setJustPosted(false);
+                onTalkToAi?.();
+              }}
+              className="flex-1 items-center py-3 rounded-xl bg-accent active:bg-accent-dark"
+            >
+              <Text className="text-bg text-sm font-semibold">Talk to the AI</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setJustPosted(false);
+                onFindMentor?.();
+              }}
+              className="flex-1 items-center py-3 rounded-xl bg-surface-2 border border-white/10 active:border-white/25"
+            >
+              <Text className="text-text-primary text-sm font-semibold">Find a mentor</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+      )}
 
       <FlatList
         data={posts}
