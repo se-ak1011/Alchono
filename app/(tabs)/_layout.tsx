@@ -11,6 +11,7 @@ import Animated, {
 import {
   HomeIcon,
   SupportIcon,
+  JournalIcon,
   InsightsIcon,
   ProfileIcon,
 } from '@/components/icons/TabIcons';
@@ -18,6 +19,7 @@ import {
 const TABS = [
   { name: 'index', label: 'Home', Icon: HomeIcon },
   { name: 'support', label: 'Support', Icon: SupportIcon },
+  { name: 'journal', label: 'Journal', Icon: JournalIcon },
   { name: 'insights', label: 'Insights', Icon: InsightsIcon },
   { name: 'profile', label: 'Profile', Icon: ProfileIcon },
 ] as const;
@@ -120,6 +122,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="support" />
+      <Tabs.Screen name="journal" />
       <Tabs.Screen name="insights" />
       <Tabs.Screen name="profile" />
     </Tabs>

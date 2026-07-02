@@ -21,6 +21,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Alchono uses camera for profile photos.",
         "NSPhotoLibraryUsageDescription": "Alchono uses photo library for profile photos.",
+        "NSMicrophoneUsageDescription": "Alchono uses the microphone to record private voice journal notes.",
+        "NSLocationWhenInUseUsageDescription": "Alchono uses your approximate location to show community posts from people near you. Your location is never shown to anyone.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
@@ -36,7 +38,9 @@
       "versionCode": 1,
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE"
+        "VIBRATE",
+        "RECORD_AUDIO",
+        "ACCESS_COARSE_LOCATION"
       ]
     },
     "web": {

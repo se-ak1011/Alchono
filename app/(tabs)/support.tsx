@@ -213,9 +213,21 @@ const RESOURCE_SECTIONS: { heading: string; items: Resource[] }[] = [
       },
     ],
   },
+  {
+    heading: 'Swap, don’t fight',
+    items: [
+      {
+        title: 'Alcohol-free alternatives',
+        description: 'Same ritual, same glass, zero alcohol — 0.0 beers, spirits, and fizz that actually taste right.',
+        action: 'See the list',
+        url: 'internal:/swaps',
+      },
+    ],
+  },
 ];
 
 function ResourcesTab() {
+  const router = useRouter();
   return (
     <ScrollView
       contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
@@ -237,7 +249,11 @@ function ResourcesTab() {
                 key={r.title}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  Linking.openURL(r.url).catch(() => {});
+                  if (r.url.startsWith('internal:')) {
+                    router.push(r.url.replace('internal:', '') as any);
+                  } else {
+                    Linking.openURL(r.url).catch(() => {});
+                  }
                 }}
                 className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
               >

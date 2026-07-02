@@ -27,6 +27,7 @@ import {
   useSendDmMessage,
   useMarkDmThreadRead,
   useDmThreadMeta,
+  useDmPeerCity,
   useRespondToDmRequest,
   DM_REQUEST_LIMIT,
 } from '@/hooks/useDirectMessages';
@@ -57,6 +58,10 @@ export default function ThreadScreen() {
   const { mutate: markMentorRead } = useMarkThreadRead(isDm ? undefined : requestId);
   const { mutate: markDmRead } = useMarkDmThreadRead(isDm ? requestId : undefined);
   const { data: dmThread } = useDmThreadMeta(isDm ? requestId : undefined);
+  const { data: peerCity } = useDmPeerCity(
+    isDm ? requestId : undefined,
+    dmThread?.status === 'accepted',
+  );
   const { mutate: respondDm, isPending: respondingDm } = useRespondToDmRequest();
   const { mutate: blockUser } = useBlockUser();
   const { mutate: reportUser } = useReportUser();
@@ -202,9 +207,14 @@ export default function ThreadScreen() {
             <Text className="text-text-secondary text-lg">←</Text>
           </Pressable>
           <Avatar username={username} size="sm" />
-          <Text className="text-text-primary text-base font-semibold ml-3 flex-1">
-            {username ?? 'Conversation'}
-          </Text>
+          <View className="ml-3 flex-1">
+            <Text className="text-text-primary text-base font-semibold">
+              {username ?? 'Conversation'}
+            </Text>
+            {!!peerCity && (
+              <Text className="text-text-muted text-xs mt-0.5">near {peerCity}</Text>
+            )}
+          </View>
           <Pressable onPress={showActions} hitSlop={12}>
             <Text className="text-text-muted text-xl">⋯</Text>
           </Pressable>

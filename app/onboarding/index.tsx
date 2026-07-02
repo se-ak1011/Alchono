@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import { SoulIcon } from '@/components/icons/SoulIcon';
 import { Button } from '@/components/ui/Button';
 import { headingShadow } from '@/styles';
+import * as Location from 'expo-location';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
 import {
@@ -298,6 +299,24 @@ function CircleStep({
           </Animated.View>
         )}
       </View>
+
+      <View>
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+          Curious about
+        </Text>
+        <ToggleRow
+          label="Alcohol-free alternatives (0.0 beers, spirits…)"
+          value={prefs.interestedInAlternatives}
+          onToggle={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onChange({ interestedInAlternatives: !prefs.interestedInAlternatives });
+          }}
+        />
+        <Text className="text-text-muted text-xs mt-2 leading-relaxed">
+          If zero-alcohol drinks are a trigger for you, leave this off — you
+          know yourself best.
+        </Text>
+      </View>
     </View>
   );
 }
@@ -305,9 +324,13 @@ function CircleStep({
 function RhythmStep({
   prefs,
   onChange,
+  locationCaptured,
+  onCaptureLocation,
 }: {
   prefs: UserPreferences;
   onChange: (p: Partial<UserPreferences>) => void;
+  locationCaptured: boolean;
+  onCaptureLocation: () => void;
 }) {
   return (
     <View style={{ gap: 20 }}>
@@ -377,6 +400,39 @@ function RhythmStep({
           placeholderTextColor="#5E6472"
           style={nameInputStyle}
         />
+
+        <View style={{ marginTop: 8 }}>
+          <ToggleRow
+            label="I live somewhere isolated (rural, remote)"
+            value={prefs.livesIsolated}
+            onToggle={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              onChange({ livesIsolated: !prefs.livesIsolated });
+            }}
+          />
+        </View>
+
+        <Pressable
+          onPress={onCaptureLocation}
+          className={`flex-row items-center justify-between rounded-xl px-4 py-3.5 border mt-2 ${
+            locationCaptured
+              ? 'bg-surface border-white/25'
+              : 'bg-surface border-white/8 active:border-white/20'
+          }`}
+        >
+          <View className="flex-1 pr-3">
+            <Text className="text-text-primary text-sm font-medium">
+              {locationCaptured
+                ? 'Approximate location saved'
+                : 'Show me people near me (optional)'}
+            </Text>
+            <Text className="text-text-muted text-xs mt-0.5 leading-relaxed">
+              Community posts from nearby people appear first. Your location is
+              rounded to ~10 km and never shown to anyone.
+            </Text>
+          </View>
+          <Text className="text-text-muted text-sm">{locationCaptured ? '◆' : '◇'}</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -399,7 +455,34 @@ export default function OnboardingScreen() {
     workShift: null,
     drinksAtWork: false,
     city: '',
+    livesIsolated: false,
+    interestedInAlternatives: false,
   });
+  const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(null);
+
+  const captureLocation = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'No worries',
+          'You can turn this on later — the feed just won’t be sorted by distance.',
+        );
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Low,
+      });
+      // Round to 1 decimal (~11km) BEFORE it ever leaves the device.
+      setLatLng({
+        lat: Math.round(pos.coords.latitude * 10) / 10,
+        lng: Math.round(pos.coords.longitude * 10) / 10,
+      });
+    } catch {
+      Alert.alert('Could not get location', 'You can try again later from your profile.');
+    }
+  };
 
   const currentStep = STEPS[step];
 
@@ -419,7 +502,11 @@ export default function OnboardingScreen() {
       // instead of surfacing as a coercion error.
       const { data: updatedRows, error } = await supabase
         .from('profiles')
-        .update({ onboarding_completed: true, preferences: prefs as any })
+        .update({
+          onboarding_completed: true,
+          preferences: prefs as any,
+          ...(latLng ? { location_lat: latLng.lat, location_lng: latLng.lng } : {}),
+        })
         .eq('id', user.id)
         .select();
 
@@ -545,7 +632,12 @@ export default function OnboardingScreen() {
               <CircleStep prefs={prefs} onChange={updatePrefs} />
             )}
             {currentStep.id === 'rhythm' && (
-              <RhythmStep prefs={prefs} onChange={updatePrefs} />
+              <RhythmStep
+                prefs={prefs}
+                onChange={updatePrefs}
+                locationCaptured={!!latLng}
+                onCaptureLocation={captureLocation}
+              />
             )}
           </Animated.View>
         </ScrollView>

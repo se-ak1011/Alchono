@@ -70,6 +70,15 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     subtitle: "Ninety seconds of the internet at its best.",
     navigate: '/session/good-feed',
   });
+
+  if (prefs?.interestedInAlternatives) {
+    list.push({
+      id: 'swap',
+      label: 'Swap it, don’t fight it',
+      subtitle: 'Same ritual, zero alcohol. See what works.',
+      navigate: '/swaps',
+    });
+  }
   list.push({
     id: 'game',
     label: 'Play a game',

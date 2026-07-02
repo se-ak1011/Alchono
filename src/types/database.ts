@@ -19,6 +19,8 @@ export interface Database {
           mentor_recovery_level: string | null;
           onboarding_completed: boolean;
           preferences: Json | null;
+          location_lat: number | null;
+          location_lng: number | null;
         };
         Insert: {
           id: string;
@@ -35,6 +37,8 @@ export interface Database {
           mentor_recovery_level?: string | null;
           onboarding_completed?: boolean;
           preferences?: Json | null;
+          location_lat?: number | null;
+          location_lng?: number | null;
         };
         Update: {
           id?: string;
@@ -50,6 +54,29 @@ export interface Database {
           mentor_recovery_level?: string | null;
           onboarding_completed?: boolean;
           preferences?: Json | null;
+          location_lat?: number | null;
+          location_lng?: number | null;
+        };
+      };
+      journal_notes: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+          text: string | null;
+          audio_path: string | null;
+          duration_seconds: number | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          created_at?: string;
+          text?: string | null;
+          audio_path?: string | null;
+          duration_seconds?: number | null;
+        };
+        Update: {
+          text?: string | null;
         };
       };
       goals: {
@@ -443,7 +470,20 @@ export interface Database {
         };
       };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      community_feed_nearby: {
+        Args: { p_limit: number; p_offset: number };
+        Returns: Database['public']['Tables']['community_posts']['Row'][];
+      };
+      get_peer_city: {
+        Args: { p_thread_id: string };
+        Returns: string | null;
+      };
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+    };
     Enums: Record<string, never>;
   };
 }

@@ -183,6 +183,24 @@ export function useDmConnections() {
   });
 }
 
+/**
+ * The other participant's city — only ever returned by the DB for ACCEPTED
+ * threads (mutual opt-in), and only as the city text, never coordinates.
+ */
+export function useDmPeerCity(threadId: string | undefined, accepted: boolean) {
+  return useQuery({
+    queryKey: ['dm-peer-city', threadId],
+    queryFn: async () => {
+      const { data } = await supabase.rpc('get_peer_city', {
+        p_thread_id: threadId!,
+      });
+      return (data as string | null) ?? null;
+    },
+    enabled: !!threadId && accepted,
+    staleTime: Infinity,
+  });
+}
+
 export function useDmThreadMeta(threadId: string | undefined) {
   return useQuery({
     queryKey: ['dm-thread', threadId],

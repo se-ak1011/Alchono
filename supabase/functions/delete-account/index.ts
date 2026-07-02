@@ -30,6 +30,20 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
     if (authError || !user) throw new Error('Unauthorized');
 
+    // Remove stored voice journal files (DB rows cascade; storage doesn't).
+    try {
+      const { data: files } = await supabaseAdmin.storage
+        .from('voice-journals')
+        .list(user.id, { limit: 1000 });
+      if (files && files.length > 0) {
+        await supabaseAdmin.storage
+          .from('voice-journals')
+          .remove(files.map((f) => `${user.id}/${f.name}`));
+      }
+    } catch {
+      // Storage cleanup is best-effort; account deletion still proceeds.
+    }
+
     // Delete the user (cascades to all profile data via FK)
     const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id);
     if (error) throw error;

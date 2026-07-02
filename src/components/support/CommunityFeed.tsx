@@ -141,13 +141,16 @@ export function CommunityFeed({
     <View className="flex-1">
       {/* Compose box */}
       <View className="mx-4 mb-4 bg-surface rounded-2xl p-5 border border-white/5">
+        <Text className="text-text-muted text-sm mb-2 leading-relaxed">
+          The rough nights and the small wins both belong here.
+        </Text>
         <TextInput
           value={newPost}
           onChangeText={(t) => {
             setNewPost(t);
             if (justPosted) setJustPosted(false);
           }}
-          placeholder="Share something with the community…"
+          placeholder="Struggling? Celebrating 10 days? Say it here…"
           placeholderTextColor="#5E6472"
           multiline
           maxLength={280}
@@ -298,8 +301,9 @@ export function CommunityFeed({
         }
         ListEmptyComponent={
           <View className="py-12 items-center">
-            <Text className="text-text-muted text-base text-center">
-              Be the first to share something.{'\n'}This is a safe space.
+            <Text className="text-text-muted text-base text-center leading-relaxed">
+              Be the first to share something.{'\n'}
+              Bad day, good day, day one, day ninety —{'\n'}it all belongs here.
             </Text>
           </View>
         }

@@ -90,6 +90,8 @@ export type UserPreferences = {
   workShift: 'morning' | 'day' | 'evening' | 'night' | null;
   drinksAtWork: boolean;
   city: string;
+  livesIsolated: boolean;
+  interestedInAlternatives: boolean;
 };
 
 export type ChatMessage = {

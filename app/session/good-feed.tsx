@@ -1,13 +1,24 @@
-import React from 'react';
-import { View, Text, Pressable, ScrollView, Image, Linking } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  Linking,
+  FlatList,
+  Dimensions,
+} from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Button } from '@/components/ui/Button';
-import { useGoodFeed, thumbnailUrl, watchUrl } from '@/hooks/useGoodFeed';
+import { useGoodFeed, thumbnailUrl, watchUrl, type GoodFeedItem } from '@/hooks/useGoodFeed';
 import { headingShadow } from '@/styles';
+
+const SCREEN_W = Dimensions.get('window').width;
+const CARD_MARGIN = 24;
 
 const CATEGORY_LABELS: Record<string, string> = {
   kindness: 'Kindness',
@@ -18,10 +29,86 @@ const CATEGORY_LABELS: Record<string, string> = {
   wholesome: 'Wholesome',
 };
 
+type Slide = { kind: 'video'; item: GoodFeedItem } | { kind: 'end' };
+
 export default function GoodFeedScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data: items, isLoading } = useGoodFeed();
+  const [page, setPage] = useState(0);
+
+  const slides: Slide[] = [
+    ...(items ?? []).map((item) => ({ kind: 'video' as const, item })),
+    { kind: 'end' as const },
+  ];
+  const videoCount = items?.length ?? 0;
+
+  const renderSlide = ({ item: slide }: { item: Slide }) => {
+    if (slide.kind === 'end') {
+      return (
+        <View
+          style={{
+            width: SCREEN_W,
+            paddingHorizontal: CARD_MARGIN,
+            justifyContent: 'center',
+          }}
+        >
+          <View className="bg-surface rounded-3xl px-6 py-12 border border-white/8 items-center">
+            <Text className="text-text-primary text-2xl font-semibold mb-3 text-center">
+              That's the good stuff.
+            </Text>
+            <Text className="text-text-secondary text-base mb-8 text-center leading-relaxed">
+              Fresh picks tomorrow.{'\n'}How are you feeling?
+            </Text>
+            <Button
+              title="Done"
+              variant="primary"
+              size="lg"
+              fullWidth
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.back();
+              }}
+            />
+          </View>
+        </View>
+      );
+    }
+
+    const { item } = slide;
+    return (
+      <View
+        style={{
+          width: SCREEN_W,
+          paddingHorizontal: CARD_MARGIN,
+          justifyContent: 'center',
+        }}
+      >
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            Linking.openURL(watchUrl(item.youtube_id)).catch(() => {});
+          }}
+          className="bg-surface rounded-3xl border border-white/8 active:border-white/20 overflow-hidden"
+        >
+          <Image
+            source={{ uri: thumbnailUrl(item.youtube_id) }}
+            style={{ width: '100%', aspectRatio: 16 / 9, backgroundColor: '#161718' }}
+            resizeMode="cover"
+          />
+          <View className="px-5 py-5">
+            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+              {CATEGORY_LABELS[item.category] ?? item.category}
+            </Text>
+            <Text className="text-text-primary text-lg font-semibold leading-snug mb-2">
+              {item.title}
+            </Text>
+            <Text className="text-text-muted text-sm">Tap to play on YouTube →</Text>
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
 
   return (
     <View
@@ -29,7 +116,7 @@ export default function GoodFeedScreen() {
         flex: 1,
         backgroundColor: '#0E0F10',
         paddingTop: insets.top,
-        paddingBottom: insets.bottom,
+        paddingBottom: insets.bottom + 8,
       }}
     >
       {/* Header */}
@@ -41,7 +128,7 @@ export default function GoodFeedScreen() {
           gap: 16,
           paddingHorizontal: 24,
           paddingTop: 16,
-          paddingBottom: 16,
+          paddingBottom: 8,
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
@@ -59,80 +146,65 @@ export default function GoodFeedScreen() {
             Something good.
           </Text>
           <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
-            Today's picks. Then back to life.
+            One at a time. Swipe when you're ready.
           </Text>
         </View>
+        {page < videoCount && videoCount > 0 && (
+          <Text style={{ color: '#4B5563', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
+            {page + 1}/{videoCount}
+          </Text>
+        )}
       </Animated.View>
 
       {isLoading ? (
         <LoadingSpinner message="Finding the good stuff…" />
+      ) : videoCount === 0 ? (
+        <View className="flex-1 items-center justify-center px-10">
+          <Text className="text-text-muted text-base text-center">
+            Nothing here yet — check back soon.
+          </Text>
+        </View>
       ) : (
-        <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
-          showsVerticalScrollIndicator={false}
-        >
-          {(items ?? []).map((item, i) => (
-            <Animated.View
-              key={item.id}
-              entering={FadeInDown.duration(300).delay(i * 60)}
-            >
-              <Pressable
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  Linking.openURL(watchUrl(item.youtube_id)).catch(() => {});
-                }}
-                className="bg-surface rounded-2xl mb-4 border border-white/5 active:border-white/20 overflow-hidden"
-              >
-                <Image
-                  source={{ uri: thumbnailUrl(item.youtube_id) }}
-                  style={{ width: '100%', aspectRatio: 16 / 9, backgroundColor: '#161718' }}
-                  resizeMode="cover"
-                />
-                <View className="px-4 py-3">
-                  <Text className="text-text-primary text-base font-medium leading-snug mb-1">
-                    {item.title}
-                  </Text>
-                  <Text className="text-text-muted text-sm">
-                    {CATEGORY_LABELS[item.category] ?? item.category} · plays on YouTube
-                  </Text>
-                </View>
-              </Pressable>
-            </Animated.View>
-          ))}
+        <>
+          <FlatList
+            data={slides}
+            keyExtractor={(s, i) => (s.kind === 'video' ? s.item.id : `end-${i}`)}
+            renderItem={renderSlide}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(e) => {
+              const next = Math.round(e.nativeEvent.contentOffset.x / SCREEN_W);
+              if (next !== page) {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setPage(next);
+              }
+            }}
+            style={{ flex: 1 }}
+          />
 
-          {(items ?? []).length === 0 && (
-            <View className="py-16 items-center">
-              <Text className="text-text-muted text-base text-center">
-                Nothing here yet — check back soon.
-              </Text>
-            </View>
-          )}
-
-          {/* Deliberate end — this is a stack, not a scroll hole */}
-          {(items ?? []).length > 0 && (
-            <Animated.View
-              entering={FadeIn.duration(400)}
-              className="bg-surface rounded-2xl px-6 py-8 mt-2 mb-4 border border-white/8 items-center"
-            >
-              <Text className="text-text-primary text-lg font-semibold mb-2 text-center">
-                That's the good stuff for now.
-              </Text>
-              <Text className="text-text-secondary text-base mb-6 text-center leading-relaxed">
-                Fresh picks tomorrow. How are you feeling?
-              </Text>
-              <Button
-                title="Done"
-                variant="primary"
-                size="md"
-                fullWidth
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.back();
+          {/* Progress dots */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              gap: 6,
+              paddingVertical: 12,
+            }}
+          >
+            {slides.map((_, i) => (
+              <View
+                key={i}
+                style={{
+                  width: i === page ? 18 : 6,
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: i === page ? '#C4C9D0' : '#2A2D30',
                 }}
               />
-            </Animated.View>
-          )}
-        </ScrollView>
+            ))}
+          </View>
+        </>
       )}
     </View>
   );

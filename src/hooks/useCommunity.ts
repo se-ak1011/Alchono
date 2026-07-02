@@ -12,14 +12,27 @@ export function useCommunityFeed() {
   return useInfiniteQuery({
     queryKey: ['community-feed'],
     queryFn: async ({ pageParam = 0 }) => {
-      const [{ data, error }, { data: blocks }] = await Promise.all([
-        supabase
+      // Nearby people first (server-side, coordinates never leave the DB);
+      // falls back to plain recency if the function isn't deployed yet.
+      const [nearby, { data: blocks }] = await Promise.all([
+        supabase.rpc('community_feed_nearby', {
+          p_limit: PAGE_SIZE,
+          p_offset: pageParam * PAGE_SIZE,
+        }),
+        supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
+      ]);
+
+      let data = nearby.data;
+      let error = nearby.error;
+      if (error) {
+        const fallback = await supabase
           .from('community_posts')
           .select('*')
           .order('created_at', { ascending: false })
-          .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1),
-        supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
-      ]);
+          .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+        data = fallback.data;
+        error = fallback.error;
+      }
       if (error) throw error;
       if (!data || data.length === 0) return [];
 
