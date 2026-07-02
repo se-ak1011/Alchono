@@ -127,6 +127,10 @@ export default function ProfileScreen() {
           title="Community"
           items={[
             {
+              label: 'Messages',
+              onPress: () => router.push('/messages'),
+            },
+            {
               label: profile?.is_mentor ? 'Your mentoring' : 'Become a mentor',
               onPress: () => router.push('/profile/become-mentor'),
             },

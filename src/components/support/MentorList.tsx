@@ -34,13 +34,13 @@ export function MentorList() {
           <Card elevated>
             <View className="flex-row items-start gap-3 mb-3">
               <Avatar
-                username={(item as any).profiles?.username}
+                username={(item as any).username}
                 size="md"
               />
               <View className="flex-1">
                 <View className="flex-row items-center gap-2 mb-1">
                   <Text className="text-text-primary font-semibold text-base">
-                    {(item as any).profiles?.username ?? 'Mentor'}
+                    {(item as any).username ?? 'Mentor'}
                   </Text>
                   <Badge
                     label={levelLabel(item.recovery_level)}

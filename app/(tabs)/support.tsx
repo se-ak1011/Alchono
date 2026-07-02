@@ -8,6 +8,7 @@ import { headingShadow } from '@/styles';
 import { AiCoachChat } from '@/components/support/AiCoachChat';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { MentorList } from '@/components/support/MentorList';
+import { useUnreadTotal } from '@/hooks/useMessages';
 
 type Tab = 'coach' | 'community' | 'mentors' | 'resources';
 
@@ -28,6 +29,7 @@ export default function SupportScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('coach');
   const [activeState, setActiveState] = useState<string | null>(null);
+  const { data: unread } = useUnreadTotal();
 
   const handleStateSelect = (state: typeof SUPPORT_STATES[number]) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -37,13 +39,30 @@ export default function SupportScreen() {
 
   return (
     <SafeArea bottom={false}>
-      <View className="px-6 pt-5 pb-3">
-        <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
-          Support
-        </Text>
-        <Text className="text-text-secondary text-base mt-1">
-          You're not doing this alone.
-        </Text>
+      <View className="flex-row items-start justify-between px-6 pt-5 pb-3">
+        <View>
+          <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
+            Support
+          </Text>
+          <Text className="text-text-secondary text-base mt-1">
+            You're not doing this alone.
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.push('/messages');
+          }}
+          hitSlop={8}
+          className="flex-row items-center gap-2 bg-surface rounded-xl px-3.5 py-2.5 border border-white/8 active:border-white/20 mt-1"
+        >
+          <Text className="text-text-secondary text-sm font-medium">Messages</Text>
+          {!!unread && (
+            <View className="bg-accent rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
+              <Text className="text-bg text-xs font-bold">{unread}</Text>
+            </View>
+          )}
+        </Pressable>
       </View>
 
       {/* Urge — always elevated, separate from everything else */}

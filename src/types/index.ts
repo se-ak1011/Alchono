@@ -67,6 +67,16 @@ export const PAUSE_ACTIONS = [
 ] as const;
 
 export type Goal = Tables<'goals'>;
+export type Message = Tables<'messages'>;
+export type Report = Tables<'reports'>;
+
+export const REPORT_REASONS = [
+  'Inappropriate messages',
+  'Harassment or bullying',
+  'Pushing products or services',
+  'Sharing dangerous advice',
+  'Other',
+] as const;
 
 export type UserPreferences = {
   familyMembers: string[];   // 'partner' | 'children' | 'parents'

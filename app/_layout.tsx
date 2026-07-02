@@ -65,6 +65,8 @@ function RootLayoutNav() {
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
         <Stack.Screen name="goals/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="messages/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="messages/[requestId]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/word-search" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/games" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/memory-match" options={{ animation: 'slide_from_right' }} />

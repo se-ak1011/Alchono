@@ -238,6 +238,67 @@ export interface Database {
           messages?: Json;
         };
       };
+      messages: {
+        Row: {
+          id: string;
+          request_id: string;
+          sender_id: string;
+          created_at: string;
+          content: string;
+          read_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          request_id: string;
+          sender_id: string;
+          created_at?: string;
+          content: string;
+          read_at?: string | null;
+        };
+        Update: {
+          read_at?: string | null;
+        };
+      };
+      user_blocks: {
+        Row: {
+          id: string;
+          blocker_id: string;
+          blocked_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          blocker_id: string;
+          blocked_id: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+      };
+      reports: {
+        Row: {
+          id: string;
+          reporter_id: string;
+          reported_user_id: string;
+          request_id: string | null;
+          created_at: string;
+          reason: string;
+          details: string | null;
+          status: string;
+        };
+        Insert: {
+          id?: string;
+          reporter_id: string;
+          reported_user_id: string;
+          request_id?: string | null;
+          created_at?: string;
+          reason: string;
+          details?: string | null;
+          status?: string;
+        };
+        Update: {
+          status?: string;
+        };
+      };
       notification_preferences: {
         Row: {
           id: string;
@@ -269,7 +330,15 @@ export interface Database {
         };
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      public_profiles: {
+        Row: {
+          id: string;
+          username: string | null;
+          avatar_url: string | null;
+        };
+      };
+    };
     Functions: Record<string, never>;
     Enums: Record<string, never>;
   };

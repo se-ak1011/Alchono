@@ -2,6 +2,7 @@ import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
+import { fetchUsernames } from '@/lib/publicProfiles';
 
 const PAGE_SIZE = 20;
 
@@ -13,11 +14,21 @@ export function useCommunityFeed() {
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await supabase
         .from('community_posts')
-        .select('*, profiles(username)')
+        .select('*')
         .order('created_at', { ascending: false })
         .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
       if (error) throw error;
-      return data ?? [];
+      if (!data || data.length === 0) return [];
+
+      // Usernames only matter for non-anonymous posts; profiles is
+      // owner-only under RLS so they come from the public_profiles view.
+      const names = await fetchUsernames(
+        data.filter((p) => !p.is_anonymous).map((p) => p.user_id),
+      );
+      return data.map((p) => ({
+        ...p,
+        username: p.is_anonymous ? null : names[p.user_id] ?? 'Member',
+      }));
     },
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PAGE_SIZE ? allPages.length : undefined,

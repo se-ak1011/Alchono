@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
+import { fetchUsernames } from '@/lib/publicProfiles';
 
 export function useAvailableMentors() {
   return useQuery({
@@ -9,11 +10,16 @@ export function useAvailableMentors() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('mentor_profiles')
-        .select('*, profiles(username)')
+        .select('*')
         .eq('is_available', true)
         .order('total_sessions', { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      if (!data || data.length === 0) return [];
+
+      // profiles is owner-only under RLS — usernames come from the
+      // public_profiles view instead.
+      const names = await fetchUsernames(data.map((m) => m.user_id));
+      return data.map((m) => ({ ...m, username: names[m.user_id] ?? 'Mentor' }));
     },
   });
 }
@@ -56,10 +62,12 @@ export function useMyMentorRequests() {
     queryFn: async () => {
       const { data } = await supabase
         .from('mentor_requests')
-        .select('*, mentor_profiles(*, profiles(username))')
+        .select('*')
         .eq('requester_id', userId!)
         .order('created_at', { ascending: false });
-      return data ?? [];
+      if (!data || data.length === 0) return [];
+      const names = await fetchUsernames(data.map((r) => r.mentor_id));
+      return data.map((r) => ({ ...r, mentorUsername: names[r.mentor_id] ?? 'Mentor' }));
     },
     enabled: !!userId,
   });

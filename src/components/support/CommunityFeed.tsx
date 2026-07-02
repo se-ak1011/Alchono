@@ -81,10 +81,10 @@ export function CommunityFeed() {
           >
             <Card elevated>
               <View className="flex-row items-start gap-3 mb-3">
-                <Avatar username={item.is_anonymous ? 'A' : (item as any).profiles?.username} size="sm" />
+                <Avatar username={item.is_anonymous ? 'A' : (item as any).username} size="sm" />
                 <View className="flex-1">
                   <Text className="text-text-secondary text-sm font-medium">
-                    {item.is_anonymous ? 'Anonymous' : (item as any).profiles?.username ?? 'Member'}
+                    {item.is_anonymous ? 'Anonymous' : (item as any).username ?? 'Member'}
                   </Text>
                   <Text className="text-text-muted text-sm mt-0.5">
                     {new Date(item.created_at).toLocaleDateString('en-GB', {
