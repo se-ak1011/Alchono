@@ -203,10 +203,16 @@ export default function UrgeScreen() {
                         }
                         toggleTick(action.id);
                       }}
-                      className={`flex-row items-center gap-4 bg-surface rounded-2xl px-5 py-5 border ${
+                      className={`flex-row items-center gap-4 bg-urge-surface rounded-2xl px-5 py-5 border ${
                         done ? 'border-white/20' : 'border-white/8'
                       }`}
-                      style={{ opacity: done ? 0.7 : 1 }}
+                      style={{
+                        opacity: done ? 0.7 : 1,
+                        shadowColor: '#120D17',
+                        shadowOpacity: 0.8,
+                        shadowRadius: 10,
+                        shadowOffset: { width: 0, height: 5 },
+                      }}
                     >
                       <Text
                         className={`text-base w-3 ${done ? 'text-text-secondary' : 'text-text-muted'}`}
@@ -263,8 +269,15 @@ export default function UrgeScreen() {
             <View style={{ gap: 12 }}>
               <Pressable
                 onPress={handleUrgePassed}
-                className="bg-surface rounded-2xl border border-white/20 active:border-white/40"
-                style={{ paddingHorizontal: 20, paddingVertical: 22 }}
+                className="bg-urge-surface rounded-2xl border border-white/20 active:border-white/40"
+                style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 22,
+                  shadowColor: '#120D17',
+                  shadowOpacity: 0.8,
+                  shadowRadius: 10,
+                  shadowOffset: { width: 0, height: 5 },
+                }}
               >
                 <Text className="text-text-primary text-lg font-semibold mb-1">
                   The urge passed.
@@ -276,8 +289,15 @@ export default function UrgeScreen() {
 
               <Pressable
                 onPress={handleDrinkAnyway}
-                className="bg-surface rounded-2xl border border-white/8 active:bg-surface-2"
-                style={{ paddingHorizontal: 20, paddingVertical: 22 }}
+                className="bg-urge-surface rounded-2xl border border-white/8 active:bg-surface-2"
+                style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 22,
+                  shadowColor: '#120D17',
+                  shadowOpacity: 0.8,
+                  shadowRadius: 10,
+                  shadowOffset: { width: 0, height: 5 },
+                }}
               >
                 <Text className="text-text-primary text-lg font-semibold mb-1">
                   I'm going to drink anyway.

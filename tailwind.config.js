@@ -18,6 +18,10 @@ module.exports = {
         'accent-dark': '#A8B0BA',
         danger: '#C0392B',
         'danger-light': '#E74C3C',
+        // The devil's tint — matches the purple in the app icon. Used as a
+        // near-subliminal cast over urge-flow surfaces.
+        urge: '#120D17',
+        'urge-surface': '#17121E',
       },
       fontFamily: {
         sans: ['Inter_400Regular', 'System'],

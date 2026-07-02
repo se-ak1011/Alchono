@@ -7,6 +7,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -408,26 +409,34 @@ export default function OnboardingScreen() {
   const handleNext = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
+    if (!user) {
+      Alert.alert('Session expired', 'Please sign in again.');
+      return;
+    }
+
     if ((currentStep as any).isLast) {
-      // Save onboarding_completed first — this is the flag AuthGate checks.
-      // Keeping it separate means a missing preferences column can never block it.
-      const { data: updated } = await supabase
+      const { data: updated, error } = await supabase
         .from('profiles')
-        .update({ onboarding_completed: true })
-        .eq('id', user!.id)
+        .update({ onboarding_completed: true, preferences: prefs as any })
+        .eq('id', user.id)
         .select()
         .single();
 
-      // Save preferences in the background — non-blocking.
-      supabase
-        .from('profiles')
-        .update({ preferences: prefs as any })
-        .eq('id', user!.id)
-        .then(() => {})
-        .catch(() => {});
+      if (error) {
+        // Surface exactly what failed (missing preferences column, RLS, etc.)
+        // but still save the completion flag alone so the user isn't stuck.
+        await supabase
+          .from('profiles')
+          .update({ onboarding_completed: true })
+          .eq('id', user.id);
+        Alert.alert(
+          'Preferences not saved',
+          `Your answers couldn't be stored:\n\n${error.message}`,
+        );
+      }
 
-      // Update local state immediately so AuthGate and the rest of the app
-      // reflect preferences without waiting for a DB round-trip.
+      // Local state always carries the preferences the user just entered,
+      // regardless of what the DB round-trip returned.
       setProfile(
         updated
           ? { ...updated, preferences: prefs as any }
@@ -440,6 +449,15 @@ export default function OnboardingScreen() {
 
       router.replace('/(tabs)');
     } else {
+      // Commit preferences at every step transition so nothing typed on this
+      // step (partner/children names) can be lost before the final save.
+      supabase
+        .from('profiles')
+        .update({ preferences: prefs as any })
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) console.warn('[onboarding] prefs step-save failed:', error.message);
+        });
       setStep((s) => s + 1);
     }
   };
