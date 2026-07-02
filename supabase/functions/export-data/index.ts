@@ -24,30 +24,68 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error('Unauthorized');
 
-    // Collect all user data
+    // Collect all user data (RLS scopes every query to this user)
     const [
       { data: profile },
       { data: checkins },
       { data: sessions },
       { data: journal },
+      { data: goals },
+      { data: posts },
+      { data: aiConversations },
     ] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', user.id).single(),
       supabase.from('daily_checkins').select('*').eq('user_id', user.id),
       supabase.from('drinking_sessions').select('*').eq('user_id', user.id),
       supabase.from('journal_entries').select('*').eq('user_id', user.id),
+      supabase.from('goals').select('*').eq('user_id', user.id),
+      supabase.from('community_posts').select('*').eq('user_id', user.id),
+      supabase.from('ai_conversations').select('*').eq('user_id', user.id),
     ]);
 
     const exportData = {
       exported_at: new Date().toISOString(),
+      account_email: user.email,
       profile,
       checkins,
       sessions,
       journal,
+      goals,
+      community_posts: posts,
+      ai_conversations: aiConversations,
     };
 
-    // In production: email this to the user's email address
-    // For now, return the data directly
-    return new Response(JSON.stringify(exportData, null, 2), {
+    // If a Resend key is configured, also email the export to the user.
+    const resendKey = Deno.env.get('RESEND_API_KEY');
+    let emailed = false;
+    if (resendKey && user.email) {
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: Deno.env.get('EXPORT_FROM_EMAIL') ?? 'Alchono <onboarding@resend.dev>',
+            to: [user.email],
+            subject: 'Your Alchono data export',
+            text: 'Attached is a full export of your Alchono data in JSON format.\n\nIf you did not request this, you can ignore this email — the data was only sent to your own account address.',
+            attachments: [
+              {
+                filename: `alchono-export-${new Date().toISOString().split('T')[0]}.json`,
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(exportData, null, 2)))),
+              },
+            ],
+          }),
+        });
+        emailed = res.ok;
+      } catch {
+        emailed = false;
+      }
+    }
+
+    return new Response(JSON.stringify({ emailed, data: exportData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

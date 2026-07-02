@@ -255,6 +255,7 @@ export function useBlockUser() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connections', userId] });
+      queryClient.invalidateQueries({ queryKey: ['community-feed'] });
     },
   });
 }

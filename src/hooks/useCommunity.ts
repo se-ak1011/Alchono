@@ -12,20 +12,27 @@ export function useCommunityFeed() {
   return useInfiniteQuery({
     queryKey: ['community-feed'],
     queryFn: async ({ pageParam = 0 }) => {
-      const { data, error } = await supabase
-        .from('community_posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+      const [{ data, error }, { data: blocks }] = await Promise.all([
+        supabase
+          .from('community_posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1),
+        supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
+      ]);
       if (error) throw error;
       if (!data || data.length === 0) return [];
+
+      // Hide posts from people the user has blocked.
+      const blocked = new Set((blocks ?? []).map((b) => b.blocked_id));
+      const visible = data.filter((p) => !blocked.has(p.user_id));
 
       // Usernames only matter for non-anonymous posts; profiles is
       // owner-only under RLS so they come from the public_profiles view.
       const names = await fetchUsernames(
-        data.filter((p) => !p.is_anonymous).map((p) => p.user_id),
+        visible.filter((p) => !p.is_anonymous).map((p) => p.user_id),
       );
-      return data.map((p) => ({
+      return visible.map((p) => ({
         ...p,
         username: p.is_anonymous ? null : names[p.user_id] ?? 'Member',
       }));

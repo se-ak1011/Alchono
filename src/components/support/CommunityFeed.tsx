@@ -6,12 +6,16 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { useCommunityFeed, useCreatePost, useReactToPost } from '@/hooks/useCommunity';
+import { useBlockUser, useReportUser } from '@/hooks/useMessages';
+import { useAuthStore } from '@/store/authStore';
+import { REPORT_REASONS } from '@/types';
 
 const REACTIONS = [
   { key: 'heart' as const, emoji: '❤️' },
@@ -29,10 +33,59 @@ export function CommunityFeed({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommunityFeed();
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
+  const { mutate: blockUser } = useBlockUser();
+  const { mutate: reportUser } = useReportUser();
+  const myUserId = useAuthStore((s) => s.user?.id);
   const [newPost, setNewPost] = useState('');
   const [justPosted, setJustPosted] = useState(false);
 
   const posts = data?.pages.flat() ?? [];
+
+  const showPostActions = (post: { id: string; user_id: string }) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Alert.alert('This post', undefined, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Report post',
+        onPress: () =>
+          Alert.alert('Why are you reporting this?', undefined, [
+            { text: 'Cancel', style: 'cancel' },
+            ...REPORT_REASONS.map((reason) => ({
+              text: reason,
+              onPress: () =>
+                reportUser(
+                  {
+                    reportedUserId: post.user_id,
+                    reason: `[community post ${post.id}] ${reason}`,
+                  },
+                  {
+                    onSuccess: () =>
+                      Alert.alert('Reported', 'Thank you. We will review it.'),
+                    onError: () => Alert.alert('Error', 'Could not send the report.'),
+                  },
+                ),
+            })),
+          ]),
+      },
+      {
+        text: 'Block this poster',
+        style: 'destructive',
+        onPress: () =>
+          Alert.alert(
+            'Block this poster?',
+            "You won't see their posts anymore, and you can't message each other.",
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Block',
+                style: 'destructive',
+                onPress: () => blockUser(post.user_id),
+              },
+            ],
+          ),
+      },
+    ]);
+  };
 
   const handlePost = () => {
     if (!newPost.trim() || isPending) return;
@@ -156,6 +209,11 @@ export function CommunityFeed({
                     })}
                   </Text>
                 </View>
+                {item.user_id !== myUserId && (
+                  <Pressable onPress={() => showPostActions(item)} hitSlop={12}>
+                    <Text className="text-text-muted text-lg">⋯</Text>
+                  </Pressable>
+                )}
               </View>
               <Text className="text-text-primary text-base leading-relaxed mb-4">
                 {item.content}

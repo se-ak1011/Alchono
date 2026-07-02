@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Text, Alert } from 'react-native';
+import { ScrollView, View, Text, Alert, Share, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Avatar } from '@/components/ui/Avatar';
@@ -78,16 +78,23 @@ export default function ProfileScreen() {
   const handleExportData = async () => {
     Alert.alert(
       'Export data',
-      'Your data will be prepared and sent to your email address.',
+      'A full copy of your data will be prepared. You can save or share it however you like.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Export',
           onPress: async () => {
-            await supabase.functions.invoke('export-data', {
+            const { data, error } = await supabase.functions.invoke('export-data', {
               body: { userId: user?.id },
             });
-            Alert.alert('Done', 'Check your email in a few minutes.');
+            if (error || !data?.data) {
+              Alert.alert('Error', 'Could not prepare your export. Please try again.');
+              return;
+            }
+            await Share.share({
+              title: 'Alchono data export',
+              message: JSON.stringify(data.data, null, 2),
+            });
           },
         },
       ],
@@ -147,6 +154,11 @@ export default function ProfileScreen() {
             {
               label: 'Export my data',
               onPress: handleExportData,
+            },
+            {
+              label: 'Privacy policy',
+              onPress: () =>
+                Linking.openURL('https://se-ak1011.github.io/Alchono/privacy.html'),
             },
           ]}
         />
