@@ -173,6 +173,10 @@ export default function ProfileScreen() {
                 label: 'Reports & disputes',
                 onPress: () => router.push('/admin/reports'),
               },
+              {
+                label: 'Good feed videos',
+                onPress: () => router.push('/admin/good-feed'),
+              },
             ]}
           />
         )}

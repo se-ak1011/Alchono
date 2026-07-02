@@ -59,19 +59,26 @@ function MorningReflectionPrompt() {
 function DailyGameCard() {
   const router = useRouter();
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4 flex-row gap-3">
       <Pressable
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/session/games');
         }}
-        className="flex-row items-center justify-between px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+        className="flex-1 px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
       >
-        <View>
-          <Text className="text-text-secondary text-base font-medium">Games</Text>
-          <Text className="text-text-muted text-sm mt-0.5">3–5 minutes. Give your mind something else.</Text>
-        </View>
-        <Text className="text-text-muted text-base">→</Text>
+        <Text className="text-text-secondary text-base font-medium">Games</Text>
+        <Text className="text-text-muted text-sm mt-0.5">Give your mind something else.</Text>
+      </Pressable>
+      <Pressable
+        onPress={async () => {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/session/good-feed');
+        }}
+        className="flex-1 px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+      >
+        <Text className="text-text-secondary text-base font-medium">Something good</Text>
+        <Text className="text-text-muted text-sm mt-0.5">Today's feel-good picks.</Text>
       </Pressable>
     </Animated.View>
   );

@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { View, Text, Pressable, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,8 +14,18 @@ const CELL_SIZE = Math.min(
   40,
   Math.floor((Dimensions.get('window').width - 16) / GRID_SIZE),
 );
-const WORDS = ['CALM', 'HOPE', 'FREE', 'PEACE', 'BRAVE', 'CLEAR', 'STILL', 'REST'];
+
+// No list to complete — the grid is quietly full of these. You just find.
+const HAPPY_WORDS = [
+  'CALM', 'HOPE', 'FREE', 'PEACE', 'BRAVE', 'CLEAR', 'STILL', 'REST',
+  'JOY', 'KIND', 'WARM', 'LIGHT', 'SMILE', 'LAUGH', 'HAPPY', 'GROW',
+  'HEAL', 'ALIVE', 'SHINE', 'BLOOM', 'DREAM', 'TRUST', 'GRACE', 'EASY',
+  'SOFT', 'STRONG', 'PROUD', 'LOVED', 'SAFE', 'HOME', 'SUNNY', 'GLOW',
+  'RISE', 'DANCE', 'MUSIC', 'OCEAN', 'RIVER', 'BREEZE', 'SPRING', 'GOLD',
+];
+const MAX_PLACED = 12;
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const DICTIONARY = new Set(HAPPY_WORDS);
 
 function seededRng(seed: number) {
   let s = ((seed >>> 0) || 1) & 0xffffffff;
@@ -25,23 +35,21 @@ function seededRng(seed: number) {
   };
 }
 
-type WordEntry = { word: string; row: number; col: number; horizontal: boolean };
-
-function buildGrid(seed: number): { cells: string[][]; entries: WordEntry[] } {
+function buildGrid(seed: number): string[][] {
   const rng = seededRng(seed);
   const cells: string[][] = Array.from({ length: GRID_SIZE }, () =>
     Array(GRID_SIZE).fill(''),
   );
-  const entries: WordEntry[] = [];
-  const shuffled = [...WORDS].sort(() => rng() - 0.5);
+  const shuffled = [...HAPPY_WORDS].sort(() => rng() - 0.5);
+  let placed = 0;
 
   for (const word of shuffled) {
-    let placed = false;
-    for (let attempt = 0; attempt < 120 && !placed; attempt++) {
+    if (placed >= MAX_PLACED) break;
+    for (let attempt = 0; attempt < 120; attempt++) {
       const horizontal = rng() > 0.5;
       const maxRow = horizontal ? GRID_SIZE - 1 : GRID_SIZE - word.length;
       const maxCol = horizontal ? GRID_SIZE - word.length : GRID_SIZE - 1;
-      if (maxRow < 0 || maxCol < 0) continue;
+      if (maxRow < 0 || maxCol < 0) break;
       const row = Math.floor(rng() * (maxRow + 1));
       const col = Math.floor(rng() * (maxCol + 1));
       let ok = true;
@@ -59,8 +67,8 @@ function buildGrid(seed: number): { cells: string[][]; entries: WordEntry[] } {
           const c = horizontal ? col + i : col;
           cells[r][c] = word[i];
         }
-        entries.push({ word, row, col, horizontal });
-        placed = true;
+        placed++;
+        break;
       }
     }
   }
@@ -72,7 +80,7 @@ function buildGrid(seed: number): { cells: string[][]; entries: WordEntry[] } {
       }
     }
   }
-  return { cells, entries };
+  return cells;
 }
 
 function posToCell(x: number, y: number): [number, number] | null {
@@ -90,16 +98,12 @@ function pathBetween(
   const [r2, c2] = end;
   if (r1 === r2) {
     const cells: [number, number][] = [];
-    const minC = Math.min(c1, c2);
-    const maxC = Math.max(c1, c2);
-    for (let c = minC; c <= maxC; c++) cells.push([r1, c]);
+    for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) cells.push([r1, c]);
     return cells;
   }
   if (c1 === c2) {
     const cells: [number, number][] = [];
-    const minR = Math.min(r1, r2);
-    const maxR = Math.max(r1, r2);
-    for (let r = minR; r <= maxR; r++) cells.push([r, c1]);
+    for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) cells.push([r, c1]);
     return cells;
   }
   return [start];
@@ -109,15 +113,17 @@ export default function WordSearchScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const today = Math.floor(Date.now() / 86400000);
-  const { cells, entries } = useMemo(() => buildGrid(today), [today]);
 
-  const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
+  const [gridIndex, setGridIndex] = useState(0);
+  const cells = useMemo(() => buildGrid(today + gridIndex * 7919), [today, gridIndex]);
+
+  const [foundWords, setFoundWords] = useState<string[]>([]);
   const [foundCells, setFoundCells] = useState<Set<string>>(new Set());
   const [selCells, setSelCells] = useState<Set<string>>(new Set());
 
   const selStartRef = useRef<[number, number] | null>(null);
   const selEndRef = useRef<[number, number] | null>(null);
-  const foundWordsRef = useRef<Set<string>>(new Set());
+  const foundWordsRef = useRef<string[]>([]);
   const foundCellsRef = useRef<Set<string>>(new Set());
 
   const onGestureBegin = useCallback((x: number, y: number) => {
@@ -144,15 +150,18 @@ export default function WordSearchScreen() {
 
     if (start && end) {
       const path = pathBetween(start, end);
-      if (path.length >= 2) {
+      if (path.length >= 3) {
         const word = path.map(([r, c]) => cells[r][c]).join('');
         const reversed = [...word].reverse().join('');
-        const match = WORDS.find(
-          (w) => !foundWordsRef.current.has(w) && (w === word || w === reversed),
-        );
+        const match =
+          DICTIONARY.has(word) && !foundWordsRef.current.includes(word)
+            ? word
+            : DICTIONARY.has(reversed) && !foundWordsRef.current.includes(reversed)
+              ? reversed
+              : null;
         if (match) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          const nw = new Set([...foundWordsRef.current, match]);
+          const nw = [...foundWordsRef.current, match];
           foundWordsRef.current = nw;
           const nc = new Set([
             ...foundCellsRef.current,
@@ -186,8 +195,15 @@ export default function WordSearchScreen() {
     [onGestureBegin, onGestureUpdate, onGestureEnd],
   );
 
-  const placedWords = WORDS.filter((w) => entries.some((e) => e.word === w));
-  const allFound = foundWords.size >= placedWords.length && placedWords.length > 0;
+  const newGrid = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setGridIndex((i) => i + 1);
+    setFoundWords([]);
+    setFoundCells(new Set());
+    setSelCells(new Set());
+    foundWordsRef.current = [];
+    foundCellsRef.current = new Set();
+  };
 
   return (
     <View
@@ -222,56 +238,13 @@ export default function WordSearchScreen() {
               ...headingShadow,
             }}
           >
-            {allFound ? 'All found.' : 'Daily word search.'}
+            Find the good words.
           </Text>
           <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
-            {allFound
-              ? 'Good. Keep going.'
-              : `${foundWords.size} of ${placedWords.length} found — drag to select`}
+            No list. No clock. They're in there — drag when you spot one.
           </Text>
         </View>
       </Animated.View>
-
-      {/* Word chips */}
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: 8,
-          paddingHorizontal: 24,
-          marginBottom: 24,
-        }}
-      >
-        {placedWords.map((word, i) => {
-          const found = foundWords.has(word);
-          return (
-            <Animated.View
-              key={word}
-              entering={FadeInDown.duration(300).delay(i * 40)}
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 7,
-                borderRadius: 8,
-                backgroundColor: found ? '#1E2022' : '#161718',
-                borderWidth: 1,
-                borderColor: found ? 'rgba(196,201,208,0.2)' : 'rgba(255,255,255,0.05)',
-              }}
-            >
-              <Text
-                style={{
-                  color: found ? '#6B7280' : '#F0F2F4',
-                  fontSize: 14,
-                  fontFamily: 'Inter_600SemiBold',
-                  letterSpacing: 1.5,
-                  textDecorationLine: found ? 'line-through' : 'none',
-                }}
-              >
-                {word}
-              </Text>
-            </Animated.View>
-          );
-        })}
-      </View>
 
       {/* Grid */}
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -306,11 +279,7 @@ export default function WordSearchScreen() {
                     >
                       <Text
                         style={{
-                          color: isFound
-                            ? '#C4C9D0'
-                            : isSel
-                              ? '#D0D5DC'
-                              : '#3D4450',
+                          color: isFound ? '#C4C9D0' : isSel ? '#D0D5DC' : '#3D4450',
                           fontSize: 17,
                           fontFamily: 'Inter_600SemiBold',
                         }}
@@ -324,45 +293,87 @@ export default function WordSearchScreen() {
             ))}
           </View>
         </GestureDetector>
-      </View>
 
-      {/* Footer */}
-      <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8 }}>
-        {allFound ? (
-          <Animated.View entering={FadeIn.duration(400)}>
-            <Pressable
-              onPress={() => router.push('/session/post-game')}
+        {/* What you've found so far — a quiet trail, not a checklist */}
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 8,
+            paddingHorizontal: 24,
+            marginTop: 20,
+            justifyContent: 'center',
+            minHeight: 34,
+          }}
+        >
+          {foundWords.map((word) => (
+            <Animated.View
+              key={word}
+              entering={FadeIn.duration(300)}
               style={{
-                backgroundColor: '#C4C9D0',
-                borderRadius: 18,
-                paddingVertical: 18,
-                alignItems: 'center',
+                paddingHorizontal: 12,
+                paddingVertical: 7,
+                borderRadius: 8,
+                backgroundColor: '#1E2022',
+                borderWidth: 1,
+                borderColor: 'rgba(196,201,208,0.2)',
               }}
             >
               <Text
                 style={{
-                  color: '#0E0F10',
-                  fontSize: 17,
+                  color: '#C4C9D0',
+                  fontSize: 14,
                   fontFamily: 'Inter_600SemiBold',
+                  letterSpacing: 1.5,
                 }}
               >
-                Done
+                {word}
               </Text>
-            </Pressable>
-          </Animated.View>
-        ) : (
-          <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Text
-              style={{
-                color: '#6B7280',
-                fontSize: 15,
-                textAlign: 'center',
-              }}
-            >
-              Back
-            </Text>
-          </Pressable>
-        )}
+            </Animated.View>
+          ))}
+        </View>
+      </View>
+
+      {/* Footer */}
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 12,
+          paddingHorizontal: 24,
+          paddingTop: 16,
+          paddingBottom: 8,
+        }}
+      >
+        <Pressable
+          onPress={newGrid}
+          style={{
+            flex: 1,
+            backgroundColor: '#161718',
+            borderRadius: 18,
+            paddingVertical: 16,
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.08)',
+          }}
+        >
+          <Text style={{ color: '#9CA3AF', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
+            New grid
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            flex: 1,
+            backgroundColor: '#C4C9D0',
+            borderRadius: 18,
+            paddingVertical: 16,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#0E0F10', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
+            Done
+          </Text>
+        </Pressable>
       </View>
     </View>
   );

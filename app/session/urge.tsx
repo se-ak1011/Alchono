@@ -65,6 +65,12 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     navigate: '/(tabs)/support',
   });
   list.push({
+    id: 'good',
+    label: 'Watch something good',
+    subtitle: "Ninety seconds of the internet at its best.",
+    navigate: '/session/good-feed',
+  });
+  list.push({
     id: 'game',
     label: 'Play a game',
     subtitle: 'Give your mind something else to do.',

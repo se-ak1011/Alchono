@@ -350,6 +350,29 @@ export interface Database {
           read_at?: string | null;
         };
       };
+      good_feed: {
+        Row: {
+          id: string;
+          youtube_id: string;
+          title: string;
+          category: string;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          youtube_id: string;
+          title: string;
+          category?: string;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+          category?: string;
+          active?: boolean;
+        };
+      };
       urge_events: {
         Row: {
           id: string;

@@ -22,11 +22,11 @@ const GAMES = [
     symbol: '◉',
   },
   {
-    id: 'words',
-    route: '/session/word-search',
-    name: 'Word Search',
-    desc: 'Find the words. One drag at a time.',
-    symbol: '◇',
+    id: 'odd',
+    route: '/session/odd-one-out',
+    name: 'Odd One Out',
+    desc: 'One shade is different. Find it.',
+    symbol: '◎',
   },
   {
     id: 'colour',
@@ -157,6 +157,44 @@ export default function GamesScreen() {
           ))}
         </View>
       </View>
+
+      {/* Decompress — not a game, no score, no end */}
+      <Animated.View entering={FadeInDown.duration(300).delay(360)} style={{ paddingHorizontal: 24, marginTop: 14 }}>
+        <Pressable
+          onPress={async () => {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.push('/session/word-search' as any);
+          }}
+          style={{
+            backgroundColor: '#161718',
+            borderRadius: 22,
+            padding: 22,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.08)',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 16,
+          }}
+        >
+          <Text style={{ color: '#3D4450', fontSize: 30 }}>◇</Text>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: '#F0F2F4',
+                fontSize: 17,
+                fontFamily: 'Inter_600SemiBold',
+                marginBottom: 5,
+              }}
+            >
+              Word Search
+            </Text>
+            <Text style={{ color: '#6B7280', fontSize: 14, lineHeight: 19 }}>
+              No list, no clock. Happy words are hiding — just look.
+            </Text>
+          </View>
+          <Text style={{ color: '#6B7280', fontSize: 16 }}>→</Text>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }
