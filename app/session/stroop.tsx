@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Dimensions } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -18,7 +18,13 @@ const COLORS = [
 type ColorEntry = typeof COLORS[number];
 
 const TOTAL_ROUNDS = 20;
-const CIRCLE_SIZE = 72;
+// 4 circles + 3 gaps must fit inside the screen minus 24px padding each side.
+// At 72px fixed, the row was 348px + 48px padding = wider than most phones.
+const CIRCLE_GAP = 16;
+const CIRCLE_SIZE = Math.min(
+  72,
+  Math.floor((Dimensions.get('window').width - 48 - CIRCLE_GAP * 3) / 4),
+);
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -252,7 +258,7 @@ export default function StroopScreen() {
           <Animated.View
             key={`options-${round}`}
             entering={FadeIn.duration(150)}
-            style={{ flexDirection: 'row', gap: 20 }}
+            style={{ flexDirection: 'row', gap: CIRCLE_GAP }}
           >
             {current.options.map((hex) => {
               const isSelected = selected === hex;

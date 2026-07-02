@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -9,7 +9,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
 const GRID_SIZE = 9;
-const CELL_SIZE = 40;
+// Fit the 9-column grid with at least 8px breathing room on narrow screens.
+const CELL_SIZE = Math.min(
+  40,
+  Math.floor((Dimensions.get('window').width - 16) / GRID_SIZE),
+);
 const WORDS = ['CALM', 'HOPE', 'FREE', 'PEACE', 'BRAVE', 'CLEAR', 'STILL', 'REST'];
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 

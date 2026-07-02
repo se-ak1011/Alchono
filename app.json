@@ -20,7 +20,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "Alchono uses camera for profile photos.",
-        "NSPhotoLibraryUsageDescription": "Alchono uses photo library for profile photos."
+        "NSPhotoLibraryUsageDescription": "Alchono uses photo library for profile photos.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
         "aps-environment": "production"

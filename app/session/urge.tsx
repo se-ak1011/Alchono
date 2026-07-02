@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
@@ -74,6 +75,7 @@ function buildActions(prefs: UserPreferences | null): Action[] {
 
 export default function UrgeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { profile } = useAuthStore();
   const { mutate: startSession } = useStartSession();
   const prefs = (profile as any)?.preferences as UserPreferences | null;
@@ -136,7 +138,7 @@ export default function UrgeScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 48 }}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -248,17 +250,6 @@ export default function UrgeScreen() {
                 );
               })}
             </View>
-
-            <Button
-              title="Continue"
-              variant="primary"
-              size="lg"
-              fullWidth
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setPhase('decision');
-              }}
-            />
           </Animated.View>
         )}
 
@@ -319,6 +310,28 @@ export default function UrgeScreen() {
           </Animated.View>
         )}
       </ScrollView>
+
+      {/* Pinned footer — Continue must never sit below the fold */}
+      {phase === 'actions' && (
+        <View
+          style={{
+            paddingHorizontal: 24,
+            paddingTop: 12,
+            paddingBottom: insets.bottom + 12,
+          }}
+        >
+          <Button
+            title="Continue"
+            variant="primary"
+            size="lg"
+            fullWidth
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setPhase('decision');
+            }}
+          />
+        </View>
+      )}
     </SafeArea>
   );
 }
