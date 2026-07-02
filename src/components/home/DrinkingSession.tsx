@@ -195,13 +195,13 @@ export function DrinkingSession() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               startSession();
             }}
-            className="flex-row items-center gap-4 bg-surface rounded-xl px-4 py-4 border border-white/15 active:border-white/30"
+            className="flex-row items-center gap-4 bg-surface rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
           >
             {isStarting
               ? <Text className="text-text-muted text-base">Starting…</Text>
               : <>
-                  <Text className="text-text-secondary text-sm w-3">●</Text>
-                  <Text className="text-text-primary text-base font-medium">
+                  <Text className="text-text-muted text-sm w-3">○</Text>
+                  <Text className="text-text-secondary text-base font-medium">
                     Already drinking
                   </Text>
                 </>

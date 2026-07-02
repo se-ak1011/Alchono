@@ -53,7 +53,17 @@ export default function ProfileScreen() {
               body: { userId: user?.id },
             });
             if (error) {
-              Alert.alert('Error', 'Could not delete your account. Please try again or contact support.');
+              // Try to extract the body the edge function returned (400 responses
+              // come back as FunctionsHttpError; the real message is in the body).
+              let detail = error.message ?? 'Unknown error';
+              try {
+                const body = await (error as any).context?.json?.();
+                if (body?.error) detail = body.error;
+              } catch {}
+              Alert.alert(
+                'Could not delete account',
+                `${detail}\n\nIf this keeps happening, the delete-account Edge Function may need to be deployed or the SUPABASE_SERVICE_ROLE_KEY secret may not be set.`,
+              );
               return;
             }
             clearAllState();

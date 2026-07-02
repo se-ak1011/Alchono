@@ -11,11 +11,15 @@ export function useActiveSession() {
   return useQuery({
     queryKey: ['active-session', userId],
     queryFn: async () => {
+      // Order + limit so we always get the latest active session even if a
+      // previous one was never ended (avoids PGRST116 from maybeSingle).
       const { data } = await supabase
         .from('drinking_sessions')
         .select('*')
         .eq('user_id', userId!)
         .is('ended_at', null)
+        .order('started_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
       setActiveSession(data?.id ?? null);
       return data;
