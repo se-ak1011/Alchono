@@ -75,7 +75,13 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
       {/* Urge quick-action — always visible, above input */}
       <Pressable
         onPress={handleUrge}
-        className="mx-4 mb-2 flex-row items-center justify-between bg-surface-2 rounded-xl px-5 py-4 border border-white/10 active:border-white/25"
+        className="mx-4 mb-2 flex-row items-center justify-between bg-urge-surface rounded-xl px-5 py-4 border border-white/10 active:border-white/25"
+        style={{
+          shadowColor: '#120D17',
+          shadowOpacity: 0.8,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: 5 },
+        }}
       >
         <Text className="text-text-primary text-base font-medium">
           I'm having an urge right now

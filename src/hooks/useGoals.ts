@@ -69,6 +69,11 @@ export function useDeleteGoal() {
 
 export function formatTargetDate(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00');
+  // Day 1 is the month-only convention (see MonthYearPicker); a specific
+  // day was chosen only when the date is past the 1st.
+  if (d.getDate() > 1) {
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
   return d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 }
 

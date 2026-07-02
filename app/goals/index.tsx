@@ -33,25 +33,44 @@ function MonthYearPicker({
   onChange: (v: string | null) => void;
 }) {
   const now = new Date();
-  const [month, setMonth] = useState<number | null>(value ? new Date(value + 'T12:00:00').getMonth() : null);
-  const [year, setYear] = useState(value ? new Date(value + 'T12:00:00').getFullYear() : now.getFullYear());
+  const initial = value ? new Date(value + 'T12:00:00') : null;
+  const [month, setMonth] = useState<number | null>(initial ? initial.getMonth() : null);
+  const [year, setYear] = useState(initial ? initial.getFullYear() : now.getFullYear());
+  // Day 1 is the "month-only" convention, so treat it as no day chosen.
+  const [day, setDay] = useState<number | null>(
+    initial && initial.getDate() > 1 ? initial.getDate() : null,
+  );
 
-  const commit = (m: number | null, y: number) => {
+  const commit = (m: number | null, y: number, d: number | null) => {
     if (m === null) { onChange(null); return; }
     const mm = String(m + 1).padStart(2, '0');
-    onChange(`${y}-${mm}-01`);
+    const dd = String(d ?? 1).padStart(2, '0');
+    onChange(`${y}-${mm}-${dd}`);
   };
+
+  const daysInMonth = month !== null ? new Date(year, month + 1, 0).getDate() : 0;
 
   const adjustYear = (delta: number) => {
     const next = year + delta;
     setYear(next);
-    commit(month, next);
+    const safeDay = day && day <= new Date(next, (month ?? 0) + 1, 0).getDate() ? day : null;
+    setDay(safeDay);
+    commit(month, next, safeDay);
   };
 
   const selectMonth = (m: number) => {
     const next = month === m ? null : m;
     setMonth(next);
-    commit(next, year);
+    const safeDay =
+      next !== null && day && day <= new Date(year, next + 1, 0).getDate() ? day : null;
+    setDay(next === null ? null : safeDay);
+    commit(next, year, safeDay);
+  };
+
+  const selectDay = (d: number) => {
+    const next = day === d ? null : d;
+    setDay(next);
+    commit(month, year, next);
   };
 
   return (
@@ -88,8 +107,43 @@ function MonthYearPicker({
         })}
       </View>
 
+      {/* Day grid — optional, shown once a month is picked */}
+      {month !== null && (
+        <View style={{ marginTop: 14 }}>
+          <Text className="text-text-muted text-xs mb-2">
+            Day (optional{day ? '' : ' — leave blank for the whole month'})
+          </Text>
+          <View className="flex-row flex-wrap" style={{ gap: 5 }}>
+            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
+              const selected = day === d;
+              return (
+                <Pressable
+                  key={d}
+                  onPress={() => selectDay(d)}
+                  style={{ width: 38, height: 34 }}
+                  className={`items-center justify-center rounded-lg border ${
+                    selected ? 'bg-surface-2 border-white/20' : 'border-white/8'
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-medium ${
+                      selected ? 'text-text-primary' : 'text-text-muted'
+                    }`}
+                  >
+                    {d}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      )}
+
       {value && (
-        <Pressable onPress={() => { setMonth(null); onChange(null); }} className="mt-3 items-center">
+        <Pressable
+          onPress={() => { setMonth(null); setDay(null); onChange(null); }}
+          className="mt-3 items-center"
+        >
           <Text className="text-text-muted text-xs">Clear date</Text>
         </Pressable>
       )}

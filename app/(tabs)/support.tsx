@@ -12,12 +12,6 @@ import { useUnreadTotal } from '@/hooks/useMessages';
 
 type Tab = 'coach' | 'community' | 'mentors' | 'resources';
 
-const SUPPORT_STATES = [
-  { key: 'talk',     label: 'Just need to talk',  tab: 'coach' as Tab },
-  { key: 'drinking', label: 'Drinking now',        tab: 'coach' as Tab },
-  { key: 'through',  label: 'Got through it',      tab: 'community' as Tab },
-] as const;
-
 const TABS: { key: Tab; label: string }[] = [
   { key: 'coach',     label: 'AI Coach' },
   { key: 'community', label: 'Community' },
@@ -28,14 +22,7 @@ const TABS: { key: Tab; label: string }[] = [
 export default function SupportScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('coach');
-  const [activeState, setActiveState] = useState<string | null>(null);
   const { data: unread } = useUnreadTotal();
-
-  const handleStateSelect = (state: typeof SUPPORT_STATES[number]) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveState(state.key);
-    setActiveTab(state.tab);
-  };
 
   return (
     <SafeArea bottom={false}>
@@ -71,7 +58,13 @@ export default function SupportScreen() {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
           router.push('/session/urge');
         }}
-        className="mx-6 mb-5 flex-row items-center justify-between bg-surface-2 rounded-2xl px-5 py-5 border border-white/15 active:border-white/35"
+        className="mx-6 mb-5 flex-row items-center justify-between bg-urge-surface rounded-2xl px-5 py-5 border border-white/15 active:border-white/35"
+        style={{
+          shadowColor: '#120D17',
+          shadowOpacity: 0.8,
+          shadowRadius: 10,
+          shadowOffset: { width: 0, height: 5 },
+        }}
       >
         <View className="flex-1">
           <Text className="text-text-primary text-base font-semibold">
@@ -83,34 +76,6 @@ export default function SupportScreen() {
         </View>
         <Text className="text-text-muted text-lg">→</Text>
       </Pressable>
-
-      {/* What else is happening */}
-      <View className="px-6 mb-4">
-        <Text className="text-text-muted text-sm font-medium tracking-wide uppercase mb-3">
-          Right now?
-        </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {SUPPORT_STATES.map((state) => (
-            <Pressable
-              key={state.key}
-              onPress={() => handleStateSelect(state)}
-              className={`px-4 py-3 rounded-xl border ${
-                activeState === state.key
-                  ? 'bg-surface border-white/25'
-                  : 'bg-surface border-white/8'
-              }`}
-            >
-              <Text
-                className={`text-base font-medium ${
-                  activeState === state.key ? 'text-text-primary' : 'text-text-muted'
-                }`}
-              >
-                {state.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
 
       {/* Sub-navigation */}
       <View className="flex-row mx-6 mb-4 bg-surface rounded-xl p-1">
