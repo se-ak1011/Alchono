@@ -133,6 +133,16 @@ export default function ProfileScreen() {
         <NotificationSettings />
 
         <SettingsSection
+          title="About you"
+          items={[
+            {
+              label: 'My circumstances (family, work, location)',
+              onPress: () => router.push('/profile/preferences'),
+            },
+          ]}
+        />
+
+        <SettingsSection
           title="Community"
           items={[
             {

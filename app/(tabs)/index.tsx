@@ -13,6 +13,7 @@ import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useYesterdaySession } from '@/hooks/useJournal';
 import { useAppStore } from '@/store/appStore';
+import { useAuthStore } from '@/store/authStore';
 
 function MorningReflectionPrompt() {
   const { data: yesterdaySession } = useYesterdaySession();
@@ -86,6 +87,10 @@ function DailyGameCard() {
 
 function SwapsCard() {
   const router = useRouter();
+  const profile = useAuthStore((s) => s.profile);
+  const interested = (profile?.preferences as any)?.interestedInAlternatives === true;
+  // Only for people who opted in — 0.0 drinks can be a trigger for others.
+  if (!interested) return null;
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Pressable

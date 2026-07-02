@@ -9,6 +9,7 @@ import { AiCoachChat } from '@/components/support/AiCoachChat';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { MentorList } from '@/components/support/MentorList';
 import { useUnreadTotal } from '@/hooks/useMessages';
+import { useAuthStore } from '@/store/authStore';
 
 type Tab = 'coach' | 'community' | 'mentors' | 'resources';
 
@@ -213,21 +214,27 @@ const RESOURCE_SECTIONS: { heading: string; items: Resource[] }[] = [
       },
     ],
   },
-  {
-    heading: 'Swap, don’t fight',
-    items: [
-      {
-        title: 'Alcohol-free alternatives',
-        description: 'Same ritual, same glass, zero alcohol — 0.0 beers, spirits, and fizz that actually taste right.',
-        action: 'See the list',
-        url: 'internal:/swaps',
-      },
-    ],
-  },
 ];
+
+const SWAPS_SECTION = {
+  heading: 'Swap, don’t fight',
+  items: [
+    {
+      title: 'Alcohol-free alternatives',
+      description: 'Same ritual, same glass, zero alcohol — 0.0 beers, spirits, and fizz that actually taste right.',
+      action: 'See the list',
+      url: 'internal:/swaps',
+    },
+  ],
+};
 
 function ResourcesTab() {
   const router = useRouter();
+  const profile = useAuthStore((s) => s.profile);
+  const interested = (profile?.preferences as any)?.interestedInAlternatives === true;
+  const sections = interested
+    ? [...RESOURCE_SECTIONS, SWAPS_SECTION]
+    : RESOURCE_SECTIONS;
   return (
     <ScrollView
       contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
@@ -239,7 +246,7 @@ function ResourcesTab() {
           local emergency services are always the right first call.
         </Text>
 
-        {RESOURCE_SECTIONS.map((section) => (
+        {sections.map((section) => (
           <View key={section.heading} className="mb-6">
             <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
               {section.heading}
