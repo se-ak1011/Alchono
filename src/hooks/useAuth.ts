@@ -82,11 +82,19 @@ export function useAuthListener() {
       // Logged-in user with no profile row (deleted during testing, or the
       // signup trigger failed). Recreate it so every FK-dependent write
       // (goals, sessions, posts) works again.
-      const { data: created } = await supabase
+      const { data: created, error: healError } = await supabase
         .from('profiles')
         .upsert({ id: userId }, { onConflict: 'id' })
         .select()
         .maybeSingle();
+
+      // FK violation here means the auth user itself no longer exists
+      // (account wiped server-side while this device kept its token).
+      // The session is a zombie — kill it so the user lands on login.
+      if (healError?.code === '23503') {
+        await supabase.auth.signOut().catch(() => {});
+        return;
+      }
       setProfile(created ?? null);
     } catch {
       // Non-fatal — user can still reach the app, profile loads on next nav
