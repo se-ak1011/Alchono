@@ -26,6 +26,17 @@ type Action = { id: string; label: string; subtitle: string; navigate?: string }
 function buildActions(prefs: UserPreferences | null): Action[] {
   const list: Action[] = [];
 
+  // 1. The swap — same ritual, zero alcohol (only for those who opted in)
+  if (prefs?.interestedInAlternatives) {
+    list.push({
+      id: 'swap',
+      label: 'Swap it, don’t fight it',
+      subtitle: 'Same ritual, zero alcohol. See what works.',
+      navigate: '/swaps',
+    });
+  }
+
+  // 2. Their people
   if (prefs?.familyMembers?.includes('partner')) {
     const name = prefs.partnerName?.trim();
     list.push({
@@ -56,35 +67,31 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     });
   }
 
-  list.push({ id: 'water', label: 'Drink a glass of water', subtitle: 'Just that. Nothing else.' });
-  list.push({ id: 'walk', label: 'Step outside for 5 minutes', subtitle: 'Movement breaks the moment.' });
-  list.push({
-    id: 'talk',
-    label: 'Talk to someone (human or not)',
-    subtitle: 'The AI is always awake. Your mentor might be too.',
-    navigate: '/(tabs)/support',
-  });
-  list.push({
-    id: 'good',
-    label: 'Watch something good',
-    subtitle: "Ninety seconds of the internet at its best.",
-    navigate: '/session/good-feed',
-  });
-
-  if (prefs?.interestedInAlternatives) {
-    list.push({
-      id: 'swap',
-      label: 'Swap it, don’t fight it',
-      subtitle: 'Same ritual, zero alcohol. See what works.',
-      navigate: '/swaps',
-    });
-  }
+  // 3. Games
   list.push({
     id: 'game',
     label: 'Play a game',
     subtitle: 'Give your mind something else to do.',
     navigate: '/session/games',
   });
+
+  // 4. A human (or not)
+  list.push({
+    id: 'talk',
+    label: 'Talk to someone (human or not)',
+    subtitle: 'The AI is always awake. Your mentor might be too.',
+    navigate: '/(tabs)/support',
+  });
+
+  // 5. The rest
+  list.push({
+    id: 'good',
+    label: 'Watch something good',
+    subtitle: "Ninety seconds of the internet at its best.",
+    navigate: '/session/good-feed',
+  });
+  list.push({ id: 'water', label: 'Drink a glass of water', subtitle: 'Just that. Nothing else.' });
+  list.push({ id: 'walk', label: 'Step outside for 5 minutes', subtitle: 'Movement breaks the moment.' });
 
   return list;
 }
