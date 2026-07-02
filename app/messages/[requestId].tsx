@@ -13,6 +13,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Avatar } from '@/components/ui/Avatar';
+import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
 import {
   useThreadMessages,
@@ -21,24 +22,62 @@ import {
   useBlockUser,
   useReportUser,
 } from '@/hooks/useMessages';
+import {
+  useDmMessages,
+  useSendDmMessage,
+  useMarkDmThreadRead,
+  useDmThreadMeta,
+  useRespondToDmRequest,
+  DM_REQUEST_LIMIT,
+} from '@/hooks/useDirectMessages';
 import { REPORT_REASONS } from '@/types';
 import type { Message } from '@/types';
 
 export default function ThreadScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { requestId, username, otherUserId } = useLocalSearchParams<{
+  const { requestId, username, otherUserId, type } = useLocalSearchParams<{
     requestId: string;
     username?: string;
     otherUserId?: string;
+    type?: string;
   }>();
   const userId = useAuthStore((s) => s.user?.id);
+  const isDm = type === 'dm';
 
-  const { data: messages } = useThreadMessages(requestId);
-  const { mutate: send, isPending: isSending } = useSendMessage(requestId);
-  const { mutate: markRead } = useMarkThreadRead(requestId);
+  // Both hook families no-op when their id is undefined.
+  const mentorMessages = useThreadMessages(isDm ? undefined : requestId);
+  const dmMessages = useDmMessages(isDm ? requestId : undefined);
+  const { mutate: sendMentor, isPending: sendingMentor } = useSendMessage(
+    isDm ? undefined : requestId,
+  );
+  const { mutate: sendDm, isPending: sendingDm } = useSendDmMessage(
+    isDm ? requestId : undefined,
+  );
+  const { mutate: markMentorRead } = useMarkThreadRead(isDm ? undefined : requestId);
+  const { mutate: markDmRead } = useMarkDmThreadRead(isDm ? requestId : undefined);
+  const { data: dmThread } = useDmThreadMeta(isDm ? requestId : undefined);
+  const { mutate: respondDm, isPending: respondingDm } = useRespondToDmRequest();
   const { mutate: blockUser } = useBlockUser();
   const { mutate: reportUser } = useReportUser();
+
+  const messages = (isDm ? dmMessages.data : mentorMessages.data) as
+    | Message[]
+    | undefined;
+  const send = isDm ? sendDm : sendMentor;
+  const isSending = isDm ? sendingDm : sendingMentor;
+  const markRead = isDm ? markDmRead : markMentorRead;
+
+  // Request-model state (DM only)
+  const dmPending = isDm && dmThread?.status === 'pending';
+  const dmDeclined = isDm && dmThread?.status === 'declined';
+  const iAmDmRequester = isDm && dmThread?.requester_id === userId;
+  const myPendingSent = dmPending
+    ? (messages ?? []).filter((m) => m.sender_id === userId).length
+    : 0;
+  const requestExhausted = dmPending && iAmDmRequester && myPendingSent >= DM_REQUEST_LIMIT;
+  const composerLocked =
+    dmDeclined || (dmPending && !iAmDmRequester) || requestExhausted;
 
   const [draft, setDraft] = useState('');
   const listRef = useRef<FlatList>(null);
@@ -77,7 +116,13 @@ export default function ThreadScreen() {
           onPress: () => {
             if (!otherUserId) return;
             reportUser(
-              { reportedUserId: otherUserId, requestId, reason },
+              // reports.request_id has a FK to mentor_requests, so DM thread
+              // context travels in the reason text instead.
+              {
+                reportedUserId: otherUserId,
+                requestId: isDm ? undefined : requestId,
+                reason: isDm ? `[dm thread ${requestId}] ${reason}` : reason,
+              },
               {
                 onSuccess: () =>
                   Alert.alert('Reported', 'Thank you. We will look into it.'),
@@ -165,6 +210,37 @@ export default function ThreadScreen() {
           </Pressable>
         </View>
 
+        {/* DM request banner — recipient decides right here too */}
+        {dmPending && !iAmDmRequester && (
+          <View className="mx-4 mt-3 bg-surface rounded-2xl px-5 py-4 border border-white/10">
+            <Text className="text-text-primary text-base font-semibold mb-1">
+              Message request
+            </Text>
+            <Text className="text-text-muted text-sm leading-relaxed mb-3">
+              {username ?? 'This member'} can't send more messages unless you
+              accept. Block and report are in the ⋯ menu.
+            </Text>
+            <View className="flex-row gap-2">
+              <Button
+                title="Decline"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
+                disabled={respondingDm}
+                onPress={() => respondDm({ threadId: requestId!, accept: false })}
+              />
+              <Button
+                title="Accept"
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                disabled={respondingDm}
+                onPress={() => respondDm({ threadId: requestId!, accept: true })}
+              />
+            </View>
+          </View>
+        )}
+
         <FlatList
           ref={listRef}
           data={messages ?? []}
@@ -176,23 +252,45 @@ export default function ThreadScreen() {
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center px-10">
               <Text className="text-text-muted text-base text-center leading-relaxed">
-                This space is private — just the two of you.{'\n'}Say hi.
+                {dmPending && iAmDmRequester
+                  ? `This is a message request.\nYou can send up to ${DM_REQUEST_LIMIT} messages until they accept.`
+                  : 'This space is private — just the two of you.\nSay hi.'}
               </Text>
             </View>
           }
         />
 
+        {/* Request-model composer states */}
+        {dmPending && iAmDmRequester && (
+          <Text className="text-text-muted text-xs text-center pb-1">
+            {requestExhausted
+              ? `Request sent — ${DM_REQUEST_LIMIT} of ${DM_REQUEST_LIMIT} messages used. Waiting for them to accept.`
+              : `Message request · ${myPendingSent} of ${DM_REQUEST_LIMIT} sent`}
+          </Text>
+        )}
+        {dmDeclined && (
+          <Text className="text-text-muted text-xs text-center pb-1">
+            This request was declined. No more messages can be sent.
+          </Text>
+        )}
+
         {/* Composer */}
         <View
           className="flex-row items-end gap-2 px-4 pt-3 border-t border-white/5"
-          style={{ paddingBottom: insets.bottom + 8 }}
+          style={{
+            paddingBottom: insets.bottom + 8,
+            opacity: composerLocked ? 0.4 : 1,
+          }}
         >
           <TextInput
             value={draft}
             onChangeText={setDraft}
-            placeholder="Write a message…"
+            placeholder={
+              composerLocked ? 'Messaging is closed on this thread' : 'Write a message…'
+            }
             placeholderTextColor="#5E6472"
             multiline
+            editable={!composerLocked}
             maxLength={2000}
             style={{
               flex: 1,
@@ -210,9 +308,9 @@ export default function ThreadScreen() {
           />
           <Pressable
             onPress={handleSend}
-            disabled={!draft.trim() || isSending}
+            disabled={!draft.trim() || isSending || composerLocked}
             className={`w-11 h-11 rounded-full items-center justify-center ${
-              draft.trim() ? 'bg-accent' : 'bg-surface-2'
+              draft.trim() && !composerLocked ? 'bg-accent' : 'bg-surface-2'
             }`}
           >
             <Text

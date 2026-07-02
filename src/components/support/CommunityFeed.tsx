@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { useCommunityFeed, useCreatePost, useReactToPost } from '@/hooks/useCommunity';
 import { useBlockUser, useReportUser } from '@/hooks/useMessages';
+import { useSendMessageRequest } from '@/hooks/useDirectMessages';
 import { useAuthStore } from '@/store/authStore';
 import { REPORT_REASONS } from '@/types';
 
@@ -30,21 +32,56 @@ export function CommunityFeed({
   onTalkToAi?: () => void;
   onFindMentor?: () => void;
 }) {
+  const router = useRouter();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommunityFeed();
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const { mutate: blockUser } = useBlockUser();
   const { mutate: reportUser } = useReportUser();
+  const { mutate: sendMessageRequest } = useSendMessageRequest();
   const myUserId = useAuthStore((s) => s.user?.id);
+  const myUsername = useAuthStore((s) => s.profile?.username);
   const [newPost, setNewPost] = useState('');
+  const [isAnon, setIsAnon] = useState(true);
   const [justPosted, setJustPosted] = useState(false);
 
   const posts = data?.pages.flat() ?? [];
 
-  const showPostActions = (post: { id: string; user_id: string }) => {
+  const handleMessageRequest = (post: { user_id: string; username?: string | null }) => {
+    sendMessageRequest(post.user_id, {
+      onSuccess: (thread) => {
+        router.push({
+          pathname: '/messages/[requestId]',
+          params: {
+            requestId: thread.id,
+            type: 'dm',
+            username: (post as any).username ?? 'Member',
+            otherUserId: post.user_id,
+          },
+        } as any);
+      },
+      onError: (e) =>
+        Alert.alert(
+          'Could not start',
+          e instanceof Error ? e.message : 'Please try again.',
+        ),
+    });
+  };
+
+  const showPostActions = (post: {
+    id: string;
+    user_id: string;
+    is_anonymous: boolean;
+    username?: string | null;
+  }) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Alert.alert('This post', undefined, [
       { text: 'Cancel', style: 'cancel' },
+      // DMs only exist for people posting under their username — messaging
+      // an anonymous poster would unmask them.
+      ...(!post.is_anonymous
+        ? [{ text: 'Send message request', onPress: () => handleMessageRequest(post) }]
+        : []),
       {
         text: 'Report post',
         onPress: () =>
@@ -90,7 +127,7 @@ export function CommunityFeed({
   const handlePost = () => {
     if (!newPost.trim() || isPending) return;
     createPost(
-      { content: newPost.trim(), isAnonymous: true },
+      { content: newPost.trim(), isAnonymous: isAnon },
       {
         onSuccess: () => {
           setNewPost('');
@@ -123,7 +160,19 @@ export function CommunityFeed({
           </Text>
         )}
         <View className="flex-row items-center justify-between mt-3">
-          <Text className="text-text-muted text-sm">Anonymous post</Text>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setIsAnon((v) => !v);
+            }}
+            hitSlop={8}
+          >
+            <Text className="text-text-muted text-sm">
+              {isAnon
+                ? '◆ Anonymous · tap to use your name'
+                : `◇ Posting as ${myUsername ?? 'you'} · tap to go anonymous`}
+            </Text>
+          </Pressable>
           <Pressable
             onPress={handlePost}
             disabled={!newPost.trim() || isPending}

@@ -299,6 +299,57 @@ export interface Database {
           status?: string;
         };
       };
+      admins: {
+        Row: {
+          user_id: string;
+          created_at: string;
+        };
+        Insert: never;
+        Update: never;
+      };
+      dm_threads: {
+        Row: {
+          id: string;
+          requester_id: string;
+          recipient_id: string;
+          status: string;
+          created_at: string;
+          responded_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          requester_id: string;
+          recipient_id: string;
+          status?: string;
+          created_at?: string;
+          responded_at?: string | null;
+        };
+        Update: {
+          status?: string;
+          responded_at?: string | null;
+        };
+      };
+      dm_messages: {
+        Row: {
+          id: string;
+          thread_id: string;
+          sender_id: string;
+          created_at: string;
+          content: string;
+          read_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          thread_id: string;
+          sender_id: string;
+          created_at?: string;
+          content: string;
+          read_at?: string | null;
+        };
+        Update: {
+          read_at?: string | null;
+        };
+      };
       urge_events: {
         Row: {
           id: string;

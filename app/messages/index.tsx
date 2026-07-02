@@ -12,6 +12,11 @@ import {
   useMentorInbox,
   useRespondToRequest,
 } from '@/hooks/useMessages';
+import {
+  useDmInbox,
+  useRespondToDmRequest,
+  useDmConnections,
+} from '@/hooks/useDirectMessages';
 
 function timeAgo(iso: string): string {
   const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
@@ -28,6 +33,36 @@ export default function MessagesScreen() {
   const { data: connections, isLoading } = useConnections();
   const { data: inbox } = useMentorInbox();
   const { mutate: respond, isPending: isResponding } = useRespondToRequest();
+  const { data: dmInbox } = useDmInbox();
+  const { mutate: respondDm, isPending: isRespondingDm } = useRespondToDmRequest();
+  const { data: dmConnections } = useDmConnections();
+
+  // One unified conversations list: mentor threads + accepted DMs,
+  // newest activity first.
+  const allConversations = [
+    ...(connections ?? []).map((c) => ({
+      key: `mentor-${c.requestId}`,
+      id: c.requestId,
+      type: 'mentor' as const,
+      otherUserId: c.otherUserId,
+      otherUsername: c.otherUsername,
+      lastMessage: c.lastMessage,
+      unreadCount: c.unreadCount,
+      emptyHint: c.iAmMentor ? 'You accepted — say hi.' : 'Connected — say hi.',
+      sortDate: c.lastMessage?.created_at ?? '',
+    })),
+    ...(dmConnections ?? []).map((c) => ({
+      key: `dm-${c.threadId}`,
+      id: c.threadId,
+      type: 'dm' as const,
+      otherUserId: c.otherUserId,
+      otherUsername: c.otherUsername,
+      lastMessage: c.lastMessage,
+      unreadCount: c.unreadCount,
+      emptyHint: 'Request accepted — say hi.',
+      sortDate: c.lastMessage?.created_at ?? '',
+    })),
+  ].sort((a, b) => (b.sortDate > a.sortDate ? 1 : -1));
 
   return (
     <View
@@ -107,14 +142,84 @@ export default function MessagesScreen() {
             </View>
           )}
 
+          {/* DM requests — up to 3 messages from another member */}
+          {!!dmInbox?.length && (
+            <View className="mb-8">
+              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
+                Message requests
+              </Text>
+              {dmInbox.map((req, i) => (
+                <Animated.View
+                  key={req.id}
+                  entering={FadeInDown.duration(300).delay(i * 50)}
+                  className="bg-surface rounded-2xl px-5 py-5 mb-3 border border-white/10"
+                >
+                  <View className="flex-row items-center gap-3 mb-3">
+                    <Avatar username={req.requesterUsername} size="md" />
+                    <View className="flex-1">
+                      <Text className="text-text-primary text-base font-semibold">
+                        {req.requesterUsername}
+                      </Text>
+                      <Text className="text-text-muted text-sm mt-0.5">
+                        wants to message you · {timeAgo(req.created_at)}
+                      </Text>
+                    </View>
+                  </View>
+                  {req.previewMessages.length > 0 && (
+                    <View className="bg-surface-2 rounded-xl px-4 py-3 mb-4 border border-white/5">
+                      {req.previewMessages.map((m) => (
+                        <Text
+                          key={m.id}
+                          className="text-text-secondary text-sm leading-relaxed"
+                        >
+                          {m.content}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+                  <Text className="text-text-muted text-xs mb-3">
+                    They can't send more unless you accept. You can block or
+                    report them any time.
+                  </Text>
+                  <View className="flex-row gap-2">
+                    <Button
+                      title="Decline"
+                      variant="secondary"
+                      size="sm"
+                      className="flex-1"
+                      disabled={isRespondingDm}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        respondDm({ threadId: req.id, accept: false });
+                      }}
+                    />
+                    <Button
+                      title="Accept"
+                      variant="primary"
+                      size="sm"
+                      className="flex-1"
+                      disabled={isRespondingDm}
+                      onPress={() => {
+                        Haptics.notificationAsync(
+                          Haptics.NotificationFeedbackType.Success,
+                        );
+                        respondDm({ threadId: req.id, accept: true });
+                      }}
+                    />
+                  </View>
+                </Animated.View>
+              ))}
+            </View>
+          )}
+
           {/* Conversations */}
           <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
             Conversations
           </Text>
-          {connections?.length ? (
-            connections.map((c, i) => (
+          {allConversations.length ? (
+            allConversations.map((c, i) => (
               <Animated.View
-                key={c.requestId}
+                key={c.key}
                 entering={FadeInDown.duration(300).delay(i * 40)}
               >
                 <Pressable
@@ -123,7 +228,8 @@ export default function MessagesScreen() {
                     router.push({
                       pathname: '/messages/[requestId]',
                       params: {
-                        requestId: c.requestId,
+                        requestId: c.id,
+                        type: c.type,
                         username: c.otherUsername,
                         otherUserId: c.otherUserId,
                       },
@@ -134,9 +240,14 @@ export default function MessagesScreen() {
                   <Avatar username={c.otherUsername} size="md" />
                   <View className="flex-1">
                     <View className="flex-row items-center justify-between">
-                      <Text className="text-text-primary text-base font-semibold">
-                        {c.otherUsername}
-                      </Text>
+                      <View className="flex-row items-center gap-2">
+                        <Text className="text-text-primary text-base font-semibold">
+                          {c.otherUsername}
+                        </Text>
+                        {c.type === 'mentor' && (
+                          <Text className="text-text-muted text-xs">mentor</Text>
+                        )}
+                      </View>
                       {c.lastMessage && (
                         <Text className="text-text-muted text-sm">
                           {timeAgo(c.lastMessage.created_at)}
@@ -150,8 +261,7 @@ export default function MessagesScreen() {
                         }`}
                         numberOfLines={1}
                       >
-                        {c.lastMessage?.content ??
-                          (c.iAmMentor ? 'You accepted — say hi.' : 'Connected — say hi.')}
+                        {c.lastMessage?.content ?? c.emptyHint}
                       </Text>
                       {c.unreadCount > 0 && (
                         <View className="bg-accent rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
@@ -167,8 +277,8 @@ export default function MessagesScreen() {
             <View className="py-12 items-center px-6">
               <Text className="text-text-muted text-base text-center leading-relaxed">
                 No conversations yet.{'\n'}
-                Connect with a mentor from the Support tab — once they accept,
-                you can talk here.
+                Connect with a mentor, or send a message request from a
+                community post.
               </Text>
             </View>
           )}

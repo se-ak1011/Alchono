@@ -221,19 +221,26 @@ export function useMarkThreadRead(requestId: string | undefined) {
   });
 }
 
-/** Total unread across all threads — for badges. */
+/** Total unread across mentor threads and DMs — for badges. */
 export function useUnreadTotal() {
   const userId = useAuthStore((s) => s.user?.id);
 
   return useQuery({
     queryKey: ['unread-total', userId],
     queryFn: async () => {
-      const { count } = await supabase
-        .from('messages')
-        .select('id', { count: 'exact', head: true })
-        .neq('sender_id', userId!)
-        .is('read_at', null);
-      return count ?? 0;
+      const [{ count: mentorUnread }, { count: dmUnread }] = await Promise.all([
+        supabase
+          .from('messages')
+          .select('id', { count: 'exact', head: true })
+          .neq('sender_id', userId!)
+          .is('read_at', null),
+        supabase
+          .from('dm_messages')
+          .select('id', { count: 'exact', head: true })
+          .neq('sender_id', userId!)
+          .is('read_at', null),
+      ]);
+      return (mentorUnread ?? 0) + (dmUnread ?? 0);
     },
     enabled: !!userId,
     refetchInterval: 30_000,

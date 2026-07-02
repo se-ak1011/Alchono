@@ -7,6 +7,7 @@ import { SettingsSection } from '@/components/profile/SettingsSection';
 import { NotificationSettings } from '@/components/profile/NotificationSettings';
 import { useAuthStore } from '@/store/authStore';
 import { useAppStore } from '@/store/appStore';
+import { useIsAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { headingShadow } from '@/styles';
@@ -16,6 +17,7 @@ export default function ProfileScreen() {
   const user = useAuthStore((s) => s.user);
   const resetAuth = useAuthStore((s) => s.reset);
   const resetApp = useAppStore((s) => s.reset);
+  const { data: isAdmin } = useIsAdmin();
   const router = useRouter();
 
   const clearAllState = () => {
@@ -162,6 +164,18 @@ export default function ProfileScreen() {
             },
           ]}
         />
+
+        {isAdmin && (
+          <SettingsSection
+            title="Admin"
+            items={[
+              {
+                label: 'Reports & disputes',
+                onPress: () => router.push('/admin/reports'),
+              },
+            ]}
+          />
+        )}
 
         <SettingsSection
           title="Account"

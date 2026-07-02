@@ -21,6 +21,26 @@ function formatDuration(startedAt: string): string {
   return `${minutes}m`;
 }
 
+// Tiny harm-reduction nudges, rotating while a session is live.
+// minMinutes gates the later ones so advice matches the moment.
+const SESSION_NUDGES: { text: string; minMinutes: number }[] = [
+  { text: 'Put your car keys somewhere hard to reach. Future you says thanks.', minMinutes: 0 },
+  { text: 'Eat something if you haven’t. It slows everything down.', minMinutes: 0 },
+  { text: 'Water between drinks. Oldest trick there is, still works.', minMinutes: 0 },
+  { text: 'Make this next one a slow one.', minMinutes: 45 },
+  { text: 'Another glass of water. Seriously.', minMinutes: 60 },
+  { text: 'Pick your stopping point now, while it’s still your call.', minMinutes: 90 },
+  { text: 'Phone in pocket, not in hand. No 2am texts you’ll regret.', minMinutes: 120 },
+  { text: 'Water, food, and a charger by the bed. Tomorrow-you matters too.', minMinutes: 150 },
+];
+
+function currentNudge(startedAt: string): string {
+  const elapsed = Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000);
+  const applicable = SESSION_NUDGES.filter((n) => n.minMinutes <= elapsed);
+  // Rotate every 15 minutes through whatever applies right now.
+  return applicable[Math.floor(elapsed / 15) % applicable.length].text;
+}
+
 export function DrinkingSession() {
   const { data: activeSession } = useActiveSession();
   const { mutate: startSession, isPending: isStarting } = useStartSession();
@@ -73,6 +93,18 @@ export function DrinkingSession() {
             </View>
             <View className="w-2 h-2 rounded-full bg-white/60" />
           </View>
+
+          {/* Rotating harm-reduction nudge — changes as the session goes on */}
+          <Animated.View
+            key={currentNudge(activeSession.started_at)}
+            entering={FadeIn.duration(600)}
+            className="flex-row items-start gap-2 mb-3"
+          >
+            <Text className="text-text-muted text-sm">○</Text>
+            <Text className="text-text-secondary text-sm leading-relaxed flex-1">
+              {currentNudge(activeSession.started_at)}
+            </Text>
+          </Animated.View>
 
           {showQuestion && (
             <Animated.View
