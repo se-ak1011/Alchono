@@ -415,20 +415,34 @@ export default function OnboardingScreen() {
     }
 
     if ((currentStep as any).isLast) {
-      const { data: updated, error } = await supabase
+      // update().select() (no .single()) so zero matched rows is detectable
+      // instead of surfacing as a coercion error.
+      const { data: updatedRows, error } = await supabase
         .from('profiles')
         .update({ onboarding_completed: true, preferences: prefs as any })
         .eq('id', user.id)
-        .select()
-        .single();
+        .select();
 
-      if (error) {
-        // Surface exactly what failed (missing preferences column, RLS, etc.)
-        // but still save the completion flag alone so the user isn't stuck.
-        await supabase
+      let saved = updatedRows?.[0] ?? null;
+
+      if (!error && !saved) {
+        // Profile row is missing (e.g. deleted during testing while the auth
+        // user survived). Recreate it — profiles_insert_own RLS allows this.
+        const { data: upserted, error: upsertError } = await supabase
           .from('profiles')
-          .update({ onboarding_completed: true })
-          .eq('id', user.id);
+          .upsert(
+            { id: user.id, onboarding_completed: true, preferences: prefs as any },
+            { onConflict: 'id' },
+          )
+          .select();
+        saved = upserted?.[0] ?? null;
+        if (upsertError) {
+          Alert.alert(
+            'Preferences not saved',
+            `Your answers couldn't be stored:\n\n${upsertError.message}`,
+          );
+        }
+      } else if (error) {
         Alert.alert(
           'Preferences not saved',
           `Your answers couldn't be stored:\n\n${error.message}`,
@@ -438,8 +452,8 @@ export default function OnboardingScreen() {
       // Local state always carries the preferences the user just entered,
       // regardless of what the DB round-trip returned.
       setProfile(
-        updated
-          ? { ...updated, preferences: prefs as any }
+        saved
+          ? { ...saved, preferences: prefs as any }
           : { ...profile!, onboarding_completed: true, preferences: prefs as any }
       );
 

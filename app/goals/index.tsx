@@ -208,6 +208,12 @@ export default function GoalsScreen() {
           setShowDatePicker(false);
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         },
+        onError: (e) => {
+          Alert.alert(
+            'Could not save',
+            e instanceof Error ? e.message : 'Please try again.',
+          );
+        },
       },
     );
   };

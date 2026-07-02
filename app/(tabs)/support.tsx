@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, Linking, Platform } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -142,41 +142,152 @@ export default function SupportScreen() {
           />
         )}
         {activeTab === 'mentors'   && <MentorList />}
-        {activeTab === 'resources' && <ResourcesPlaceholder />}
+        {activeTab === 'resources' && <ResourcesTab />}
       </View>
     </SafeArea>
   );
 }
 
-function ResourcesPlaceholder() {
-  const RESOURCES = [
-    { icon: '—', title: 'Crisis lines', description: 'Immediate phone support, 24/7.' },
-    { icon: '○', title: 'Local meetings', description: 'AA, SMART Recovery, and more near you.' },
-    { icon: '◇', title: 'Treatment options', description: 'Detox, rehab, and outpatient programmes.' },
-    { icon: '→', title: 'Self-help tools', description: 'Guided exercises and reading.' },
-  ];
+type Resource = {
+  title: string;
+  description: string;
+  action: string;
+  url: string;
+};
 
+const RESOURCE_SECTIONS: { heading: string; items: Resource[] }[] = [
+  {
+    heading: 'Right now',
+    items: [
+      {
+        title: 'Emergency — 999',
+        description: 'Medical emergency, danger to yourself or others.',
+        action: 'Call 999',
+        url: 'tel:999',
+      },
+      {
+        title: 'Samaritans',
+        description: 'Whatever you are going through. Free, 24/7, confidential.',
+        action: 'Call 116 123',
+        url: 'tel:116123',
+      },
+      {
+        title: 'Shout',
+        description: 'Free 24/7 crisis support by text, if talking feels like too much.',
+        action: 'Text SHOUT to 85258',
+        url: Platform.OS === 'ios' ? 'sms:85258&body=SHOUT' : 'sms:85258?body=SHOUT',
+      },
+      {
+        title: 'NHS 111',
+        description: 'Urgent mental health support — choose the mental health option.',
+        action: 'Call 111',
+        url: 'tel:111',
+      },
+    ],
+  },
+  {
+    heading: 'Alcohol support',
+    items: [
+      {
+        title: 'Drinkline',
+        description: 'The national alcohol helpline. Free and confidential advice, weekdays 9am–8pm, weekends 11am–4pm.',
+        action: 'Call 0300 123 1110',
+        url: 'tel:03001231110',
+      },
+      {
+        title: 'Alcoholics Anonymous',
+        description: 'Free helpline and meetings across the UK, run by people in recovery.',
+        action: 'Call 0800 9177 650',
+        url: 'tel:08009177650',
+      },
+      {
+        title: 'AA meeting finder',
+        description: 'Find an AA meeting near you, in person or online.',
+        action: 'Open website',
+        url: 'https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting',
+      },
+      {
+        title: 'SMART Recovery UK',
+        description: 'Science-based mutual aid meetings — an alternative to 12-step.',
+        action: 'Open website',
+        url: 'https://smartrecovery.org.uk',
+      },
+      {
+        title: 'NHS alcohol advice',
+        description: 'Cutting down, risks, and where to get local treatment.',
+        action: 'Open website',
+        url: 'https://www.nhs.uk/live-well/alcohol-advice/',
+      },
+    ],
+  },
+  {
+    heading: 'For the people around you',
+    items: [
+      {
+        title: 'Al-Anon',
+        description: 'Support for family and friends affected by someone else’s drinking.',
+        action: 'Call 0800 0086 811',
+        url: 'tel:08000086811',
+      },
+      {
+        title: 'NACOA',
+        description: 'For anyone affected by a parent’s drinking — at any age.',
+        action: 'Call 0800 358 3456',
+        url: 'tel:08003583456',
+      },
+    ],
+  },
+  {
+    heading: 'Talk online',
+    items: [
+      {
+        title: '7 Cups',
+        description: 'Free, anonymous chat with trained listeners.',
+        action: 'Open website',
+        url: 'https://www.7cups.com',
+      },
+    ],
+  },
+];
+
+function ResourcesTab() {
   return (
     <ScrollView
       contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
     >
       <Animated.View entering={FadeIn.duration(400)}>
-        {RESOURCES.map((r) => (
-          <View
-            key={r.title}
-            className="flex-row items-start gap-4 bg-surface rounded-2xl px-5 py-5 mb-3 border border-white/5"
-          >
-            <Text className="text-text-muted text-base font-semibold w-5 mt-0.5">{r.icon}</Text>
-            <View className="flex-1">
-              <Text className="text-text-primary font-semibold text-base mb-1">
-                {r.title}
-              </Text>
-              <Text className="text-text-secondary text-base leading-relaxed">
-                {r.description}
-              </Text>
-              <Text className="text-text-muted text-sm mt-2">Coming soon</Text>
-            </View>
+        <Text className="text-text-muted text-sm leading-relaxed mb-5">
+          UK services. All free unless noted. If you're outside the UK,
+          local emergency services are always the right first call.
+        </Text>
+
+        {RESOURCE_SECTIONS.map((section) => (
+          <View key={section.heading} className="mb-6">
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
+              {section.heading}
+            </Text>
+            {section.items.map((r) => (
+              <Pressable
+                key={r.title}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  Linking.openURL(r.url).catch(() => {});
+                }}
+                className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
+              >
+                <View className="flex-row items-center justify-between mb-1">
+                  <Text className="text-text-primary font-semibold text-base flex-1 pr-3">
+                    {r.title}
+                  </Text>
+                  <Text className="text-text-muted text-sm">→</Text>
+                </View>
+                <Text className="text-text-secondary text-sm leading-relaxed mb-2">
+                  {r.description}
+                </Text>
+                <Text className="text-text-muted text-sm font-medium">{r.action}</Text>
+              </Pressable>
+            ))}
           </View>
         ))}
       </Animated.View>

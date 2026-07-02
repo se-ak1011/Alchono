@@ -72,8 +72,22 @@ export function useAuthListener() {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
-      setProfile(data);
+        .maybeSingle();
+
+      if (data) {
+        setProfile(data);
+        return;
+      }
+
+      // Logged-in user with no profile row (deleted during testing, or the
+      // signup trigger failed). Recreate it so every FK-dependent write
+      // (goals, sessions, posts) works again.
+      const { data: created } = await supabase
+        .from('profiles')
+        .upsert({ id: userId }, { onConflict: 'id' })
+        .select()
+        .maybeSingle();
+      setProfile(created ?? null);
     } catch {
       // Non-fatal — user can still reach the app, profile loads on next nav
     }
