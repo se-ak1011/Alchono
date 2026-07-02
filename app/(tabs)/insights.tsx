@@ -8,6 +8,7 @@ import { MoodChart } from '@/components/insights/MoodChart';
 import { PatternChart } from '@/components/insights/PatternChart';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
+import { useUrgeStats, useAfDaysCount } from '@/hooks/useVictories';
 import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
@@ -76,11 +77,11 @@ export default function InsightsScreen() {
   const [period, setPeriod] = useState<Period>(30);
   const { data: insights, isLoading } = useInsights(period);
   const { data: totalPauses = 0 } = useTotalPauses(period);
+  const { data: urgeStats } = useUrgeStats(period);
+  const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
   const { width } = useWindowDimensions();
 
-  const sessionDays     = insights?.filter((d) => d.hadSession).length ?? 0;
-  const checkinDays     = insights?.filter((d) => d.mood).length ?? 0;
-  const alcoholFreeDays = insights?.filter((d) => !d.hadSession).length ?? 0;
+  const checkinDays = insights?.filter((d) => d.mood).length ?? 0;
 
   const triggerCounts = insights?.reduce<Record<string, number>>((acc, d) => {
     for (const t of d.triggers) {
@@ -136,18 +137,26 @@ export default function InsightsScreen() {
         ) : (
           <Animated.View entering={FadeIn.duration(400)}>
             {/* Stat cards */}
-            <View className="flex-row mx-6 gap-3 mb-4">
+            <View className="flex-row mx-6 gap-3 mb-3">
               <InsightCard
-                title="Check-ins"
-                value={checkinDays}
+                title="Urges beaten"
+                value={urgeStats?.periodPassed ?? 0}
                 symbol="◆"
-                subtitle={`of ${period} days`}
+                subtitle={`in ${period} days`}
               />
               <InsightCard
                 title="Alcohol-free"
                 value={alcoholFreeDays}
                 symbol="○"
-                subtitle="recorded days"
+                subtitle="marked days"
+              />
+            </View>
+            <View className="flex-row mx-6 gap-3 mb-4">
+              <InsightCard
+                title="Check-ins"
+                value={checkinDays}
+                symbol="◇"
+                subtitle={`of ${period} days`}
               />
               <InsightCard
                 title="Pauses"

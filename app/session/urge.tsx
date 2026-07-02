@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
+import { useLogUrgeOutcome, useUrgeStats } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
 import type { UserPreferences } from '@/types';
@@ -73,16 +74,31 @@ function buildActions(prefs: UserPreferences | null): Action[] {
   return list;
 }
 
+function buildReasonNames(prefs: UserPreferences | null): string | null {
+  if (!prefs) return null;
+  const parts: string[] = [];
+  if (prefs.familyMembers?.includes('partner') && prefs.partnerName?.trim()) {
+    parts.push(prefs.partnerName.trim());
+  }
+  if (prefs.familyMembers?.includes('children') && prefs.childrenNames?.trim()) {
+    parts.push(prefs.childrenNames.trim());
+  }
+  return parts.length > 0 ? parts.join(' & ') : null;
+}
+
 export default function UrgeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile } = useAuthStore();
   const { mutate: startSession } = useStartSession();
+  const { mutate: logUrge } = useLogUrgeOutcome();
+  const { data: urgeStats } = useUrgeStats();
   const prefs = (profile as any)?.preferences as UserPreferences | null;
 
-  const [phase, setPhase] = useState<'breathing' | 'actions' | 'decision'>('breathing');
+  const [phase, setPhase] = useState<'breathing' | 'actions' | 'decision' | 'passed'>('breathing');
   const [halfCycle, setHalfCycle] = useState(0);
   const [ticked, setTicked] = useState<Set<string>>(new Set());
+  const [survivedCount, setSurvivedCount] = useState(0);
 
   const circleScale = useSharedValue(0.6);
   const circleOpacity = useSharedValue(0.35);
@@ -100,6 +116,10 @@ export default function UrgeScreen() {
       setPhase('actions');
       return;
     }
+    // A soft pulse on each transition so the rhythm works with eyes closed.
+    Haptics.impactAsync(
+      isIn ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light,
+    );
     circleScale.value = withTiming(isIn ? 1.4 : 0.6, { duration: BREATH_MS });
     circleOpacity.value = withTiming(isIn ? 0.75 : 0.35, { duration: BREATH_MS });
     const t = setTimeout(() => setHalfCycle((h) => h + 1), BREATH_MS);
@@ -107,6 +127,7 @@ export default function UrgeScreen() {
   }, [phase, halfCycle]);
 
   const actions = buildActions(prefs);
+  const reasonNames = buildReasonNames(prefs);
   const breathsLeft = Math.ceil((TOTAL_HALF_CYCLES - halfCycle) / 2);
 
   const toggleTick = (id: string) => {
@@ -120,11 +141,15 @@ export default function UrgeScreen() {
 
   const handleUrgePassed = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.back();
+    // Capture the count before the query refetches, so the ack is stable.
+    setSurvivedCount((urgeStats?.allTimePassed ?? 0) + 1);
+    logUrge('passed');
+    setPhase('passed');
   };
 
   const handleDrinkAnyway = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    logUrge('drank');
     startSession();
     router.back();
   };
@@ -262,9 +287,20 @@ export default function UrgeScreen() {
             >
               Did it pass?
             </Text>
-            <Text className="text-text-secondary text-base mb-8">
+            <Text className="text-text-secondary text-base mb-6">
               Honest answer.
             </Text>
+
+            {reasonNames && (
+              <View className="mb-8">
+                <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-1">
+                  Remember
+                </Text>
+                <Text className="text-text-primary text-2xl font-semibold">
+                  {reasonNames}.
+                </Text>
+              </View>
+            )}
 
             <View style={{ gap: 12 }}>
               <Pressable
@@ -307,6 +343,40 @@ export default function UrgeScreen() {
                 </Text>
               </Pressable>
             </View>
+          </Animated.View>
+        )}
+
+        {/* Passed phase — the win gets acknowledged, not just dismissed */}
+        {phase === 'passed' && (
+          <Animated.View
+            entering={FadeIn.duration(500)}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 480 }}
+          >
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">
+              Logged
+            </Text>
+            <Text
+              className="text-text-primary text-4xl font-semibold tracking-tight mb-3"
+              style={headingShadow}
+            >
+              It passed.
+            </Text>
+            <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 px-4">
+              {survivedCount <= 1
+                ? 'Your first urge, beaten.'
+                : `That's ${survivedCount} urges beaten.`}
+              {'\n'}Proof this works.
+            </Text>
+            <Button
+              title="Done"
+              variant="primary"
+              size="lg"
+              fullWidth
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.back();
+              }}
+            />
           </Animated.View>
         )}
       </ScrollView>

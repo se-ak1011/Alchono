@@ -299,6 +299,36 @@ export interface Database {
           status?: string;
         };
       };
+      urge_events: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+          outcome: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          created_at?: string;
+          outcome: string;
+        };
+        Update: Record<string, never>;
+      };
+      alcohol_free_days: {
+        Row: {
+          id: string;
+          user_id: string;
+          date: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          date: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+      };
       notification_preferences: {
         Row: {
           id: string;

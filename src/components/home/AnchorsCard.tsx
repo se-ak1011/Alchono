@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { useAuthStore } from '@/store/authStore';
 import { useGoals, formatTargetDate, daysUntil } from '@/hooks/useGoals';
+import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
 import type { UserPreferences } from '@/types';
 
 const DAILY_ANCHORS = [
@@ -40,15 +41,30 @@ export function AnchorsCard() {
   const profile = useAuthStore((s) => s.profile);
   const prefs = profile?.preferences as UserPreferences | null;
   const { data: allGoals = [] } = useGoals();
+  const { data: urgeStats } = useUrgeStats();
+  const { data: afMonth = 0 } = useAfMonthCount();
 
   const names = buildNames(prefs);
   const activeGoals = allGoals.filter((g) => !g.completed_at);
   const preview = activeGoals.slice(0, 3);
   const overflow = activeGoals.length - preview.length;
 
+  const victories: string[] = [];
+  const urgesBeaten = urgeStats?.allTimePassed ?? 0;
+  if (urgesBeaten > 0) {
+    victories.push(`${urgesBeaten} urge${urgesBeaten === 1 ? '' : 's'} beaten`);
+  }
+  if (afMonth > 0) {
+    victories.push(`${afMonth} alcohol-free day${afMonth === 1 ? '' : 's'} this month`);
+  }
+  const victoryLine = victories.join(' · ');
+
   if (!names && activeGoals.length === 0) {
     return (
       <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+        {victoryLine ? (
+          <Text className="text-text-secondary text-base mb-1">◆ {victoryLine}</Text>
+        ) : null}
         <Pressable onPress={() => router.push('/goals')} className="py-2">
           <Text className="text-text-muted text-base">+ What are you building towards?</Text>
         </Pressable>
@@ -120,6 +136,14 @@ export function AnchorsCard() {
             <Text className="text-text-muted text-base">+ Add something to look forward to</Text>
           </Pressable>
         )}
+
+        {/* Quiet evidence that it's working */}
+        {victoryLine ? (
+          <>
+            <View className="h-px bg-white/5 mt-5 mb-4" />
+            <Text className="text-text-secondary text-sm">◆ {victoryLine}</Text>
+          </>
+        ) : null}
       </Card>
     </Animated.View>
   );

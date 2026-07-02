@@ -10,6 +10,7 @@ import {
   useStartSession,
   useEndSession,
 } from '@/hooks/useDrinkingSession';
+import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { useAppStore } from '@/store/appStore';
 
 function formatDuration(startedAt: string): string {
@@ -24,13 +25,12 @@ export function DrinkingSession() {
   const { data: activeSession } = useActiveSession();
   const { mutate: startSession, isPending: isStarting } = useStartSession();
   const { mutate: endSession, isPending: isEnding } = useEndSession();
-  const { setPauseModalVisible, alcoholFreeTodayDate, setAlcoholFreeToday, clearAlcoholFreeToday } = useAppStore();
+  const { setPauseModalVisible } = useAppStore();
+  const { data: alcoholFreeMarked = false } = useAfToday();
+  const { mutate: toggleAlcoholFree } = useToggleAlcoholFree();
   const router = useRouter();
   const [duration, setDuration] = useState('');
   const [showQuestion, setShowQuestion] = useState(false);
-
-  const today = new Date().toISOString().split('T')[0];
-  const alcoholFreeMarked = alcoholFreeTodayDate === today;
 
   useEffect(() => {
     if (!activeSession) return;
@@ -57,7 +57,11 @@ export function DrinkingSession() {
   if (activeSession) {
     return (
       <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4 gap-3">
-        <Card className="border border-white/10">
+        {/* Session active — pure black, no warmth. The dark side, plainly. */}
+        <View
+          className="rounded-2xl p-5 border border-white/10"
+          style={{ backgroundColor: '#060708' }}
+        >
           <View className="flex-row items-center justify-between mb-3">
             <View>
               <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
@@ -132,7 +136,7 @@ export function DrinkingSession() {
               }}
             />
           </View>
-        </Card>
+        </View>
 
         <Button
           title="I need support"
@@ -156,11 +160,7 @@ export function DrinkingSession() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              if (alcoholFreeMarked) {
-                clearAlcoholFreeToday();
-              } else {
-                setAlcoholFreeToday();
-              }
+              toggleAlcoholFree(!alcoholFreeMarked);
             }}
             className={`flex-row items-center gap-4 rounded-xl px-4 py-4 border ${
               alcoholFreeMarked
@@ -201,7 +201,8 @@ export function DrinkingSession() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               startSession();
             }}
-            className="flex-row items-center gap-4 bg-surface rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
+            className="flex-row items-center gap-4 rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
+            style={{ backgroundColor: '#060708' }}
           >
             {isStarting
               ? <Text className="text-text-muted text-base">Starting…</Text>
