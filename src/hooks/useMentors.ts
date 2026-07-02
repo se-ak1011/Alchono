@@ -64,3 +64,96 @@ export function useMyMentorRequests() {
     enabled: !!userId,
   });
 }
+
+export function useMyMentorProfile() {
+  const userId = useAuthStore((s) => s.user?.id);
+
+  return useQuery({
+    queryKey: ['my-mentor-profile', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('mentor_profiles')
+        .select('*')
+        .eq('user_id', userId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+}
+
+export function useSaveMentorProfile() {
+  const userId = useAuthStore((s) => s.user?.id);
+
+  return useMutation({
+    mutationFn: async ({
+      recoveryLevel,
+      bio,
+      isAvailable,
+    }: {
+      recoveryLevel: string;
+      bio: string;
+      isAvailable: boolean;
+    }) => {
+      const { data, error } = await supabase
+        .from('mentor_profiles')
+        .upsert(
+          {
+            user_id: userId!,
+            recovery_level: recoveryLevel,
+            bio: bio.trim() || null,
+            is_available: isAvailable,
+          },
+          { onConflict: 'user_id' },
+        )
+        .select()
+        .single();
+      if (error) throw error;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ is_mentor: true, mentor_recovery_level: recoveryLevel })
+        .eq('id', userId!);
+      if (profileError) throw profileError;
+
+      const { profile, setProfile } = useAuthStore.getState();
+      if (profile) {
+        setProfile({ ...profile, is_mentor: true, mentor_recovery_level: recoveryLevel });
+      }
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-mentor-profile', userId] });
+      queryClient.invalidateQueries({ queryKey: ['mentors'] });
+    },
+  });
+}
+
+export function useStopMentoring() {
+  const userId = useAuthStore((s) => s.user?.id);
+
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('mentor_profiles')
+        .delete()
+        .eq('user_id', userId!);
+      if (error) throw error;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ is_mentor: false, mentor_recovery_level: null })
+        .eq('id', userId!);
+      if (profileError) throw profileError;
+
+      const { profile, setProfile } = useAuthStore.getState();
+      if (profile) {
+        setProfile({ ...profile, is_mentor: false, mentor_recovery_level: null });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-mentor-profile', userId] });
+      queryClient.invalidateQueries({ queryKey: ['mentors'] });
+    },
+  });
+}

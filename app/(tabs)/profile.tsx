@@ -124,6 +124,16 @@ export default function ProfileScreen() {
         <NotificationSettings />
 
         <SettingsSection
+          title="Community"
+          items={[
+            {
+              label: profile?.is_mentor ? 'Your mentoring' : 'Become a mentor',
+              onPress: () => router.push('/profile/become-mentor'),
+            },
+          ]}
+        />
+
+        <SettingsSection
           title="Privacy"
           items={[
             {
