@@ -57,6 +57,12 @@ function buildActions(prefs: UserPreferences | null): Action[] {
   list.push({ id: 'water', label: 'Drink a glass of water', subtitle: 'Just that. Nothing else.' });
   list.push({ id: 'walk', label: 'Step outside for 5 minutes', subtitle: 'Movement breaks the moment.' });
   list.push({
+    id: 'talk',
+    label: 'Talk to someone (human or not)',
+    subtitle: 'The AI is always awake. Your mentor might be too.',
+    navigate: '/(tabs)/support',
+  });
+  list.push({
     id: 'game',
     label: 'Play a game',
     subtitle: 'Give your mind something else to do.',
@@ -188,7 +194,7 @@ export default function UrgeScreen() {
             <View style={{ gap: 12, marginBottom: 32 }}>
               {actions.map((action, i) => {
                 const done = ticked.has(action.id);
-                const isGame = !!action.navigate;
+                const navigates = !!action.navigate;
                 return (
                   <Animated.View
                     key={action.id}
@@ -196,9 +202,12 @@ export default function UrgeScreen() {
                   >
                     <Pressable
                       onPress={() => {
-                        if (isGame) {
+                        if (action.navigate) {
                           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                          router.push(action.navigate as any);
+                          // navigate (not push): tab routes like Support already
+                          // exist below this modal, so this dismisses the modal
+                          // and focuses them; new routes (games) still push.
+                          router.navigate(action.navigate as any);
                           return;
                         }
                         toggleTick(action.id);
@@ -231,7 +240,7 @@ export default function UrgeScreen() {
                           {action.subtitle}
                         </Text>
                       </View>
-                      {isGame && (
+                      {navigates && (
                         <Text className="text-text-muted text-sm">→</Text>
                       )}
                     </Pressable>
