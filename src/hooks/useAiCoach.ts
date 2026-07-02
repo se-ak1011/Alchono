@@ -55,7 +55,7 @@ export function useAiCoach(sessionType = 'general') {
       try {
         const allMessages = [...messages, userMsg];
 
-        const { data, error } = await supabase.functions.invoke('open-ai', {
+        const { data, error } = await supabase.functions.invoke('ai-coach', {
           body: {
             messages: allMessages.map((m) => ({
               role: m.role,
