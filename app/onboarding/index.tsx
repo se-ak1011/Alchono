@@ -45,14 +45,14 @@ const STEPS = [
   },
   {
     id: 'circle',
-    title: "People at home.",
-    body: "So we know what's at stake. You don't have to fill this in.",
+    title: "Who is important to you?",
+    body: "First names are enough. On a hard night, the app will remind you of them. Skip anything you don't want to share.",
     custom: true,
   },
   {
     id: 'rhythm',
-    title: "Your hours.",
-    body: "So we don't ping you in the middle of a shift.",
+    title: "What does your day look like?",
+    body: "So we never ping you mid-shift or wake you up. All optional.",
     custom: true,
     isLast: true,
   },
@@ -216,16 +216,29 @@ export default function OnboardingScreen() {
             )}
 
             {currentStep.id === 'welcome' && (
-              <View style={{ gap: 14, marginTop: 8 }}>
-                {WELCOME_BULLETS.map((bullet) => (
-                  <View key={bullet} className="flex-row items-start gap-3">
-                    <Text className="text-text-muted text-sm mt-0.5">—</Text>
-                    <Text className="text-text-secondary text-base flex-1 leading-relaxed">
-                      {bullet}
-                    </Text>
-                  </View>
-                ))}
-              </View>
+              <>
+                <View style={{ gap: 14, marginTop: 8 }}>
+                  {WELCOME_BULLETS.map((bullet) => (
+                    <View key={bullet} className="flex-row items-start gap-3">
+                      <Text className="text-text-muted text-sm mt-0.5">—</Text>
+                      <Text className="text-text-secondary text-base flex-1 leading-relaxed">
+                        {bullet}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+                <View className="bg-surface rounded-2xl px-4 py-4 border border-white/8 mt-8">
+                  <Text className="text-text-secondary text-sm leading-relaxed">
+                    Next we'll ask two quick things about your life.{' '}
+                    <Text className="text-text-primary font-semibold">
+                      Everything is optional.
+                    </Text>{' '}
+                    Answer what you like, skip the rest — it just helps the app
+                    talk to you like it knows you. You can add or change any of
+                    it later in Profile → My circumstances.
+                  </Text>
+                </View>
+              </>
             )}
 
             {(currentStep as any).body && (

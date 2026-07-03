@@ -168,7 +168,7 @@ export function CircleStep({
     <View style={{ gap: 20 }}>
       <View>
         <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-          Family
+          Who's at home
         </Text>
         <View style={{ gap: 8 }}>
           {FAMILY_OPTIONS.map(({ key, label }) => {
