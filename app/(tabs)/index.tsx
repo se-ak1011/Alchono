@@ -13,6 +13,7 @@ import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useYesterdaySession } from '@/hooks/useJournal';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
+import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -149,6 +150,7 @@ function SwapsCard() {
 }
 
 export default function HomeScreen() {
+  useSmartReminder();
   return (
     <SafeArea>
       <ScrollView
