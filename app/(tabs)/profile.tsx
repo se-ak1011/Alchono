@@ -160,6 +160,10 @@ export default function ProfileScreen() {
               onPress: () => router.push('/profile/trusted'),
             },
             {
+              label: 'Care team (counsellor access)',
+              onPress: () => router.push('/profile/care-team'),
+            },
+            {
               label: profile?.is_mentor ? 'Your mentoring' : 'Become a mentor',
               onPress: () => router.push('/profile/become-mentor'),
             },
@@ -196,6 +200,10 @@ export default function ProfileScreen() {
               {
                 label: 'Good feed videos',
                 onPress: () => router.push('/admin/good-feed'),
+              },
+              {
+                label: 'Counsellor verification',
+                onPress: () => router.push('/admin/professionals'),
               },
             ]}
           />

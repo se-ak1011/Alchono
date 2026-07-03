@@ -140,6 +140,11 @@ export default function LoginScreen() {
             </Link>
           </Animated.View>
         </View>
+        <Link href={'/(auth)/pro' as any} asChild>
+          <Pressable className="items-center mt-8" hitSlop={8}>
+            <Text className="text-text-muted text-sm">I'm a counsellor →</Text>
+          </Pressable>
+        </Link>
       </ScrollView>
     </KeyboardAvoidingView>
   );

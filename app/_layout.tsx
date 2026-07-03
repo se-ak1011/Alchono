@@ -34,9 +34,13 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
     const inAuth = segments[0] === '(auth)';
     const inOnboarding = segments[0] === 'onboarding';
+    const inPro = segments[0] === 'pro';
 
     if (!session && !inAuth) {
       router.replace('/(auth)/login');
+    } else if (session && (profile as any)?.is_professional && !inPro) {
+      // Professionals live in their own portal, not the member app.
+      router.replace('/pro' as any);
     } else if (session && !profile?.onboarding_completed && !inOnboarding) {
       router.replace('/onboarding');
     } else if (session && profile?.onboarding_completed && (inAuth || inOnboarding)) {
@@ -72,6 +76,9 @@ function RootLayoutNav() {
         <Stack.Screen name="admin/reports" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="timeline" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="pro/index" />
+        <Stack.Screen name="pro/add/[username]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/odd-one-out" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/word-search" options={{ animation: 'slide_from_right' }} />
