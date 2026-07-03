@@ -11,15 +11,53 @@ export function useLogUrgeOutcome() {
   const userId = useAuthStore((s) => s.user?.id);
 
   return useMutation({
-    mutationFn: async (outcome: 'passed' | 'drank') => {
-      const { error } = await supabase
-        .from('urge_events')
-        .insert({ user_id: userId!, outcome });
+    mutationFn: async ({
+      outcome,
+      durationSeconds,
+    }: {
+      outcome: 'passed' | 'drank';
+      durationSeconds?: number;
+    }) => {
+      const { error } = await supabase.from('urge_events').insert({
+        user_id: userId!,
+        outcome,
+        ...(durationSeconds ? { duration_seconds: Math.round(durationSeconds) } : {}),
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['urge-stats', userId] });
+      queryClient.invalidateQueries({ queryKey: ['urge-duration', userId] });
     },
+  });
+}
+
+/**
+ * The user's own typical urge length — "your urges usually pass in ~18
+ * minutes". Needs at least 2 timed passes to say anything.
+ */
+export function useTypicalUrgeMinutes() {
+  const userId = useAuthStore((s) => s.user?.id);
+
+  return useQuery({
+    queryKey: ['urge-duration', userId],
+    queryFn: async (): Promise<number | null> => {
+      const { data } = await supabase
+        .from('urge_events')
+        .select('duration_seconds')
+        .eq('user_id', userId!)
+        .eq('outcome', 'passed')
+        .not('duration_seconds', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      const durations = (data ?? [])
+        .map((r: any) => r.duration_seconds as number)
+        .filter((d) => d > 0);
+      if (durations.length < 2) return null;
+      const avg = durations.reduce((a, b) => a + b, 0) / durations.length;
+      return Math.max(1, Math.round(avg / 60));
+    },
+    enabled: !!userId,
   });
 }
 

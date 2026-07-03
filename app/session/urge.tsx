@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
-import { useLogUrgeOutcome, useUrgeStats } from '@/hooks/useVictories';
+import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
 import type { UserPreferences } from '@/types';
@@ -115,6 +115,8 @@ export default function UrgeScreen() {
   const { mutate: startSession } = useStartSession();
   const { mutate: logUrge } = useLogUrgeOutcome();
   const { data: urgeStats } = useUrgeStats();
+  const { data: typicalMinutes } = useTypicalUrgeMinutes();
+  const urgeStartRef = useRef(Date.now());
   const prefs = (profile as any)?.preferences as UserPreferences | null;
 
   const [phase, setPhase] = useState<'breathing' | 'actions' | 'decision' | 'passed'>('breathing');
@@ -165,13 +167,19 @@ export default function UrgeScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     // Capture the count before the query refetches, so the ack is stable.
     setSurvivedCount((urgeStats?.allTimePassed ?? 0) + 1);
-    logUrge('passed');
+    logUrge({
+      outcome: 'passed',
+      durationSeconds: (Date.now() - urgeStartRef.current) / 1000,
+    });
     setPhase('passed');
   };
 
   const handleDrinkAnyway = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    logUrge('drank');
+    logUrge({
+      outcome: 'drank',
+      durationSeconds: (Date.now() - urgeStartRef.current) / 1000,
+    });
     startSession();
     router.back();
   };
@@ -236,9 +244,18 @@ export default function UrgeScreen() {
             >
               Do one of these.
             </Text>
-            <Text className="text-text-secondary text-base mb-6">
+            <Text className="text-text-secondary text-base mb-2">
               Tick it off when done.
             </Text>
+            {typicalMinutes ? (
+              <Text className="text-text-muted text-sm mb-6">
+                Your urges usually pass in ~{typicalMinutes} minute
+                {typicalMinutes === 1 ? '' : 's'}. You've never regretted
+                waiting one out.
+              </Text>
+            ) : (
+              <View className="mb-4" />
+            )}
 
             <View style={{ gap: 12, marginBottom: 32 }}>
               {actions.map((action, i) => {
