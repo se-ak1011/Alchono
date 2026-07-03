@@ -26,17 +26,10 @@ type Action = { id: string; label: string; subtitle: string; navigate?: string }
 function buildActions(prefs: UserPreferences | null): Action[] {
   const list: Action[] = [];
 
-  // 1. The swap — same ritual, zero alcohol (only for those who opted in)
-  if (prefs?.interestedInAlternatives) {
-    list.push({
-      id: 'swap',
-      label: 'Swap it, don’t fight it',
-      subtitle: 'Same ritual, zero alcohol. See what works.',
-      navigate: '/swaps',
-    });
-  }
+  // No swaps here: browsing 0.0s to order online is general information, not
+  // an in-the-moment intercept. The list lives on home and in Resources.
 
-  // 2. Their people
+  // 1. Their people
   if (prefs?.familyMembers?.includes('partner')) {
     const name = prefs.partnerName?.trim();
     list.push({
@@ -67,7 +60,7 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     });
   }
 
-  // 3. Games — the from=urge param makes finishing a game ask "did it pass?"
+  // 2. Games — the from=urge param makes finishing a game ask "did it pass?"
   list.push({
     id: 'game',
     label: 'Play a game',
@@ -75,7 +68,7 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     navigate: '/session/games?from=urge',
   });
 
-  // 4. A human (or not)
+  // 3. A human (or not)
   list.push({
     id: 'talk',
     label: 'Talk to someone (human or not)',
@@ -83,7 +76,7 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     navigate: '/(tabs)/support',
   });
 
-  // 5. The rest
+  // 4. The rest
   list.push({
     id: 'good',
     label: 'Watch something good',
