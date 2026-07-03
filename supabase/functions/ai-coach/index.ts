@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')!;
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+const MODEL = 'gpt-4o-mini';
 
 const SYSTEM_PROMPT = `You are a compassionate recovery support companion for Alchono,
 an app that helps people understand their relationship with alcohol.
@@ -31,6 +32,19 @@ serve(async (req) => {
 
   try {
     const { messages, sessionType, context } = await req.json();
+
+    // 1+3+4: prove we were called, the key exists, and which model we're using.
+    console.log('[ai-coach] invoked', {
+      sessionType: sessionType ?? 'general',
+      messageCount: Array.isArray(messages) ? messages.length : 0,
+      hasApiKey: !!OPENAI_API_KEY,
+      model: MODEL,
+    });
+
+    if (!OPENAI_API_KEY) {
+      console.error('[ai-coach] OPENAI_API_KEY secret is missing — set it with: supabase secrets set OPENAI_API_KEY=sk-...');
+      throw new Error('OPENAI_API_KEY is not set in edge function secrets');
+    }
 
     let systemMessage = sessionType === 'sos'
       ? SYSTEM_PROMPT + '\n\nThis is an SOS session. The user is reaching out in a moment of crisis. Be especially warm and present.'
@@ -67,7 +81,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: MODEL,
         messages: [
           { role: 'system', content: systemMessage },
           ...messages.slice(-20),
@@ -79,20 +93,35 @@ serve(async (req) => {
 
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error?.message ?? 'OpenAI error');
+    // 2+5: if OpenAI is unhappy, put the WHOLE error object in the logs.
+    if (!response.ok || data.error) {
+      console.error('[ai-coach] OpenAI error', {
+        status: response.status,
+        statusText: response.statusText,
+        body: JSON.stringify(data),
+      });
+      throw new Error(
+        `OpenAI ${response.status}: ${data.error?.message ?? JSON.stringify(data)}`,
+      );
     }
 
     const reply = data.choices[0]?.message?.content ?? "I'm here for you.";
+    console.log('[ai-coach] ok', { replyChars: reply.length });
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    // 6: never swallow — full exception (message + stack) into the logs,
+    // and a real error status so the client knows this call failed.
+    console.error('[ai-coach] FAILED', error, (error as Error)?.stack);
     return new Response(
-      JSON.stringify({ error: String(error), reply: "I'm having trouble connecting right now. I'm still here for you." }),
+      JSON.stringify({
+        error: String(error),
+        reply: "I'm having trouble connecting right now. I'm still here for you.",
+      }),
       {
-        status: 200,
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     );

@@ -100,7 +100,9 @@ export function useAiCoach(sessionType = 'general') {
           messages: [...allMessages, assistantMsg],
           updated_at: new Date().toISOString(),
         });
-      } catch {
+      } catch (e) {
+        // Surface the real failure in dev logs instead of swallowing it.
+        console.error('[useAiCoach] sendMessage failed:', e);
         const fallback: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
