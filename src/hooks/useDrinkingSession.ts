@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { useAppStore } from '@/store/appStore';
+import { scheduleSessionNudges, cancelSessionNudges } from '@/lib/notifications';
+import type { UserPreferences } from '@/types';
 
 export function useActiveSession() {
   const userId = useAuthStore((s) => s.user?.id);
@@ -46,6 +48,10 @@ export function useStartSession() {
     onSuccess: (data) => {
       setActiveSession(data.id);
       queryClient.invalidateQueries({ queryKey: ['active-session', userId] });
+      // Start the gentle "slow down" nudges for the length of the session.
+      const prefs = (useAuthStore.getState().profile?.preferences ??
+        null) as UserPreferences | null;
+      if (prefs) scheduleSessionNudges(prefs);
     },
   });
 }
@@ -69,6 +75,8 @@ export function useEndSession() {
       setActiveSession(null);
       queryClient.invalidateQueries({ queryKey: ['active-session', userId] });
       queryClient.invalidateQueries({ queryKey: ['sessions', userId] });
+      // Session's over — stop any pending nudges.
+      cancelSessionNudges();
     },
   });
 }
