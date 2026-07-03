@@ -167,6 +167,10 @@ export default function ProfileScreen() {
               label: profile?.is_mentor ? 'Your mentoring' : 'Become a mentor',
               onPress: () => router.push('/profile/become-mentor'),
             },
+            {
+              label: 'Struggling with something else too?',
+              onPress: () => router.push('/ecosystem' as any),
+            },
           ]}
         />
 

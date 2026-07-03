@@ -225,6 +225,18 @@ const RESOURCE_SECTIONS: { heading: string; items: Resource[] }[] = [
       },
     ],
   },
+  {
+    heading: 'More than alcohol?',
+    items: [
+      {
+        title: 'Recovery ecosystem',
+        description:
+          'Struggling with smoking, gambling, or something else too? Sister apps to Alchono are on the way.',
+        action: "See what's coming",
+        url: 'internal:/ecosystem',
+      },
+    ],
+  },
 ];
 
 const SWAPS_SECTION = {
