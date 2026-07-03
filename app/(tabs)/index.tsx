@@ -12,6 +12,7 @@ import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useYesterdaySession } from '@/hooks/useJournal';
+import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -85,6 +86,39 @@ function DailyGameCard() {
   );
 }
 
+function MonthlyRecapCard() {
+  const { recap, dismiss } = useMonthlyRecap();
+  if (!recap) return null;
+
+  const lines: string[] = [];
+  if (recap.afDays > 0)
+    lines.push(`${recap.afDays} alcohol-free day${recap.afDays === 1 ? '' : 's'}`);
+  if (recap.urgesBeaten > 0)
+    lines.push(`${recap.urgesBeaten} urge${recap.urgesBeaten === 1 ? '' : 's'} beaten`);
+  if (recap.checkins > 0) lines.push(`${recap.checkins} check-ins`);
+
+  return (
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+      <Card className="border border-white/10">
+        <View className="flex-row items-start justify-between mb-1">
+          <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
+            Your {recap.monthLabel}
+          </Text>
+          <Pressable onPress={dismiss} hitSlop={12}>
+            <Text className="text-text-muted text-base">✕</Text>
+          </Pressable>
+        </View>
+        <Text className="text-text-primary text-xl font-semibold mb-2">
+          {lines.join(' · ')}.
+        </Text>
+        <Text className="text-text-secondary text-base leading-relaxed">
+          That's a month of showing up. Carry it into this one.
+        </Text>
+      </Card>
+    </Animated.View>
+  );
+}
+
 function SwapsCard() {
   const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
@@ -122,6 +156,7 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: 48 }}
       >
         <GreetingHeader />
+        <MonthlyRecapCard />
         <AnchorsCard />
         <DailyGameCard />
         <SwapsCard />
