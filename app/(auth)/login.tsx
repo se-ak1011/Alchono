@@ -56,7 +56,7 @@ export default function LoginScreen() {
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -141,7 +141,7 @@ export default function LoginScreen() {
           </Animated.View>
         </View>
         <Link href={'/(auth)/pro' as any} asChild>
-          <Pressable className="items-center mt-8" hitSlop={8}>
+          <Pressable className="items-center mt-8 mb-2 py-2" hitSlop={8}>
             <Text className="text-text-muted text-sm">I'm a counsellor →</Text>
           </Pressable>
         </Link>
