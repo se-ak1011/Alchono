@@ -1,7 +1,9 @@
 import 'react-native-gesture-handler';
 import '../global.css';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image } from 'react-native';
+import Animated, { FadeOut } from 'react-native-reanimated';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -83,6 +85,43 @@ function RootLayoutNav() {
   );
 }
 
+function SplashOverlay() {
+  return (
+    <Animated.View
+      exiting={FadeOut.duration(400)}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#0E0F10',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 999,
+      }}
+    >
+      <Image
+        source={require('../assets/splash-icon.png')}
+        style={{ width: 220, height: 220, resizeMode: 'contain' }}
+      />
+      <Text
+        style={{
+          color: '#FFFFFF',
+          fontSize: 24,
+          fontFamily: 'Inter_700Bold',
+          marginTop: 28,
+          textAlign: 'center',
+          lineHeight: 34,
+          letterSpacing: 0.5,
+        }}
+      >
+        He Drives,{'\n'}You Pay.
+      </Text>
+    </Animated.View>
+  );
+}
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -91,6 +130,7 @@ export default function RootLayout() {
     Inter_700Bold,
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);
+  const [overlayVisible, setOverlayVisible] = useState(true);
 
   // Start auth init immediately — parallel with font loading, not after it.
   useAuthListener();
@@ -101,6 +141,9 @@ export default function RootLayout() {
     const ready = (fontsLoaded || !!fontError) && isInitialized;
     if (ready) {
       SplashScreen.hideAsync().catch(() => {});
+      // Hold the branded overlay a beat so the tagline can land.
+      const t = setTimeout(() => setOverlayVisible(false), 1500);
+      return () => clearTimeout(t);
     }
   }, [fontsLoaded, fontError, isInitialized]);
 
@@ -122,6 +165,7 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0E0F10' }}>
             <StatusBar style="light" backgroundColor="#0E0F10" />
             <RootLayoutNav />
+            {overlayVisible && <SplashOverlay />}
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </QueryClientProvider>

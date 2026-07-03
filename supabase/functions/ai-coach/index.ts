@@ -30,11 +30,35 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, sessionType } = await req.json();
+    const { messages, sessionType, context } = await req.json();
 
-    const systemMessage = sessionType === 'sos'
+    let systemMessage = sessionType === 'sos'
       ? SYSTEM_PROMPT + '\n\nThis is an SOS session. The user is reaching out in a moment of crisis. Be especially warm and present.'
       : SYSTEM_PROMPT;
+
+    // Personal context the app sends (first names and the user's own stats,
+    // shared with their consent via the app). Weave it in naturally — never
+    // recite it back as a list.
+    if (context && typeof context === 'object') {
+      const lines: string[] = [];
+      if (context.username) lines.push(`They go by ${context.username}.`);
+      if (context.partnerName) lines.push(`Partner: ${context.partnerName}.`);
+      if (context.childrenNames) lines.push(`Children: ${context.childrenNames}.`);
+      if (context.petName) lines.push(`Pet: ${context.petName}.`);
+      if (typeof context.urgesBeaten === 'number' && context.urgesBeaten > 0)
+        lines.push(`They have beaten ${context.urgesBeaten} urges using the app.`);
+      if (typeof context.afDaysThisMonth === 'number' && context.afDaysThisMonth > 0)
+        lines.push(`${context.afDaysThisMonth} alcohol-free days marked this month.`);
+      if (context.sessionActive)
+        lines.push('They are CURRENTLY in a drinking session — meet them there without judgement.');
+      if (context.livesIsolated)
+        lines.push('They live somewhere rural/isolated; in-person support is hard to reach.');
+      if (lines.length > 0) {
+        systemMessage +=
+          '\n\nWhat you quietly know about this person (use it naturally when relevant, never recite it):\n- ' +
+          lines.join('\n- ');
+      }
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
