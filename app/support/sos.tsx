@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { AiCoachChat } from '@/components/support/AiCoachChat';
+import { useAuthStore } from '@/store/authStore';
+import { logSupportTap } from '@/hooks/useTrustedPerson';
 
 export default function SosScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const userId = useAuthStore((s) => s.user?.id);
+
+  // Reaching for support is the 🔴 signal a trusted person can see.
+  useEffect(() => {
+    logSupportTap(userId);
+  }, [userId]);
 
   return (
     <View

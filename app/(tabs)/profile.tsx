@@ -156,6 +156,10 @@ export default function ProfileScreen() {
               onPress: () => router.push('/messages'),
             },
             {
+              label: 'Trusted person',
+              onPress: () => router.push('/profile/trusted'),
+            },
+            {
               label: profile?.is_mentor ? 'Your mentoring' : 'Become a mentor',
               onPress: () => router.push('/profile/become-mentor'),
             },
