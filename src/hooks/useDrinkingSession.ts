@@ -45,13 +45,18 @@ export function useStartSession() {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setActiveSession(data.id);
       queryClient.invalidateQueries({ queryKey: ['active-session', userId] });
-      // Start the gentle "slow down" nudges for the length of the session.
+      // Start the gentle "slow down" nudges — unless they've turned them off.
       const prefs = (useAuthStore.getState().profile?.preferences ??
         null) as UserPreferences | null;
-      if (prefs) scheduleSessionNudges(prefs);
+      const { data: np } = await supabase
+        .from('notification_preferences')
+        .select('session_nudges')
+        .eq('user_id', userId!)
+        .maybeSingle();
+      if (prefs && np?.session_nudges !== false) scheduleSessionNudges(prefs);
     },
   });
 }

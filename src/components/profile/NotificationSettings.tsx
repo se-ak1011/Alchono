@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 type PrefKey =
   | 'daily_checkin'
   | 'drinking_reminders'
+  | 'session_nudges'
   | 'milestone_alerts'
   | 'morning_reflection'
   | 'community_updates';
@@ -16,6 +17,7 @@ const NOTIF_ITEMS: { key: PrefKey; label: string; description: string }[] = [
   { key: 'daily_checkin', label: 'Daily check-in', description: 'Gentle morning reminder' },
   { key: 'morning_reflection', label: 'Morning reflection', description: 'Prompt after a session' },
   { key: 'drinking_reminders', label: 'Pause reminders', description: 'Support during a session' },
+  { key: 'session_nudges', label: 'Slow-down nudges', description: 'Gentle buzzes to pace yourself while drinking' },
   { key: 'milestone_alerts', label: 'Milestones', description: 'Celebrate your progress' },
   { key: 'community_updates', label: 'Community', description: 'Replies and reactions' },
 ];

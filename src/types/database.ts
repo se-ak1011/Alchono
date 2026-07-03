@@ -439,6 +439,7 @@ export interface Database {
           user_id: string;
           daily_checkin: boolean;
           drinking_reminders: boolean;
+          session_nudges: boolean;
           milestone_alerts: boolean;
           community_updates: boolean;
           morning_reflection: boolean;
@@ -449,6 +450,7 @@ export interface Database {
           user_id: string;
           daily_checkin?: boolean;
           drinking_reminders?: boolean;
+          session_nudges?: boolean;
           milestone_alerts?: boolean;
           community_updates?: boolean;
           morning_reflection?: boolean;
@@ -457,6 +459,7 @@ export interface Database {
         Update: {
           daily_checkin?: boolean;
           drinking_reminders?: boolean;
+          session_nudges?: boolean;
           milestone_alerts?: boolean;
           community_updates?: boolean;
           morning_reflection?: boolean;
