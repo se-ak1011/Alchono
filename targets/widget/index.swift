@@ -16,6 +16,10 @@ let sessionNudges = [
   "Pick your stopping point now, while it's your call.",
 ]
 
+// The two brand tokens the widget leans on.
+let blackBase = Color(red: 0.024, green: 0.027, blue: 0.031)   // #060708
+let purpleBase = Color(red: 0.070, green: 0.051, blue: 0.090)  // #120D17 — the devil's tint
+
 struct AlchonoEntry: TimelineEntry {
   let date: Date
   let urgesBeaten: Int
@@ -86,79 +90,62 @@ struct AlchonoWidgetView: View {
   var entry: AlchonoEntry
   @Environment(\.widgetFamily) var family
 
-  // Grey when alcohol-free / idle, darkest black when a session is live.
-  var background: Color {
-    entry.sessionActive
-      ? Color(red: 0.024, green: 0.027, blue: 0.031)   // #060708
-      : Color(red: 0.204, green: 0.212, blue: 0.224)   // #34363A grey
-  }
+  // Deep black when sober; the purple devil's-tint when a session is live.
+  var base: Color { entry.sessionActive ? purpleBase : blackBase }
+  var artName: String { entry.sessionActive ? "CharacterDrinking" : "CharacterSober" }
 
   var body: some View {
-    Group {
-      if entry.sessionActive, let start = entry.sessionStart {
-        activeView(start: start)
-      } else {
-        idleView
-      }
-    }
-    .containerBackground(background, for: .widget)
-  }
-
-  // MARK: Session live
-
-  func activeView(start: Date) -> some View {
-    VStack(alignment: .leading, spacing: 6) {
-      HStack {
-        Text("SESSION")
-          .font(.system(size: 10, weight: .bold))
-          .tracking(2)
-          .foregroundColor(.white.opacity(0.5))
-        Spacer()
-        Circle().fill(Color.white.opacity(0.6)).frame(width: 6, height: 6)
-      }
-
-      // Self-updating elapsed timer — no timeline refresh needed.
-      Text(start, style: .timer)
-        .font(.system(size: family == .systemMedium ? 30 : 26, weight: .bold, design: .rounded))
-        .foregroundColor(.white)
-        .minimumScaleFactor(0.6)
-        .lineLimit(1)
-
-      Spacer(minLength: 0)
-
-      Text(entry.nudge)
-        .font(.system(size: 12, weight: .medium))
-        .foregroundColor(.white.opacity(0.75))
-        .lineLimit(family == .systemMedium ? 2 : 3)
-        .fixedSize(horizontal: false, vertical: true)
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-  }
-
-  // MARK: Idle
-
-  var idleView: some View {
-    VStack(spacing: 6) {
-      Image("Character")
+    // The character art is on its own near-black field, so scaledToFit over a
+    // matching base reads as a full character with no visible letterbox.
+    ZStack(alignment: family == .systemMedium ? .bottomLeading : .bottom) {
+      Image(artName)
         .resizable()
         .scaledToFit()
-        .frame(maxHeight: family == .systemMedium ? 60 : 52)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-      VStack(spacing: 2) {
+      // Scrim so the copy stays legible over the figure's lower half.
+      LinearGradient(
+        colors: [base.opacity(0), base.opacity(0.5), base.opacity(0.95)],
+        startPoint: .center, endPoint: .bottom
+      )
+
+      overlayText
+        .padding(family == .systemMedium ? 16 : 12)
+    }
+    .containerBackground(base, for: .widget)
+  }
+
+  @ViewBuilder
+  var overlayText: some View {
+    if entry.sessionActive, let start = entry.sessionStart {
+      VStack(alignment: .leading, spacing: 3) {
+        Text("SESSION")
+          .font(.system(size: 9, weight: .bold)).tracking(2)
+          .foregroundColor(.white.opacity(0.55))
+        // Self-updating elapsed timer — no timeline refresh needed.
+        Text(start, style: .timer)
+          .font(.system(size: family == .systemMedium ? 26 : 22, weight: .bold, design: .rounded))
+          .foregroundColor(.white)
+          .lineLimit(1).minimumScaleFactor(0.6)
+        Text(entry.nudge)
+          .font(.system(size: 11, weight: .medium))
+          .foregroundColor(.white.opacity(0.75))
+          .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+    } else {
+      VStack(alignment: .leading, spacing: 1) {
         Text("\(entry.urgesBeaten) urge\(entry.urgesBeaten == 1 ? "" : "s") beaten")
           .font(.system(size: 15, weight: .bold))
           .foregroundColor(.white)
-          .minimumScaleFactor(0.7)
-          .lineLimit(1)
-
+          .lineLimit(1).minimumScaleFactor(0.7)
         Text("\(entry.afDays) AF day\(entry.afDays == 1 ? "" : "s") this month")
-          .font(.system(size: 12, weight: .medium))
+          .font(.system(size: 11, weight: .medium))
           .foregroundColor(.white.opacity(0.7))
-          .minimumScaleFactor(0.7)
-          .lineLimit(1)
+          .lineLimit(1).minimumScaleFactor(0.7)
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 }
 
