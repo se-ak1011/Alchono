@@ -8,21 +8,31 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAvailableMentors, useRequestMentor } from '@/hooks/useMentors';
+import { useAuthStore } from '@/store/authStore';
 import { MENTOR_LEVELS } from '@/types';
 
 export function MentorList() {
   const { data: mentors, isLoading } = useAvailableMentors();
   const { mutate: requestMentor, isPending } = useRequestMentor();
   const [requestedId, setRequestedId] = useState<string | null>(null);
+  const iAmIsolated =
+    ((useAuthStore((s) => s.profile)?.preferences as any)?.livesIsolated ?? false) === true;
 
   if (isLoading) return <LoadingSpinner message="Finding mentors…" />;
 
   const levelLabel = (value: string) =>
     MENTOR_LEVELS.find((l) => l.value === value)?.label ?? value;
 
+  // Isolated users see mentors who also live rural first — they get it.
+  const sorted = iAmIsolated
+    ? [...(mentors ?? [])].sort(
+        (a, b) => Number((b as any).is_rural ?? false) - Number((a as any).is_rural ?? false),
+      )
+    : mentors;
+
   return (
     <FlatList
-      data={mentors}
+      data={sorted}
       keyExtractor={(item) => item.id}
       contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
       showsVerticalScrollIndicator={false}
@@ -46,6 +56,9 @@ export function MentorList() {
                     label={levelLabel(item.recovery_level)}
                     variant="accent"
                   />
+                  {(item as any).is_rural && (
+                    <Badge label="Rural" variant="accent" />
+                  )}
                 </View>
                 <Text className="text-text-secondary text-sm">
                   {item.total_sessions} sessions · Available now

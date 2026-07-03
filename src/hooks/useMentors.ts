@@ -111,6 +111,9 @@ export function useSaveMentorProfile() {
             recovery_level: recoveryLevel,
             bio: bio.trim() || null,
             is_available: isAvailable,
+            is_rural:
+              ((useAuthStore.getState().profile?.preferences as any)
+                ?.livesIsolated ?? false) === true,
           },
           { onConflict: 'user_id' },
         )

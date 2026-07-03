@@ -203,6 +203,7 @@ export interface Database {
           recovery_level: string;
           bio: string | null;
           is_available: boolean;
+          is_rural: boolean;
           total_sessions: number;
         };
         Insert: {
@@ -212,12 +213,14 @@ export interface Database {
           recovery_level: string;
           bio?: string | null;
           is_available?: boolean;
+          is_rural?: boolean;
           total_sessions?: number;
         };
         Update: {
           recovery_level?: string;
           bio?: string | null;
           is_available?: boolean;
+          is_rural?: boolean;
           total_sessions?: number;
         };
       };
