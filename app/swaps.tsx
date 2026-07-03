@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable, Linking } from 'react-native';
+import { View, Text, ScrollView, Pressable, Linking, Alert } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -92,36 +92,40 @@ export default function SwapsScreen() {
           available in most UK supermarkets.
         </Text>
 
-        {SWAP_SECTIONS.map((section) => (
-          <View key={section.heading} className="mb-6">
+        {SWAP_SECTIONS.map((section, si) => (
+          <Animated.View
+            key={section.heading}
+            entering={FadeInDown.duration(300).delay(si * 60)}
+            className="mb-6"
+          >
             <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
               {section.heading}
             </Text>
-            {section.items.map((item, i) => (
-              <Animated.View
+            {section.items.map((item) => (
+              <Pressable
                 key={item.name}
-                entering={FadeInDown.duration(300).delay(i * 40)}
+                onPress={async () => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  try {
+                    await Linking.openURL(item.url);
+                  } catch {
+                    Alert.alert('Could not open', item.url);
+                  }
+                }}
+                className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
               >
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    Linking.openURL(item.url).catch(() => {});
-                  }}
-                  className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
-                >
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-text-primary text-base font-semibold mb-0.5 flex-1 pr-3">
-                      {item.name}
-                    </Text>
-                    <Text className="text-text-muted text-sm">→</Text>
-                  </View>
-                  <Text className="text-text-secondary text-sm leading-relaxed">
-                    {item.note}
+                <View className="flex-row items-center justify-between">
+                  <Text className="text-text-primary text-base font-semibold mb-0.5 flex-1 pr-3">
+                    {item.name}
                   </Text>
-                </Pressable>
-              </Animated.View>
+                  <Text className="text-text-muted text-sm">→</Text>
+                </View>
+                <Text className="text-text-secondary text-sm leading-relaxed">
+                  {item.note}
+                </Text>
+              </Pressable>
             ))}
-          </View>
+          </Animated.View>
         ))}
 
         <Text className="text-text-muted text-sm leading-relaxed mb-4">

@@ -14,9 +14,6 @@ import * as Haptics from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuthStore } from '@/store/authStore';
-import { useAppStore } from '@/store/appStore';
-import { supabase } from '@/lib/supabase';
-import { queryClient } from '@/lib/queryClient';
 import {
   useProfessional,
   useMyClients,
@@ -86,8 +83,6 @@ export default function ProDashboard() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const profile = useAuthStore((s) => s.profile);
-  const resetAuth = useAuthStore((s) => s.reset);
-  const resetApp = useAppStore((s) => s.reset);
   const { data: pro } = useProfessional();
   const { data: clients } = useMyClients();
   const { mutate: requestClient, isPending: requesting } = useRequestClient();
@@ -106,14 +101,6 @@ export default function ProDashboard() {
     });
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut().catch(() => {});
-    queryClient.clear();
-    resetApp();
-    resetAuth();
-    router.replace('/(auth)/login');
-  };
-
   return (
     <View
       className="flex-1 bg-bg"
@@ -128,14 +115,7 @@ export default function ProDashboard() {
             {profile?.username ?? 'Counsellor'}{pro?.org ? ` · ${pro.org}` : ''}
           </Text>
         </View>
-        <View className="flex-row gap-4 mt-1">
-          <Pressable onPress={() => router.push('/admin/accounts' as any)} hitSlop={8}>
-            <Text className="text-text-muted text-sm">Switch</Text>
-          </Pressable>
-          <Pressable onPress={handleSignOut} hitSlop={8}>
-            <Text className="text-text-muted text-sm">Sign out</Text>
-          </Pressable>
-        </View>
+
       </View>
 
       <ScrollView

@@ -38,7 +38,13 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
     if (!session && !inAuth) {
       router.replace('/(auth)/login');
-    } else if (session && (profile as any)?.is_professional && !inPro) {
+    } else if (
+      session &&
+      (profile as any)?.is_professional &&
+      !inPro &&
+      // The device-level account switcher is the one shared screen.
+      !(segments[0] === 'admin' && (segments as string[])[1] === 'accounts')
+    ) {
       // Professionals live in their own portal, not the member app.
       router.replace('/pro' as any);
     } else if (session && !profile?.onboarding_completed && !inOnboarding) {
@@ -76,8 +82,7 @@ function RootLayoutNav() {
         <Stack.Screen name="admin/reports" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="timeline" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="pro/index" />
-        <Stack.Screen name="pro/add/[username]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="pro" />
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/good-feed" options={{ animation: 'slide_from_right' }} />

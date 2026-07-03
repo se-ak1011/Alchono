@@ -6,7 +6,6 @@ import * as Haptics from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuthStore } from '@/store/authStore';
-import { useIsAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/lib/supabase';
 import {
   getSavedAccounts,
@@ -20,7 +19,6 @@ export default function AccountSwitcherScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user, profile } = useAuthStore();
-  const { data: isAdmin } = useIsAdmin();
   const [accounts, setAccounts] = useState<SavedAccount[]>([]);
   const [switching, setSwitching] = useState(false);
 
@@ -49,20 +47,6 @@ export default function AccountSwitcherScreen() {
       setSwitching(false);
     }
   };
-
-  // Device-level tool: visible to admins, or once accounts are saved.
-  if (!isAdmin && accounts.length === 0) {
-    return (
-      <View className="flex-1 bg-bg items-center justify-center px-10">
-        <Text className="text-text-muted text-base text-center">
-          Nothing here.
-        </Text>
-        <Pressable onPress={() => router.back()} className="mt-6" hitSlop={12}>
-          <Text className="text-text-secondary text-base">← Back</Text>
-        </Pressable>
-      </View>
-    );
-  }
 
   return (
     <View
