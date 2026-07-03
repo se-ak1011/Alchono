@@ -13,7 +13,7 @@ const SWAP_SECTIONS: {
   {
     heading: 'Beers (0.0%)',
     items: [
-      { name: "Beck's Blue", url: 'https://www.becks.de/en/beers/becks-blue', note: 'The classic 0.0 pilsner. Everywhere, cheap.' },
+      { name: "Beck's Blue", url: 'https://www.becks.de/', note: 'The classic 0.0 pilsner. Everywhere, cheap.' },
       { name: 'Lucky Saint', url: 'https://luckysaint.co', note: 'Unfiltered lager — the one beer people can’t tell apart.' },
       { name: 'Guinness 0.0', url: 'https://www.guinness.com/en-gb/our-beers/guinness-0-0', note: 'Genuinely tastes like Guinness. Widely stocked.' },
       { name: 'Heineken 0.0', url: 'https://www.heineken.com/gb/en/heineken-00', note: 'Available in almost every pub and shop.' },
