@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, Pressable, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Card } from '@/components/ui/Card';
 import { InsightCard } from '@/components/insights/InsightCard';
@@ -80,6 +81,7 @@ export default function InsightsScreen() {
   const { data: urgeStats } = useUrgeStats(period);
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
   const { width } = useWindowDimensions();
+  const router = useRouter();
 
   const checkinDays = insights?.filter((d) => d.mood).length ?? 0;
 
@@ -102,13 +104,21 @@ export default function InsightsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 32 }}
       >
-        <View className="px-6 pt-4 pb-3">
-          <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
-            Patterns
-          </Text>
-          <Text className="text-text-secondary text-sm mt-1">
-            Your record.
-          </Text>
+        <View className="flex-row items-start justify-between px-6 pt-4 pb-3">
+          <View>
+            <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+              Patterns
+            </Text>
+            <Text className="text-text-secondary text-sm mt-1">
+              Your record.
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push('/timeline')}
+            className="bg-surface rounded-xl px-3.5 py-2.5 border border-white/8 active:border-white/20 mt-1"
+          >
+            <Text className="text-text-secondary text-sm font-medium">Your story →</Text>
+          </Pressable>
         </View>
 
         {/* Period selector */}
