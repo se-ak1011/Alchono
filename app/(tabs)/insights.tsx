@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, Pressable, useWindowDimensions } from 'react-native';
+import { ScrollView, View, Text, Pressable, useWindowDimensions, Share } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
@@ -9,7 +9,8 @@ import { MoodChart } from '@/components/insights/MoodChart';
 import { PatternChart } from '@/components/insights/PatternChart';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
-import { useUrgeStats, useAfDaysCount } from '@/hooks/useVictories';
+import { useUrgeStats, useAfDaysCount, useTypicalUrgeMinutes } from '@/hooks/useVictories';
+import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
@@ -82,8 +83,37 @@ export default function InsightsScreen() {
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
   const { width } = useWindowDimensions();
   const router = useRouter();
+  const { data: typicalMinutes } = useTypicalUrgeMinutes();
+  const username = useAuthStore((st) => st.profile?.username);
 
   const checkinDays = insights?.filter((d) => d.mood).length ?? 0;
+  const sessionDayCount = insights?.filter((d) => d.hadSession).length ?? 0;
+
+  const handleShareSummary = async () => {
+    const moodCounts: Record<string, number> = {};
+    for (const d of insights ?? []) {
+      if (d.mood) moodCounts[d.mood] = (moodCounts[d.mood] ?? 0) + 1;
+    }
+    const topMood = Object.entries(moodCounts).sort(([, a], [, b]) => b - a)[0]?.[0];
+
+    const lines = [
+      `${username ?? 'My'} Alchono summary — last ${period} days`,
+      '',
+      `• Alcohol-free days: ${alcoholFreeDays}`,
+      `• Urges beaten: ${urgeStats?.periodPassed ?? 0}`,
+      `• Check-ins: ${checkinDays} of ${period} days`,
+      `• Drinking sessions: ${sessionDayCount}`,
+      `• Pauses taken mid-session: ${totalPauses}`,
+    ];
+    if (topMood) lines.push(`• Most common mood: ${topMood}`);
+    if (typicalMinutes) lines.push(`• Urges typically pass in ~${typicalMinutes} min`);
+    lines.push(
+      '',
+      `Generated ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} · self-reported, from the Alchono app.`,
+      'Shared by the member. Trends only — journals and conversations stay private.',
+    );
+    await Share.share({ message: lines.join('\n') });
+  };
 
   const triggerCounts = insights?.reduce<Record<string, number>>((acc, d) => {
     for (const t of d.triggers) {
@@ -175,6 +205,18 @@ export default function InsightsScreen() {
                 subtitle="taken"
               />
             </View>
+
+            {/* Member-initiated snapshot — for counsellors, sponsors, or anyone
+                they choose. Free by design; the paid portal is for continuous
+                remote visibility, not this. */}
+            <Pressable
+              onPress={handleShareSummary}
+              className="mx-6 mb-4 py-3.5 rounded-2xl bg-surface border border-white/8 items-center active:border-white/20"
+            >
+              <Text className="text-text-secondary text-sm font-semibold">
+                Share this summary →
+              </Text>
+            </Pressable>
 
             {/* Pattern insights */}
             {patterns.length > 0 && (
