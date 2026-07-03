@@ -101,10 +101,11 @@ function RootLayoutNav() {
 }
 
 function SplashOverlay() {
-  // Pixel-match the native splash (square image, contain-fit = full screen
-  // width, centered) so the native→JS handoff is invisible; only the tagline
-  // fades in on top of it.
+  // Pixel-match the native splash so the native→JS handoff is invisible:
+  // the expo-splash-screen plugin renders splash-icon.png at 400pt wide,
+  // centered. Draw exactly that, and only fade the tagline in on top.
   const { width, height } = Dimensions.get('window');
+  const logo = Math.min(400, width);
   return (
     <Animated.View
       exiting={FadeOut.duration(400)}
@@ -119,13 +120,13 @@ function SplashOverlay() {
       }}
     >
       <Image
-        source={require('../assets/splash.png')}
+        source={require('../assets/splash-icon.png')}
         style={{
           position: 'absolute',
-          top: (height - width) / 2,
-          left: 0,
-          width,
-          height: width,
+          top: (height - logo) / 2,
+          left: (width - logo) / 2,
+          width: logo,
+          height: logo,
           resizeMode: 'contain',
         }}
       />
@@ -133,7 +134,7 @@ function SplashOverlay() {
         entering={FadeIn.duration(600).delay(150)}
         style={{
           position: 'absolute',
-          top: (height + width) / 2 - 12,
+          top: (height + logo) / 2 - 12,
           left: 0,
           right: 0,
           color: '#FFFFFF',
