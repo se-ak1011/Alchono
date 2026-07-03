@@ -12,6 +12,7 @@ import {
   saveAccount,
   removeAccount,
   switchToAccount,
+  NeedsPasswordError,
   type SavedAccount,
 } from '@/lib/accountSwitcher';
 
@@ -33,16 +34,36 @@ export default function AccountSwitcherScreen() {
     setAccounts(await saveAccount(data.session, profile?.username ?? 'unnamed'));
   };
 
-  const handleSwitch = async (account: SavedAccount) => {
+  const handleSwitch = async (account: SavedAccount, password?: string) => {
     if (account.userId === user?.id) return;
     setSwitching(true);
     try {
-      await switchToAccount(account);
+      await switchToAccount(account, password);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       // AuthGate takes over from here (member -> tabs, professional -> /pro).
       router.replace('/(tabs)' as any);
     } catch (e) {
-      Alert.alert('Could not switch', e instanceof Error ? e.message : 'Try again.');
+      if (e instanceof NeedsPasswordError) {
+        // One-time ask: the password goes into the device Keychain, after
+        // which this account switches silently forever. (Alert.prompt is
+        // iOS-only, which is where all TestFlight testing happens.)
+        Alert.prompt(
+          `Password for ${account.label}`,
+          'The saved session expired. Enter the password once — it stays in this device\'s Keychain so future switches are instant.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Switch',
+              onPress: (pw) => {
+                if (pw) handleSwitch(account, pw);
+              },
+            },
+          ],
+          'secure-text',
+        );
+      } else {
+        Alert.alert('Could not switch', e instanceof Error ? e.message : 'Try again.');
+      }
     } finally {
       setSwitching(false);
     }
@@ -65,8 +86,9 @@ export default function AccountSwitcherScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text className="text-text-muted text-sm leading-relaxed mb-5">
-          Testing tool: saved accounts swap instantly, no passwords. Sessions
-          are stored on this device only.
+          Testing tool: saved accounts swap instantly. If a saved session has
+          expired you'll be asked for that account's password once — it's kept
+          in this device's Keychain so every switch after that is instant.
         </Text>
 
         <Button
