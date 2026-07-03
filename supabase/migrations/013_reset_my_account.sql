@@ -36,3 +36,9 @@ $$;
 
 COMMENT ON FUNCTION reset_my_account(TEXT) IS
   'Deletes all profile-owned data for an auth user, recreates a blank profile for re-onboarding, and leaves auth.users untouched. Ready-to-run example: SELECT reset_my_account(''drainedstore@gmail.com'');';
+
+REVOKE ALL ON FUNCTION reset_my_account(TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION reset_my_account(TEXT) TO service_role;
+
+-- Ready-to-run example:
+-- SELECT reset_my_account('drainedstore@gmail.com');
