@@ -26,7 +26,8 @@
         "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
-        "aps-environment": "production"
+        "aps-environment": "production",
+        "com.apple.security.application-groups": ["group.com.alchono.app"]
       }
     },
     "android": {
@@ -68,7 +69,13 @@
           "backgroundColor": "#0E0F10"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "@bacons/apple-targets",
+        {
+          "appleTeamId": "REPLACE_WITH_YOUR_TEAM_ID"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

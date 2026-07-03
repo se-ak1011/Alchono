@@ -92,6 +92,12 @@ workflows:
             --type IOS_APP_STORE \
             --create \
             --certificate-key-password "${CERTIFICATE_PRIVATE_KEY_PASSWORD:-}" || true
+          # Widget extension is a second target with its own bundle id; it needs
+          # its own App Store provisioning profile or build-ipa fails to sign it.
+          app-store-connect fetch-signing-files "${IOS_BUNDLE_IDENTIFIER}.widget" \
+            --type IOS_APP_STORE \
+            --create \
+            --certificate-key-password "${CERTIFICATE_PRIVATE_KEY_PASSWORD:-}" || true
           keychain add-certificates
 
           echo "== Certificates in keychain after setup =="

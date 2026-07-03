@@ -14,6 +14,7 @@ import { PauseModal } from '@/components/home/PauseModal';
 import { useYesterdaySession } from '@/hooks/useJournal';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
+import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -176,6 +177,7 @@ function CounsellorCard() {
 
 export default function HomeScreen() {
   useSmartReminder();
+  useWidgetSync();
   return (
     <SafeArea>
       <ScrollView
