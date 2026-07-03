@@ -79,6 +79,7 @@ function RootLayoutNav() {
         <Stack.Screen name="pro/index" />
         <Stack.Screen name="pro/add/[username]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/odd-one-out" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/word-search" options={{ animation: 'slide_from_right' }} />

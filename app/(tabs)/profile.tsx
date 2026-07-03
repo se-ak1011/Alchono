@@ -205,6 +205,10 @@ export default function ProfileScreen() {
                 label: 'Counsellor verification',
                 onPress: () => router.push('/admin/professionals'),
               },
+              {
+                label: 'Account switcher',
+                onPress: () => router.push('/admin/accounts'),
+              },
             ]}
           />
         )}

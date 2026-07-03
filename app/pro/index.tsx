@@ -128,9 +128,14 @@ export default function ProDashboard() {
             {profile?.username ?? 'Counsellor'}{pro?.org ? ` · ${pro.org}` : ''}
           </Text>
         </View>
-        <Pressable onPress={handleSignOut} hitSlop={8} className="mt-1">
-          <Text className="text-text-muted text-sm">Sign out</Text>
-        </Pressable>
+        <View className="flex-row gap-4 mt-1">
+          <Pressable onPress={() => router.push('/admin/accounts' as any)} hitSlop={8}>
+            <Text className="text-text-muted text-sm">Switch</Text>
+          </Pressable>
+          <Pressable onPress={handleSignOut} hitSlop={8}>
+            <Text className="text-text-muted text-sm">Sign out</Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView

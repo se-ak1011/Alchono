@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 import { useAppStore } from '@/store/appStore';
 import { queryClient } from '@/lib/queryClient';
+import { updateIfSaved } from '@/lib/accountSwitcher';
 
 export function useAuthListener() {
   const { setSession, setProfile, setInitialized } = useAuthStore();
@@ -42,6 +43,8 @@ export function useAuthListener() {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Always update the session so the JWT stays current.
       setSession(session);
+      // Keep account-switcher snapshots fresh across token rotations.
+      updateIfSaved(session).catch(() => {});
 
       if (event === 'SIGNED_IN') {
         // Clear stale data from a previous account before loading the new one.
