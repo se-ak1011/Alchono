@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { SafeArea } from '@/components/ui/SafeArea';
 import {
   useJournalNotes,
@@ -108,6 +108,7 @@ export default function JournalScreen() {
   }, []);
 
   const startRecording = async () => {
+    if (recording) return;
     try {
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -118,9 +119,17 @@ export default function JournalScreen() {
         return;
       }
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      // Full audio-session config: without an explicit interruption mode,
+      // iOS can refuse to activate a recording session while another app
+      // (music, a podcast) holds audio. DoNotMix takes the session over.
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false,
       });
       const { recording: rec } = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY,
@@ -128,8 +137,14 @@ export default function JournalScreen() {
       setRecording(rec);
       setRecordSeconds(0);
       timerRef.current = setInterval(() => setRecordSeconds((s) => s + 1), 1000);
-    } catch {
-      Alert.alert('Could not start recording', 'Please try again.');
+    } catch (e) {
+      console.error('[journal] startRecording failed:', e);
+      Alert.alert(
+        'Could not start recording',
+        e instanceof Error ? e.message : 'Please try again.',
+      );
+      // Leave the session clean so the next attempt starts fresh.
+      Audio.setAudioModeAsync({ allowsRecordingIOS: false }).catch(() => {});
     }
   };
 
