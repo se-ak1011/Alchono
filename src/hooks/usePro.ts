@@ -35,7 +35,15 @@ export function useProfessional() {
         .select('*')
         .eq('user_id', userId!)
         .maybeSingle();
-      return data as { user_id: string; org: string | null; verified: boolean } | null;
+      return data as {
+        user_id: string;
+        org: string | null;
+        bio: string | null;
+        website_url: string | null;
+        booking_url: string | null;
+        listed: boolean;
+        verified: boolean;
+      } | null;
     },
     enabled: !!userId,
   });
@@ -153,6 +161,61 @@ export function useRespondToCareRequest() {
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['care-team', userId] }),
+  });
+}
+
+export type DirectoryEntry = {
+  user_id: string;
+  org: string | null;
+  bio: string | null;
+  website_url: string | null;
+  booking_url: string | null;
+  username: string;
+};
+
+/** Public directory: verified + listed professionals only (RLS-enforced). */
+export function useCounsellorDirectory() {
+  return useQuery({
+    queryKey: ['counsellor-directory'],
+    queryFn: async (): Promise<DirectoryEntry[]> => {
+      const { data, error } = await supabase
+        .from('professionals' as any)
+        .select('user_id, org, bio, website_url, booking_url')
+        .eq('verified', true)
+        .eq('listed', true);
+      if (error) throw error;
+      const rows = (data ?? []) as any[];
+      if (!rows.length) return [];
+      const names = await fetchUsernames(rows.map((p) => p.user_id));
+      return rows.map((p) => ({
+        ...p,
+        username: names[p.user_id] ?? 'Counsellor',
+      }));
+    },
+  });
+}
+
+/** Professional: edit own practice details (verified flag is trigger-protected). */
+export function useUpdatePractice() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: async (fields: {
+      org?: string | null;
+      bio?: string | null;
+      website_url?: string | null;
+      booking_url?: string | null;
+      listed?: boolean;
+    }) => {
+      const { error } = await supabase
+        .from('professionals' as any)
+        .update(fields)
+        .eq('user_id', userId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['professional', userId] });
+      queryClient.invalidateQueries({ queryKey: ['counsellor-directory'] });
+    },
   });
 }
 

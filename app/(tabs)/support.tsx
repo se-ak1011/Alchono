@@ -204,6 +204,17 @@ const RESOURCE_SECTIONS: { heading: string; items: Resource[] }[] = [
     ],
   },
   {
+    heading: 'Professional help',
+    items: [
+      {
+        title: 'Find a counsellor',
+        description: 'Verified recovery professionals on Alchono — websites and booking links included.',
+        action: 'Browse the directory',
+        url: 'internal:/counsellors',
+      },
+    ],
+  },
+  {
     heading: 'Talk online',
     items: [
       {
