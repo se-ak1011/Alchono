@@ -42,6 +42,40 @@ const textClasses: Record<Variant, string> = {
   accent: 'text-text-secondary font-semibold',
 };
 
+// Depth without changing the vibe: the light primary button gets a soft
+// glow, dark buttons get a grounded drop shadow. Android maps to elevation.
+const variantShadows: Record<Variant, object> = {
+  primary: {
+    shadowColor: '#F0F2F4',
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 6,
+  },
+  secondary: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+  ghost: {},
+  danger: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+  accent: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+};
+
 const sizeClasses: Record<Size, string> = {
   sm: 'px-5 py-3 rounded-xl',
   md: 'px-6 py-4 rounded-xl',
@@ -90,6 +124,7 @@ export function Button({
           onPress?.(e);
         }}
         disabled={isDisabled}
+        style={isDisabled ? undefined : variantShadows[variant]}
         className={`flex-row items-center justify-center ${sizeClasses[size]} ${variantClasses[variant]} ${isDisabled ? 'opacity-50' : ''} ${className}`}
         {...rest}
       >

@@ -23,12 +23,23 @@ export function Card({ children, className = '', onPress, elevated = false, ...r
     transform: [{ scale: scale.value }],
   }));
 
-  const baseClass = `bg-surface rounded-2xl p-5 ${elevated ? 'border border-white/5' : ''} ${className}`;
+  const baseClass = `bg-surface rounded-2xl p-5 border border-white/5 ${className}`;
+
+  // A whisper of light on the top edge + a grounded shadow — cards lift off
+  // the background instead of sitting flat on it.
+  const depthStyle = {
+    borderTopColor: 'rgba(255,255,255,0.13)',
+    shadowColor: '#000000',
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  } as const;
 
   if (onPress) {
     return (
       <AnimatedPressable
-        style={animatedStyle}
+        style={[animatedStyle, depthStyle]}
         onPressIn={() => {
           scale.value = withSpring(0.98, { damping: 15, stiffness: 300 });
         }}
@@ -47,7 +58,7 @@ export function Card({ children, className = '', onPress, elevated = false, ...r
   }
 
   return (
-    <View className={baseClass} {...rest}>
+    <View className={baseClass} style={depthStyle} {...rest}>
       {children}
     </View>
   );
