@@ -224,7 +224,7 @@ export function DrinkingSession() {
           >
             <Text className="text-text-muted text-sm w-3">≈</Text>
             <Text className="text-text-primary text-base font-medium">
-              Feeling the urge
+              I want a drink
             </Text>
           </Pressable>
 

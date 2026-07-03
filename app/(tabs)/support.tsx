@@ -69,10 +69,10 @@ export default function SupportScreen() {
       >
         <View className="flex-1">
           <Text className="text-text-primary text-base font-semibold">
-            I'm having an urge
+            I want a drink
           </Text>
           <Text className="text-text-muted text-sm mt-1">
-            The app will take it from here.
+            Say it here first. The app will take it from there.
           </Text>
         </View>
         <Text className="text-text-muted text-lg">→</Text>
