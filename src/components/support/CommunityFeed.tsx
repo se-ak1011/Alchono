@@ -169,11 +169,13 @@ export function CommunityFeed({
               setIsAnon((v) => !v);
             }}
             hitSlop={8}
+            className="flex-1 pr-3"
           >
-            <Text className="text-text-muted text-sm">
+            {/* Truncate long usernames so this label can never push Post off-screen. */}
+            <Text className="text-text-muted text-sm" numberOfLines={1} ellipsizeMode="middle">
               {isAnon
-                ? '◆ Anonymous · tap to use your name'
-                : `◇ Posting as ${myUsername ?? 'you'} · tap to go anonymous`}
+                ? '◆ Anonymous · tap for your name'
+                : `◇ As ${myUsername ?? 'you'} · tap for anonymous`}
             </Text>
           </Pressable>
           <Pressable
@@ -191,6 +193,21 @@ export function CommunityFeed({
           </Pressable>
         </View>
       </View>
+
+      {/* Quiet path to professional help, right where people open up */}
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/counsellors');
+        }}
+        className="mx-4 mb-4 flex-row items-center justify-between bg-surface rounded-xl px-4 py-3 border border-white/5 active:border-white/15"
+      >
+        <Text className="text-text-muted text-sm flex-1 pr-3">
+          Rather talk to a professional?{' '}
+          <Text className="text-text-secondary font-medium">Find a counsellor</Text>
+        </Text>
+        <Text className="text-text-muted text-sm">→</Text>
+      </Pressable>
 
       {/* Post-share nudge — posting is a shout, this offers a conversation too */}
       {justPosted && (
