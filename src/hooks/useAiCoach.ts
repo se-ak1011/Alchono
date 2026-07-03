@@ -3,7 +3,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
-import type { ChatMessage } from '@/types';
+import { useAppStore } from '@/store/appStore';
+import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
+import type { ChatMessage, UserPreferences } from '@/types';
 
 export function useAiConversation(sessionType = 'general') {
   const userId = useAuthStore((s) => s.user?.id);
@@ -27,6 +29,10 @@ export function useAiConversation(sessionType = 'general') {
 
 export function useAiCoach(sessionType = 'general') {
   const userId = useAuthStore((s) => s.user?.id);
+  const profile = useAuthStore((s) => s.profile);
+  const activeSessionId = useAppStore((s) => s.activeSessionId);
+  const { data: urgeStats } = useUrgeStats();
+  const { data: afMonth } = useAfMonthCount();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '0',
@@ -55,6 +61,7 @@ export function useAiCoach(sessionType = 'general') {
       try {
         const allMessages = [...messages, userMsg];
 
+        const prefs = (profile?.preferences as UserPreferences | null) ?? null;
         const { data, error } = await supabase.functions.invoke('ai-coach', {
           body: {
             messages: allMessages.map((m) => ({
@@ -62,6 +69,17 @@ export function useAiCoach(sessionType = 'general') {
               content: m.content,
             })),
             sessionType,
+            // First names + their own stats so the coach isn't a stranger.
+            context: {
+              username: profile?.username ?? null,
+              partnerName: prefs?.partnerName?.trim() || null,
+              childrenNames: prefs?.childrenNames?.trim() || null,
+              petName: prefs?.petName?.trim() || null,
+              urgesBeaten: urgeStats?.allTimePassed ?? 0,
+              afDaysThisMonth: afMonth ?? 0,
+              sessionActive: !!activeSessionId,
+              livesIsolated: prefs?.livesIsolated ?? false,
+            },
           },
         });
 
