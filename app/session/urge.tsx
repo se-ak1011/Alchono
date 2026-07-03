@@ -67,12 +67,12 @@ function buildActions(prefs: UserPreferences | null): Action[] {
     });
   }
 
-  // 3. Games
+  // 3. Games — the from=urge param makes finishing a game ask "did it pass?"
   list.push({
     id: 'game',
     label: 'Play a game',
     subtitle: 'Give your mind something else to do.',
-    navigate: '/session/games',
+    navigate: '/session/games?from=urge',
   });
 
   // 4. A human (or not)

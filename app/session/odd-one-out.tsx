@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, Pressable, Dimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
@@ -36,6 +36,7 @@ function makeRound(level: number): Round {
 export default function OddOneOutScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { from } = useLocalSearchParams<{ from?: string }>();
 
   const [level, setLevel] = useState(1);
   const [best, setBest] = useState(0);
@@ -182,7 +183,7 @@ export default function OddOneOutScreen() {
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push('/session/post-game')}
+              onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 10, alignItems: 'center' }}
             >
               <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>

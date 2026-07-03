@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
@@ -40,6 +40,10 @@ const GAMES = [
 export default function GamesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { from } = useLocalSearchParams<{ from?: string }>();
+  // Games opened during an urge carry the context through, so finishing
+  // asks "did it pass?". Opened casually, they're just games.
+  const suffix = from === 'urge' ? '?from=urge' : '';
 
   return (
     <View
@@ -84,7 +88,7 @@ export default function GamesScreen() {
               <Pressable
                 onPress={async () => {
                   await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push(game.route as any);
+                  router.push((game.route + suffix) as any);
                 }}
                 style={{
                   backgroundColor: '#161718',
@@ -124,7 +128,7 @@ export default function GamesScreen() {
               <Pressable
                 onPress={async () => {
                   await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push(game.route as any);
+                  router.push((game.route + suffix) as any);
                 }}
                 style={{
                   backgroundColor: '#161718',

@@ -8,7 +8,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
@@ -106,6 +106,7 @@ function MemoryCard({
 export default function MemoryMatchScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { from } = useLocalSearchParams<{ from?: string }>();
   const today = Math.floor(Date.now() / 86400000);
 
   const makeCards = (seed: number): Card[] => {
@@ -259,7 +260,7 @@ export default function MemoryMatchScreen() {
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push('/session/post-game')}
+              onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 10, alignItems: 'center' }}
             >
               <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>

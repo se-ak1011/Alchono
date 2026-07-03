@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, Pressable, Dimensions } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
@@ -51,6 +51,7 @@ function makeRound(): Round {
 export default function StroopScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { from } = useLocalSearchParams<{ from?: string }>();
 
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
@@ -207,7 +208,7 @@ export default function StroopScreen() {
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push('/session/post-game')}
+              onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 12, alignItems: 'center' }}
             >
               <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>
