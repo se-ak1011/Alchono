@@ -57,6 +57,8 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
       <FlatList
         ref={flatListRef}
         data={messages}
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
         showsVerticalScrollIndicator={false}

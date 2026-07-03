@@ -254,6 +254,8 @@ export default function ThreadScreen() {
         <FlatList
           ref={listRef}
           data={messages ?? []}
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
           keyExtractor={(m) => m.id}
           renderItem={renderMessage}
           contentContainerStyle={{ paddingVertical: 16, flexGrow: 1 }}

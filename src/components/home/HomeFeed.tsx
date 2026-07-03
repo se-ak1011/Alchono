@@ -11,6 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { useCommunityFeed, useCreatePost, useReactToPost } from '@/hooks/useCommunity';
+import { useAuthStore } from '@/store/authStore';
 
 const REACTIONS = [
   { key: 'heart' as const,      label: '♥' },
@@ -25,13 +26,15 @@ export function HomeFeed() {
   const { mutate: createPost, isPending: isPosting } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const [newPost, setNewPost] = useState('');
+  const [isAnon, setIsAnon] = useState(true);
+  const myUsername = useAuthStore((st) => st.profile?.username);
 
   const posts = (data?.pages.flat() ?? []).slice(0, MAX_HOME_POSTS);
 
   const handlePost = () => {
     if (!newPost.trim() || isPosting) return;
     createPost(
-      { content: newPost.trim(), isAnonymous: true },
+      { content: newPost.trim(), isAnonymous: isAnon },
       { onSuccess: () => setNewPost('') },
     );
   };
@@ -60,7 +63,11 @@ export function HomeFeed() {
         />
         {newPost.trim().length > 0 && (
           <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-white/5">
-            <Text className="text-text-muted text-sm">Anonymous</Text>
+            <Pressable onPress={() => setIsAnon((v) => !v)} hitSlop={8}>
+              <Text className="text-text-muted text-sm">
+                {isAnon ? '\u25c6 Anonymous \u00b7 tap to switch' : `\u25c7 As ${myUsername ?? 'you'} \u00b7 tap to switch`}
+              </Text>
+            </Pressable>
             <Pressable
               onPress={handlePost}
               disabled={isPosting}
@@ -96,12 +103,12 @@ export function HomeFeed() {
                 <Card elevated>
                   <View className="flex-row items-start gap-3 mb-3">
                     <Avatar
-                      username={post.is_anonymous ? 'A' : (post as any).profiles?.username}
+                      username={post.is_anonymous ? 'A' : (post as any).username}
                       size="sm"
                     />
                     <View className="flex-1">
                       <Text className="text-text-muted text-sm font-medium">
-                        {post.is_anonymous ? 'Anonymous' : ((post as any).profiles?.username ?? 'Member')}
+                        {post.is_anonymous ? 'Anonymous' : ((post as any).username ?? 'Member')}
                       </Text>
                     </View>
                     <Text className="text-text-muted text-sm">

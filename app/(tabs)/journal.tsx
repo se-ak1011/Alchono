@@ -275,6 +275,8 @@ export default function JournalScreen() {
         {/* Notes */}
         <FlatList
           data={notes ?? []}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
           keyExtractor={(n) => n.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
