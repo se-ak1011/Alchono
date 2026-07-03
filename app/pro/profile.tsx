@@ -188,6 +188,39 @@ export default function ProProfileScreen() {
           </View>
         </View>
 
+        {/* Cross-sell: Path — the practice-admin companion (coming soon) */}
+        <Pressable
+          onPress={() =>
+            Alert.alert(
+              'Path — coming soon',
+              "An all-in-one admin assistant for your practice: quotes, calendar, invoicing, and an automatic tax pot. Built by the Alchono team. We'll let you know the moment it's ready.",
+            )
+          }
+          className="mx-6 mb-6 bg-surface rounded-2xl p-4 border border-white/8 active:border-white/20"
+          style={{
+            borderTopColor: 'rgba(255,255,255,0.14)',
+            shadowColor: '#000000',
+            shadowOpacity: 0.35,
+            shadowRadius: 12,
+            shadowOffset: { width: 0, height: 6 },
+          }}
+        >
+          <View className="flex-row items-center justify-between mb-1">
+            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              From the Alchono team
+            </Text>
+            <Text className="text-text-muted text-xs">Coming soon →</Text>
+          </View>
+          <Text className="text-text-primary text-base font-semibold mt-1">
+            Path — run your whole practice
+          </Text>
+          <Text className="text-text-secondary text-sm leading-relaxed mt-1">
+            Your all-in-one admin assistant: quotes, calendar, invoicing, and a
+            tax pot that fills itself. So you can spend your time with clients,
+            not paperwork.
+          </Text>
+        </Pressable>
+
         <SettingsSection
           title="Account"
           items={[
