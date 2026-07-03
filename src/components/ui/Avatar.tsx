@@ -17,6 +17,17 @@ export function Avatar({ username, imageUrl, size = 'md' }: AvatarProps) {
   const initials = username ? username.charAt(0).toUpperCase() : '?';
   const { container, text } = sizeMap[size];
 
+  // avatar_url can carry a chosen emoji instead of a photo: "emoji:🦊"
+  if (imageUrl?.startsWith('emoji:')) {
+    return (
+      <View
+        className={`${container} rounded-full bg-accent/20 border border-accent/30 items-center justify-center`}
+      >
+        <Text className={text}>{imageUrl.slice(6)}</Text>
+      </View>
+    );
+  }
+
   if (imageUrl) {
     return (
       <Image

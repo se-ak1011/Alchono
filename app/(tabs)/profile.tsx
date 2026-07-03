@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Text, Alert, Share, Linking } from 'react-native';
+import { ScrollView, View, Text, Alert, Share, Linking, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Avatar } from '@/components/ui/Avatar';
@@ -113,21 +113,27 @@ export default function ProfileScreen() {
           <Text className="text-text-primary text-3xl font-semibold tracking-tight mb-5" style={headingShadow}>
             Profile
           </Text>
-          <View className="flex-row items-center gap-4">
+          <Pressable
+            onPress={() => router.push('/profile/identity')}
+            className="flex-row items-center gap-4 active:opacity-70"
+          >
             <Avatar
               username={profile?.username}
               imageUrl={profile?.avatar_url}
               size="lg"
             />
-            <View>
-              <Text className="text-text-primary text-xl font-semibold">
-                {profile?.username ?? 'Anonymous'}
-              </Text>
+            <View className="flex-1">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-text-primary text-xl font-semibold">
+                  {profile?.username ?? 'Anonymous'}
+                </Text>
+                <Text className="text-text-muted text-sm">✎</Text>
+              </View>
               <Text className="text-text-muted text-base mt-0.5">
                 {user?.email}
               </Text>
             </View>
-          </View>
+          </Pressable>
         </View>
 
         <NotificationSettings />
