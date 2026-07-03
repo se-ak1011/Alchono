@@ -2,8 +2,8 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image } from 'react-native';
-import Animated, { FadeOut } from 'react-native-reanimated';
+import { View, Text, Image, Dimensions } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -101,6 +101,10 @@ function RootLayoutNav() {
 }
 
 function SplashOverlay() {
+  // Pixel-match the native splash (square image, contain-fit = full screen
+  // width, centered) so the native→JS handoff is invisible; only the tagline
+  // fades in on top of it.
+  const { width, height } = Dimensions.get('window');
   return (
     <Animated.View
       exiting={FadeOut.duration(400)}
@@ -111,28 +115,37 @@ function SplashOverlay() {
         right: 0,
         bottom: 0,
         backgroundColor: '#0E0F10',
-        alignItems: 'center',
-        justifyContent: 'center',
         zIndex: 999,
       }}
     >
       <Image
-        source={require('../assets/splash-icon.png')}
-        style={{ width: 220, height: 220, resizeMode: 'contain' }}
-      />
-      <Text
+        source={require('../assets/splash.png')}
         style={{
+          position: 'absolute',
+          top: (height - width) / 2,
+          left: 0,
+          width,
+          height: width,
+          resizeMode: 'contain',
+        }}
+      />
+      <Animated.Text
+        entering={FadeIn.duration(600).delay(150)}
+        style={{
+          position: 'absolute',
+          top: (height + width) / 2 - 12,
+          left: 0,
+          right: 0,
           color: '#FFFFFF',
           fontSize: 24,
           fontFamily: 'Inter_700Bold',
-          marginTop: 28,
           textAlign: 'center',
           lineHeight: 34,
           letterSpacing: 0.5,
         }}
       >
-        He Drives,{'\n'}You Pay.
-      </Text>
+        It Drives,{'\n'}You Pay.
+      </Animated.Text>
     </Animated.View>
   );
 }
