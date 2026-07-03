@@ -1,38 +1,39 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, Linking } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { headingShadow } from '@/styles';
 
 const SWAP_SECTIONS: {
   heading: string;
-  items: { name: string; note: string }[];
+  items: { name: string; note: string; url: string }[];
 }[] = [
   {
     heading: 'Beers (0.0%)',
     items: [
-      { name: "Beck's Blue", note: 'The classic 0.0 pilsner. Everywhere, cheap.' },
-      { name: 'Lucky Saint', note: 'Unfiltered lager — the one beer people can’t tell apart.' },
-      { name: 'Guinness 0.0', note: 'Genuinely tastes like Guinness. Widely stocked.' },
-      { name: 'Heineken 0.0', note: 'Available in almost every pub and shop.' },
-      { name: 'Days Lager', note: 'UK brewery that only makes alcohol-free.' },
-      { name: 'Big Drop Paradiso', note: 'Craft citra IPA without the morning after.' },
+      { name: "Beck's Blue", url: 'https://www.becks.de/en/beers/becks-blue', note: 'The classic 0.0 pilsner. Everywhere, cheap.' },
+      { name: 'Lucky Saint', url: 'https://luckysaint.co', note: 'Unfiltered lager — the one beer people can’t tell apart.' },
+      { name: 'Guinness 0.0', url: 'https://www.guinness.com/en-gb/our-beers/guinness-0-0', note: 'Genuinely tastes like Guinness. Widely stocked.' },
+      { name: 'Heineken 0.0', url: 'https://www.heineken.com/gb/en/heineken-00', note: 'Available in almost every pub and shop.' },
+      { name: 'Days Lager', url: 'https://daysbrewing.com', note: 'UK brewery that only makes alcohol-free.' },
+      { name: 'Big Drop Paradiso', url: 'https://uk.bigdropbrew.com', note: 'Craft citra IPA without the morning after.' },
     ],
   },
   {
     heading: 'Spirits & mixers',
     items: [
-      { name: 'Seedlip', note: 'The original distilled non-alcoholic spirit. With tonic.' },
-      { name: "Lyre's", note: 'Alcohol-free versions of nearly every spirit.' },
-      { name: 'CleanCo', note: 'Clean G(in) and tonic, without the gin part.' },
+      { name: 'Seedlip', url: 'https://www.seedlipdrinks.com', note: 'The original distilled non-alcoholic spirit. With tonic.' },
+      { name: "Lyre's", url: 'https://lyres.co.uk', note: 'Alcohol-free versions of nearly every spirit.' },
+      { name: 'CleanCo', url: 'https://clean.co', note: 'Clean G(in) and tonic, without the gin part.' },
     ],
   },
   {
     heading: 'Wine & fizz',
     items: [
-      { name: 'Nozeco', note: 'Alcohol-free fizz for toasts and celebrations.' },
-      { name: 'Torres Natureo', note: 'De-alcoholised wine that still tastes like wine.' },
+      { name: 'Nozeco', url: 'https://nozeco.com', note: 'Alcohol-free fizz for toasts and celebrations.' },
+      { name: 'Torres Natureo', url: 'https://www.torres.es/en/wines/natureo', note: 'De-alcoholised wine that still tastes like wine.' },
     ],
   },
 ];
@@ -100,14 +101,24 @@ export default function SwapsScreen() {
               <Animated.View
                 key={item.name}
                 entering={FadeInDown.duration(300).delay(i * 40)}
-                className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5"
               >
-                <Text className="text-text-primary text-base font-semibold mb-0.5">
-                  {item.name}
-                </Text>
-                <Text className="text-text-secondary text-sm leading-relaxed">
-                  {item.note}
-                </Text>
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    Linking.openURL(item.url).catch(() => {});
+                  }}
+                  className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
+                >
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-text-primary text-base font-semibold mb-0.5 flex-1 pr-3">
+                      {item.name}
+                    </Text>
+                    <Text className="text-text-muted text-sm">→</Text>
+                  </View>
+                  <Text className="text-text-secondary text-sm leading-relaxed">
+                    {item.note}
+                  </Text>
+                </Pressable>
               </Animated.View>
             ))}
           </View>
