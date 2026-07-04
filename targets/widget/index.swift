@@ -144,17 +144,42 @@ struct AlchonoWidgetView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
     } else {
       VStack(alignment: .leading, spacing: 1) {
-        Text("\(entry.urgesBeaten) urge\(entry.urgesBeaten == 1 ? "" : "s") beaten")
+        Text(idleHeadline)
           .font(.system(size: 15, weight: .bold))
           .foregroundColor(.white)
           .lineLimit(1).minimumScaleFactor(0.7)
-        Text("\(entry.afDays) AF day\(entry.afDays == 1 ? "" : "s") this month")
+        Text(idleSub)
           .font(.system(size: 11, weight: .medium))
           .foregroundColor(.white.opacity(0.7))
           .lineLimit(1).minimumScaleFactor(0.7)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
     }
+  }
+
+  // Idle copy is always framed positively and NEVER renders a "0 …" — an empty
+  // scoreboard reads like failure. Lead with alcohol-free days (unambiguously
+  // good, and it grows); reframe urges as "ridden out" to match urge-surfing.
+  var idleHeadline: String {
+    if entry.afDays > 0 {
+      return "\(entry.afDays) alcohol-free \(entry.afDays == 1 ? "day" : "days")"
+    }
+    if entry.urgesBeaten > 0 {
+      return "\(entry.urgesBeaten) urge\(entry.urgesBeaten == 1 ? "" : "s") ridden out"
+    }
+    return "You're here."
+  }
+
+  var idleSub: String {
+    if entry.afDays > 0 {
+      return entry.urgesBeaten > 0
+        ? "\(entry.urgesBeaten) urge\(entry.urgesBeaten == 1 ? "" : "s") ridden out"
+        : "this month"
+    }
+    if entry.urgesBeaten > 0 {
+      return "you rode the wave"
+    }
+    return "One day at a time."
   }
 }
 
