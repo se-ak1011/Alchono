@@ -19,12 +19,31 @@ interface AiCoachChatProps {
   sessionType?: string;
 }
 
+// "What do you need right now?" — one tap to open the conversation, so the user
+// never faces a blank box in a hard moment.
+const QUICK_ACTIONS: { label: string; message: string; urge?: boolean }[] = [
+  {
+    label: "I'm having an urge",
+    message: "I'm having an urge to drink right now. I need help getting through it.",
+    urge: true,
+  },
+  { label: 'I drank today', message: 'I drank today and I want to talk about it.' },
+  { label: 'I nearly drank', message: 'I nearly drank just now, but I didn’t.' },
+  { label: 'I feel overwhelmed', message: 'I feel overwhelmed right now.' },
+  { label: "I don't know what's wrong", message: "I don't know what's wrong, I just feel off." },
+  { label: 'Just talk to me', message: 'Can we just talk for a bit?' },
+];
+
 export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
   const router = useRouter();
   const { messages, isTyping, sendMessage } = useAiCoach(sessionType);
   const [input, setInput] = useState('');
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
+
+  // Show the openers only before the conversation has really started
+  // (just the assistant's greeting present).
+  const showQuickActions = messages.length <= 1;
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -46,6 +65,15 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     sendMessage("I'm having an urge to drink right now. I need help getting through it.");
     router.push('/session/urge');
+  };
+
+  const handleQuickAction = async (action: (typeof QUICK_ACTIONS)[number]) => {
+    if (action.urge) {
+      handleUrge();
+      return;
+    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    sendMessage(action.message);
   };
 
   return (
@@ -74,22 +102,53 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
         }
       />
 
-      {/* Urge quick-action — always visible, above input */}
-      <Pressable
-        onPress={handleUrge}
-        className="mx-4 mb-2 flex-row items-center justify-between bg-urge-surface rounded-xl px-5 py-4 border border-white/10 active:border-white/25"
-        style={{
-          shadowColor: '#120D17',
-          shadowOpacity: 0.8,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: 5 },
-        }}
-      >
-        <Text className="text-text-primary text-base font-medium">
-          I'm having an urge right now
-        </Text>
-        <Text className="text-text-muted text-sm">→</Text>
-      </Pressable>
+      {showQuickActions ? (
+        /* Openers — one tap to start, so there's never a blank box to fill */
+        <View className="px-4 mb-2">
+          <Text className="text-text-muted text-sm font-medium mb-2.5 px-1">
+            What do you need right now?
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {QUICK_ACTIONS.map((a) => (
+              <Pressable
+                key={a.label}
+                onPress={() => handleQuickAction(a)}
+                disabled={isTyping}
+                className={`px-4 py-2.5 rounded-full border ${
+                  a.urge
+                    ? 'bg-urge-surface border-white/15 active:border-white/35'
+                    : 'bg-surface border-white/10 active:border-white/25'
+                }`}
+              >
+                <Text
+                  className={`text-sm font-medium ${
+                    a.urge ? 'text-text-primary' : 'text-text-secondary'
+                  }`}
+                >
+                  {a.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : (
+        /* Once talking, keep the urge escape hatch always one tap away */
+        <Pressable
+          onPress={handleUrge}
+          className="mx-4 mb-2 flex-row items-center justify-between bg-urge-surface rounded-xl px-5 py-4 border border-white/10 active:border-white/25"
+          style={{
+            shadowColor: '#120D17',
+            shadowOpacity: 0.8,
+            shadowRadius: 10,
+            shadowOffset: { width: 0, height: 5 },
+          }}
+        >
+          <Text className="text-text-primary text-base font-medium">
+            I'm having an urge right now
+          </Text>
+          <Text className="text-text-muted text-sm">→</Text>
+        </Pressable>
+      )}
 
       <View
         className="flex-row items-end gap-3 px-4 py-3 border-t border-white/5 bg-bg"
