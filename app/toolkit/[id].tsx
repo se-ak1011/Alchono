@@ -5,7 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
-import { toolById, KIND_META, type ToolSection } from '@/lib/toolkit';
+import { toolById, CATEGORY_META, type ToolSection } from '@/lib/toolkit';
 import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
 import { headingShadow } from '@/styles';
 
@@ -142,7 +142,7 @@ export default function ToolDetailScreen() {
           <View className="flex-row items-center gap-2 mb-3">
             <View className="px-2.5 py-1 rounded-full bg-surface-2 border border-white/10">
               <Text className="text-text-muted text-xs font-medium">
-                {KIND_META[tool.kind].short}
+                {CATEGORY_META[tool.category].label}
               </Text>
             </View>
             <Text className="text-text-muted text-xs">{tool.minutes} min read</Text>
