@@ -78,6 +78,26 @@ export default function SupportScreen() {
         <Text className="text-text-muted text-lg">→</Text>
       </Pressable>
 
+      {/* Toolkit — self-help library, prominent above the sub-nav */}
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/toolkit');
+        }}
+        className="mx-6 mb-5 flex-row items-center justify-between bg-surface rounded-2xl px-5 py-4 border border-white/8 active:border-white/20"
+        style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+      >
+        <View className="flex-1 pr-3">
+          <Text className="text-text-primary text-base font-semibold">
+            Toolkit
+          </Text>
+          <Text className="text-text-muted text-sm mt-1">
+            Small, practical things that help — cravings, triggers, saying no.
+          </Text>
+        </View>
+        <Text className="text-text-muted text-lg">→</Text>
+      </Pressable>
+
       {/* Sub-navigation */}
       <View className="flex-row mx-6 mb-4 bg-surface rounded-xl p-1">
         {TABS.map((tab) => (

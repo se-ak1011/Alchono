@@ -85,6 +85,8 @@ function RootLayoutNav() {
         <Stack.Screen name="summary" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="pro" />
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
