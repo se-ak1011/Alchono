@@ -23,8 +23,8 @@ interface AiCoachChatProps {
 // never faces a blank box in a hard moment.
 const QUICK_ACTIONS: { label: string; message: string; urge?: boolean }[] = [
   {
-    label: "I'm having an urge",
-    message: "I'm having an urge to drink right now. I need help getting through it.",
+    label: 'I want a drink',
+    message: "I want a drink right now. I need help getting through it.",
     urge: true,
   },
   { label: 'I drank today', message: 'I drank today and I want to talk about it.' },
@@ -63,7 +63,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
 
   const handleUrge = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    sendMessage("I'm having an urge to drink right now. I need help getting through it.");
+    sendMessage("I want a drink right now. I need help getting through it.");
     router.push('/session/urge');
   };
 
@@ -144,7 +144,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           }}
         >
           <Text className="text-text-primary text-base font-medium">
-            I'm having an urge right now
+            I want a drink right now
           </Text>
           <Text className="text-text-muted text-sm">→</Text>
         </Pressable>

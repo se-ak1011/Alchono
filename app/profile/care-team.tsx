@@ -37,7 +37,7 @@ export default function CareTeamScreen() {
       >
         <Text className="text-text-secondary text-sm leading-relaxed mb-6">
           If you work with a counsellor or recovery professional, you can let
-          them see your trends — check-ins, alcohol-free days, urges beaten.
+          them see your trends — check-ins, alcohol-free days, tough moments you got through.
           Never your journals, messages, or AI conversations. You approve every
           link and can revoke it any time.
         </Text>

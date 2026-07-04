@@ -166,7 +166,7 @@ export default function InsightsScreen() {
             {/* Stat cards */}
             <View className="flex-row mx-6 gap-3 mb-3">
               <InsightCard
-                title="Urges beaten"
+                title="Got through it"
                 value={urgeStats?.periodPassed ?? 0}
                 symbol="◆"
                 subtitle={`in ${period} days`}

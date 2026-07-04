@@ -171,8 +171,8 @@ export default function TimelineScreen() {
           ) : (entries ?? []).length === 0 ? (
             <View className="py-16 items-center px-6">
               <Text className="text-text-muted text-base text-center leading-relaxed">
-                Your story starts writing itself the moment you beat your
-                first urge or mark your first alcohol-free day.{'\n\n'}Or pin
+                Your story starts writing itself the first time you get
+                through a hard moment or mark your first alcohol-free day.{'\n\n'}Or pin
                 a moment yourself — it's yours to tell.
               </Text>
             </View>

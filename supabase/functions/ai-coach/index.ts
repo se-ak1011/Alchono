@@ -72,7 +72,7 @@ serve(async (req) => {
         lines.push('They live somewhere rural/isolated; in-person support is hard to reach.');
       if (lines.length > 0) {
         systemMessage +=
-          '\n\nWhat you quietly know about this person (use it naturally when relevant, never recite it):\n- ' +
+          '\n\nWhat you know about this person — use it naturally to make them feel seen: address them by name, and let what you know shape your questions (their people, their progress, their situation). Never recite it back as a list.\n- ' +
           lines.join('\n- ');
       }
     }

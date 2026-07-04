@@ -64,7 +64,7 @@ function ClientCard({ link }: { link: ClientLink }) {
         <>
           <View className="flex-row flex-wrap gap-2">
             <Stat label="AF days · 30d" value={t.af_days_30} />
-            <Stat label="Urges beaten" value={`${t.urges_beaten_30}/${t.urges_faced_30}`} />
+            <Stat label="Got through" value={`${t.urges_beaten_30}/${t.urges_faced_30}`} />
             <Stat label="Sessions · 30d" value={t.sessions_30} />
             <Stat label="Journalling" value={t.journal_notes_30} />
           </View>

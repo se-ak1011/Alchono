@@ -288,7 +288,7 @@ export default function UrgeScreen() {
 
             {typicalMinutes ? (
               <Text className="text-text-muted text-sm text-center leading-relaxed mt-6 px-4">
-                Your urges usually pass in ~{typicalMinutes} minute
+                These usually pass in ~{typicalMinutes} minute
                 {typicalMinutes === 1 ? '' : 's'}. You've never regretted waiting one out.
               </Text>
             ) : null}
@@ -301,7 +301,7 @@ export default function UrgeScreen() {
               hitSlop={10}
               className="items-center mt-8 py-2"
             >
-              <Text className="text-text-muted text-sm">The urge already passed →</Text>
+              <Text className="text-text-muted text-sm">It already passed →</Text>
             </Pressable>
           </Animated.View>
         )}
@@ -344,7 +344,7 @@ export default function UrgeScreen() {
                 }}
               >
                 <Text className="text-text-primary text-lg font-semibold mb-1">
-                  The urge passed.
+                  It passed.
                 </Text>
                 <Text className="text-text-muted text-base">
                   Good. Keep going.
@@ -391,8 +391,8 @@ export default function UrgeScreen() {
             </Text>
             <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 px-4">
               {survivedCount <= 1
-                ? 'Your first urge, beaten.'
-                : `That's ${survivedCount} urges beaten.`}
+                ? 'You got through your first one.'
+                : `That's ${survivedCount} times you've got through it.`}
               {'\n'}Proof this works.
             </Text>
             <Button

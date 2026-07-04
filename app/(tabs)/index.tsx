@@ -100,7 +100,7 @@ function MonthlyRecapCard() {
   if (recap.afDays > 0)
     lines.push(`${recap.afDays} alcohol-free day${recap.afDays === 1 ? '' : 's'}`);
   if (recap.urgesBeaten > 0)
-    lines.push(`${recap.urgesBeaten} urge${recap.urgesBeaten === 1 ? '' : 's'} beaten`);
+    lines.push(`${recap.urgesBeaten} tough moment${recap.urgesBeaten === 1 ? '' : 's'} you got through`);
   if (recap.checkins > 0) lines.push(`${recap.checkins} check-ins`);
 
   return (
