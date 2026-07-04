@@ -60,20 +60,26 @@ export function useSubmitJournal() {
   });
 }
 
-/** Whether a reflection has already been saved for a given session. */
-export function useReflectionDoneForSession(sessionId?: string | null) {
+/**
+ * Whether a reflection has already been saved today. Reflection is a daily
+ * practice — offered every morning regardless of whether yesterday involved a
+ * drink — so "done" is tracked per day, not per drinking session.
+ */
+export function useReflectionDoneToday() {
   const userId = useAuthStore((s) => s.user?.id);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
   return useQuery({
-    queryKey: ['reflection-done', userId, sessionId ?? null],
+    queryKey: ['reflection-done', userId, startOfToday.toDateString()],
     queryFn: async () => {
       const { count } = await supabase
         .from('journal_entries')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', userId!)
-        .eq('drinking_session_id', sessionId!);
+        .gte('created_at', startOfToday.toISOString());
       return (count ?? 0) > 0;
     },
-    enabled: !!userId && !!sessionId,
+    enabled: !!userId,
   });
 }
 

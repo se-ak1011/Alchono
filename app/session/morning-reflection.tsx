@@ -19,6 +19,7 @@ export default function MorningReflectionScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data: yesterdaySession } = useYesterdaySession();
+  const drankYesterday = !!yesterdaySession;
   const { mutate: submitJournal, isPending } = useSubmitJournal();
   const [step, setStep] = useState<'triggers' | 'impact' | 'notes'>('triggers');
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
@@ -84,7 +85,7 @@ export default function MorningReflectionScreen() {
               What happened yesterday?
             </Text>
             <Text className="text-text-secondary text-base mb-6 leading-relaxed">
-              Select anything that felt relevant. No judgement.
+              Good, hard, or somewhere in between — pick anything that fits. No judgement.
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {JOURNAL_TRIGGERS.map((trigger) => (
@@ -115,7 +116,9 @@ export default function MorningReflectionScreen() {
                 variant="primary"
                 size="lg"
                 fullWidth
-                onPress={() => setStep('impact')}
+                // Only ask about alcohol's impact on days there was a drink —
+                // otherwise skip straight to the open note.
+                onPress={() => setStep(drankYesterday ? 'impact' : 'notes')}
               />
             </View>
           </Animated.View>
@@ -167,10 +170,10 @@ export default function MorningReflectionScreen() {
         {step === 'notes' && (
           <Animated.View entering={FadeInDown.duration(400)}>
             <Text className="text-text-primary text-2xl font-semibold mb-2">
-              Anything else?
+              Anything worth keeping?
             </Text>
             <Text className="text-text-secondary text-base mb-6 leading-relaxed">
-              Optional. Just for you.
+              Optional — and the good bits count too. Just for you.
             </Text>
             <TextInput
               value={notes}

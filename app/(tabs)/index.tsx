@@ -11,7 +11,7 @@ import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
-import { useYesterdaySession, useReflectionDoneForSession } from '@/hooks/useJournal';
+import { useReflectionDoneToday } from '@/hooks/useJournal';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
@@ -19,23 +19,16 @@ import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
 function MorningReflectionPrompt() {
-  const { data: yesterdaySession } = useYesterdaySession();
-  const { data: reflectionDone } = useReflectionDoneForSession(
-    (yesterdaySession as any)?.id,
-  );
+  const { data: reflectedToday } = useReflectionDoneToday();
   const { morningReflectionDismissed, dismissMorningReflection } = useAppStore();
   const router = useRouter();
 
   const isAfterMidnight = new Date().getHours() < 12;
 
-  // Hide once it's actually been reflected on (DB-backed, so it stays hidden
-  // across restarts), or soft-dismissed for the session, or outside the morning.
-  if (
-    !yesterdaySession ||
-    reflectionDone ||
-    morningReflectionDismissed ||
-    !isAfterMidnight
-  ) {
+  // Every morning, for every kind of day — not only after a drinking session.
+  // The good days and the got-through-it days deserve reflecting on too.
+  // Hides once reflected today (DB-backed), soft-dismissed, or past midday.
+  if (reflectedToday || morningReflectionDismissed || !isAfterMidnight) {
     return null;
   }
 
@@ -49,7 +42,7 @@ function MorningReflectionPrompt() {
           How did it go?
         </Text>
         <Text className="text-text-secondary text-base mb-5 leading-relaxed">
-          Worth a look.
+          Rough, quiet, or genuinely good — it all counts.
         </Text>
         <View className="flex-row gap-2">
           <Pressable
