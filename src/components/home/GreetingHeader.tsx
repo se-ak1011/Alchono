@@ -46,11 +46,16 @@ export function GreetingHeader() {
           </Text>
         </View>
         {streak > 0 && (
-          <View className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1.5">
+          <Pressable
+            onPress={() => router.push('/constellation')}
+            hitSlop={8}
+            className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1.5 active:opacity-70"
+          >
+            <Text className="text-accent text-xs">✦</Text>
             <Text className="text-text-secondary text-sm font-semibold">
               {streak} {streak === 1 ? 'day' : 'days'}
             </Text>
-          </View>
+          </Pressable>
         )}
       </View>
 

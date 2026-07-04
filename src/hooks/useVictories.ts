@@ -167,6 +167,27 @@ export function useAfDaysCount(days = 30) {
   });
 }
 
+/**
+ * Every alcohol-free day the user has ever marked, oldest first. One row per
+ * date — the raw material for the Recovery Constellation, where each becomes a
+ * permanent star.
+ */
+export function useAfDays() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useQuery({
+    queryKey: ['af-days-all', userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('alcohol_free_days')
+        .select('date')
+        .eq('user_id', userId!)
+        .order('date', { ascending: true });
+      return ((data ?? []) as { date: string }[]).map((r) => r.date);
+    },
+    enabled: !!userId,
+  });
+}
+
 /** Alcohol-free days marked in the current calendar month (home card). */
 export function useAfMonthCount() {
   const userId = useAuthStore((s) => s.user?.id);
