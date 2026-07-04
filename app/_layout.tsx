@@ -92,6 +92,8 @@ function RootLayoutNav() {
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/help-now" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/recovery" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/coach" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/community" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/mentors" options={{ animation: 'slide_from_right' }} />
