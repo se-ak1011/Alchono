@@ -29,11 +29,13 @@ export function useSubmitJournal() {
     mutationFn: async ({
       triggers,
       affectedOthers,
+      wentWell,
       notes,
       drinkingSessionId,
     }: {
       triggers: string[];
       affectedOthers: string[];
+      wentWell?: string[];
       notes?: string;
       drinkingSessionId?: string;
     }) => {
@@ -43,6 +45,7 @@ export function useSubmitJournal() {
           user_id: userId!,
           triggers,
           affected_others: affectedOthers,
+          went_well: wentWell ?? [],
           notes: notes ?? null,
           drinking_session_id: drinkingSessionId ?? null,
         })

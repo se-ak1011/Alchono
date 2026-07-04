@@ -13,7 +13,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Button } from '@/components/ui/Button';
 import { useSubmitJournal, useYesterdaySession } from '@/hooks/useJournal';
-import { JOURNAL_TRIGGERS, JOURNAL_AFFECTED } from '@/types';
+import { JOURNAL_TRIGGERS, JOURNAL_AFFECTED, JOURNAL_WENT_WELL } from '@/types';
 
 export default function MorningReflectionScreen() {
   const router = useRouter();
@@ -21,9 +21,10 @@ export default function MorningReflectionScreen() {
   const { data: yesterdaySession } = useYesterdaySession();
   const drankYesterday = !!yesterdaySession;
   const { mutate: submitJournal, isPending } = useSubmitJournal();
-  const [step, setStep] = useState<'triggers' | 'impact' | 'notes'>('triggers');
+  const [step, setStep] = useState<'triggers' | 'impact' | 'good' | 'notes'>('triggers');
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
   const [selectedAffected, setSelectedAffected] = useState<string[]>([]);
+  const [selectedWentWell, setSelectedWentWell] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
 
   const toggleTrigger = (trigger: string) => {
@@ -40,11 +41,19 @@ export default function MorningReflectionScreen() {
     );
   };
 
+  const toggleWentWell = (thing: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedWentWell((prev) =>
+      prev.includes(thing) ? prev.filter((t) => t !== thing) : [...prev, thing],
+    );
+  };
+
   const handleSubmit = () => {
     submitJournal(
       {
         triggers: selectedTriggers,
         affectedOthers: selectedAffected,
+        wentWell: selectedWentWell,
         notes: notes.trim() || undefined,
         drinkingSessionId: yesterdaySession?.id,
       },
@@ -117,8 +126,8 @@ export default function MorningReflectionScreen() {
                 size="lg"
                 fullWidth
                 // Only ask about alcohol's impact on days there was a drink —
-                // otherwise skip straight to the open note.
-                onPress={() => setStep(drankYesterday ? 'impact' : 'notes')}
+                // otherwise go straight to what went well.
+                onPress={() => setStep(drankYesterday ? 'impact' : 'good')}
               />
             </View>
           </Animated.View>
@@ -151,6 +160,49 @@ export default function MorningReflectionScreen() {
                     }`}
                   >
                     {person}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+            <View className="mt-8">
+              <Button
+                title="Continue"
+                variant="primary"
+                size="lg"
+                fullWidth
+                onPress={() => setStep('good')}
+              />
+            </View>
+          </Animated.View>
+        )}
+
+        {step === 'good' && (
+          <Animated.View entering={FadeInDown.duration(400)}>
+            <Text className="text-text-primary text-2xl font-semibold mb-2">
+              What was good?
+            </Text>
+            <Text className="text-text-secondary text-base mb-6 leading-relaxed">
+              Even the small stuff. The good is worth noticing too.
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {JOURNAL_WENT_WELL.map((thing) => (
+                <Pressable
+                  key={thing}
+                  onPress={() => toggleWentWell(thing)}
+                  className={`px-5 py-3 rounded-xl border ${
+                    selectedWentWell.includes(thing)
+                      ? 'bg-accent/20 border-accent/50'
+                      : 'bg-surface border-white/8'
+                  }`}
+                >
+                  <Text
+                    className={`text-base font-medium ${
+                      selectedWentWell.includes(thing)
+                        ? 'text-accent'
+                        : 'text-text-secondary'
+                    }`}
+                  >
+                    {thing}
                   </Text>
                 </Pressable>
               ))}

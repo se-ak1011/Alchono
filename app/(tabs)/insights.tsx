@@ -97,6 +97,18 @@ export default function InsightsScreen() {
     .sort(([, a], [, b]) => b - a)
     .map(([label, count]) => ({ label, count }));
 
+  // The good, counted the same way — so it gets its own visible space.
+  const goodCounts = insights?.reduce<Record<string, number>>((acc, d) => {
+    for (const g of d.wentWell) {
+      acc[g] = (acc[g] ?? 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const sortedGood = Object.entries(goodCounts ?? {})
+    .sort(([, a], [, b]) => b - a)
+    .map(([label, count]) => ({ label, count }));
+
   const patterns = computePatterns(insights ?? [], period);
 
   return (
@@ -205,6 +217,18 @@ export default function InsightsScreen() {
               </View>
             )}
 
+            {/* Good things — given its own space, before the hard stuff */}
+            {sortedGood.length > 0 && (
+              <View className="mx-6 mb-4">
+                <Card elevated>
+                  <PatternChart triggers={sortedGood} title="What’s been good" />
+                  <Text className="text-text-muted text-xs leading-relaxed mt-3">
+                    The things worth holding onto. Reflect on any day to add to this.
+                  </Text>
+                </Card>
+              </View>
+            )}
+
             {/* Mood chart */}
             <View className="mx-6 mb-4">
               <Card elevated>
@@ -219,7 +243,7 @@ export default function InsightsScreen() {
             {sortedTriggers.length > 0 && (
               <View className="mx-6 mb-4">
                 <Card elevated>
-                  <PatternChart triggers={sortedTriggers} />
+                  <PatternChart triggers={sortedTriggers} title="What’s been hard" />
                 </Card>
               </View>
             )}

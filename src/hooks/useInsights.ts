@@ -7,6 +7,7 @@ export type InsightData = {
   mood: string | null;
   hadSession: boolean;
   triggers: string[];
+  wentWell: string[];
 };
 
 export function useInsights(days = 30) {
@@ -31,7 +32,7 @@ export function useInsights(days = 30) {
           .order('started_at', { ascending: true }),
         supabase
           .from('journal_entries')
-          .select('created_at, triggers')
+          .select('created_at, triggers, went_well')
           .eq('user_id', userId!)
           .gte('created_at', since)
           .order('created_at', { ascending: true }),
@@ -52,6 +53,7 @@ export function useInsights(days = 30) {
           mood: primaryMood,
           hadSession: false,
           triggers: [],
+          wentWell: [],
         });
       }
 
@@ -62,6 +64,7 @@ export function useInsights(days = 30) {
           mood: null,
           hadSession: false,
           triggers: [],
+          wentWell: [],
         };
         dateMap.set(date, { ...existing, hadSession: true });
       }
@@ -70,16 +73,18 @@ export function useInsights(days = 30) {
         const date = j.created_at.split('T')[0];
         // Create the day if it doesn't exist yet — otherwise a reflection saved
         // on a day with no check-in/session would be silently dropped, and its
-        // triggers would never reach the Patterns chart.
+        // triggers/good things would never reach the Patterns charts.
         const existing = dateMap.get(date) ?? {
           date,
           mood: null,
           hadSession: false,
           triggers: [],
+          wentWell: [],
         };
         dateMap.set(date, {
           ...existing,
           triggers: [...existing.triggers, ...(j.triggers ?? [])],
+          wentWell: [...existing.wentWell, ...(j.went_well ?? [])],
         });
       }
 
