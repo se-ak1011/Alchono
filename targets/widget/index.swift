@@ -189,7 +189,7 @@ struct AlchonoWidget: Widget {
       AlchonoWidgetView(entry: entry)
     }
     .configurationDisplayName("Alchono")
-    .description("Your record, and your session, on the home screen.")
+    .description("Where you're at — with a live timer when a session's on.")
     .supportedFamilies([.systemSmall, .systemMedium])
   }
 }
