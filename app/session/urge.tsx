@@ -9,7 +9,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
@@ -103,7 +102,6 @@ function buildReasonNames(prefs: UserPreferences | null): string | null {
 
 export default function UrgeScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { profile } = useAuthStore();
   const { mutate: startSession } = useStartSession();
   const { mutate: logUrge } = useLogUrgeOutcome();
@@ -114,7 +112,7 @@ export default function UrgeScreen() {
 
   const [phase, setPhase] = useState<'breathing' | 'actions' | 'decision' | 'passed'>('breathing');
   const [halfCycle, setHalfCycle] = useState(0);
-  const [ticked, setTicked] = useState<Set<string>>(new Set());
+  const [actionIndex, setActionIndex] = useState(0);
   const [survivedCount, setSurvivedCount] = useState(0);
 
   const circleScale = useSharedValue(0.6);
@@ -146,14 +144,25 @@ export default function UrgeScreen() {
   const actions = buildActions(prefs);
   const reasonNames = buildReasonNames(prefs);
   const breathsLeft = Math.ceil((TOTAL_HALF_CYCLES - halfCycle) / 2);
+  const currentAction = actions[actionIndex % actions.length];
 
-  const toggleTick = (id: string) => {
+  const nextAction = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActionIndex((i) => i + 1);
+  };
+
+  const doAction = () => {
+    if (currentAction.navigate) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      // navigate (not push): tab routes like Support already exist below this
+      // modal, so this dismisses the modal and focuses them; new routes push.
+      router.navigate(currentAction.navigate as any);
+      return;
+    }
+    // A physical, in-the-room action (water, walk, message someone) — they go
+    // do it, then we ask how it went.
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setTicked((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+    setPhase('decision');
   };
 
   const handleUrgePassed = () => {
@@ -228,85 +237,72 @@ export default function UrgeScreen() {
           </Animated.View>
         )}
 
-        {/* Action cards phase */}
+        {/* Action phase — ONE suggestion at a time. Opening a bottle is one
+            move; choosing from a scroll wall shouldn't be harder than that. */}
         {phase === 'actions' && (
-          <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
-            <Text
-              className="text-text-primary text-3xl font-semibold tracking-tight mb-1"
-              style={headingShadow}
-            >
-              Do one of these.
+          <Animated.View
+            entering={FadeIn.duration(400)}
+            style={{ flex: 1, justifyContent: 'center', minHeight: 520, paddingBottom: 8 }}
+          >
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
+              Just one thing
             </Text>
-            <Text className="text-text-secondary text-base mb-2">
-              Tick it off when done.
-            </Text>
-            {typicalMinutes ? (
-              <Text className="text-text-muted text-sm mb-6">
-                Your urges usually pass in ~{typicalMinutes} minute
-                {typicalMinutes === 1 ? '' : 's'}. You've never regretted
-                waiting one out.
-              </Text>
-            ) : (
-              <View className="mb-4" />
-            )}
 
-            <View style={{ gap: 12, marginBottom: 32 }}>
-              {actions.map((action, i) => {
-                const done = ticked.has(action.id);
-                const navigates = !!action.navigate;
-                return (
-                  <Animated.View
-                    key={action.id}
-                    entering={FadeInDown.duration(300).delay(i * 50)}
-                  >
-                    <Pressable
-                      onPress={() => {
-                        if (action.navigate) {
-                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                          // navigate (not push): tab routes like Support already
-                          // exist below this modal, so this dismisses the modal
-                          // and focuses them; new routes (games) still push.
-                          router.navigate(action.navigate as any);
-                          return;
-                        }
-                        toggleTick(action.id);
-                      }}
-                      className={`flex-row items-center gap-4 bg-urge-surface rounded-2xl px-5 py-5 border ${
-                        done ? 'border-white/20' : 'border-white/8'
-                      }`}
-                      style={{
-                        opacity: done ? 0.7 : 1,
-                        shadowColor: '#120D17',
-                        shadowOpacity: 0.8,
-                        shadowRadius: 10,
-                        shadowOffset: { width: 0, height: 5 },
-                      }}
-                    >
-                      <Text
-                        className={`text-base w-3 ${done ? 'text-text-secondary' : 'text-text-muted'}`}
-                      >
-                        {done ? '◆' : '◇'}
-                      </Text>
-                      <View className="flex-1">
-                        <Text
-                          className={`text-base font-medium leading-snug ${
-                            done ? 'text-text-secondary' : 'text-text-primary'
-                          }`}
-                        >
-                          {action.label}
-                        </Text>
-                        <Text className="text-text-muted text-sm mt-0.5">
-                          {action.subtitle}
-                        </Text>
-                      </View>
-                      {navigates && (
-                        <Text className="text-text-muted text-sm">→</Text>
-                      )}
-                    </Pressable>
-                  </Animated.View>
-                );
-              })}
-            </View>
+            {/* The single suggestion — re-animates each time it changes */}
+            <Animated.View
+              key={currentAction.id}
+              entering={FadeInDown.duration(350)}
+              className="bg-urge-surface rounded-3xl px-6 py-8 border border-white/12 mb-6"
+              style={{
+                shadowColor: '#120D17',
+                shadowOpacity: 0.85,
+                shadowRadius: 14,
+                shadowOffset: { width: 0, height: 7 },
+                borderTopColor: 'rgba(255,255,255,0.16)',
+              }}
+            >
+              <Text
+                className="text-text-primary text-3xl font-semibold leading-tight mb-2"
+                style={headingShadow}
+              >
+                {currentAction.label}
+              </Text>
+              <Text className="text-text-secondary text-lg leading-relaxed">
+                {currentAction.subtitle}
+              </Text>
+            </Animated.View>
+
+            <Button
+              title={currentAction.navigate ? "Take me there" : "Okay, I'll do this"}
+              variant="primary"
+              size="lg"
+              fullWidth
+              onPress={doAction}
+            />
+
+            <Pressable onPress={nextAction} hitSlop={10} className="items-center mt-5 py-2">
+              <Text className="text-text-secondary text-base font-medium">
+                Show me another →
+              </Text>
+            </Pressable>
+
+            {typicalMinutes ? (
+              <Text className="text-text-muted text-sm text-center leading-relaxed mt-6 px-4">
+                Your urges usually pass in ~{typicalMinutes} minute
+                {typicalMinutes === 1 ? '' : 's'}. You've never regretted waiting one out.
+              </Text>
+            ) : null}
+
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setPhase('decision');
+              }}
+              hitSlop={10}
+              className="items-center mt-8 py-2"
+            >
+              <Text className="text-text-muted text-sm">The urge already passed →</Text>
+            </Pressable>
           </Animated.View>
         )}
 
@@ -412,28 +408,6 @@ export default function UrgeScreen() {
           </Animated.View>
         )}
       </ScrollView>
-
-      {/* Pinned footer — Continue must never sit below the fold */}
-      {phase === 'actions' && (
-        <View
-          style={{
-            paddingHorizontal: 24,
-            paddingTop: 12,
-            paddingBottom: insets.bottom + 12,
-          }}
-        >
-          <Button
-            title="Continue"
-            variant="primary"
-            size="lg"
-            fullWidth
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setPhase('decision');
-            }}
-          />
-        </View>
-      )}
     </SafeArea>
   );
 }
