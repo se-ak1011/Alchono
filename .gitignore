@@ -21,3 +21,7 @@ yarn-error.*
 
 # Lockfile intentionally not committed — Codemagic uses `npm install --legacy-peer-deps`
 package-lock.json
+# Companion/widget PNG binaries are supplied outside text-only PRs.
+assets/companions/*.png
+targets/widget/Assets.xcassets/WidgetSober.imageset/*.png
+targets/widget/Assets.xcassets/WidgetDrinking.imageset/*.png
