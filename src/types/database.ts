@@ -176,6 +176,23 @@ export interface Database {
           notes?: string | null;
         };
       };
+      daily_choices: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+          choice: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          created_at?: string;
+          choice: string;
+        };
+        Update: {
+          choice?: string;
+        };
+      };
       community_posts: {
         Row: {
           id: string;

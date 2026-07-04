@@ -69,6 +69,10 @@ function RootLayoutNav() {
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
         <Stack.Screen
+          name="session/choosing"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
           name="support/sos"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />

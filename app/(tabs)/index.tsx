@@ -12,6 +12,7 @@ import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useReflectionDoneToday } from '@/hooks/useJournal';
+import { useChoicesDoneToday } from '@/hooks/useChoices';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
@@ -153,6 +154,47 @@ function SwapsCard() {
   );
 }
 
+function ChoosingPrompt() {
+  const { data: choseToday } = useChoicesDoneToday();
+  const { choosingDismissed, dismissChoosing } = useAppStore();
+  const router = useRouter();
+
+  // Evening ritual — from 5pm, once a day, until they've recorded a choice.
+  const isEvening = new Date().getHours() >= 17;
+
+  if (choseToday || choosingDismissed || !isEvening) return null;
+
+  return (
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+      <Card className="border border-white/10">
+        <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-2">
+          This evening
+        </Text>
+        <Text className="text-text-primary text-lg font-semibold mb-1">
+          Today I chose…
+        </Text>
+        <Text className="text-text-secondary text-base mb-5 leading-relaxed">
+          Not a streak — a record of who you're becoming.
+        </Text>
+        <View className="flex-row gap-2">
+          <Pressable
+            onPress={dismissChoosing}
+            className="flex-1 items-center py-3 rounded-xl bg-surface border border-white/8 active:border-white/20"
+          >
+            <Text className="text-text-muted text-base font-medium">Later</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/session/choosing')}
+            className="flex-1 items-center py-3 rounded-xl bg-accent active:bg-accent-dark"
+          >
+            <Text className="text-white text-base font-semibold">Choose</Text>
+          </Pressable>
+        </View>
+      </Card>
+    </Animated.View>
+  );
+}
+
 function CounsellorCard() {
   const router = useRouter();
   return (
@@ -194,6 +236,7 @@ export default function HomeScreen() {
         <SwapsCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
+        <ChoosingPrompt />
         <DrinkingSession />
         <CounsellorCard />
         <HomeFeed />

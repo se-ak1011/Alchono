@@ -51,6 +51,19 @@ export const JOURNAL_AFFECTED = [
   'Nobody',
 ] as const;
 
+// "Today I chose…" — identity-reinforcing one-tap choices (evening prompt).
+export const CHOICE_OPTIONS = [
+  'to ride it out',
+  'to say no',
+  'to rest',
+  'to ask for help',
+  'to leave early',
+  'to drink water',
+  'to go to bed',
+  'to call someone',
+  'to eat first',
+] as const;
+
 // The good, given its own space. Positive, concrete, easy to recognise.
 export const JOURNAL_WENT_WELL = [
   'Family',

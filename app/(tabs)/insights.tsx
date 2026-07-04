@@ -10,6 +10,7 @@ import { PatternChart } from '@/components/insights/PatternChart';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
 import { useUrgeStats, useAfDaysCount } from '@/hooks/useVictories';
+import { useChoiceStats } from '@/hooks/useChoices';
 import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
@@ -80,6 +81,7 @@ export default function InsightsScreen() {
   const { data: totalPauses = 0 } = useTotalPauses(period);
   const { data: urgeStats } = useUrgeStats(period);
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
+  const { data: choiceStats } = useChoiceStats(); // all-time — this only grows
   const { width } = useWindowDimensions();
   const router = useRouter();
 
@@ -200,6 +202,33 @@ export default function InsightsScreen() {
                 See my summary →
               </Text>
             </Pressable>
+
+            {/* Today I chose — identity over streaks, all-time and only grows */}
+            {!!choiceStats && choiceStats.total > 0 && (
+              <View className="mx-6 mb-4">
+                <Card elevated>
+                  <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+                    Choices you've made
+                  </Text>
+                  <Text className="text-text-primary text-4xl font-semibold">
+                    {choiceStats.total}
+                  </Text>
+                  <Text className="text-text-secondary text-sm leading-relaxed mt-1 mb-3">
+                    positive choices, one at a time. Not a streak — a record of
+                    who you're becoming.
+                  </Text>
+                  {choiceStats.breakdown.length > 0 && (
+                    <PatternChart
+                      title=""
+                      triggers={choiceStats.breakdown.map((b) => ({
+                        label: b.label.replace(/^to /, ''),
+                        count: b.count,
+                      }))}
+                    />
+                  )}
+                </Card>
+              </View>
+            )}
 
             {/* Pattern insights */}
             {patterns.length > 0 && (
