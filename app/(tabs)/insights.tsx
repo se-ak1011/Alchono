@@ -10,6 +10,8 @@ import { PatternChart } from '@/components/insights/PatternChart';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
 import { useUrgeStats, useAfDaysCount } from '@/hooks/useVictories';
+import { useChoiceStats } from '@/hooks/useChoices';
+import { useLifeReturned } from '@/hooks/useLifeReturned';
 import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
@@ -80,6 +82,8 @@ export default function InsightsScreen() {
   const { data: totalPauses = 0 } = useTotalPauses(period);
   const { data: urgeStats } = useUrgeStats(period);
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
+  const { data: choiceStats } = useChoiceStats(); // all-time — this only grows
+  const lifeReturned = useLifeReturned(period);
   const { width } = useWindowDimensions();
   const router = useRouter();
 
@@ -94,6 +98,18 @@ export default function InsightsScreen() {
   }, {});
 
   const sortedTriggers = Object.entries(triggerCounts ?? {})
+    .sort(([, a], [, b]) => b - a)
+    .map(([label, count]) => ({ label, count }));
+
+  // The good, counted the same way — so it gets its own visible space.
+  const goodCounts = insights?.reduce<Record<string, number>>((acc, d) => {
+    for (const g of d.wentWell) {
+      acc[g] = (acc[g] ?? 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const sortedGood = Object.entries(goodCounts ?? {})
     .sort(([, a], [, b]) => b - a)
     .map(([label, count]) => ({ label, count }));
 
@@ -177,6 +193,23 @@ export default function InsightsScreen() {
               />
             </View>
 
+            {/* Evidence — proof from your own data, for the days it doesn't feel like it */}
+            <Pressable
+              onPress={() => router.push('/evidence')}
+              className="mx-6 mb-4 flex-row items-center justify-between bg-surface rounded-2xl px-5 py-4 border border-white/8 active:border-white/20"
+              style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+            >
+              <View className="flex-1 pr-3">
+                <Text className="text-text-primary text-base font-semibold">
+                  Evidence
+                </Text>
+                <Text className="text-text-muted text-sm mt-0.5">
+                  When it doesn't feel like progress — what your own data says.
+                </Text>
+              </View>
+              <Text className="text-text-muted text-lg">→</Text>
+            </Pressable>
+
             {/* Member-initiated snapshot — a page they can simply show across
                 a table, with sharing as a choice on it. Free by design; the
                 paid portal is for continuous remote visibility, not this. */}
@@ -188,6 +221,57 @@ export default function InsightsScreen() {
                 See my summary →
               </Text>
             </Pressable>
+
+            {/* Today I chose — identity over streaks, all-time and only grows */}
+            {!!choiceStats && choiceStats.total > 0 && (
+              <View className="mx-6 mb-4">
+                <Card elevated>
+                  <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+                    Choices you've made
+                  </Text>
+                  <Text className="text-text-primary text-4xl font-semibold">
+                    {choiceStats.total}
+                  </Text>
+                  <Text className="text-text-secondary text-sm leading-relaxed mt-1 mb-3">
+                    positive choices, one at a time. Not a streak — a record of
+                    who you're becoming.
+                  </Text>
+                  {choiceStats.breakdown.length > 0 && (
+                    <PatternChart
+                      title=""
+                      triggers={choiceStats.breakdown.map((b) => ({
+                        label: b.label.replace(/^to /, ''),
+                        count: b.count,
+                      }))}
+                    />
+                  )}
+                </Card>
+              </View>
+            )}
+
+            {/* Life returned — what recovery gives back, not what it removes */}
+            {lifeReturned.length > 0 && (
+              <View className="mx-6 mb-4">
+                <Card elevated>
+                  <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-1">
+                    Life returned
+                  </Text>
+                  <Text className="text-text-secondary text-sm leading-relaxed mb-4">
+                    The everyday things that come back.
+                  </Text>
+                  <View className="gap-3">
+                    {lifeReturned.map((item) => (
+                      <View key={item.key} className="flex-row items-start gap-3">
+                        <Text className="text-accent text-base mt-0.5">✦</Text>
+                        <Text className="text-text-primary text-base leading-relaxed flex-1">
+                          {item.label}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </Card>
+              </View>
+            )}
 
             {/* Pattern insights */}
             {patterns.length > 0 && (
@@ -205,6 +289,18 @@ export default function InsightsScreen() {
               </View>
             )}
 
+            {/* Good things — given its own space, before the hard stuff */}
+            {sortedGood.length > 0 && (
+              <View className="mx-6 mb-4">
+                <Card elevated>
+                  <PatternChart triggers={sortedGood} title="What’s been good" />
+                  <Text className="text-text-muted text-xs leading-relaxed mt-3">
+                    The things worth holding onto. Reflect on any day to add to this.
+                  </Text>
+                </Card>
+              </View>
+            )}
+
             {/* Mood chart */}
             <View className="mx-6 mb-4">
               <Card elevated>
@@ -219,7 +315,7 @@ export default function InsightsScreen() {
             {sortedTriggers.length > 0 && (
               <View className="mx-6 mb-4">
                 <Card elevated>
-                  <PatternChart triggers={sortedTriggers} />
+                  <PatternChart triggers={sortedTriggers} title="What’s been hard" />
                 </Card>
               </View>
             )}

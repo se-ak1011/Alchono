@@ -155,6 +155,7 @@ export interface Database {
           created_at: string;
           triggers: string[];
           affected_others: string[];
+          went_well: string[];
           notes: string | null;
           drinking_session_id: string | null;
         };
@@ -164,13 +165,32 @@ export interface Database {
           created_at?: string;
           triggers: string[];
           affected_others: string[];
+          went_well?: string[];
           notes?: string | null;
           drinking_session_id?: string | null;
         };
         Update: {
           triggers?: string[];
           affected_others?: string[];
+          went_well?: string[];
           notes?: string | null;
+        };
+      };
+      daily_choices: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+          choice: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          created_at?: string;
+          choice: string;
+        };
+        Update: {
+          choice?: string;
         };
       };
       community_posts: {

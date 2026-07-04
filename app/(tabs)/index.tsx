@@ -11,7 +11,8 @@ import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
-import { useYesterdaySession } from '@/hooks/useJournal';
+import { useReflectionDoneToday } from '@/hooks/useJournal';
+import { useChoicesDoneToday } from '@/hooks/useChoices';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
@@ -19,13 +20,16 @@ import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
 function MorningReflectionPrompt() {
-  const { data: yesterdaySession } = useYesterdaySession();
+  const { data: reflectedToday } = useReflectionDoneToday();
   const { morningReflectionDismissed, dismissMorningReflection } = useAppStore();
   const router = useRouter();
 
   const isAfterMidnight = new Date().getHours() < 12;
 
-  if (!yesterdaySession || morningReflectionDismissed || !isAfterMidnight) {
+  // Every morning, for every kind of day — not only after a drinking session.
+  // The good days and the got-through-it days deserve reflecting on too.
+  // Hides once reflected today (DB-backed), soft-dismissed, or past midday.
+  if (reflectedToday || morningReflectionDismissed || !isAfterMidnight) {
     return null;
   }
 
@@ -39,7 +43,7 @@ function MorningReflectionPrompt() {
           How did it go?
         </Text>
         <Text className="text-text-secondary text-base mb-5 leading-relaxed">
-          Worth a look.
+          Rough, quiet, or genuinely good — it all counts.
         </Text>
         <View className="flex-row gap-2">
           <Pressable
@@ -150,6 +154,47 @@ function SwapsCard() {
   );
 }
 
+function ChoosingPrompt() {
+  const { data: choseToday } = useChoicesDoneToday();
+  const { choosingDismissed, dismissChoosing } = useAppStore();
+  const router = useRouter();
+
+  // Evening ritual — from 5pm, once a day, until they've recorded a choice.
+  const isEvening = new Date().getHours() >= 17;
+
+  if (choseToday || choosingDismissed || !isEvening) return null;
+
+  return (
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+      <Card className="border border-white/10">
+        <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-2">
+          This evening
+        </Text>
+        <Text className="text-text-primary text-lg font-semibold mb-1">
+          Today I chose…
+        </Text>
+        <Text className="text-text-secondary text-base mb-5 leading-relaxed">
+          Not a streak — a record of who you're becoming.
+        </Text>
+        <View className="flex-row gap-2">
+          <Pressable
+            onPress={dismissChoosing}
+            className="flex-1 items-center py-3 rounded-xl bg-surface border border-white/8 active:border-white/20"
+          >
+            <Text className="text-text-muted text-base font-medium">Later</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/session/choosing')}
+            className="flex-1 items-center py-3 rounded-xl bg-accent active:bg-accent-dark"
+          >
+            <Text className="text-white text-base font-semibold">Choose</Text>
+          </Pressable>
+        </View>
+      </Card>
+    </Animated.View>
+  );
+}
+
 function CounsellorCard() {
   const router = useRouter();
   return (
@@ -191,6 +236,7 @@ export default function HomeScreen() {
         <SwapsCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
+        <ChoosingPrompt />
         <DrinkingSession />
         <CounsellorCard />
         <HomeFeed />

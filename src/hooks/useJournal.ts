@@ -29,11 +29,13 @@ export function useSubmitJournal() {
     mutationFn: async ({
       triggers,
       affectedOthers,
+      wentWell,
       notes,
       drinkingSessionId,
     }: {
       triggers: string[];
       affectedOthers: string[];
+      wentWell?: string[];
       notes?: string;
       drinkingSessionId?: string;
     }) => {
@@ -43,6 +45,7 @@ export function useSubmitJournal() {
           user_id: userId!,
           triggers,
           affected_others: affectedOthers,
+          went_well: wentWell ?? [],
           notes: notes ?? null,
           drinking_session_id: drinkingSessionId ?? null,
         })
@@ -54,7 +57,32 @@ export function useSubmitJournal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['journal', userId] });
       queryClient.invalidateQueries({ queryKey: ['insights', userId] });
+      // So the home "How did it go?" card disappears the moment it's saved.
+      queryClient.invalidateQueries({ queryKey: ['reflection-done'] });
     },
+  });
+}
+
+/**
+ * Whether a reflection has already been saved today. Reflection is a daily
+ * practice — offered every morning regardless of whether yesterday involved a
+ * drink — so "done" is tracked per day, not per drinking session.
+ */
+export function useReflectionDoneToday() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  return useQuery({
+    queryKey: ['reflection-done', userId, startOfToday.toDateString()],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('journal_entries')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId!)
+        .gte('created_at', startOfToday.toISOString());
+      return (count ?? 0) > 0;
+    },
+    enabled: !!userId,
   });
 }
 

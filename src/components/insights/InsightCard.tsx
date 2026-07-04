@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Card } from '@/components/ui/Card';
-import { headingShadow } from '@/styles';
 
 interface InsightCardProps {
   title: string;
@@ -21,19 +20,19 @@ export function InsightCard({ title, value, subtitle, symbol, trend }: InsightCa
   return (
     <Card className="flex-1">
       <View className="flex-row items-start justify-between mb-3">
-        {symbol && (
-          <Text className="text-text-muted text-xs font-semibold">{symbol}</Text>
-        )}
+        {symbol && <Text className="text-text-muted text-xs">{symbol}</Text>}
         {trend && (
-          <Text className={`text-xs font-semibold ${trendConfig[trend].color}`}>
+          <Text className={`text-xs ${trendConfig[trend].color}`}>
             {trendConfig[trend].symbol}
           </Text>
         )}
       </View>
-      <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+      {/* The number anchors its own card — bold + size, but no glow: a grid of
+          glowing numbers all compete. Tone/size carry it. */}
+      <Text className="text-text-primary text-2xl font-semibold tracking-tight">
         {value}
       </Text>
-      <Text className="text-text-muted text-xs font-semibold tracking-wider uppercase mt-1">
+      <Text className="text-text-muted text-xs font-medium tracking-wider uppercase mt-1">
         {title}
       </Text>
       {subtitle && (

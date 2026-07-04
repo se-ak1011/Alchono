@@ -69,6 +69,10 @@ function RootLayoutNav() {
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
         <Stack.Screen
+          name="session/choosing"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
           name="support/sos"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
@@ -83,8 +87,18 @@ function RootLayoutNav() {
         <Stack.Screen name="admin/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="timeline" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="summary" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="evidence" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="toolkit/c/[cat]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/help-now" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/recovery" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/coach" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/community" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/mentors" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/resources" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="pro" />
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
