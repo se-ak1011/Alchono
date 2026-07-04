@@ -11,7 +11,7 @@ import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
-import { useYesterdaySession } from '@/hooks/useJournal';
+import { useYesterdaySession, useReflectionDoneForSession } from '@/hooks/useJournal';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
@@ -20,12 +20,22 @@ import { useAuthStore } from '@/store/authStore';
 
 function MorningReflectionPrompt() {
   const { data: yesterdaySession } = useYesterdaySession();
+  const { data: reflectionDone } = useReflectionDoneForSession(
+    (yesterdaySession as any)?.id,
+  );
   const { morningReflectionDismissed, dismissMorningReflection } = useAppStore();
   const router = useRouter();
 
   const isAfterMidnight = new Date().getHours() < 12;
 
-  if (!yesterdaySession || morningReflectionDismissed || !isAfterMidnight) {
+  // Hide once it's actually been reflected on (DB-backed, so it stays hidden
+  // across restarts), or soft-dismissed for the session, or outside the morning.
+  if (
+    !yesterdaySession ||
+    reflectionDone ||
+    morningReflectionDismissed ||
+    !isAfterMidnight
+  ) {
     return null;
   }
 

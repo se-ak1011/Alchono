@@ -68,13 +68,19 @@ export function useInsights(days = 30) {
 
       for (const j of journals) {
         const date = j.created_at.split('T')[0];
-        const existing = dateMap.get(date);
-        if (existing) {
-          dateMap.set(date, {
-            ...existing,
-            triggers: [...existing.triggers, ...j.triggers],
-          });
-        }
+        // Create the day if it doesn't exist yet — otherwise a reflection saved
+        // on a day with no check-in/session would be silently dropped, and its
+        // triggers would never reach the Patterns chart.
+        const existing = dateMap.get(date) ?? {
+          date,
+          mood: null,
+          hadSession: false,
+          triggers: [],
+        };
+        dateMap.set(date, {
+          ...existing,
+          triggers: [...existing.triggers, ...(j.triggers ?? [])],
+        });
       }
 
       return Array.from(dateMap.values()).sort((a, b) =>

@@ -54,7 +54,26 @@ export function useSubmitJournal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['journal', userId] });
       queryClient.invalidateQueries({ queryKey: ['insights', userId] });
+      // So the home "How did it go?" card disappears the moment it's saved.
+      queryClient.invalidateQueries({ queryKey: ['reflection-done'] });
     },
+  });
+}
+
+/** Whether a reflection has already been saved for a given session. */
+export function useReflectionDoneForSession(sessionId?: string | null) {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useQuery({
+    queryKey: ['reflection-done', userId, sessionId ?? null],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('journal_entries')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId!)
+        .eq('drinking_session_id', sessionId!);
+      return (count ?? 0) > 0;
+    },
+    enabled: !!userId && !!sessionId,
   });
 }
 
