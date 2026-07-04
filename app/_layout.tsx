@@ -90,6 +90,15 @@ function RootLayoutNav() {
         <Stack.Screen name="evidence" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="letters/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen
+          name="letters/write"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="letters/[id]"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
