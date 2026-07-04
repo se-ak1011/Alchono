@@ -1,7 +1,10 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-const MODEL = 'gpt-4o-mini';
+const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+// Claude Opus 4.8 — the warmest, most capable model for crisis conversation.
+// If cost becomes a concern for this high-frequency chat, swap to a cheaper
+// tier (e.g. 'claude-haiku-4-5') — this one line is the only change needed.
+const MODEL = 'claude-opus-4-8';
 
 const SYSTEM_PROMPT = `You are a compassionate recovery support companion for Alchono,
 an app that helps people understand their relationship with alcohol.
@@ -33,17 +36,17 @@ serve(async (req) => {
   try {
     const { messages, sessionType, context } = await req.json();
 
-    // 1+3+4: prove we were called, the key exists, and which model we're using.
+    // Prove we were called, the key exists, and which model we're using.
     console.log('[ai-coach] invoked', {
       sessionType: sessionType ?? 'general',
       messageCount: Array.isArray(messages) ? messages.length : 0,
-      hasApiKey: !!OPENAI_API_KEY,
+      hasApiKey: !!ANTHROPIC_API_KEY,
       model: MODEL,
     });
 
-    if (!OPENAI_API_KEY) {
-      console.error('[ai-coach] OPENAI_API_KEY secret is missing — set it with: supabase secrets set OPENAI_API_KEY=sk-...');
-      throw new Error('OPENAI_API_KEY is not set in edge function secrets');
+    if (!ANTHROPIC_API_KEY) {
+      console.error('[ai-coach] ANTHROPIC_API_KEY secret is missing — set it with: supabase secrets set ANTHROPIC_API_KEY=sk-ant-...');
+      throw new Error('ANTHROPIC_API_KEY is not set in edge function secrets');
     }
 
     let systemMessage = sessionType === 'sos'
@@ -74,45 +77,51 @@ serve(async (req) => {
       }
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Anthropic takes the system prompt as a top-level string (not a message),
+    // and only user/assistant turns in the messages array.
+    const turns = (Array.isArray(messages) ? messages : [])
+      .filter((m: { role?: string }) => m?.role === 'user' || m?.role === 'assistant')
+      .slice(-20);
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
       },
       body: JSON.stringify({
         model: MODEL,
-        messages: [
-          { role: 'system', content: systemMessage },
-          ...messages.slice(-20),
-        ],
-        max_tokens: 200,
+        max_tokens: 300,
         temperature: 0.8,
+        system: systemMessage,
+        messages: turns,
       }),
     });
 
     const data = await response.json();
 
-    // 2+5: if OpenAI is unhappy, put the WHOLE error object in the logs.
-    if (!response.ok || data.error) {
-      console.error('[ai-coach] OpenAI error', {
+    // If Anthropic is unhappy, put the WHOLE error object in the logs.
+    if (!response.ok || data.type === 'error') {
+      console.error('[ai-coach] Anthropic error', {
         status: response.status,
         statusText: response.statusText,
         body: JSON.stringify(data),
       });
       throw new Error(
-        `OpenAI ${response.status}: ${data.error?.message ?? JSON.stringify(data)}`,
+        `Anthropic ${response.status}: ${data.error?.message ?? JSON.stringify(data)}`,
       );
     }
 
-    const reply = data.choices[0]?.message?.content ?? "I'm here for you.";
+    // Response text lives in the first text block of the content array.
+    const reply = data.content?.[0]?.text ?? "I'm here for you.";
     console.log('[ai-coach] ok', { replyChars: reply.length });
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    // 6: never swallow — full exception (message + stack) into the logs,
+    // Never swallow — full exception (message + stack) into the logs,
     // and a real error status so the client knows this call failed.
     console.error('[ai-coach] FAILED', error, (error as Error)?.stack);
     return new Response(
