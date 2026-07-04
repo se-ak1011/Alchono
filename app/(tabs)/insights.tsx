@@ -11,6 +11,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
 import { useUrgeStats, useAfDaysCount } from '@/hooks/useVictories';
 import { useChoiceStats } from '@/hooks/useChoices';
+import { useLifeReturned } from '@/hooks/useLifeReturned';
 import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
@@ -82,6 +83,7 @@ export default function InsightsScreen() {
   const { data: urgeStats } = useUrgeStats(period);
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
   const { data: choiceStats } = useChoiceStats(); // all-time — this only grows
+  const lifeReturned = useLifeReturned(period);
   const { width } = useWindowDimensions();
   const router = useRouter();
 
@@ -226,6 +228,30 @@ export default function InsightsScreen() {
                       }))}
                     />
                   )}
+                </Card>
+              </View>
+            )}
+
+            {/* Life returned — what recovery gives back, not what it removes */}
+            {lifeReturned.length > 0 && (
+              <View className="mx-6 mb-4">
+                <Card elevated>
+                  <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-1">
+                    Life returned
+                  </Text>
+                  <Text className="text-text-secondary text-sm leading-relaxed mb-4">
+                    The everyday things that come back.
+                  </Text>
+                  <View className="gap-3">
+                    {lifeReturned.map((item) => (
+                      <View key={item.key} className="flex-row items-start gap-3">
+                        <Text className="text-accent text-base mt-0.5">✦</Text>
+                        <Text className="text-text-primary text-base leading-relaxed flex-1">
+                          {item.label}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </Card>
               </View>
             )}
