@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { useStartSession } from '@/hooks/useDrinkingSession';
 import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
-import { headingShadow } from '@/styles';
+import { headingShadow, celebrationGlow } from '@/styles';
 import type { UserPreferences } from '@/types';
 
 const BREATH_MS = 4000;
@@ -385,7 +385,7 @@ export default function UrgeScreen() {
             </Text>
             <Text
               className="text-text-primary text-4xl font-semibold tracking-tight mb-3"
-              style={headingShadow}
+              style={celebrationGlow}
             >
               It passed.
             </Text>

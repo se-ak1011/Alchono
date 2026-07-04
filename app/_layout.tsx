@@ -131,7 +131,7 @@ function SplashOverlay() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#09070C',
         zIndex: 999,
       }}
     >
@@ -207,8 +207,8 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0E0F10' }}>
-            <StatusBar style="light" backgroundColor="#0E0F10" />
+          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#09070C' }}>
+            <StatusBar style="light" backgroundColor="#09070C" />
             <RootLayoutNav />
             {overlayVisible && <SplashOverlay />}
           </GestureHandlerRootView>

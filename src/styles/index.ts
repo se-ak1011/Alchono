@@ -1,12 +1,18 @@
-// The Display treatment — reserved for a screen's ONE hero title (see
-// docs/type-hierarchy.md). Pure white + full bold + a *whisper* of glow so it
-// lifts off the near-black background without shouting. Softened from the old
-// values (0.30 opacity / 14 radius) because it was over-applied to ~80
-// elements; a quieter glow lets a single anchor read per screen.
+// The Display treatment — a screen's hero title. In the premium theme the
+// look relies on CONTRAST, not glow: warm off-white on near-black violet,
+// fully bold, crisp. No shadow (see docs/theme.md).
 export const headingShadow = {
-  color: '#FFFFFF',
+  color: '#F4F1ED',
   fontFamily: 'Inter_700Bold',
-  textShadowColor: 'rgba(240, 242, 244, 0.16)',
+};
+
+// Reserved for the few moments that should feel luminous: streaks, milestone
+// celebrations, emergency actions, and success beats (an urge ridden out, a
+// day marked). A soft muted-violet halo — never neon, just a quiet lift.
+export const celebrationGlow = {
+  color: '#F4F1ED',
+  fontFamily: 'Inter_700Bold',
+  textShadowColor: 'rgba(167, 159, 178, 0.22)',
   textShadowOffset: { width: 0, height: 0 },
-  textShadowRadius: 9,
+  textShadowRadius: 12,
 };
