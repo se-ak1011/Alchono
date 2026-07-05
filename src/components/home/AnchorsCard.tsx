@@ -36,7 +36,7 @@ function buildNames(prefs: UserPreferences | null): string | null {
   return parts.length > 0 ? parts.join(' & ') : null;
 }
 
-export function AnchorsCard({ inline }: { inline?: boolean }) {
+export function AnchorsCard({ inline, compact }: { inline?: boolean; compact?: boolean }) {
   const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
   const prefs = profile?.preferences as UserPreferences | null;
@@ -60,6 +60,33 @@ export function AnchorsCard({ inline }: { inline?: boolean }) {
   const victoryLine = victories.join(' · ');
 
   const outerCls = inline ? '' : 'mx-6 mt-4';
+
+  // Compact mode: show only the Reasons block (names + anchor). No goals, no stats.
+  if (compact) {
+    return (
+      <Animated.View entering={FadeIn.duration(400)} className={outerCls}>
+        <Card className="border border-white/5">
+          <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-2">
+            Reasons
+          </Text>
+          {names ? (
+            <>
+              <Text className="text-text-primary text-2xl font-semibold mb-2">
+                {names}.
+              </Text>
+              <Text className="text-text-secondary text-base leading-relaxed">
+                {getDailyAnchor()}
+              </Text>
+            </>
+          ) : (
+            <Pressable onPress={() => router.push('/goals')} hitSlop={8}>
+              <Text className="text-text-muted text-base">+ Who are you doing this for?</Text>
+            </Pressable>
+          )}
+        </Card>
+      </Animated.View>
+    );
+  }
 
   if (!names && activeGoals.length === 0) {
     return (
