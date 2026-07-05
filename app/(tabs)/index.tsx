@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
+import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useGoals, daysUntil } from '@/hooks/useGoals';
@@ -121,6 +122,8 @@ export default function HomeScreen() {
             <AnchorsCard inline compact />
           </View>
         </View>
+        {/* Daily action: check-in, drinking-or-not, and the live session */}
+        <DrinkingSession />
         <HomeSecondaryCards />
         <MoodCheckin />
       </ScrollView>
