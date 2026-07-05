@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import { ScrollView, View, Text, Pressable, Image } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -11,7 +11,6 @@ import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
-import { CompanionImage } from '@/components/ui/CompanionImage';
 import { useReflectionDoneToday } from '@/hooks/useJournal';
 import { useChoicesDoneToday } from '@/hooks/useChoices';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
@@ -239,13 +238,11 @@ export default function HomeScreen() {
         <MorningReflectionPrompt />
         <ChoosingPrompt />
         <DrinkingSession />
-        <View className="mx-6 mt-1">
-          <CompanionImage
+        <View className="mx-6 mt-1 items-end">
+          <Image
             source={require('../../assets/companions/image_01_standing.png')}
-            size="medium"
-            alignment="right"
-            opacity={0.58}
-            maxHeight={132}
+            style={{ width: 112, height: 132, opacity: 0.58 }}
+            resizeMode="contain"
           />
         </View>
         <CounsellorCard />

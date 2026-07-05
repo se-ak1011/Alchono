@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +12,6 @@ import {
 } from '@/lib/toolkit';
 import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
 import { headingShadow } from '@/styles';
-import { CompanionImage } from '@/components/ui/CompanionImage';
 
 export default function ToolkitScreen() {
   const router = useRouter();
@@ -57,13 +56,11 @@ export default function ToolkitScreen() {
       </Animated.View>
 
       {!q && (
-        <View className="px-6 pt-1 pb-2">
-          <CompanionImage
+        <View className="px-6 pt-1 pb-2 items-end">
+          <Image
             source={require('../../assets/companions/image_06_reading.png')}
-            size="medium"
-            alignment="right"
-            opacity={0.62}
-            maxHeight={118}
+            style={{ width: 106, height: 118, opacity: 0.62 }}
+            resizeMode="contain"
           />
         </View>
       )}

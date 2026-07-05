@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
@@ -16,7 +17,6 @@ import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
-import { CompanionImage } from '@/components/ui/CompanionImage';
 import {
   useJournalNotes,
   useAddTextNote,
@@ -343,12 +343,10 @@ export default function JournalScreen() {
           ListEmptyComponent={
             !isLoading ? (
               <View className="py-10 items-center px-6">
-                <CompanionImage
+                <Image
                   source={require('../../assets/companions/image_05_journal.png')}
-                  size="medium"
-                  alignment="center"
-                  opacity={0.68}
-                  maxHeight={128}
+                  style={{ width: 108, height: 128, opacity: 0.68, marginBottom: 10 }}
+                  resizeMode="contain"
                 />
                 <Text className="text-text-muted text-base text-center leading-relaxed">
                   Nothing here yet.{'\n'}Write it, type it, or just say it out
