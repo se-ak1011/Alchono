@@ -17,6 +17,7 @@ import { useChoicesDoneToday } from '@/hooks/useChoices';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
+import { useDrinkIntentSync } from '@/hooks/useDrinkIntentSync';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -224,6 +225,8 @@ function CounsellorCard() {
 export default function HomeScreen() {
   useSmartReminder();
   useWidgetSync();
+  // Drain any drinks logged offline via the "I had a drink" App Intent.
+  useDrinkIntentSync();
   return (
     <SafeArea>
       <ScrollView

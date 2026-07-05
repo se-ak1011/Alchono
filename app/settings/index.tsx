@@ -120,6 +120,26 @@ export default function SettingsScreen() {
         <NotificationSettings />
 
         <SettingsSection
+          title="Quick log"
+          items={[
+            {
+              label: 'Log a drink with Siri or Back Tap',
+              onPress: () =>
+                Alert.alert(
+                  'Log a drink without opening the app',
+                  'Say "Hey Siri, I had a drink."\n\n' +
+                    'Back Tap: Settings → Accessibility → Touch → Back Tap → ' +
+                    'Triple Tap → Shortcuts → I had a drink.\n\n' +
+                    'Action Button (iPhone 15 Pro and later): Settings → ' +
+                    'Action Button → Shortcut → I had a drink.\n\n' +
+                    'It logs to your current session, or gently starts one — no ' +
+                    'need to open the app.',
+                ),
+            },
+          ]}
+        />
+
+        <SettingsSection
           title="Privacy"
           items={[
             {
