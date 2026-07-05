@@ -128,6 +128,7 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const [nativeSplashHidden, setNativeSplashHidden] = useState(false);
+  const [splashReady, setSplashReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -146,17 +147,14 @@ export default function RootLayout() {
   }, []);
 
   const appReady = (fontsLoaded || !!fontError) && isInitialized;
-  if (!appReady || !nativeSplashHidden) {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#0E0F10' }}>
-        <Image
-          source={APP_SPLASH}
-          style={{ width: '100%', height: '100%' }}
-          resizeMode="cover"
-        />
-      </View>
-    );
-  }
+
+  // Give AuthGate one event-loop tick to fire its navigation effect before the
+  // overlay lifts — prevents a wrong-screen flash on first render.
+  useEffect(() => {
+    if (!appReady || !nativeSplashHidden) return;
+    const t = setTimeout(() => setSplashReady(true), 0);
+    return () => clearTimeout(t);
+  }, [appReady, nativeSplashHidden]);
 
   return (
     <ErrorBoundary>
@@ -165,6 +163,24 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#09070C' }}>
             <StatusBar style="light" backgroundColor="#09070C" />
             <RootLayoutNav />
+            {!splashReady && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: '#0E0F10',
+                }}
+              >
+                <Image
+                  source={APP_SPLASH}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </View>
+            )}
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </QueryClientProvider>
