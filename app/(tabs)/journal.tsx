@@ -29,12 +29,23 @@ import { headingShadow } from '@/styles';
 
 const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
 const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
-const JOURNAL_COMPANION_OVERHANG = 52;
-const JOURNAL_COMPANION_IMAGE_TOP = -JOURNAL_COMPANION_OVERHANG;
-const JOURNAL_COMPANION_IMAGE_RIGHT = 16;
-// Compose card spacing leaves room for the companion to overhang the card edge.
-const JOURNAL_COMPOSE_CARD_TOP_MARGIN = 40;
-const JOURNAL_COMPOSE_CARD_TOP_PADDING = 64;
+
+function JournalCompanionFooter() {
+  return (
+    <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 16 }}>
+      <Image
+        source={require('../../assets/companions/image_05_journal.png')}
+        accessible={false}
+        style={{
+          width: JOURNAL_COMPANION_IMAGE_WIDTH,
+          height: JOURNAL_COMPANION_IMAGE_HEIGHT,
+          opacity: 0.55,
+        }}
+        resizeMode="contain"
+      />
+    </View>
+  );
+}
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -239,24 +250,7 @@ export default function JournalScreen() {
         {/* Compose */}
         <View
           className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8"
-          style={{
-            marginTop: JOURNAL_COMPOSE_CARD_TOP_MARGIN,
-            paddingTop: JOURNAL_COMPOSE_CARD_TOP_PADDING,
-          }}
         >
-          <Image
-            source={require('../../assets/companions/image_05_journal.png')}
-            accessible={false}
-            style={{
-              position: 'absolute',
-              top: JOURNAL_COMPANION_IMAGE_TOP,
-              right: JOURNAL_COMPANION_IMAGE_RIGHT,
-              width: JOURNAL_COMPANION_IMAGE_WIDTH,
-              height: JOURNAL_COMPANION_IMAGE_HEIGHT,
-              opacity: 0.68,
-            }}
-            resizeMode="contain"
-          />
           {recording ? (
             <Animated.View entering={FadeIn.duration(300)} className="items-center py-4">
               <View className="w-3 h-3 rounded-full bg-danger-light mb-3" />
@@ -337,6 +331,7 @@ export default function JournalScreen() {
           keyExtractor={(n) => n.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={JournalCompanionFooter}
           renderItem={({ item, index }) => (
             <Animated.View
               entering={FadeInDown.duration(300).delay(Math.min(index * 30, 300))}
