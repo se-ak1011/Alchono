@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
 import { useUnreadTotal } from '@/hooks/useMessages';
@@ -48,7 +49,7 @@ export default function SupportScreen() {
       <View className="flex-1 justify-center px-6" style={{ gap: 18, marginTop: -40 }}>
         <Animated.View entering={FadeIn.duration(400)}>
           <Text className="text-text-secondary text-lg leading-relaxed">
-            You're not doing this alone. Pick one thing.
+            Hard moment or steady recovery — pick one.
           </Text>
         </Animated.View>
 
@@ -74,6 +75,15 @@ export default function SupportScreen() {
           </Pressable>
         </Animated.View>
 
+        {/* Tea companion — centred between the two cards */}
+        <Animated.View entering={FadeIn.duration(500).delay(120)} style={{ alignSelf: 'center' }}>
+          <CompanionArt
+            source={require('../../assets/companions/image_07_tea.png')}
+            width={130}
+            height={154}
+          />
+        </Animated.View>
+
         {/* Mode 2 — everything else */}
         <Animated.View entering={FadeInDown.duration(450).delay(160)}>
           <Pressable
@@ -83,7 +93,7 @@ export default function SupportScreen() {
           >
             <Text className="text-text-primary text-2xl font-semibold">Recovery</Text>
             <Text className="text-text-muted text-base mt-2 leading-relaxed">
-              Community, mentors, learning, and how far you've come.
+              Ongoing support: progress, toolkit, and people when you want them.
             </Text>
           </Pressable>
         </Animated.View>

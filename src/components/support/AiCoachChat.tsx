@@ -12,8 +12,8 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { useAiCoach } from '@/hooks/useAiCoach';
-import { CompanionImage } from '@/components/ui/CompanionImage';
 import type { ChatMessage } from '@/types';
 
 interface AiCoachChatProps {
@@ -94,13 +94,11 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
         renderItem={({ item }) => <ChatBubble message={item} />}
         ListHeaderComponent={
           showQuickActions ? (
-            <View className="pt-2 pb-1">
-              <CompanionImage
+            <View className="pt-2 pb-1 items-center">
+              <CompanionArt
                 source={require('../../../assets/companions/image_02_armchair.png')}
-                size="large"
-                alignment="center"
-                opacity={0.7}
-                maxHeight={156}
+                width={152}
+                height={179}
               />
             </View>
           ) : null

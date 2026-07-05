@@ -62,8 +62,6 @@ export function AnchorsCard({ inline, compact }: { inline?: boolean; compact?: b
   const outerCls = inline ? '' : 'mx-6 mt-4';
 
   // Compact mode: show only the Reasons block (names + anchor). No goals, no stats.
-  // Text is capped and sized down because this card sits in a narrow column
-  // beside the companion — it must never overflow its frame.
   if (compact) {
     return (
       <Animated.View entering={FadeIn.duration(400)} className={outerCls}>
@@ -73,10 +71,10 @@ export function AnchorsCard({ inline, compact }: { inline?: boolean; compact?: b
           </Text>
           {names ? (
             <>
-              <Text className="text-text-primary text-xl font-semibold mb-2" numberOfLines={2}>
+              <Text className="text-text-primary text-2xl font-semibold mb-2">
                 {names}.
               </Text>
-              <Text className="text-text-secondary text-sm leading-relaxed" numberOfLines={3}>
+              <Text className="text-text-secondary text-base leading-relaxed">
                 {getDailyAnchor()}
               </Text>
             </>

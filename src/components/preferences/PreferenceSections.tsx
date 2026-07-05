@@ -7,7 +7,6 @@ import type { UserPreferences } from '@/types';
 export const FAMILY_OPTIONS = [
   { key: 'partner',  label: 'Partner' },
   { key: 'children', label: 'Children' },
-  { key: 'parents',  label: 'Parents (I live with them)' },
 ] as const;
 
 export const SHIFT_OPTIONS = [
@@ -44,6 +43,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   city: '',
   livesIsolated: false,
   interestedInAlternatives: false,
+  hobbies: [],
 };
 
 export const nameInputStyle = {

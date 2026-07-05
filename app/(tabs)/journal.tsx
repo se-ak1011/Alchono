@@ -14,6 +14,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { SafeArea } from '@/components/ui/SafeArea';
 import {
@@ -362,6 +363,16 @@ export default function JournalScreen() {
               )}
             </Animated.View>
           )}
+          ListEmptyComponent={
+            !isLoading ? (
+              <View className="py-10 items-center px-6">
+                <Text className="text-text-muted text-base text-center leading-relaxed">
+                  Nothing here yet.{'\n'}Write it, type it, or just say it out
+                  loud — whatever's easiest tonight.
+                </Text>
+              </View>
+            ) : null
+          }
         />
       </KeyboardAvoidingView>
     </SafeArea>

@@ -28,12 +28,12 @@ export function Card({ children, className = '', onPress, elevated = false, ...r
   // A whisper of light on the top edge + a grounded shadow — cards lift off
   // the background instead of sitting flat on it.
   const depthStyle = {
-    borderTopColor: 'rgba(255,255,255,0.13)',
+    borderTopColor: 'rgba(255,255,255,0.16)',
     shadowColor: '#000000',
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
+    shadowOpacity: 0.42,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 5,
   } as const;
 
   if (onPress) {

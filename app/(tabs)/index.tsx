@@ -8,14 +8,12 @@ import { Card } from '@/components/ui/Card';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
-import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useGoals, daysUntil } from '@/hooks/useGoals';
 import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
-import { useDrinkIntentSync } from '@/hooks/useDrinkIntentSync';
 
 const HOME_COMPANION_IMAGE_WIDTH = 140;
 const HOME_COMPANION_IMAGE_HEIGHT = 165;
@@ -51,7 +49,7 @@ function HomeSecondaryCards() {
           router.push('/goals');
         }}
       >
-        <Card className="border border-white/5">
+        <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Looking Forward To
           </Text>
@@ -81,7 +79,7 @@ function HomeSecondaryCards() {
 
       {/* Progress */}
       <View className="flex-1" style={{ minHeight: 112 }}>
-        <Card className="border border-white/5">
+        <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
           </Text>
@@ -122,8 +120,6 @@ export default function HomeScreen() {
             <AnchorsCard inline compact />
           </View>
         </View>
-        {/* Daily action: check-in, drinking-or-not, and the live session */}
-        <DrinkingSession />
         <HomeSecondaryCards />
         <MoodCheckin />
       </ScrollView>
