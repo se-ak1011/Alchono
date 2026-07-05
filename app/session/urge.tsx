@@ -245,11 +245,22 @@ export default function UrgeScreen() {
             style={{ flex: 1, justifyContent: 'center', minHeight: 520, paddingBottom: 8 }}
           >
             <View className="items-center">
-              <Image
-                source={require('../../assets/companions/image_14_elbows.png')}
-                style={{ width: 104, height: 124, opacity: 0.76 }}
-                resizeMode="contain"
-              />
+              <View
+                style={{
+                  borderRadius: 999,
+                  backgroundColor: 'rgba(99,86,128,0.16)',
+                  shadowColor: '#7B6FA0',
+                  shadowOpacity: 0.24,
+                  shadowRadius: 24,
+                  shadowOffset: { width: 0, height: 0 },
+                }}
+              >
+                <Image
+                  source={require('../../assets/companions/image_14_elbows.png')}
+                  style={{ width: 104, height: 124, opacity: 0.86 }}
+                  resizeMode="contain"
+                />
+              </View>
             </View>
 
             <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3 mt-4">
@@ -397,11 +408,22 @@ export default function UrgeScreen() {
             >
               It passed.
             </Text>
-            <Image
-              source={require('../../assets/companions/image_19_small_smile.png')}
-              style={{ width: 74, height: 88, opacity: 0.7 }}
-              resizeMode="contain"
-            />
+            <View
+              style={{
+                borderRadius: 999,
+                backgroundColor: 'rgba(99,86,128,0.16)',
+                shadowColor: '#7B6FA0',
+                shadowOpacity: 0.22,
+                shadowRadius: 22,
+                shadowOffset: { width: 0, height: 0 },
+              }}
+            >
+              <Image
+                source={require('../../assets/companions/image_19_small_smile.png')}
+                style={{ width: 74, height: 88, opacity: 0.84 }}
+                resizeMode="contain"
+              />
+            </View>
             <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">
               {survivedCount <= 1
                 ? 'You got through your first one.'

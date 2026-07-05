@@ -48,7 +48,7 @@ export default function SupportScreen() {
       <View className="flex-1 justify-center px-6" style={{ gap: 18, marginTop: -40 }}>
         <Animated.View entering={FadeIn.duration(400)}>
           <Text className="text-text-secondary text-lg leading-relaxed">
-            You're not doing this alone. Pick one thing.
+            Hard moment or steady recovery — pick one.
           </Text>
         </Animated.View>
 
@@ -76,16 +76,29 @@ export default function SupportScreen() {
 
         {/* Tea companion — centred between the two cards */}
         <Animated.View entering={FadeIn.duration(500).delay(120)} style={{ alignSelf: 'center' }}>
-          <Image
-            source={require('../../assets/companions/image_07_tea.png')}
-            accessible={false}
+          <View
             style={{
-              width: 130,
-              height: 154,
-              opacity: 0.68,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 999,
+              backgroundColor: 'rgba(99,86,128,0.16)',
+              shadowColor: '#7B6FA0',
+              shadowOpacity: 0.24,
+              shadowRadius: 28,
+              shadowOffset: { width: 0, height: 0 },
             }}
-            resizeMode="contain"
-          />
+          >
+            <Image
+              source={require('../../assets/companions/image_07_tea.png')}
+              accessible={false}
+              style={{
+                width: 130,
+                height: 154,
+                opacity: 0.84,
+              }}
+              resizeMode="contain"
+            />
+          </View>
         </Animated.View>
 
         {/* Mode 2 — everything else */}
@@ -97,7 +110,7 @@ export default function SupportScreen() {
           >
             <Text className="text-text-primary text-2xl font-semibold">Recovery</Text>
             <Text className="text-text-muted text-base mt-2 leading-relaxed">
-              Community, mentors, learning, and how far you've come.
+              Ongoing support: progress, toolkit, and people when you want them.
             </Text>
           </Pressable>
         </Animated.View>

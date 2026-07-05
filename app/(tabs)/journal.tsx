@@ -30,19 +30,30 @@ import { headingShadow } from '@/styles';
 const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
 const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
 
-function JournalCompanionFooter() {
+function JournalCompanionSection() {
   return (
-    <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 16 }}>
-      <Image
-        source={require('../../assets/companions/image_05_journal.png')}
-        accessible={false}
+    <View style={{ alignItems: 'center', paddingTop: 8, paddingBottom: 12 }}>
+      <View
         style={{
-          width: JOURNAL_COMPANION_IMAGE_WIDTH,
-          height: JOURNAL_COMPANION_IMAGE_HEIGHT,
-          opacity: 0.70,
+          borderRadius: 999,
+          backgroundColor: 'rgba(99,86,128,0.16)',
+          shadowColor: '#7B6FA0',
+          shadowOpacity: 0.24,
+          shadowRadius: 26,
+          shadowOffset: { width: 0, height: 0 },
         }}
-        resizeMode="contain"
-      />
+      >
+        <Image
+          source={require('../../assets/companions/image_05_journal.png')}
+          accessible={false}
+          style={{
+            width: JOURNAL_COMPANION_IMAGE_WIDTH,
+            height: JOURNAL_COMPANION_IMAGE_HEIGHT,
+            opacity: 0.84,
+          }}
+          resizeMode="contain"
+        />
+      </View>
     </View>
   );
 }
@@ -323,6 +334,22 @@ export default function JournalScreen() {
           )}
         </View>
 
+        <JournalCompanionSection />
+
+        <View className="mx-6 mb-4">
+          <Text className="text-text-primary text-xl font-semibold">Letters</Text>
+          <Text className="text-text-secondary text-sm mt-1 leading-relaxed">
+            Write to your future self. One day, when you least expect it, it comes back.
+          </Text>
+          <Pressable
+            onPress={() => router.push('/letters/write')}
+            className="mt-3 bg-surface rounded-2xl px-5 py-4 border border-white/8 active:border-white/20"
+          >
+            <Text className="text-text-primary text-base font-semibold">Write to Future You</Text>
+            <Text className="text-text-muted text-sm mt-1">Something they'll need to hear.</Text>
+          </Pressable>
+        </View>
+
         {/* Notes */}
         <FlatList
           data={notes ?? []}
@@ -331,7 +358,6 @@ export default function JournalScreen() {
           keyExtractor={(n) => n.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={JournalCompanionFooter}
           renderItem={({ item, index }) => (
             <Animated.View
               entering={FadeInDown.duration(300).delay(Math.min(index * 30, 300))}

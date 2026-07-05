@@ -95,12 +95,23 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
         ListHeaderComponent={
           showQuickActions ? (
             <View className="pt-2 pb-1 items-center">
-              <Image
-                source={require('../../../assets/companions/image_02_armchair.png')}
-                accessible={false}
-                style={{ width: 152, height: 179, opacity: 0.7 }}
-                resizeMode="contain"
-              />
+              <View
+                style={{
+                  borderRadius: 999,
+                  backgroundColor: 'rgba(99,86,128,0.16)',
+                  shadowColor: '#7B6FA0',
+                  shadowOpacity: 0.24,
+                  shadowRadius: 28,
+                  shadowOffset: { width: 0, height: 0 },
+                }}
+              >
+                <Image
+                  source={require('../../../assets/companions/image_02_armchair.png')}
+                  accessible={false}
+                  style={{ width: 152, height: 179, opacity: 0.84 }}
+                  resizeMode="contain"
+                />
+              </View>
             </View>
           ) : null
         }
