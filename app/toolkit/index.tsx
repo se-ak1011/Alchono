@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import {
   TOOLKIT,
   CATEGORY_META,
@@ -57,23 +58,11 @@ export default function ToolkitScreen() {
 
       {!q && (
         <View className="px-6 pt-1 pb-2 items-center">
-          <View
-            style={{
-              borderRadius: 999,
-              backgroundColor: 'rgba(99,86,128,0.16)',
-              shadowColor: '#7B6FA0',
-              shadowOpacity: 0.24,
-              shadowRadius: 26,
-              shadowOffset: { width: 0, height: 0 },
-            }}
-          >
-            <Image
-              source={require('../../assets/companions/image_06_reading.png')}
-              accessible={false}
-              style={{ width: 106, height: 118, opacity: 0.84 }}
-              resizeMode="contain"
-            />
-          </View>
+          <CompanionArt
+            source={require('../../assets/companions/image_06_reading.png')}
+            width={106}
+            height={118}
+          />
         </View>
       )}
 

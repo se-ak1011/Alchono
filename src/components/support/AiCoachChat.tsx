@@ -7,12 +7,12 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
-  Image,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { useAiCoach } from '@/hooks/useAiCoach';
 import type { ChatMessage } from '@/types';
 
@@ -95,23 +95,11 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
         ListHeaderComponent={
           showQuickActions ? (
             <View className="pt-2 pb-1 items-center">
-              <View
-                style={{
-                  borderRadius: 999,
-                  backgroundColor: 'rgba(99,86,128,0.16)',
-                  shadowColor: '#7B6FA0',
-                  shadowOpacity: 0.24,
-                  shadowRadius: 28,
-                  shadowOffset: { width: 0, height: 0 },
-                }}
-              >
-                <Image
-                  source={require('../../../assets/companions/image_02_armchair.png')}
-                  accessible={false}
-                  style={{ width: 152, height: 179, opacity: 0.84 }}
-                  resizeMode="contain"
-                />
-              </View>
+              <CompanionArt
+                source={require('../../../assets/companions/image_02_armchair.png')}
+                width={152}
+                height={179}
+              />
             </View>
           ) : null
         }

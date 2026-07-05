@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
 import { useUnreadTotal } from '@/hooks/useMessages';
@@ -76,29 +77,11 @@ export default function SupportScreen() {
 
         {/* Tea companion — centred between the two cards */}
         <Animated.View entering={FadeIn.duration(500).delay(120)} style={{ alignSelf: 'center' }}>
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 999,
-              backgroundColor: 'rgba(99,86,128,0.16)',
-              shadowColor: '#7B6FA0',
-              shadowOpacity: 0.24,
-              shadowRadius: 28,
-              shadowOffset: { width: 0, height: 0 },
-            }}
-          >
-            <Image
-              source={require('../../assets/companions/image_07_tea.png')}
-              accessible={false}
-              style={{
-                width: 130,
-                height: 154,
-                opacity: 0.84,
-              }}
-              resizeMode="contain"
-            />
-          </View>
+          <CompanionArt
+            source={require('../../assets/companions/image_07_tea.png')}
+            width={130}
+            height={154}
+          />
         </Animated.View>
 
         {/* Mode 2 — everything else */}
