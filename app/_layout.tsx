@@ -1,8 +1,8 @@
 import 'react-native-gesture-handler';
 import '../global.css';
 
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Image } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -22,6 +22,7 @@ import { useAuthListener } from '@/hooks/useAuth';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 SplashScreen.preventAutoHideAsync();
+const APP_SPLASH = require('../assets/Splash_Screen.png');
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { session, profile, isInitialized } = useAuthStore();
@@ -127,6 +128,7 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const [nativeSplashHidden, setNativeSplashHidden] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -139,24 +141,23 @@ export default function RootLayout() {
   useAuthListener();
 
   useEffect(() => {
-    // Proceed if fonts are ready (or errored — fall back to system fonts)
-    // and auth has initialised. Either way, always hide within 10s.
-    const ready = (fontsLoaded || !!fontError) && isInitialized;
-    if (ready) {
-      SplashScreen.hideAsync().catch(() => {});
-    }
-  }, [fontsLoaded, fontError, isInitialized]);
-
-  useEffect(() => {
-    // Absolute safety net: never stay on the splash screen past 10 seconds.
-    const timer = setTimeout(() => {
-      SplashScreen.hideAsync().catch(() => {});
-    }, 10000);
-    return () => clearTimeout(timer);
+    SplashScreen.hideAsync()
+      .catch(() => {})
+      .finally(() => setNativeSplashHidden(true));
   }, []);
 
-  // Wait for fonts (or a font error) before rendering — avoids FOUC.
-  if (!fontsLoaded && !fontError) return null;
+  const appReady = (fontsLoaded || !!fontError) && isInitialized;
+  if (!appReady || !nativeSplashHidden) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0E0F10' }}>
+        <Image
+          source={APP_SPLASH}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        />
+      </View>
+    );
+  }
 
   return (
     <ErrorBoundary>

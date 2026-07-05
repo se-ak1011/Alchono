@@ -209,23 +209,6 @@ export default function InsightsScreen() {
               <Text className="text-text-muted text-lg ml-3">→</Text>
             </Pressable>
 
-            {/* Evidence — proof from your own data, for the days it doesn't feel like it */}
-            <Pressable
-              onPress={() => router.push('/evidence')}
-              className="mx-6 mb-4 flex-row items-center justify-between bg-surface rounded-2xl px-5 py-4 border border-white/8 active:border-white/20"
-              style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
-            >
-              <View className="flex-1 pr-3">
-                <Text className="text-text-primary text-base font-semibold">
-                  Evidence
-                </Text>
-                <Text className="text-text-muted text-sm mt-0.5">
-                  When it doesn't feel like progress — what your own data says.
-                </Text>
-              </View>
-              <Text className="text-text-muted text-lg">→</Text>
-            </Pressable>
-
             {/* Member-initiated snapshot — a page they can simply show across
                 a table, with sharing as a choice on it. Free by design; the
                 paid portal is for continuous remote visibility, not this. */}

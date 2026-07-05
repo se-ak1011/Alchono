@@ -198,7 +198,7 @@ function HomeSecondaryCards() {
       {/* Looking Forward To */}
       <Pressable
         className="flex-1"
-        style={{ height: 110 }}
+        style={{ minHeight: 124 }}
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/goals');
@@ -210,7 +210,7 @@ function HomeSecondaryCards() {
           </Text>
           {firstGoal ? (
             <>
-              <Text className="text-text-secondary text-sm leading-relaxed">
+              <Text className="text-text-secondary text-sm leading-relaxed" numberOfLines={3}>
                 {firstGoal.text}
               </Text>
               {firstGoal.target_date && (
@@ -233,13 +233,15 @@ function HomeSecondaryCards() {
       </Pressable>
 
       {/* Progress */}
-      <View className="flex-1" style={{ height: 110 }}>
+      <View className="flex-1" style={{ minHeight: 112 }}>
         <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
           </Text>
           {victoryLine ? (
-            <Text className="text-text-secondary text-sm leading-relaxed">◆ {victoryLine}</Text>
+            <Text className="text-text-secondary text-sm leading-relaxed" numberOfLines={4}>
+              ◆ {victoryLine}
+            </Text>
           ) : (
             <Text className="text-text-muted text-sm">Your wins will appear here.</Text>
           )}
@@ -249,23 +251,21 @@ function HomeSecondaryCards() {
   );
 }
 
-function CounsellorCard() {
+function ExploreAlchonoCard() {
   const router = useRouter();
   return (
     <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
       <Pressable
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          router.push('/counsellors');
+          router.push('/ecosystem');
         }}
-        className="flex-row items-center justify-between px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+        className="flex-row items-center justify-between px-5 py-3.5 bg-surface rounded-2xl border border-white/5 active:border-white/15"
       >
         <View className="flex-1 pr-3">
-          <Text className="text-text-secondary text-base font-medium">
-            Find a counsellor
-          </Text>
+          <Text className="text-text-secondary text-base font-medium">Explore Alchono</Text>
           <Text className="text-text-muted text-sm mt-0.5">
-            Verified professionals, when you want a human in your corner.
+            Toolkit, games, letters, and more support paths.
           </Text>
         </View>
         <Text className="text-text-muted text-base">→</Text>
@@ -290,9 +290,11 @@ export default function HomeScreen() {
           <View
             style={{
               shadowColor: '#7B6FA0',
-              shadowOpacity: 0.18,
-              shadowRadius: 28,
+              shadowOpacity: 0.26,
+              shadowRadius: 34,
               shadowOffset: { width: 0, height: 0 },
+              borderRadius: 999,
+              backgroundColor: 'rgba(96,84,124,0.18)',
             }}
           >
             <View
@@ -308,7 +310,7 @@ export default function HomeScreen() {
                 style={{
                   width: HOME_COMPANION_IMAGE_WIDTH,
                   height: HOME_COMPANION_IMAGE_HEIGHT,
-                  opacity: 0.72,
+                  opacity: 0.86,
                 }}
                 resizeMode="contain"
               />
@@ -321,11 +323,11 @@ export default function HomeScreen() {
         <HomeSecondaryCards />
         <MonthlyRecapCard />
         <DailyGameCard />
+        <ExploreAlchonoCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
         <ChoosingPrompt />
         <DrinkingSession />
-        <CounsellorCard />
       </ScrollView>
       <PauseModal />
     </SafeArea>

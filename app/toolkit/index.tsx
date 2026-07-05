@@ -57,12 +57,23 @@ export default function ToolkitScreen() {
 
       {!q && (
         <View className="px-6 pt-1 pb-2 items-center">
-          <Image
-            source={require('../../assets/companions/image_06_reading.png')}
-            accessible={false}
-            style={{ width: 106, height: 118, opacity: 0.74 }}
-            resizeMode="contain"
-          />
+          <View
+            style={{
+              borderRadius: 999,
+              backgroundColor: 'rgba(99,86,128,0.16)',
+              shadowColor: '#7B6FA0',
+              shadowOpacity: 0.24,
+              shadowRadius: 26,
+              shadowOffset: { width: 0, height: 0 },
+            }}
+          >
+            <Image
+              source={require('../../assets/companions/image_06_reading.png')}
+              accessible={false}
+              style={{ width: 106, height: 118, opacity: 0.84 }}
+              resizeMode="contain"
+            />
+          </View>
         </View>
       )}
 
