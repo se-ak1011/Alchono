@@ -24,22 +24,6 @@ export default function SupportScreen() {
 
   return (
     <SafeArea>
-      {/* Tea companion — upper right, quietly present above the cards */}
-      <Image
-        source={require('../../assets/companions/image_07_tea.png')}
-        accessible={false}
-        style={{
-          position: 'absolute',
-          right: 0,
-          top: 72,
-          width: 130,
-          height: 154,
-          opacity: 0.52,
-          zIndex: 0,
-        }}
-        resizeMode="contain"
-      />
-
       <View className="flex-row items-start justify-between px-6 pt-6 pb-2">
         <Text
           className="text-text-primary text-3xl font-semibold tracking-tight"
@@ -88,6 +72,20 @@ export default function SupportScreen() {
               A craving, a hard moment. Calm and immediate.
             </Text>
           </Pressable>
+        </Animated.View>
+
+        {/* Tea companion — centred between the two cards */}
+        <Animated.View entering={FadeIn.duration(500).delay(120)} style={{ alignSelf: 'center' }}>
+          <Image
+            source={require('../../assets/companions/image_07_tea.png')}
+            accessible={false}
+            style={{
+              width: 130,
+              height: 154,
+              opacity: 0.52,
+            }}
+            resizeMode="contain"
+          />
         </Animated.View>
 
         {/* Mode 2 — everything else */}
