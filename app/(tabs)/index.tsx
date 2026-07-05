@@ -19,6 +19,12 @@ import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
+const HOME_COMPANION_IMAGE_WIDTH = 112;
+const HOME_COMPANION_IMAGE_HEIGHT = 132;
+const HOME_TOP_CARD_IMAGE_GUTTER = 16;
+// Keep the top recap card clear of the companion that's anchored to the right.
+const HOME_TOP_CARD_RIGHT_MARGIN = HOME_COMPANION_IMAGE_WIDTH - HOME_TOP_CARD_IMAGE_GUTTER;
+
 function MorningReflectionPrompt() {
   const { data: reflectedToday } = useReflectionDoneToday();
   const { morningReflectionDismissed, dismissMorningReflection } = useAppStore();
@@ -104,7 +110,11 @@ function MonthlyRecapCard() {
   if (recap.checkins > 0) lines.push(`${recap.checkins} check-ins`);
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3 mr-24">
+    <Animated.View
+      entering={FadeIn.duration(400)}
+      className="mx-6 mt-3"
+      style={{ marginRight: HOME_TOP_CARD_RIGHT_MARGIN }}
+    >
       <Card className="border border-white/10">
         <View className="flex-row items-start justify-between mb-1">
           <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
@@ -233,7 +243,12 @@ export default function HomeScreen() {
         <View className="mx-6 -mt-1 mb-1 items-end">
           <Image
             source={require('../../assets/companions/image_01_standing.png')}
-            style={{ width: 112, height: 132, opacity: 0.58 }}
+            accessible={false}
+            style={{
+              width: HOME_COMPANION_IMAGE_WIDTH,
+              height: HOME_COMPANION_IMAGE_HEIGHT,
+              opacity: 0.58,
+            }}
             resizeMode="contain"
           />
         </View>

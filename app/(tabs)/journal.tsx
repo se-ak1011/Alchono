@@ -27,6 +27,15 @@ import {
 } from '@/hooks/useJournalNotes';
 import { headingShadow } from '@/styles';
 
+const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
+const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
+const JOURNAL_COMPANION_OVERHANG = 52;
+const JOURNAL_COMPANION_IMAGE_TOP = -JOURNAL_COMPANION_OVERHANG;
+const JOURNAL_COMPANION_IMAGE_RIGHT = 16;
+// Compose card spacing leaves room for the companion to overhang the card edge.
+const JOURNAL_COMPOSE_CARD_TOP_MARGIN = 40;
+const JOURNAL_COMPOSE_CARD_TOP_PADDING = 64;
+
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
@@ -228,15 +237,22 @@ export default function JournalScreen() {
         </View>
 
         {/* Compose */}
-        <View className="mx-6 mb-4 mt-10 bg-surface rounded-2xl p-4 pt-16 border border-white/8">
+        <View
+          className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8"
+          style={{
+            marginTop: JOURNAL_COMPOSE_CARD_TOP_MARGIN,
+            paddingTop: JOURNAL_COMPOSE_CARD_TOP_PADDING,
+          }}
+        >
           <Image
             source={require('../../assets/companions/image_05_journal.png')}
+            accessible={false}
             style={{
               position: 'absolute',
-              top: -52,
-              right: 16,
-              width: 108,
-              height: 128,
+              top: JOURNAL_COMPANION_IMAGE_TOP,
+              right: JOURNAL_COMPANION_IMAGE_RIGHT,
+              width: JOURNAL_COMPANION_IMAGE_WIDTH,
+              height: JOURNAL_COMPANION_IMAGE_HEIGHT,
               opacity: 0.68,
             }}
             resizeMode="contain"
