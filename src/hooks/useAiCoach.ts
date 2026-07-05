@@ -33,15 +33,22 @@ export function useAiCoach(sessionType = 'general') {
   const activeSessionId = useAppStore((s) => s.activeSessionId);
   const { data: urgeStats } = useUrgeStats();
   const { data: afMonth } = useAfMonthCount();
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '0',
-      role: 'assistant',
-      content:
-        "Hi, I'm here whenever you need to talk. What's on your mind today?",
-      timestamp: new Date().toISOString(),
-    },
-  ]);
+  // Open with the user's name so the coach feels like it already knows them
+  // from the very first line — instant, no API call. The AI then adapts using
+  // the full context (partner, stats, isolation, etc.) from its first reply.
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const name = profile?.username?.trim();
+    return [
+      {
+        id: '0',
+        role: 'assistant',
+        content: name
+          ? `Hey ${name} — I'm here whenever you need to talk. What's on your mind?`
+          : "Hi, I'm here whenever you need to talk. What's on your mind today?",
+        timestamp: new Date().toISOString(),
+      },
+    ];
+  });
   const [isTyping, setIsTyping] = useState(false);
 
   const sendMessage = useCallback(

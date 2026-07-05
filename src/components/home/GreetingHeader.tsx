@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SoulIconSmall } from '@/components/icons/SoulIcon';
-import { headingShadow } from '@/styles';
+import { headingShadow, celebrationGlow } from '@/styles';
 import { useAuthStore } from '@/store/authStore';
 import { useStreak } from '@/hooks/useInsights';
+import { useDueLetter, daysAgo } from '@/hooks/useLetters';
 
 const GREETINGS = {
   early:     ["Still up?", "Late night.", "Hey."],
@@ -29,6 +31,8 @@ function getGreeting(): string {
 export function GreetingHeader() {
   const profile = useAuthStore((s) => s.profile);
   const { data: streakData } = useStreak();
+  const { data: dueLetter } = useDueLetter();
+  const router = useRouter();
   const name = profile?.username ?? profile?.full_name ?? null;
   const streak = streakData?.streak ?? 0;
 
@@ -42,17 +46,51 @@ export function GreetingHeader() {
           </Text>
         </View>
         {streak > 0 && (
-          <View className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1.5">
+          <Pressable
+            onPress={() => router.push('/constellation')}
+            hitSlop={8}
+            className="flex-row items-center gap-1.5 bg-white/6 border border-white/10 rounded-full px-3 py-1.5 active:opacity-70"
+          >
+            <Text className="text-accent text-xs">✦</Text>
             <Text className="text-text-secondary text-sm font-semibold">
               {streak} {streak === 1 ? 'day' : 'days'}
             </Text>
-          </View>
+          </Pressable>
         )}
       </View>
-      <Text className="text-text-primary text-4xl font-semibold tracking-tight mt-3" style={headingShadow}>
-        {getGreeting()}
-        {name ? `\n${name}.` : ''}
-      </Text>
+
+      {dueLetter ? (
+        /* A letter from the past has come due — it quietly takes the greeting's
+           place. Never announced twice; opening it delivers it for good. */
+        <Pressable
+          onPress={() => router.push(`/letters/${dueLetter.id}`)}
+          className="mt-3 active:opacity-80"
+        >
+          <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2">
+            A letter arrived
+          </Text>
+          <Text
+            className="text-text-primary text-3xl font-semibold tracking-tight"
+            style={celebrationGlow}
+          >
+            A letter from{'\n'}your past self.
+          </Text>
+          <Text className="text-text-secondary text-sm mt-3">
+            Written {daysAgo(dueLetter.created_at) === 0
+              ? 'today'
+              : `${daysAgo(dueLetter.created_at)} day${daysAgo(dueLetter.created_at) === 1 ? '' : 's'} ago`}{' '}
+            · tap to read →
+          </Text>
+        </Pressable>
+      ) : (
+        <Text
+          className="text-text-primary text-4xl font-semibold tracking-tight mt-3"
+          style={headingShadow}
+        >
+          {getGreeting()}
+          {name ? `\n${name}.` : ''}
+        </Text>
+      )}
     </View>
   );
 }

@@ -93,7 +93,7 @@ export default function PostGameScreen() {
                 fontFamily: 'Inter_600SemiBold',
               }}
             >
-              The urge passed.
+              It passed.
             </Text>
           </Pressable>
 

@@ -166,7 +166,7 @@ export default function InsightsScreen() {
             {/* Stat cards */}
             <View className="flex-row mx-6 gap-3 mb-3">
               <InsightCard
-                title="Urges beaten"
+                title="Got through it"
                 value={urgeStats?.periodPassed ?? 0}
                 symbol="◆"
                 subtitle={`in ${period} days`}
@@ -192,6 +192,22 @@ export default function InsightsScreen() {
                 subtitle="taken"
               />
             </View>
+
+            {/* Recovery Constellation — every sober day as a permanent star */}
+            <Pressable
+              onPress={() => router.push('/constellation')}
+              className="mx-6 mb-4 flex-row items-center justify-between bg-surface-2 rounded-2xl px-5 py-4 border border-white/10 active:opacity-80"
+            >
+              <View className="flex-1">
+                <Text className="text-text-primary text-base font-semibold">
+                  ✦ Recovery Constellation
+                </Text>
+                <Text className="text-text-secondary text-sm mt-0.5 leading-relaxed">
+                  Your sky of sober days. Every one leaves a permanent star.
+                </Text>
+              </View>
+              <Text className="text-text-muted text-lg ml-3">→</Text>
+            </Pressable>
 
             {/* Evidence — proof from your own data, for the days it doesn't feel like it */}
             <Pressable

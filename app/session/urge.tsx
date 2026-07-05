@@ -11,10 +11,11 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
+import { CompanionImage } from '@/components/ui/CompanionImage';
 import { useStartSession } from '@/hooks/useDrinkingSession';
 import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
-import { headingShadow } from '@/styles';
+import { headingShadow, celebrationGlow } from '@/styles';
 import type { UserPreferences } from '@/types';
 
 const BREATH_MS = 4000;
@@ -244,7 +245,15 @@ export default function UrgeScreen() {
             entering={FadeIn.duration(400)}
             style={{ flex: 1, justifyContent: 'center', minHeight: 520, paddingBottom: 8 }}
           >
-            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
+            <CompanionImage
+              source={require('../../assets/companions/image_14_elbows_knees.png')}
+              size="medium"
+              alignment="center"
+              opacity={0.64}
+              maxHeight={124}
+            />
+
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3 mt-4">
               Just one thing
             </Text>
 
@@ -288,7 +297,7 @@ export default function UrgeScreen() {
 
             {typicalMinutes ? (
               <Text className="text-text-muted text-sm text-center leading-relaxed mt-6 px-4">
-                Your urges usually pass in ~{typicalMinutes} minute
+                These usually pass in ~{typicalMinutes} minute
                 {typicalMinutes === 1 ? '' : 's'}. You've never regretted waiting one out.
               </Text>
             ) : null}
@@ -301,7 +310,7 @@ export default function UrgeScreen() {
               hitSlop={10}
               className="items-center mt-8 py-2"
             >
-              <Text className="text-text-muted text-sm">The urge already passed →</Text>
+              <Text className="text-text-muted text-sm">It already passed →</Text>
             </Pressable>
           </Animated.View>
         )}
@@ -344,7 +353,7 @@ export default function UrgeScreen() {
                 }}
               >
                 <Text className="text-text-primary text-lg font-semibold mb-1">
-                  The urge passed.
+                  It passed.
                 </Text>
                 <Text className="text-text-muted text-base">
                   Good. Keep going.
@@ -385,14 +394,21 @@ export default function UrgeScreen() {
             </Text>
             <Text
               className="text-text-primary text-4xl font-semibold tracking-tight mb-3"
-              style={headingShadow}
+              style={celebrationGlow}
             >
               It passed.
             </Text>
-            <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 px-4">
+            <CompanionImage
+              source={require('../../assets/companions/image_19_small_smile.png')}
+              size="small"
+              alignment="center"
+              opacity={0.7}
+              maxHeight={88}
+            />
+            <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">
               {survivedCount <= 1
-                ? 'Your first urge, beaten.'
-                : `That's ${survivedCount} urges beaten.`}
+                ? 'You got through your first one.'
+                : `That's ${survivedCount} times you've got through it.`}
               {'\n'}Proof this works.
             </Text>
             <Button

@@ -64,7 +64,7 @@ function SignalsCard({ link }: { link: TrustedLink }) {
           <SignalChip on={signals.checked_in_today} tone="good"
             onLabel="✅ Checked in" offLabel="— No check-in yet" />
           <SignalChip on={signals.urge_beaten_today} tone="good"
-            onLabel="✅ Beat an urge" offLabel="— No urges logged" />
+            onLabel="✅ Got through a hard moment" offLabel="— None logged yet" />
           <SignalChip on={signals.rough_day} tone="warn"
             onLabel="🟡 Rough day" offLabel="— Mood steady" />
           <SignalChip on={signals.asked_for_support} tone="alert"

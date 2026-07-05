@@ -45,13 +45,13 @@ export default function SummaryScreen() {
 
   const rows: { label: string; value: string }[] = [
     { label: 'Alcohol-free days', value: String(alcoholFreeDays) },
-    { label: 'Urges beaten', value: String(urgeStats?.periodPassed ?? 0) },
+    { label: 'Times you got through it', value: String(urgeStats?.periodPassed ?? 0) },
     { label: 'Check-ins', value: `${checkinDays} of ${period} days` },
     { label: 'Drinking sessions', value: String(sessionDayCount) },
     { label: 'Pauses taken mid-session', value: String(totalPauses) },
     ...(topMood ? [{ label: 'Most common mood', value: topMood }] : []),
     ...(typicalMinutes
-      ? [{ label: 'Urges typically pass in', value: `~${typicalMinutes} min` }]
+      ? [{ label: 'These usually pass in', value: `~${typicalMinutes} min` }]
       : []),
   ];
 

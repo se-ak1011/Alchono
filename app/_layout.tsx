@@ -89,6 +89,17 @@ function RootLayoutNav() {
         <Stack.Screen name="summary" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="evidence" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="letters/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen
+          name="letters/write"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="letters/[id]"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
@@ -131,7 +142,7 @@ function SplashOverlay() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#09070C',
         zIndex: 999,
       }}
     >
@@ -207,8 +218,8 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0E0F10' }}>
-            <StatusBar style="light" backgroundColor="#0E0F10" />
+          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#09070C' }}>
+            <StatusBar style="light" backgroundColor="#09070C" />
             <RootLayoutNav />
             {overlayVisible && <SplashOverlay />}
           </GestureHandlerRootView>

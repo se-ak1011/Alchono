@@ -52,7 +52,7 @@ export function AnchorsCard() {
   const victories: string[] = [];
   const urgesBeaten = urgeStats?.allTimePassed ?? 0;
   if (urgesBeaten > 0) {
-    victories.push(`${urgesBeaten} urge${urgesBeaten === 1 ? '' : 's'} beaten`);
+    victories.push(`${urgesBeaten} tough moment${urgesBeaten === 1 ? '' : 's'} you got through`);
   }
   if (afMonth > 0) {
     victories.push(`${afMonth} alcohol-free day${afMonth === 1 ? '' : 's'} this month`);

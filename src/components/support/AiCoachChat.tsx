@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAiCoach } from '@/hooks/useAiCoach';
+import { CompanionImage } from '@/components/ui/CompanionImage';
 import type { ChatMessage } from '@/types';
 
 interface AiCoachChatProps {
@@ -23,8 +24,8 @@ interface AiCoachChatProps {
 // never faces a blank box in a hard moment.
 const QUICK_ACTIONS: { label: string; message: string; urge?: boolean }[] = [
   {
-    label: "I'm having an urge",
-    message: "I'm having an urge to drink right now. I need help getting through it.",
+    label: 'I want a drink',
+    message: "I want a drink right now. I need help getting through it.",
     urge: true,
   },
   { label: 'I drank today', message: 'I drank today and I want to talk about it.' },
@@ -63,7 +64,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
 
   const handleUrge = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    sendMessage("I'm having an urge to drink right now. I need help getting through it.");
+    sendMessage("I want a drink right now. I need help getting through it.");
     router.push('/session/urge');
   };
 
@@ -91,6 +92,19 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
         contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => <ChatBubble message={item} />}
+        ListHeaderComponent={
+          showQuickActions ? (
+            <View className="pt-2 pb-1">
+              <CompanionImage
+                source={require('../../../assets/companions/image_02_armchair.png')}
+                size="large"
+                alignment="center"
+                opacity={0.7}
+                maxHeight={156}
+              />
+            </View>
+          ) : null
+        }
         ListFooterComponent={
           isTyping ? (
             <View className="flex-row justify-start mb-3">
@@ -144,7 +158,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           }}
         >
           <Text className="text-text-primary text-base font-medium">
-            I'm having an urge right now
+            I want a drink right now
           </Text>
           <Text className="text-text-muted text-sm">→</Text>
         </Pressable>

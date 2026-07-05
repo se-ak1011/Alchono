@@ -11,6 +11,7 @@ import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
+import { CompanionImage } from '@/components/ui/CompanionImage';
 import { useReflectionDoneToday } from '@/hooks/useJournal';
 import { useChoicesDoneToday } from '@/hooks/useChoices';
 import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
@@ -100,7 +101,7 @@ function MonthlyRecapCard() {
   if (recap.afDays > 0)
     lines.push(`${recap.afDays} alcohol-free day${recap.afDays === 1 ? '' : 's'}`);
   if (recap.urgesBeaten > 0)
-    lines.push(`${recap.urgesBeaten} urge${recap.urgesBeaten === 1 ? '' : 's'} beaten`);
+    lines.push(`${recap.urgesBeaten} tough moment${recap.urgesBeaten === 1 ? '' : 's'} you got through`);
   if (recap.checkins > 0) lines.push(`${recap.checkins} check-ins`);
 
   return (
@@ -238,6 +239,15 @@ export default function HomeScreen() {
         <MorningReflectionPrompt />
         <ChoosingPrompt />
         <DrinkingSession />
+        <View className="mx-6 mt-1">
+          <CompanionImage
+            source={require('../../assets/companions/image_01_standing.png')}
+            size="medium"
+            alignment="right"
+            opacity={0.58}
+            maxHeight={132}
+          />
+        </View>
         <CounsellorCard />
         <HomeFeed />
       </ScrollView>

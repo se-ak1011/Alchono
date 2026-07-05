@@ -72,7 +72,7 @@ serve(async (req) => {
         lines.push('They live somewhere rural/isolated; in-person support is hard to reach.');
       if (lines.length > 0) {
         systemMessage +=
-          '\n\nWhat you quietly know about this person (use it naturally when relevant, never recite it):\n- ' +
+          '\n\nWhat you know about this person — use it naturally to make them feel seen: address them by name, and let what you know shape your questions (their people, their progress, their situation). Never recite it back as a list.\n- ' +
           lines.join('\n- ');
       }
     }
@@ -82,6 +82,14 @@ serve(async (req) => {
     const turns = (Array.isArray(messages) ? messages : [])
       .filter((m: { role?: string }) => m?.role === 'user' || m?.role === 'assistant')
       .slice(-20);
+
+    // Anthropic requires the FIRST message to be from the user (unlike OpenAI,
+    // which tolerated a leading assistant turn). The app seeds the thread with
+    // an assistant greeting, so strip any leading assistant turns — otherwise
+    // the API 400s and the user only ever sees the fallback message.
+    while (turns.length > 0 && turns[0].role !== 'user') {
+      turns.shift();
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
