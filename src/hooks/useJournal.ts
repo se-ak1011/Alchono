@@ -63,29 +63,6 @@ export function useSubmitJournal() {
   });
 }
 
-/**
- * Whether a reflection has already been saved today. Reflection is a daily
- * practice — offered every morning regardless of whether yesterday involved a
- * drink — so "done" is tracked per day, not per drinking session.
- */
-export function useReflectionDoneToday() {
-  const userId = useAuthStore((s) => s.user?.id);
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  return useQuery({
-    queryKey: ['reflection-done', userId, startOfToday.toDateString()],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('journal_entries')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', userId!)
-        .gte('created_at', startOfToday.toISOString());
-      return (count ?? 0) > 0;
-    },
-    enabled: !!userId,
-  });
-}
-
 export function useYesterdaySession() {
   const userId = useAuthStore((s) => s.user?.id);
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);

@@ -89,24 +89,3 @@ export function useUpdateCheckin() {
     },
   });
 }
-
-export function useRecentCheckins(days = 7) {
-  const userId = useAuthStore((s) => s.user?.id);
-  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split('T')[0];
-
-  return useQuery({
-    queryKey: ['checkins', userId, days],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('daily_checkins')
-        .select('*')
-        .eq('user_id', userId!)
-        .gte('created_at', `${since}T00:00:00`)
-        .order('created_at', { ascending: false });
-      return data ?? [];
-    },
-    enabled: !!userId,
-  });
-}
