@@ -9,6 +9,7 @@ import {
   useActiveSession,
   useStartSession,
   useEndSession,
+  useLogDrink,
 } from '@/hooks/useDrinkingSession';
 import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { useAppStore } from '@/store/appStore';
@@ -45,6 +46,7 @@ export function DrinkingSession() {
   const { data: activeSession } = useActiveSession();
   const { mutate: startSession, isPending: isStarting } = useStartSession();
   const { mutate: endSession, isPending: isEnding } = useEndSession();
+  const { mutate: logDrink, isPending: isLogging } = useLogDrink();
   const { setPauseModalVisible } = useAppStore();
   const { data: alcoholFreeMarked = false } = useAfToday();
   const { mutate: toggleAlcoholFree } = useToggleAlcoholFree();
@@ -91,7 +93,14 @@ export function DrinkingSession() {
                 {duration}
               </Text>
             </View>
-            <View className="w-2 h-2 rounded-full bg-white/60" />
+            <View className="items-end">
+              <Text className="text-text-primary text-2xl font-semibold">
+                {(activeSession as any).drinks_count ?? 0}
+              </Text>
+              <Text className="text-text-muted text-xs tracking-widest uppercase">
+                {((activeSession as any).drinks_count ?? 0) === 1 ? 'drink' : 'drinks'}
+              </Text>
+            </View>
           </View>
 
           {/* Rotating harm-reduction nudge — changes as the session goes on */}
@@ -135,6 +144,21 @@ export function DrinkingSession() {
               </View>
             </Animated.View>
           )}
+
+          {/* One tap to log a drink — no judgement, just awareness. Same
+              action the iOS 'I had a drink' shortcut/Siri/Back Tap triggers. */}
+          <Button
+            title="I had a drink"
+            variant="secondary"
+            size="sm"
+            fullWidth
+            loading={isLogging}
+            className="mb-2"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              logDrink({});
+            }}
+          />
 
           <View className="flex-row gap-2">
             <Button

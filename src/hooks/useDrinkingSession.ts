@@ -86,6 +86,76 @@ export function useEndSession() {
   });
 }
 
+/**
+ * Log a drink — the single source of truth the tap-button AND the iOS App
+ * Intent both flow through. If no session is active it starts one (drinks = 1);
+ * otherwise it adds one to the active session. Returns the new count.
+ *
+ * `startedAtOverride` lets the intent-reconciler backdate a session to when the
+ * drink was actually logged offline (epoch ms), and `add` batches several
+ * pending drinks from the App Group in one write.
+ */
+export function useLogDrink() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const { setActiveSession } = useAppStore();
+
+  return useMutation({
+    mutationFn: async (opts?: { add?: number; startedAtOverride?: number }) => {
+      const add = Math.max(1, opts?.add ?? 1);
+
+      // Fresh read — the intent may have run while the app was closed, so
+      // don't trust cached state.
+      const { data: active } = await (supabase as any)
+        .from('drinking_sessions')
+        .select('id, drinks_count')
+        .eq('user_id', userId!)
+        .is('ended_at', null)
+        .order('started_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (active?.id) {
+        const next = (active.drinks_count ?? 0) + add;
+        const { error } = await (supabase as any)
+          .from('drinking_sessions')
+          .update({ drinks_count: next })
+          .eq('id', active.id);
+        if (error) throw error;
+        return { sessionId: active.id as string, count: next, created: false };
+      }
+
+      // No active session — start one, seeded with the drink(s).
+      const insert: Record<string, unknown> = { user_id: userId!, drinks_count: add };
+      if (opts?.startedAtOverride) {
+        insert.started_at = new Date(opts.startedAtOverride).toISOString();
+      }
+      const { data, error } = await (supabase as any)
+        .from('drinking_sessions')
+        .insert(insert)
+        .select()
+        .single();
+      if (error) throw error;
+      return { sessionId: data.id as string, count: add, created: true };
+    },
+    onSuccess: async (res) => {
+      setActiveSession(res.sessionId);
+      queryClient.invalidateQueries({ queryKey: ['active-session', userId] });
+      queryClient.invalidateQueries({ queryKey: ['sessions', userId] });
+      // A freshly-started session gets the same gentle nudges as useStartSession.
+      if (res.created) {
+        const prefs = (useAuthStore.getState().profile?.preferences ??
+          null) as UserPreferences | null;
+        const { data: np } = await supabase
+          .from('notification_preferences')
+          .select('session_nudges')
+          .eq('user_id', userId!)
+          .maybeSingle();
+        if (prefs && np?.session_nudges !== false) scheduleSessionNudges(prefs);
+      }
+    },
+  });
+}
+
 export function useIncrementPause() {
   const userId = useAuthStore((s) => s.user?.id);
 

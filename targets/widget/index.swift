@@ -5,15 +5,16 @@ import SwiftUI
 // into the shared App Group whenever the member's state changes.
 let appGroup = "group.com.alchono.app"
 
-// Short harm-reduction nudges, mirrored from SESSION_NUDGES in the app.
-// Rotates every 20 minutes while a session is live.
+// Short harm-reduction nudges. Kept deliberately terse so they fit the small
+// widget without clipping — the in-app SESSION_NUDGES carry the longer, warmer
+// versions. Rotates every 20 minutes while a session is live.
 let sessionNudges = [
-  "Water between drinks. Still works.",
-  "Eat something. It slows everything down.",
-  "Car keys somewhere hard to reach.",
-  "Make this next one a slow one.",
-  "Message someone. You don't have to sit in it alone.",
-  "Pick your stopping point now, while it's your call.",
+  "Water between drinks.",
+  "Eat something.",
+  "Keys somewhere safe.",
+  "Make this one slow.",
+  "Message someone.",
+  "Pick your stopping point.",
 ]
 
 // The two brand tokens the widget leans on.
@@ -138,7 +139,7 @@ struct AlchonoWidgetView: View {
         Text(entry.nudge)
           .font(.system(size: 11, weight: .medium))
           .foregroundColor(.white.opacity(0.75))
-          .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+          .lineLimit(2).minimumScaleFactor(0.8).fixedSize(horizontal: false, vertical: true)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
     } else {

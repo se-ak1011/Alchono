@@ -99,6 +99,8 @@ function HomeSecondaryCards() {
 export default function HomeScreen() {
   useSmartReminder();
   useWidgetSync();
+  // Drain any drinks logged offline via the "I had a drink" App Intent.
+  useDrinkIntentSync();
   return (
     <SafeArea>
       <ScrollView

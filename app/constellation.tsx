@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -43,6 +43,21 @@ export default function ConstellationScreen() {
       ) : (
         <ConstellationSky sky={sky} onSelectStar={setSelected} />
       )}
+
+      {/* Ito, watching the sky fill — bottom-left, never blocking the stars */}
+      <Image
+        source={require('../assets/companions/companion_constellation.png')}
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          left: 4,
+          bottom: insets.bottom,
+          width: 150,
+          height: 200,
+          resizeMode: 'contain',
+          opacity: 0.92,
+        }}
+      />
 
       {/* Header overlay — box-none lets taps fall through to the sky */}
       <View

@@ -220,26 +220,16 @@ export default function JournalScreen() {
         className="flex-1"
         keyboardVerticalOffset={90}
       >
-        <View className="px-6 pt-5 pb-3 flex-row items-start justify-between">
-          <View className="flex-1">
-            <Text
-              className="text-text-primary text-3xl font-semibold tracking-tight"
-              style={headingShadow}
-            >
-              Journal
-            </Text>
-            <Text className="text-text-secondary text-base mt-1">
-              Written or spoken. Yours alone.
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => router.push('/letters')}
-            hitSlop={8}
-            className="flex-row items-center gap-1.5 bg-surface-2 rounded-full px-3.5 py-2 border border-white/10 active:opacity-70 mt-1"
+        <View className="px-6 pt-5 pb-3">
+          <Text
+            className="text-text-primary text-3xl font-semibold tracking-tight"
+            style={headingShadow}
           >
-            <Feather name="mail" size={14} color="#A79FB2" />
-            <Text className="text-text-secondary text-xs font-semibold">Letters</Text>
-          </Pressable>
+            Journal
+          </Text>
+          <Text className="text-text-secondary text-base mt-1">
+            Written or spoken. Yours alone.
+          </Text>
         </View>
 
         {/* Compose */}

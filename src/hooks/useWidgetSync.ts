@@ -34,6 +34,9 @@ export function useWidgetSync() {
   const sessionStart = activeSession?.started_at
     ? Math.floor(new Date(activeSession.started_at).getTime() / 1000)
     : 0;
+  // Keep the shared count in step with the source of truth, so after the app
+  // reconciles the App Intent's offline drinks the widget agrees.
+  const drinksCount = (activeSession as any)?.drinks_count ?? 0;
 
   useEffect(() => {
     if (!storage || urgesBeaten === null || afMonth === undefined) return;
@@ -44,9 +47,10 @@ export function useWidgetSync() {
       storage.set('afDays', afMonth ?? 0);
       storage.set('sessionActive', sessionStart > 0 ? 1 : 0);
       storage.set('sessionStart', sessionStart);
+      storage.set('drinksCount', sessionStart > 0 ? drinksCount : 0);
       ExtensionStorage.reloadWidget();
     } catch {
       // Widget sync is best-effort — never let it touch the app.
     }
-  }, [urgesBeaten, afMonth, sessionStart]);
+  }, [urgesBeaten, afMonth, sessionStart, drinksCount]);
 }

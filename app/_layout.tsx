@@ -91,7 +91,6 @@ function RootLayoutNav() {
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="letters/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="letters/write"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
