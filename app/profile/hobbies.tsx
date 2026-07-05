@@ -64,8 +64,8 @@ export default function HobbiesScreen() {
   const addCustom = () => {
     const trimmed = customInput.trim();
     if (!trimmed) return;
-    // Normalise: capitalise first letter
-    const normalised = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+    // Normalise: capitalise first letter, lowercase the rest
+    const normalised = trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
     if (!selected.includes(normalised)) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setSelected((prev) => [...prev, normalised]);
