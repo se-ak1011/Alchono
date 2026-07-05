@@ -11,6 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
+import { CompanionImage } from '@/components/ui/CompanionImage';
 import { useStartSession } from '@/hooks/useDrinkingSession';
 import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
@@ -244,7 +245,15 @@ export default function UrgeScreen() {
             entering={FadeIn.duration(400)}
             style={{ flex: 1, justifyContent: 'center', minHeight: 520, paddingBottom: 8 }}
           >
-            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
+            <CompanionImage
+              source={require('../../assets/companions/image_14_elbows_knees.png')}
+              size="medium"
+              alignment="center"
+              opacity={0.64}
+              maxHeight={124}
+            />
+
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3 mt-4">
               Just one thing
             </Text>
 
@@ -389,7 +398,14 @@ export default function UrgeScreen() {
             >
               It passed.
             </Text>
-            <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 px-4">
+            <CompanionImage
+              source={require('../../assets/companions/image_19_small_smile.png')}
+              size="small"
+              alignment="center"
+              opacity={0.7}
+              maxHeight={88}
+            />
+            <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">
               {survivedCount <= 1
                 ? 'You got through your first one.'
                 : `That's ${survivedCount} times you've got through it.`}

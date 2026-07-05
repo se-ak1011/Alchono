@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAiCoach } from '@/hooks/useAiCoach';
+import { CompanionImage } from '@/components/ui/CompanionImage';
 import type { ChatMessage } from '@/types';
 
 interface AiCoachChatProps {
@@ -91,6 +92,19 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
         contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => <ChatBubble message={item} />}
+        ListHeaderComponent={
+          showQuickActions ? (
+            <View className="pt-2 pb-1">
+              <CompanionImage
+                source={require('../../../assets/companions/image_02_armchair.png')}
+                size="large"
+                alignment="center"
+                opacity={0.7}
+                maxHeight={156}
+              />
+            </View>
+          ) : null
+        }
         ListFooterComponent={
           isTyping ? (
             <View className="flex-row justify-start mb-3">
