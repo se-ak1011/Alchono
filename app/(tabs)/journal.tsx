@@ -9,13 +9,13 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Image,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { SafeArea } from '@/components/ui/SafeArea';
 import {
   useJournalNotes,
@@ -33,27 +33,11 @@ const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
 function JournalCompanionSection() {
   return (
     <View style={{ alignItems: 'center', paddingTop: 8, paddingBottom: 12 }}>
-      <View
-        style={{
-          borderRadius: 999,
-          backgroundColor: 'rgba(99,86,128,0.16)',
-          shadowColor: '#7B6FA0',
-          shadowOpacity: 0.24,
-          shadowRadius: 26,
-          shadowOffset: { width: 0, height: 0 },
-        }}
-      >
-        <Image
-          source={require('../../assets/companions/image_05_journal.png')}
-          accessible={false}
-          style={{
-            width: JOURNAL_COMPANION_IMAGE_WIDTH,
-            height: JOURNAL_COMPANION_IMAGE_HEIGHT,
-            opacity: 0.84,
-          }}
-          resizeMode="contain"
-        />
-      </View>
+      <CompanionArt
+        source={require('../../assets/companions/image_05_journal.png')}
+        width={JOURNAL_COMPANION_IMAGE_WIDTH}
+        height={JOURNAL_COMPANION_IMAGE_HEIGHT}
+      />
     </View>
   );
 }

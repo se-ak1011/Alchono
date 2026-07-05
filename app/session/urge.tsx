@@ -11,6 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Button } from '@/components/ui/Button';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { useStartSession } from '@/hooks/useDrinkingSession';
 import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
@@ -245,22 +246,12 @@ export default function UrgeScreen() {
             style={{ flex: 1, justifyContent: 'center', minHeight: 520, paddingBottom: 8 }}
           >
             <View className="items-center">
-              <View
-                style={{
-                  borderRadius: 999,
-                  backgroundColor: 'rgba(99,86,128,0.16)',
-                  shadowColor: '#7B6FA0',
-                  shadowOpacity: 0.24,
-                  shadowRadius: 24,
-                  shadowOffset: { width: 0, height: 0 },
-                }}
-              >
-                <Image
-                  source={require('../../assets/companions/image_14_elbows.png')}
-                  style={{ width: 104, height: 124, opacity: 0.86 }}
-                  resizeMode="contain"
-                />
-              </View>
+              <CompanionArt
+                source={require('../../assets/companions/image_14_elbows.png')}
+                width={104}
+                height={124}
+                opacity={0.8}
+              />
             </View>
 
             <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3 mt-4">
@@ -408,22 +399,11 @@ export default function UrgeScreen() {
             >
               It passed.
             </Text>
-            <View
-              style={{
-                borderRadius: 999,
-                backgroundColor: 'rgba(99,86,128,0.16)',
-                shadowColor: '#7B6FA0',
-                shadowOpacity: 0.22,
-                shadowRadius: 22,
-                shadowOffset: { width: 0, height: 0 },
-              }}
-            >
-              <Image
-                source={require('../../assets/companions/image_19_small_smile.png')}
-                style={{ width: 74, height: 88, opacity: 0.84 }}
-                resizeMode="contain"
-              />
-            </View>
+            <CompanionArt
+              source={require('../../assets/companions/image_19_small_smile.png')}
+              width={74}
+              height={88}
+            />
             <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">
               {survivedCount <= 1
                 ? 'You got through your first one.'
