@@ -39,7 +39,7 @@ function JournalCompanionFooter() {
         style={{
           width: JOURNAL_COMPANION_IMAGE_WIDTH,
           height: JOURNAL_COMPANION_IMAGE_HEIGHT,
-          opacity: 0.55,
+          opacity: 0.70,
         }}
         resizeMode="contain"
       />

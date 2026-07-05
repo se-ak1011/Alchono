@@ -130,6 +130,11 @@ export default function ProfileScreen() {
             onPress={() => router.push('/profile/preferences')}
           />
           <HubCard
+            title="Things I enjoy"
+            subtitle="Hobbies and interests — helps personalise your experience over time."
+            onPress={() => router.push('/profile/hobbies')}
+          />
+          <HubCard
             title="Struggling with something else too?"
             subtitle="Other things that can travel alongside drinking."
             onPress={() => router.push('/ecosystem' as any)}

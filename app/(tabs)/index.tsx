@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/Card';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
-import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useGoals, daysUntil } from '@/hooks/useGoals';
@@ -19,12 +18,11 @@ import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { useAppStore } from '@/store/appStore';
-import { useAuthStore } from '@/store/authStore';
 
 const HOME_COMPANION_IMAGE_WIDTH = 140;
 const HOME_COMPANION_IMAGE_HEIGHT = 165;
-// Clip the container to roughly mid-thigh (show top ~76% of the image).
-const HOME_COMPANION_CROP_HEIGHT = 126;
+// Clip the container to roughly knee (show top ~85% of the image).
+const HOME_COMPANION_CROP_HEIGHT = 140;
 
 function MorningReflectionPrompt() {
   const { data: reflectedToday } = useReflectionDoneToday();
@@ -74,13 +72,13 @@ function MorningReflectionPrompt() {
 function DailyGameCard() {
   const router = useRouter();
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4 flex-row gap-3">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3 flex-row gap-3">
       <Pressable
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/session/games');
         }}
-        className="flex-1 px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+        className="flex-1 px-5 py-3 bg-surface rounded-2xl border border-white/5 active:border-white/15"
       >
         <Text className="text-text-secondary text-base font-medium">Games</Text>
         <Text className="text-text-muted text-sm mt-0.5">Give your mind something else.</Text>
@@ -90,7 +88,7 @@ function DailyGameCard() {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/session/good-feed');
         }}
-        className="flex-1 px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
+        className="flex-1 px-5 py-3 bg-surface rounded-2xl border border-white/5 active:border-white/15"
       >
         <Text className="text-text-secondary text-base font-medium">Something good</Text>
         <Text className="text-text-muted text-sm mt-0.5">Today's feel-good picks.</Text>
@@ -131,35 +129,6 @@ function MonthlyRecapCard() {
           That's a month of showing up. Carry it into this one.
         </Text>
       </Card>
-    </Animated.View>
-  );
-}
-
-function SwapsCard() {
-  const router = useRouter();
-  const profile = useAuthStore((s) => s.profile);
-  const interested = (profile?.preferences as any)?.interestedInAlternatives === true;
-  // Only for people who opted in — 0.0 drinks can be a trigger for others.
-  if (!interested) return null;
-  return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
-      <Pressable
-        onPress={async () => {
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          router.push('/swaps');
-        }}
-        className="flex-row items-center justify-between px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
-      >
-        <View className="flex-1 pr-3">
-          <Text className="text-text-secondary text-base font-medium">
-            Swap it, don't fight it
-          </Text>
-          <Text className="text-text-muted text-sm mt-0.5">
-            0.0 drinks that actually taste right.
-          </Text>
-        </View>
-        <Text className="text-text-muted text-base">→</Text>
-      </Pressable>
     </Animated.View>
   );
 }
@@ -229,7 +198,7 @@ function HomeSecondaryCards() {
       {/* Looking Forward To */}
       <Pressable
         className="flex-1"
-        style={{ height: 136 }}
+        style={{ height: 110 }}
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/goals');
@@ -264,7 +233,7 @@ function HomeSecondaryCards() {
       </Pressable>
 
       {/* Progress */}
-      <View className="flex-1" style={{ height: 136 }}>
+      <View className="flex-1" style={{ height: 110 }}>
         <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
@@ -317,23 +286,33 @@ export default function HomeScreen() {
         <GreetingHeader />
         {/* Character (left) + Reasons card (right) */}
         <View className="flex-row mx-6 mt-2 items-start" style={{ gap: 12 }}>
+          {/* Ambient halo sits outside the clip container so it bleeds softly */}
           <View
             style={{
-              width: HOME_COMPANION_IMAGE_WIDTH,
-              height: HOME_COMPANION_CROP_HEIGHT,
-              overflow: 'hidden',
+              shadowColor: '#7B6FA0',
+              shadowOpacity: 0.18,
+              shadowRadius: 28,
+              shadowOffset: { width: 0, height: 0 },
             }}
           >
-            <Image
-              source={require('../../assets/companions/image_01_standing.png')}
-              accessible={false}
+            <View
               style={{
                 width: HOME_COMPANION_IMAGE_WIDTH,
-                height: HOME_COMPANION_IMAGE_HEIGHT,
-                opacity: 0.58,
+                height: HOME_COMPANION_CROP_HEIGHT,
+                overflow: 'hidden',
               }}
-              resizeMode="contain"
-            />
+            >
+              <Image
+                source={require('../../assets/companions/image_01_standing.png')}
+                accessible={false}
+                style={{
+                  width: HOME_COMPANION_IMAGE_WIDTH,
+                  height: HOME_COMPANION_IMAGE_HEIGHT,
+                  opacity: 0.72,
+                }}
+                resizeMode="contain"
+              />
+            </View>
           </View>
           <View className="flex-1">
           <AnchorsCard inline compact />
@@ -342,13 +321,11 @@ export default function HomeScreen() {
         <HomeSecondaryCards />
         <MonthlyRecapCard />
         <DailyGameCard />
-        <SwapsCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
         <ChoosingPrompt />
         <DrinkingSession />
         <CounsellorCard />
-        <HomeFeed />
       </ScrollView>
       <PauseModal />
     </SafeArea>

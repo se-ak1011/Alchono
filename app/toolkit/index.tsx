@@ -60,7 +60,7 @@ export default function ToolkitScreen() {
           <Image
             source={require('../../assets/companions/image_06_reading.png')}
             accessible={false}
-            style={{ width: 106, height: 118, opacity: 0.62 }}
+            style={{ width: 106, height: 118, opacity: 0.74 }}
             resizeMode="contain"
           />
         </View>

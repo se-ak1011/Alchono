@@ -106,7 +106,7 @@ export const REPORT_REASONS = [
 ] as const;
 
 export type UserPreferences = {
-  familyMembers: string[];   // 'partner' | 'children' | 'parents'
+  familyMembers: string[];   // 'partner' | 'children'
   partnerName: string;
   childrenNames: string;
   childrenCount: number;     // 1, 2, 3, or 4 (meaning 4+)
@@ -119,6 +119,7 @@ export type UserPreferences = {
   city: string;
   livesIsolated: boolean;
   interestedInAlternatives: boolean;
+  hobbies: string[];         // "Things I enjoy" — personalisation for AI context
 };
 
 export type ChatMessage = {

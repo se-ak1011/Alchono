@@ -82,7 +82,7 @@ export default function SupportScreen() {
             style={{
               width: 130,
               height: 154,
-              opacity: 0.52,
+              opacity: 0.68,
             }}
             resizeMode="contain"
           />
