@@ -26,7 +26,7 @@ export default function SupportScreen() {
     <SafeArea>
       {/* Tea companion — upper right, quietly present above the cards */}
       <Image
-        source={require('../../assets/companions/image_07_tea.PNG')}
+        source={require('../../assets/companions/image_07_tea.png')}
         accessible={false}
         style={{
           position: 'absolute',
