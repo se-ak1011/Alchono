@@ -225,10 +225,11 @@ function HomeSecondaryCards() {
   const victoryLine = victories.join(' · ');
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="flex-row mx-6 mt-3" style={{ gap: 12 }}>
+    <Animated.View entering={FadeIn.duration(400)} className="flex-row mx-6 mt-3 items-start" style={{ gap: 12 }}>
       {/* Looking Forward To */}
       <Pressable
         className="flex-1"
+        style={{ height: 136 }}
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/goals');
@@ -240,7 +241,7 @@ function HomeSecondaryCards() {
           </Text>
           {firstGoal ? (
             <>
-              <Text className="text-text-secondary text-sm leading-relaxed flex-1">
+              <Text className="text-text-secondary text-sm leading-relaxed">
                 {firstGoal.text}
               </Text>
               {firstGoal.target_date && (
@@ -263,7 +264,7 @@ function HomeSecondaryCards() {
       </Pressable>
 
       {/* Progress */}
-      <View className="flex-1">
+      <View className="flex-1" style={{ height: 136 }}>
         <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
