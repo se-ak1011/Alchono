@@ -5,15 +5,16 @@ import SwiftUI
 // into the shared App Group whenever the member's state changes.
 let appGroup = "group.com.alchono.app"
 
-// Short harm-reduction nudges, mirrored from SESSION_NUDGES in the app.
-// Rotates every 20 minutes while a session is live.
+// Short harm-reduction nudges. Kept deliberately terse so they fit the small
+// widget without clipping — the in-app SESSION_NUDGES carry the longer, warmer
+// versions. Rotates every 20 minutes while a session is live.
 let sessionNudges = [
-  "Water between drinks. Still works.",
-  "Eat something. It slows everything down.",
-  "Car keys somewhere hard to reach.",
-  "Make this next one a slow one.",
-  "Message someone. You don't have to sit in it alone.",
-  "Pick your stopping point now, while it's your call.",
+  "Water between drinks.",
+  "Eat something.",
+  "Keys somewhere safe.",
+  "Make this one slow.",
+  "Message someone.",
+  "Pick your stopping point.",
 ]
 
 // The two brand tokens the widget leans on.
@@ -93,20 +94,23 @@ struct AlchonoWidgetView: View {
   // Deep black when sober; the purple devil's-tint when a session is live.
   var base: Color { entry.sessionActive ? purpleBase : blackBase }
 
-  // The same artwork is used for small and medium widgets; the text/timer
-  // layout fills the available space for each family.
+  // Small widget → tight head crop (the eyes read at a glance). Medium →
+  // the full seated figure with room for the timer beside it.
+  var isSmall: Bool { family != .systemMedium }
   var artName: String {
     entry.sessionActive ? "WidgetDrinking" : "WidgetSober"
   }
 
   var body: some View {
     // Art sits on its own near-black field, so it blends seamlessly with the
-    // matching base and fits both widget sizes without cropping.
+    // matching base: the head crop fills the small square, the full figure
+    // fits the medium with no visible letterbox.
     ZStack(alignment: family == .systemMedium ? .bottomLeading : .bottom) {
       Image(artName)
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .aspectRatio(contentMode: isSmall ? .fill : .fit)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .clipped()
 
       // Scrim so the copy stays legible over the figure's lower half.
       LinearGradient(
@@ -135,7 +139,7 @@ struct AlchonoWidgetView: View {
         Text(entry.nudge)
           .font(.system(size: 11, weight: .medium))
           .foregroundColor(.white.opacity(0.75))
-          .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+          .lineLimit(2).minimumScaleFactor(0.8).fixedSize(horizontal: false, vertical: true)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
     } else {
