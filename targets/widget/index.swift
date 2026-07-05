@@ -93,20 +93,23 @@ struct AlchonoWidgetView: View {
   // Deep black when sober; the purple devil's-tint when a session is live.
   var base: Color { entry.sessionActive ? purpleBase : blackBase }
 
-  // The same artwork is used for small and medium widgets; the text/timer
-  // layout fills the available space for each family.
+  // Small widget → tight head crop (the eyes read at a glance). Medium →
+  // the full seated figure with room for the timer beside it.
+  var isSmall: Bool { family != .systemMedium }
   var artName: String {
     entry.sessionActive ? "WidgetDrinking" : "WidgetSober"
   }
 
   var body: some View {
     // Art sits on its own near-black field, so it blends seamlessly with the
-    // matching base and fits both widget sizes without cropping.
+    // matching base: the head crop fills the small square, the full figure
+    // fits the medium with no visible letterbox.
     ZStack(alignment: family == .systemMedium ? .bottomLeading : .bottom) {
       Image(artName)
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .aspectRatio(contentMode: isSmall ? .fill : .fit)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .clipped()
 
       // Scrim so the copy stays legible over the figure's lower half.
       LinearGradient(
