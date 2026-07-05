@@ -9,6 +9,7 @@ import { CompanionArt } from '@/components/ui/CompanionArt';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
+import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useGoals, daysUntil } from '@/hooks/useGoals';
 import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
