@@ -363,16 +363,6 @@ export default function JournalScreen() {
               )}
             </Animated.View>
           )}
-          ListEmptyComponent={
-            !isLoading ? (
-              <View className="py-10 items-center px-6">
-                <Text className="text-text-muted text-base text-center leading-relaxed">
-                  Nothing here yet.{'\n'}Write it, type it, or just say it out
-                  loud — whatever's easiest tonight.
-                </Text>
-              </View>
-            ) : null
-          }
         />
       </KeyboardAvoidingView>
     </SafeArea>
