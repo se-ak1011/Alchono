@@ -97,7 +97,8 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
             <View className="pt-2 pb-1 items-center">
               <Image
                 source={require('../../../assets/companions/image_02_armchair.png')}
-                style={{ width: 132, height: 156, opacity: 0.7 }}
+                accessible={false}
+                style={{ width: 152, height: 179, opacity: 0.7 }}
                 resizeMode="contain"
               />
             </View>

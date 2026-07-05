@@ -56,9 +56,10 @@ export default function ToolkitScreen() {
       </Animated.View>
 
       {!q && (
-        <View className="px-6 pt-1 pb-2 items-end">
+        <View className="px-6 pt-1 pb-2 items-center">
           <Image
             source={require('../../assets/companions/image_06_reading.png')}
+            accessible={false}
             style={{ width: 106, height: 118, opacity: 0.62 }}
             resizeMode="contain"
           />
