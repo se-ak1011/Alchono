@@ -247,7 +247,7 @@ export default function UrgeScreen() {
             <View className="items-center">
               <Image
                 source={require('../../assets/companions/image_14_elbows.png')}
-                style={{ width: 104, height: 124, opacity: 0.64 }}
+                style={{ width: 104, height: 124, opacity: 0.76 }}
                 resizeMode="contain"
               />
             </View>
