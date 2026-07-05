@@ -50,7 +50,7 @@ function HomeSecondaryCards() {
           router.push('/goals');
         }}
       >
-        <Card className="border border-white/5 h-full">
+        <Card className="border border-white/5">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Looking Forward To
           </Text>
@@ -80,7 +80,7 @@ function HomeSecondaryCards() {
 
       {/* Progress */}
       <View className="flex-1" style={{ minHeight: 112 }}>
-        <Card className="border border-white/5 h-full">
+        <Card className="border border-white/5">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
           </Text>
