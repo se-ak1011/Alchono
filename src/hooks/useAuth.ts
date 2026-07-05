@@ -132,11 +132,3 @@ export function useSignUp() {
     return data;
   };
 }
-
-export function useSignOut() {
-  const { reset } = useAuthStore();
-  return async () => {
-    await supabase.auth.signOut();
-    reset();
-  };
-}

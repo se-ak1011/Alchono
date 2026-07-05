@@ -3,25 +3,6 @@ import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 
-/** Has the user recorded any choice today? Gates the evening prompt. */
-export function useChoicesDoneToday() {
-  const userId = useAuthStore((s) => s.user?.id);
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  return useQuery({
-    queryKey: ['choices-done', userId, startOfToday.toDateString()],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('daily_choices')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', userId!)
-        .gte('created_at', startOfToday.toISOString());
-      return (count ?? 0) > 0;
-    },
-    enabled: !!userId,
-  });
-}
-
 /** Save tonight's choices — replaces any already recorded today. */
 export function useSaveChoices() {
   const userId = useAuthStore((s) => s.user?.id);
