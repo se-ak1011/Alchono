@@ -14,9 +14,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { useRouter } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { SafeArea } from '@/components/ui/SafeArea';
-import { CompanionImage } from '@/components/ui/CompanionImage';
 import {
   useJournalNotes,
   useAddTextNote,
@@ -26,6 +25,21 @@ import {
   type JournalNote,
 } from '@/hooks/useJournalNotes';
 import { headingShadow } from '@/styles';
+
+const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
+const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
+
+function JournalCompanionSection() {
+  return (
+    <View style={{ alignItems: 'center', paddingTop: 8, paddingBottom: 12 }}>
+      <CompanionArt
+        source={require('../../assets/companions/image_05_journal.png')}
+        width={JOURNAL_COMPANION_IMAGE_WIDTH}
+        height={JOURNAL_COMPANION_IMAGE_HEIGHT}
+      />
+    </View>
+  );
+}
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -205,30 +219,22 @@ export default function JournalScreen() {
         className="flex-1"
         keyboardVerticalOffset={90}
       >
-        <View className="px-6 pt-5 pb-3 flex-row items-start justify-between">
-          <View className="flex-1">
-            <Text
-              className="text-text-primary text-3xl font-semibold tracking-tight"
-              style={headingShadow}
-            >
-              Journal
-            </Text>
-            <Text className="text-text-secondary text-base mt-1">
-              Written or spoken. Yours alone.
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => router.push('/letters')}
-            hitSlop={8}
-            className="flex-row items-center gap-1.5 bg-surface-2 rounded-full px-3.5 py-2 border border-white/10 active:opacity-70 mt-1"
+        <View className="px-6 pt-5 pb-3">
+          <Text
+            className="text-text-primary text-3xl font-semibold tracking-tight"
+            style={headingShadow}
           >
-            <Feather name="mail" size={14} color="#A79FB2" />
-            <Text className="text-text-secondary text-xs font-semibold">Letters</Text>
-          </Pressable>
+            Journal
+          </Text>
+          <Text className="text-text-secondary text-base mt-1">
+            Written or spoken. Yours alone.
+          </Text>
         </View>
 
         {/* Compose */}
-        <View className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8">
+        <View
+          className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8"
+        >
           {recording ? (
             <Animated.View entering={FadeIn.duration(300)} className="items-center py-4">
               <View className="w-3 h-3 rounded-full bg-danger-light mb-3" />
@@ -301,6 +307,22 @@ export default function JournalScreen() {
           )}
         </View>
 
+        <JournalCompanionSection />
+
+        <View className="mx-6 mb-4">
+          <Text className="text-text-primary text-xl font-semibold">Letters</Text>
+          <Text className="text-text-secondary text-sm mt-1 leading-relaxed">
+            Write to your future self. One day, when you least expect it, it comes back.
+          </Text>
+          <Pressable
+            onPress={() => router.push('/letters/write')}
+            className="mt-3 bg-surface rounded-2xl px-5 py-4 border border-white/8 active:border-white/20"
+          >
+            <Text className="text-text-primary text-base font-semibold">Write to Future You</Text>
+            <Text className="text-text-muted text-sm mt-1">Something they'll need to hear.</Text>
+          </Pressable>
+        </View>
+
         {/* Notes */}
         <FlatList
           data={notes ?? []}
@@ -340,23 +362,6 @@ export default function JournalScreen() {
               )}
             </Animated.View>
           )}
-          ListEmptyComponent={
-            !isLoading ? (
-              <View className="py-10 items-center px-6">
-                <CompanionImage
-                  source={require('../../assets/companions/image_05_journal.png')}
-                  size="medium"
-                  alignment="center"
-                  opacity={0.68}
-                  maxHeight={128}
-                />
-                <Text className="text-text-muted text-base text-center leading-relaxed">
-                  Nothing here yet.{'\n'}Write it, type it, or just say it out
-                  loud — whatever's easiest tonight.
-                </Text>
-              </View>
-            ) : null
-          }
         />
       </KeyboardAvoidingView>
     </SafeArea>

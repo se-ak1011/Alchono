@@ -2,8 +2,7 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, Dimensions } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { View, Image } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -23,6 +22,7 @@ import { useAuthListener } from '@/hooks/useAuth';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 SplashScreen.preventAutoHideAsync();
+const APP_SPLASH = require('../assets/Splash_Screen.png');
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { session, profile, isInitialized } = useAuthStore();
@@ -91,7 +91,6 @@ function RootLayoutNav() {
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="letters/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="letters/write"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
@@ -127,58 +126,8 @@ function RootLayoutNav() {
   );
 }
 
-function SplashOverlay() {
-  // Pixel-match the native splash so the native→JS handoff is invisible:
-  // the expo-splash-screen plugin renders splash-icon.png at 400pt wide,
-  // centered. Draw exactly that, and only fade the tagline in on top.
-  const { width, height } = Dimensions.get('window');
-  const logo = Math.min(400, width);
-  return (
-    <Animated.View
-      exiting={FadeOut.duration(400)}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: '#09070C',
-        zIndex: 999,
-      }}
-    >
-      <Image
-        source={require('../assets/splash-icon.png')}
-        style={{
-          position: 'absolute',
-          top: (height - logo) / 2,
-          left: (width - logo) / 2,
-          width: logo,
-          height: logo,
-          resizeMode: 'contain',
-        }}
-      />
-      <Animated.Text
-        entering={FadeIn.duration(600).delay(150)}
-        style={{
-          position: 'absolute',
-          top: (height + logo) / 2 - 12,
-          left: 0,
-          right: 0,
-          color: '#FFFFFF',
-          fontSize: 24,
-          fontFamily: 'Inter_700Bold',
-          textAlign: 'center',
-          lineHeight: 34,
-          letterSpacing: 0.5,
-        }}
-      >
-        It Drives,{'\n'}You Pay.
-      </Animated.Text>
-    </Animated.View>
-  );
-}
-
 export default function RootLayout() {
+  const [nativeSplashHidden, setNativeSplashHidden] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -186,33 +135,28 @@ export default function RootLayout() {
     Inter_700Bold,
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);
-  const [overlayVisible, setOverlayVisible] = useState(true);
 
   // Start auth init immediately — parallel with font loading, not after it.
   useAuthListener();
 
   useEffect(() => {
-    // Proceed if fonts are ready (or errored — fall back to system fonts)
-    // and auth has initialised. Either way, always hide within 10s.
-    const ready = (fontsLoaded || !!fontError) && isInitialized;
-    if (ready) {
-      SplashScreen.hideAsync().catch(() => {});
-      // Hold the branded overlay a beat so the tagline can land.
-      const t = setTimeout(() => setOverlayVisible(false), 1500);
-      return () => clearTimeout(t);
-    }
-  }, [fontsLoaded, fontError, isInitialized]);
-
-  useEffect(() => {
-    // Absolute safety net: never stay on the splash screen past 10 seconds.
-    const timer = setTimeout(() => {
-      SplashScreen.hideAsync().catch(() => {});
-    }, 10000);
-    return () => clearTimeout(timer);
+    SplashScreen.hideAsync()
+      .catch(() => {})
+      .finally(() => setNativeSplashHidden(true));
   }, []);
 
-  // Wait for fonts (or a font error) before rendering — avoids FOUC.
-  if (!fontsLoaded && !fontError) return null;
+  const appReady = (fontsLoaded || !!fontError) && isInitialized;
+  if (!appReady || !nativeSplashHidden) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0E0F10' }}>
+        <Image
+          source={APP_SPLASH}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        />
+      </View>
+    );
+  }
 
   return (
     <ErrorBoundary>
@@ -221,7 +165,6 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#09070C' }}>
             <StatusBar style="light" backgroundColor="#09070C" />
             <RootLayoutNav />
-            {overlayVisible && <SplashOverlay />}
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </QueryClientProvider>
