@@ -30,6 +30,23 @@ import { headingShadow } from '@/styles';
 const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
 const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
 
+function JournalCompanionFooter() {
+  return (
+    <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 16 }}>
+      <Image
+        source={require('../../assets/companions/image_05_journal.png')}
+        accessible={false}
+        style={{
+          width: JOURNAL_COMPANION_IMAGE_WIDTH,
+          height: JOURNAL_COMPANION_IMAGE_HEIGHT,
+          opacity: 0.55,
+        }}
+        resizeMode="contain"
+      />
+    </View>
+  );
+}
+
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
@@ -314,20 +331,7 @@ export default function JournalScreen() {
           keyExtractor={(n) => n.id}
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={
-            <View style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 16 }}>
-              <Image
-                source={require('../../assets/companions/image_05_journal.png')}
-                accessible={false}
-                style={{
-                  width: JOURNAL_COMPANION_IMAGE_WIDTH,
-                  height: JOURNAL_COMPANION_IMAGE_HEIGHT,
-                  opacity: 0.55,
-                }}
-                resizeMode="contain"
-              />
-            </View>
-          }
+          ListFooterComponent={JournalCompanionFooter}
           renderItem={({ item, index }) => (
             <Animated.View
               entering={FadeInDown.duration(300).delay(Math.min(index * 30, 300))}

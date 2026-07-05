@@ -36,7 +36,7 @@ function buildNames(prefs: UserPreferences | null): string | null {
   return parts.length > 0 ? parts.join(' & ') : null;
 }
 
-export function AnchorsCard({ containerClassName }: { containerClassName?: string }) {
+export function AnchorsCard({ inline }: { inline?: boolean }) {
   const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
   const prefs = profile?.preferences as UserPreferences | null;
@@ -59,7 +59,7 @@ export function AnchorsCard({ containerClassName }: { containerClassName?: strin
   }
   const victoryLine = victories.join(' · ');
 
-  const outerCls = containerClassName !== undefined ? containerClassName : 'mx-6 mt-4';
+  const outerCls = inline ? '' : 'mx-6 mt-4';
 
   if (!names && activeGoals.length === 0) {
     return (

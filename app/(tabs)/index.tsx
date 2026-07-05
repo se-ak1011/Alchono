@@ -259,7 +259,7 @@ export default function HomeScreen() {
             />
           </View>
           <View className="flex-1">
-            <AnchorsCard containerClassName="" />
+          <AnchorsCard inline />
           </View>
         </View>
         <MonthlyRecapCard />
