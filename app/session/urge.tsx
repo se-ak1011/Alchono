@@ -246,7 +246,7 @@ export default function UrgeScreen() {
             style={{ flex: 1, justifyContent: 'center', minHeight: 520, paddingBottom: 8 }}
           >
             <CompanionImage
-              source={require('../../assets/companions/image_14_elbows_knees.png')}
+              source={require('../../assets/companions/image_14_elbows.png')}
               size="medium"
               alignment="center"
               opacity={0.64}
