@@ -103,8 +103,8 @@ export function useLogDrink() {
     mutationFn: async (opts?: { add?: number; startedAtOverride?: number }) => {
       const add = Math.max(1, opts?.add ?? 1);
 
-      // Find the current active session (fresh read — the intent may have run
-      // while the app was closed, so don't trust cached state).
+      // Fresh read — the intent may have run while the app was closed, so
+      // don't trust cached state.
       const { data: active } = await (supabase as any)
         .from('drinking_sessions')
         .select('id, drinks_count')
@@ -115,7 +115,7 @@ export function useLogDrink() {
         .maybeSingle();
 
       if (active?.id) {
-        const next = ((active as any).drinks_count ?? 0) + add;
+        const next = (active.drinks_count ?? 0) + add;
         const { error } = await (supabase as any)
           .from('drinking_sessions')
           .update({ drinks_count: next })
@@ -135,7 +135,7 @@ export function useLogDrink() {
         .select()
         .single();
       if (error) throw error;
-      return { sessionId: (data as any).id as string, count: add, created: true };
+      return { sessionId: data.id as string, count: add, created: true };
     },
     onSuccess: async (res) => {
       setActiveSession(res.sessionId);
