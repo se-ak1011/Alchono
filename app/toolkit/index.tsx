@@ -12,6 +12,7 @@ import {
 } from '@/lib/toolkit';
 import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
 import { headingShadow } from '@/styles';
+import { CompanionImage } from '@/components/ui/CompanionImage';
 
 export default function ToolkitScreen() {
   const router = useRouter();
@@ -54,6 +55,18 @@ export default function ToolkitScreen() {
           </Text>
         </View>
       </Animated.View>
+
+      {!q && (
+        <View className="px-6 pt-1 pb-2">
+          <CompanionImage
+            source={require('../../assets/companions/image_06_reading.png')}
+            size="medium"
+            alignment="right"
+            opacity={0.62}
+            maxHeight={118}
+          />
+        </View>
+      )}
 
       <View className="px-6 mb-4 mt-2">
         <TextInput
