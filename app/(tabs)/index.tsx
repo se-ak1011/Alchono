@@ -44,7 +44,7 @@ function HomeSecondaryCards() {
       {/* Looking Forward To */}
       <Pressable
         className="flex-1"
-        style={{ minHeight: 124 }}
+        style={{ minHeight: 124, maxHeight: 160 }}
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/goals');
@@ -79,7 +79,7 @@ function HomeSecondaryCards() {
       </Pressable>
 
       {/* Progress */}
-      <View className="flex-1" style={{ minHeight: 112 }}>
+      <View className="flex-1" style={{ minHeight: 112, maxHeight: 160 }}>
         <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
