@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/Card';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
-import { HomeFeed } from '@/components/home/HomeFeed';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useGoals, daysUntil } from '@/hooks/useGoals';
@@ -19,7 +18,6 @@ import { useMonthlyRecap } from '@/hooks/useMonthlyRecap';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { useAppStore } from '@/store/appStore';
-import { useAuthStore } from '@/store/authStore';
 
 const HOME_COMPANION_IMAGE_WIDTH = 140;
 const HOME_COMPANION_IMAGE_HEIGHT = 165;
@@ -131,35 +129,6 @@ function MonthlyRecapCard() {
           That's a month of showing up. Carry it into this one.
         </Text>
       </Card>
-    </Animated.View>
-  );
-}
-
-function SwapsCard() {
-  const router = useRouter();
-  const profile = useAuthStore((s) => s.profile);
-  const interested = (profile?.preferences as any)?.interestedInAlternatives === true;
-  // Only for people who opted in — 0.0 drinks can be a trigger for others.
-  if (!interested) return null;
-  return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
-      <Pressable
-        onPress={async () => {
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          router.push('/swaps');
-        }}
-        className="flex-row items-center justify-between px-5 py-4 bg-surface rounded-2xl border border-white/5 active:border-white/15"
-      >
-        <View className="flex-1 pr-3">
-          <Text className="text-text-secondary text-base font-medium">
-            Swap it, don't fight it
-          </Text>
-          <Text className="text-text-muted text-sm mt-0.5">
-            0.0 drinks that actually taste right.
-          </Text>
-        </View>
-        <Text className="text-text-muted text-base">→</Text>
-      </Pressable>
     </Animated.View>
   );
 }
@@ -352,13 +321,11 @@ export default function HomeScreen() {
         <HomeSecondaryCards />
         <MonthlyRecapCard />
         <DailyGameCard />
-        <SwapsCard />
         <MoodCheckin />
         <MorningReflectionPrompt />
         <ChoosingPrompt />
         <DrinkingSession />
         <CounsellorCard />
-        <HomeFeed />
       </ScrollView>
       <PauseModal />
     </SafeArea>
