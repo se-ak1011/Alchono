@@ -228,7 +228,19 @@ export default function JournalScreen() {
         </View>
 
         {/* Compose */}
-        <View className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8">
+        <View className="mx-6 mb-4 mt-10 bg-surface rounded-2xl p-4 pt-16 border border-white/8">
+          <Image
+            source={require('../../assets/companions/image_05_journal.png')}
+            style={{
+              position: 'absolute',
+              top: -52,
+              right: 16,
+              width: 108,
+              height: 128,
+              opacity: 0.68,
+            }}
+            resizeMode="contain"
+          />
           {recording ? (
             <Animated.View entering={FadeIn.duration(300)} className="items-center py-4">
               <View className="w-3 h-3 rounded-full bg-danger-light mb-3" />
@@ -343,11 +355,6 @@ export default function JournalScreen() {
           ListEmptyComponent={
             !isLoading ? (
               <View className="py-10 items-center px-6">
-                <Image
-                  source={require('../../assets/companions/image_05_journal.png')}
-                  style={{ width: 108, height: 128, opacity: 0.68, marginBottom: 10 }}
-                  resizeMode="contain"
-                />
                 <Text className="text-text-muted text-base text-center leading-relaxed">
                   Nothing here yet.{'\n'}Write it, type it, or just say it out
                   loud — whatever's easiest tonight.

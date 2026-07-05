@@ -104,7 +104,7 @@ function MonthlyRecapCard() {
   if (recap.checkins > 0) lines.push(`${recap.checkins} check-ins`);
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3 mr-24">
       <Card className="border border-white/10">
         <View className="flex-row items-start justify-between mb-1">
           <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase">
@@ -230,6 +230,13 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: 48 }}
       >
         <GreetingHeader />
+        <View className="mx-6 -mt-1 mb-1 items-end">
+          <Image
+            source={require('../../assets/companions/image_01_standing.png')}
+            style={{ width: 112, height: 132, opacity: 0.58 }}
+            resizeMode="contain"
+          />
+        </View>
         <MonthlyRecapCard />
         <AnchorsCard />
         <DailyGameCard />
@@ -238,13 +245,6 @@ export default function HomeScreen() {
         <MorningReflectionPrompt />
         <ChoosingPrompt />
         <DrinkingSession />
-        <View className="mx-6 mt-1 items-end">
-          <Image
-            source={require('../../assets/companions/image_01_standing.png')}
-            style={{ width: 112, height: 132, opacity: 0.58 }}
-            resizeMode="contain"
-          />
-        </View>
         <CounsellorCard />
         <HomeFeed />
       </ScrollView>
