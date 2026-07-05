@@ -19,11 +19,10 @@ import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { useAppStore } from '@/store/appStore';
 import { useAuthStore } from '@/store/authStore';
 
-const HOME_COMPANION_IMAGE_WIDTH = 112;
-const HOME_COMPANION_IMAGE_HEIGHT = 132;
-const HOME_TOP_CARD_IMAGE_GUTTER = 16;
-// Keep the top recap card clear of the companion that's anchored to the right.
-const HOME_TOP_CARD_RIGHT_MARGIN = HOME_COMPANION_IMAGE_WIDTH - HOME_TOP_CARD_IMAGE_GUTTER;
+const HOME_COMPANION_IMAGE_WIDTH = 140;
+const HOME_COMPANION_IMAGE_HEIGHT = 165;
+// Clip the container to roughly mid-thigh (show top ~76% of the image).
+const HOME_COMPANION_CROP_HEIGHT = 126;
 
 function MorningReflectionPrompt() {
   const { data: reflectedToday } = useReflectionDoneToday();
@@ -113,7 +112,6 @@ function MonthlyRecapCard() {
     <Animated.View
       entering={FadeIn.duration(400)}
       className="mx-6 mt-3"
-      style={{ marginRight: HOME_TOP_CARD_RIGHT_MARGIN }}
     >
       <Card className="border border-white/10">
         <View className="flex-row items-start justify-between mb-1">
@@ -240,20 +238,31 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: 48 }}
       >
         <GreetingHeader />
-        <View className="mx-6 -mt-1 mb-1 items-end">
-          <Image
-            source={require('../../assets/companions/image_01_standing.png')}
-            accessible={false}
+        {/* Character (left) + Reasons card (right) */}
+        <View className="flex-row mx-6 mt-2 items-start" style={{ gap: 12 }}>
+          <View
             style={{
               width: HOME_COMPANION_IMAGE_WIDTH,
-              height: HOME_COMPANION_IMAGE_HEIGHT,
-              opacity: 0.58,
+              height: HOME_COMPANION_CROP_HEIGHT,
+              overflow: 'hidden',
             }}
-            resizeMode="contain"
-          />
+          >
+            <Image
+              source={require('../../assets/companions/image_01_standing.png')}
+              accessible={false}
+              style={{
+                width: HOME_COMPANION_IMAGE_WIDTH,
+                height: HOME_COMPANION_IMAGE_HEIGHT,
+                opacity: 0.58,
+              }}
+              resizeMode="contain"
+            />
+          </View>
+          <View className="flex-1">
+            <AnchorsCard containerClassName="" />
+          </View>
         </View>
         <MonthlyRecapCard />
-        <AnchorsCard />
         <DailyGameCard />
         <SwapsCard />
         <MoodCheckin />

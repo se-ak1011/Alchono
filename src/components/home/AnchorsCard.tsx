@@ -36,7 +36,7 @@ function buildNames(prefs: UserPreferences | null): string | null {
   return parts.length > 0 ? parts.join(' & ') : null;
 }
 
-export function AnchorsCard() {
+export function AnchorsCard({ containerClassName }: { containerClassName?: string }) {
   const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
   const prefs = profile?.preferences as UserPreferences | null;
@@ -59,9 +59,11 @@ export function AnchorsCard() {
   }
   const victoryLine = victories.join(' · ');
 
+  const outerCls = containerClassName !== undefined ? containerClassName : 'mx-6 mt-4';
+
   if (!names && activeGoals.length === 0) {
     return (
-      <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+      <Animated.View entering={FadeIn.duration(400)} className={outerCls}>
         {victoryLine ? (
           <Text className="text-text-secondary text-base mb-1">◆ {victoryLine}</Text>
         ) : null}
@@ -73,7 +75,7 @@ export function AnchorsCard() {
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
+    <Animated.View entering={FadeIn.duration(400)} className={outerCls}>
       <Card className="border border-white/5">
         {/* People */}
         {names && (

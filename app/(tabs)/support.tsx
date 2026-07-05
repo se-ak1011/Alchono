@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -24,6 +24,22 @@ export default function SupportScreen() {
 
   return (
     <SafeArea>
+      {/* Tea companion — upper right, quietly present above the cards */}
+      <Image
+        source={require('../../assets/companions/image_07_tea.PNG')}
+        accessible={false}
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 72,
+          width: 130,
+          height: 154,
+          opacity: 0.52,
+          zIndex: 0,
+        }}
+        resizeMode="contain"
+      />
+
       <View className="flex-row items-start justify-between px-6 pt-6 pb-2">
         <Text
           className="text-text-primary text-3xl font-semibold tracking-tight"
