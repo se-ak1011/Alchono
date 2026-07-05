@@ -23,7 +23,7 @@ export function CompanionArt({
   width,
   height,
   cropHeight,
-  opacity = 0.82,
+  opacity = 0.8,
   containerStyle,
   imageStyle,
 }: CompanionArtProps) {

@@ -113,7 +113,6 @@ export default function HomeScreen() {
             width={HOME_COMPANION_IMAGE_WIDTH}
             height={HOME_COMPANION_IMAGE_HEIGHT}
             cropHeight={HOME_COMPANION_CROP_HEIGHT}
-            opacity={0.76}
           />
           <View className="flex-1">
             <AnchorsCard inline compact />

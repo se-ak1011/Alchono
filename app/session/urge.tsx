@@ -250,7 +250,6 @@ export default function UrgeScreen() {
                 source={require('../../assets/companions/image_14_elbows.png')}
                 width={104}
                 height={124}
-                opacity={0.8}
               />
             </View>
 
