@@ -20,6 +20,7 @@ type CompanionMenuProps = {
   quietSignal?: number;
   onVoiceNote?: () => void;
   onToolkitSearch?: () => void;
+  zoneLayout?: OrbitLayout;
 };
 
 type CompanionChip = {
@@ -75,7 +76,8 @@ const QUIET_MESSAGES: Record<CompanionContext, string[]> = {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-type OrbitPoint = { x: number; y: number };
+export type CompanionMenuPoint = { x: number; y: number };
+type OrbitPoint = CompanionMenuPoint;
 
 type OrbitLayout = {
   anchor: OrbitPoint;
@@ -219,6 +221,7 @@ export function CompanionMenu({
   quietSignal = 0,
   onVoiceNote,
   onToolkitSearch,
+  zoneLayout,
 }: CompanionMenuProps) {
   const router = useRouter();
   const chips = useMemo(
@@ -304,7 +307,7 @@ export function CompanionMenu({
     if (chip.route) router.push(chip.route as any);
   };
 
-  const orbit = ORBITS[context];
+  const orbit = zoneLayout ?? ORBITS[context];
   const activeConstellationPrompt =
     context === "constellation" && renderMenu ? constellationPrompt : null;
 

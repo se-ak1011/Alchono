@@ -46,28 +46,52 @@ export default function ConstellationScreen() {
         <ConstellationSky sky={sky} onSelectStar={setSelected} />
       )}
 
-      {/* Ito anchors a compact constellation menu without blocking the stars. */}
-      <Pressable
-        onPress={() => setCompanionMenuOpen(true)}
-        hitSlop={12}
+      {/* Ito anchors a compact constellation menu in a local sky zone. */}
+      <View
+        pointerEvents="box-none"
         style={{
           position: "absolute",
           left: 4,
           bottom: insets.bottom,
-          width: 150,
-          height: 200,
+          width: 300,
+          height: 300,
         }}
       >
-        <Image
-          source={require("../assets/companions/image_23_star.png")}
+        <Pressable
+          onPress={() => setCompanionMenuOpen(true)}
+          hitSlop={12}
           style={{
+            position: "absolute",
+            left: 0,
+            bottom: 0,
             width: 150,
             height: 200,
-            resizeMode: "contain",
-            opacity: 0.92,
+          }}
+        >
+          <Image
+            source={require("../assets/companions/image_23_star.png")}
+            style={{
+              width: 150,
+              height: 200,
+              resizeMode: "contain",
+              opacity: 0.92,
+            }}
+          />
+        </Pressable>
+        <CompanionMenu
+          visible={companionMenuOpen}
+          onClose={() => setCompanionMenuOpen(false)}
+          context="constellation"
+          zoneLayout={{
+            anchor: { x: 78, y: 200 },
+            points: [
+              { x: 116, y: -92 },
+              { x: 136, y: -42 },
+            ],
+            caption: { x: 124, y: -142 },
           }}
         />
-      </Pressable>
+      </View>
 
       {/* Header overlay — box-none lets taps fall through to the sky */}
       <View
@@ -100,11 +124,6 @@ export default function ConstellationScreen() {
       </View>
 
       {/* Selected day */}
-      <CompanionMenu
-        visible={companionMenuOpen}
-        onClose={() => setCompanionMenuOpen(false)}
-        context="constellation"
-      />
 
       {selected && (
         <Animated.View
