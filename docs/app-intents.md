@@ -24,7 +24,8 @@ The intent can't reach the network or the app's JS, so:
    widget feedback) and increments `pendingDrinks` (the unsynced queue).
 2. Next time the app opens/foregrounds, `useDrinkIntentSync` drains
    `pendingDrinks` via `useLogDrink` — creating/backdating the session and
-   writing the real count to Supabase — then clears the queue.
+   writing the real count to Supabase — then subtracts only the successfully
+   logged batch from the queue.
 
 So the session already reflects the drink(s) whenever the app is next opened,
 and the widget reflects them immediately.
@@ -55,7 +56,9 @@ App Intents can't be exercised in CI — verify on a TestFlight build:
 - The action appears in the Shortcuts app as **I had a drink**.
 - Running it with the app closed updates the **widget** immediately.
 - Opening the app then shows the drink on the active session (count matches the
-  number of times the intent ran).
+  number of times the intent ran, including multiple pending drinks).
+- If Supabase logging fails, `pendingDrinks` remains queued for the next app
+  launch/foreground instead of being cleared prematurely.
 - `AppShortcutsProvider` lives in the widget extension. If Siri's zero-config
   phrase or the Action Button list doesn't pick it up, the provider may need to
   move to the main app target via a config plugin — the manual Back Tap →
