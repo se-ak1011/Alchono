@@ -5,7 +5,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -46,10 +45,7 @@ export function Card({ children, className = '', onPress, elevated = false, ...r
         onPressOut={() => {
           scale.value = withSpring(1, { damping: 15, stiffness: 300 });
         }}
-        onPress={async () => {
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          onPress();
-        }}
+        onPress={onPress}
         className={baseClass}
       >
         {children}
