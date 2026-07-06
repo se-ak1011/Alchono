@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { CompanionArt } from '@/components/ui/CompanionArt';
+import { CompanionMenu } from '@/components/ui/CompanionMenu';
 import {
   TOOLKIT,
   CATEGORY_META,
@@ -19,6 +20,7 @@ export default function ToolkitScreen() {
   const insets = useSafeAreaInsets();
   const { isSaved } = useToolkitFavourites();
   const [query, setQuery] = useState('');
+  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
 
   const q = query.trim().toLowerCase();
   const results = useMemo(
@@ -62,6 +64,7 @@ export default function ToolkitScreen() {
             source={require('../../assets/companions/image_06_reading.png')}
             width={106}
             height={118}
+            onPress={() => setCompanionMenuOpen(true)}
           />
         </View>
       )}
@@ -186,6 +189,10 @@ export default function ToolkitScreen() {
           </View>
         )}
       </ScrollView>
+      <CompanionMenu
+        visible={companionMenuOpen}
+        onClose={() => setCompanionMenuOpen(false)}
+      />
     </View>
   );
 }

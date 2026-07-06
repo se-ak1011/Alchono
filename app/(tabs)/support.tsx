@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { CompanionArt } from '@/components/ui/CompanionArt';
+import { CompanionMenu } from '@/components/ui/CompanionMenu';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
 import { useUnreadTotal } from '@/hooks/useMessages';
@@ -15,6 +16,7 @@ import { useUnreadTotal } from '@/hooks/useMessages';
  */
 export default function SupportScreen() {
   const router = useRouter();
+  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
   const { data: unread } = useUnreadTotal();
 
   const go = (route: string, warn = false) => {
@@ -81,6 +83,7 @@ export default function SupportScreen() {
             source={require('../../assets/companions/image_07_tea.png')}
             width={130}
             height={154}
+            onPress={() => setCompanionMenuOpen(true)}
           />
         </Animated.View>
 
@@ -98,6 +101,10 @@ export default function SupportScreen() {
           </Pressable>
         </Animated.View>
       </View>
+      <CompanionMenu
+        visible={companionMenuOpen}
+        onClose={() => setCompanionMenuOpen(false)}
+      />
     </SafeArea>
   );
 }

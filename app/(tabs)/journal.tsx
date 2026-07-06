@@ -16,6 +16,7 @@ import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { CompanionArt } from '@/components/ui/CompanionArt';
+import { CompanionMenu } from '@/components/ui/CompanionMenu';
 import { SafeArea } from '@/components/ui/SafeArea';
 import {
   useJournalNotes,
@@ -30,13 +31,14 @@ import { headingShadow } from '@/styles';
 const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
 const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
 
-function JournalCompanionSection() {
+function JournalCompanionSection({ onPress }: { onPress: () => void }) {
   return (
     <View style={{ alignItems: 'center', paddingTop: 8, paddingBottom: 12 }}>
       <CompanionArt
         source={require('../../assets/companions/image_05_journal.png')}
         width={JOURNAL_COMPANION_IMAGE_WIDTH}
         height={JOURNAL_COMPANION_IMAGE_HEIGHT}
+        onPress={onPress}
       />
     </View>
   );
@@ -116,6 +118,7 @@ export default function JournalScreen() {
   const { mutate: deleteNote } = useDeleteNote();
 
   const [draft, setDraft] = useState('');
+  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordSeconds, setRecordSeconds] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -308,7 +311,7 @@ export default function JournalScreen() {
           )}
         </View>
 
-        <JournalCompanionSection />
+        <JournalCompanionSection onPress={() => setCompanionMenuOpen(true)} />
 
         <View className="mx-6 mb-4">
           <Text className="text-text-primary text-xl font-semibold">Letters</Text>
@@ -365,6 +368,10 @@ export default function JournalScreen() {
           )}
         />
       </KeyboardAvoidingView>
+      <CompanionMenu
+        visible={companionMenuOpen}
+        onClose={() => setCompanionMenuOpen(false)}
+      />
     </SafeArea>
   );
 }

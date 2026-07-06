@@ -46,7 +46,7 @@ export default function ConstellationScreen() {
 
       {/* Ito, watching the sky fill — bottom-left, never blocking the stars */}
       <Image
-        source={require('../assets/companions/image_22_stars.png')}
+        source={require('../assets/companions/image_23_star.png')}
         pointerEvents="none"
         style={{
           position: 'absolute',
