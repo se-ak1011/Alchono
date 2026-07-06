@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, Pressable, Text, View } from "react-native";
+import { Animated, Dimensions, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 
@@ -73,18 +73,90 @@ const QUIET_MESSAGES: Record<CompanionContext, string[]> = {
   ],
 };
 
-const PLACEMENT: Record<
-  CompanionContext,
-  { top?: number; bottom?: number; left?: number; right?: number }
-> = {
-  home: { top: 172, left: 8 },
-  journal: { top: 330, left: 24 },
-  support: { top: 330, left: 52 },
-  toolkit: { top: 188, left: 44 },
-  insights: { top: 188, left: 44 },
-  constellation: { top: 188, left: 44 },
-  games: { top: 188, left: 44 },
-  profile: { top: 188, left: 44 },
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+type OrbitPoint = { x: number; y: number };
+
+type OrbitLayout = {
+  anchor: OrbitPoint;
+  points: OrbitPoint[];
+  caption?: OrbitPoint;
+};
+
+const centerX = SCREEN_WIDTH / 2;
+
+const ORBITS: Record<CompanionContext, OrbitLayout> = {
+  home: {
+    anchor: { x: 90, y: 206 },
+    points: [
+      { x: 98, y: -90 },
+      { x: 114, y: -38 },
+      { x: -78, y: -38 },
+      { x: 18, y: 94 },
+    ],
+    caption: { x: 72, y: -92 },
+  },
+  journal: {
+    anchor: { x: centerX, y: 350 },
+    points: [
+      { x: 0, y: -84 },
+      { x: -104, y: 54 },
+      { x: 88, y: 54 },
+    ],
+    caption: { x: 0, y: -92 },
+  },
+  support: {
+    anchor: { x: centerX, y: 332 },
+    points: [
+      { x: 0, y: -92 },
+      { x: -100, y: 58 },
+      { x: 98, y: 58 },
+    ],
+    caption: { x: 0, y: -98 },
+  },
+  toolkit: {
+    anchor: { x: centerX, y: 206 },
+    points: [
+      { x: -82, y: -52 },
+      { x: 86, y: 52 },
+    ],
+    caption: { x: 0, y: -92 },
+  },
+  insights: {
+    anchor: { x: centerX, y: 206 },
+    points: [
+      { x: -86, y: -54 },
+      { x: 88, y: -54 },
+      { x: 0, y: 76 },
+    ],
+    caption: { x: 0, y: -92 },
+  },
+  constellation: {
+    anchor: { x: 78, y: Math.max(520, SCREEN_HEIGHT - 120) },
+    points: [
+      { x: 112, y: -60 },
+      { x: 118, y: -12 },
+    ],
+    caption: { x: 120, y: -116 },
+  },
+  games: {
+    anchor: { x: centerX, y: 206 },
+    points: [
+      { x: -86, y: -54 },
+      { x: 88, y: -54 },
+      { x: 0, y: 76 },
+    ],
+    caption: { x: 0, y: -92 },
+  },
+  profile: {
+    anchor: { x: centerX, y: 206 },
+    points: [
+      { x: -96, y: -54 },
+      { x: 92, y: -54 },
+      { x: 0, y: 76 },
+    ],
+    caption: { x: 0, y: -92 },
+  },
 };
 
 function chipsForContext(
@@ -125,11 +197,7 @@ function chipsForContext(
       { label: "Constellation", route: "/constellation" },
       emergency,
     ],
-    constellation: [
-      { label: "Summary", route: "/summary" },
-      { label: "Insights", route: "/(tabs)/insights" },
-      emergency,
-    ],
+    constellation: [emergency, { label: "See calendar", route: "/timeline" }],
     games: [
       { label: "Memory", route: "/session/memory-match" },
       { label: "Word Search", route: "/session/word-search" },
@@ -159,21 +227,48 @@ export function CompanionMenu({
   );
   const chipAnims = useRef(chips.map(() => new Animated.Value(0))).current;
   const captionAnim = useRef(new Animated.Value(0)).current;
+  const [renderMenu, setRenderMenu] = useState(visible);
   const lastMessage = useRef<string | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
+  const [constellationPrompt, setConstellationPrompt] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (!visible) return;
-    chipAnims.forEach((anim, index) => {
-      anim.setValue(0);
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 180,
-        delay: index * 45,
-        useNativeDriver: true,
-      }).start();
+    if (visible) {
+      if (context === "constellation") {
+        setConstellationPrompt(
+          Math.random() > 0.5 ? "Two days." : "Ready for another star?",
+        );
+      }
+      setRenderMenu(true);
+      chipAnims.forEach((anim, index) => {
+        anim.setValue(0);
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 220,
+          delay: index * 90,
+          useNativeDriver: true,
+        }).start();
+      });
+      return;
+    }
+
+    if (!renderMenu) return;
+    Animated.stagger(
+      35,
+      [...chipAnims].reverse().map((anim) =>
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: 160,
+          useNativeDriver: true,
+        }),
+      ),
+    ).start(() => {
+      setRenderMenu(false);
+      setConstellationPrompt(null);
     });
-  }, [visible, chipAnims]);
+  }, [visible, chipAnims, renderMenu, context]);
 
   useEffect(() => {
     if (!quietSignal || visible) return;
@@ -209,7 +304,11 @@ export function CompanionMenu({
     if (chip.route) router.push(chip.route as any);
   };
 
-  if (!visible && !caption) return null;
+  const orbit = ORBITS[context];
+  const activeConstellationPrompt =
+    context === "constellation" && renderMenu ? constellationPrompt : null;
+
+  if (!renderMenu && !caption) return null;
 
   return (
     <View className="absolute inset-0" pointerEvents="box-none">
@@ -220,81 +319,86 @@ export function CompanionMenu({
           setCaption(null);
         }}
       />
-      <View
-        className="absolute"
-        style={PLACEMENT[context]}
-        pointerEvents="box-none"
-      >
-        {caption && !visible && (
-          <Animated.View
-            className="rounded-2xl border border-white/10 bg-black/55 px-3.5 py-2"
-            style={{
-              opacity: captionAnim,
-              transform: [
-                {
-                  translateY: captionAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [6, 0],
-                  }),
-                },
-              ],
-            }}
-          >
-            <Text className="text-text-secondary text-xs font-medium">
-              {caption}
-            </Text>
-          </Animated.View>
-        )}
-        {visible && (
-          <View style={{ width: 310, height: 168 }} pointerEvents="box-none">
-            {chips.map((chip, index) => {
-              const positions = [
-                { top: 0, left: 154 },
-                { top: 44, left: 184 },
-                { top: 92, left: 34 },
-                { top: 116, left: 142 },
-              ];
-              const anim = chipAnims[index] ?? new Animated.Value(1);
-              return (
-                <Animated.View
-                  key={chip.label}
-                  className="absolute"
-                  style={{
-                    ...positions[index],
-                    opacity: anim,
-                    transform: [
-                      {
-                        translateY: anim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [8, 0],
-                        }),
-                      },
-                      {
-                        scale: anim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0.96, 1],
-                        }),
-                      },
-                    ],
-                  }}
+      {(caption && !visible) || activeConstellationPrompt ? (
+        <Animated.View
+          className="absolute rounded-2xl border border-white/10 bg-black/55 px-3.5 py-2"
+          style={{
+            left: orbit.anchor.x + (orbit.caption?.x ?? 0),
+            top: orbit.anchor.y + (orbit.caption?.y ?? 0),
+            opacity: activeConstellationPrompt ? chipAnims[0] : captionAnim,
+            transform: [
+              {
+                translateY: (activeConstellationPrompt
+                  ? chipAnims[0]
+                  : captionAnim
+                ).interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [6, 0],
+                }),
+              },
+              { translateX: -48 },
+            ],
+          }}
+        >
+          <Text className="text-text-secondary text-xs font-medium">
+            {activeConstellationPrompt ?? caption}
+          </Text>
+        </Animated.View>
+      ) : null}
+      {renderMenu && (
+        <View className="absolute inset-0" pointerEvents="box-none">
+          {chips.map((chip, index) => {
+            const point =
+              orbit.points[index] ?? orbit.points[orbit.points.length - 1];
+            const anim = chipAnims[index] ?? new Animated.Value(1);
+            return (
+              <Animated.View
+                key={chip.label}
+                className="absolute"
+                style={{
+                  left: orbit.anchor.x,
+                  top: orbit.anchor.y,
+                  opacity: anim,
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, point.x],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, point.y],
+                      }),
+                    },
+                    { translateX: -44 },
+                    { translateY: -18 },
+                    {
+                      scale: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.72, 1],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => runChip(chip)}
+                  className={`rounded-full border px-3.5 py-2 ${chip.emergency ? "bg-accent border-accent" : "bg-black/60 border-stone-500/20"}`}
                 >
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => runChip(chip)}
-                    className={`rounded-full border px-3.5 py-2 ${chip.emergency ? "bg-accent border-accent" : "bg-black/60 border-stone-500/20"}`}
+                  <Text
+                    className={`text-xs font-semibold ${chip.emergency ? "text-bg" : "text-stone-300"}`}
                   >
-                    <Text
-                      className={`text-xs font-semibold ${chip.emergency ? "text-bg" : "text-stone-300"}`}
-                    >
-                      {chip.label}
-                    </Text>
-                  </Pressable>
-                </Animated.View>
-              );
-            })}
-          </View>
-        )}
-      </View>
+                    {chip.label}
+                  </Text>
+                </Pressable>
+              </Animated.View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }
