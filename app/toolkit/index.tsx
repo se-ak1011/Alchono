@@ -1,26 +1,28 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
-import { CompanionArt } from '@/components/ui/CompanionArt';
-import { CompanionMenu } from '@/components/ui/CompanionMenu';
+import React, { useState, useMemo, useRef } from "react";
+import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
+import { CompanionArt } from "@/components/ui/CompanionArt";
+import { CompanionMenu } from "@/components/ui/CompanionMenu";
 import {
   TOOLKIT,
   CATEGORY_META,
   CATEGORY_ORDER,
   toolsByCategory,
-} from '@/lib/toolkit';
-import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
-import { headingShadow } from '@/styles';
+} from "@/lib/toolkit";
+import { useToolkitFavourites } from "@/hooks/useToolkitFavourites";
+import { headingShadow } from "@/styles";
 
 export default function ToolkitScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isSaved } = useToolkitFavourites();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
+  const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
+  const searchRef = useRef<TextInput>(null);
 
   const q = query.trim().toLowerCase();
   const results = useMemo(
@@ -28,7 +30,8 @@ export default function ToolkitScreen() {
       q
         ? TOOLKIT.filter(
             (t) =>
-              t.title.toLowerCase().includes(q) || t.teaser.toLowerCase().includes(q),
+              t.title.toLowerCase().includes(q) ||
+              t.teaser.toLowerCase().includes(q),
           )
         : [],
     [q],
@@ -38,7 +41,7 @@ export default function ToolkitScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: "#0E0F10",
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -48,11 +51,11 @@ export default function ToolkitScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: "#6B7280", fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={{ ...headingShadow, fontSize: 26 }}>Toolkit.</Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: "#6B7280", fontSize: 15, marginTop: 2 }}>
             Small, practical things that actually help.
           </Text>
         </View>
@@ -61,16 +64,21 @@ export default function ToolkitScreen() {
       {!q && (
         <View className="px-6 pt-1 pb-2 items-center">
           <CompanionArt
-            source={require('../../assets/companions/image_06_reading.png')}
+            source={require("../../assets/companions/image_06_reading.png")}
             width={106}
             height={118}
             onPress={() => setCompanionMenuOpen(true)}
+            onLongPress={() => {
+              if (!companionMenuOpen)
+                setQuietCompanionSignal((signal) => signal + 1);
+            }}
           />
         </View>
       )}
 
       <View className="px-6 mb-4 mt-2">
         <TextInput
+          ref={searchRef}
           value={query}
           onChangeText={setQuery}
           placeholder="Search the toolkit…"
@@ -78,14 +86,14 @@ export default function ToolkitScreen() {
           autoCapitalize="none"
           autoCorrect={false}
           style={{
-            backgroundColor: '#161718',
+            backgroundColor: "#161718",
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
-            color: '#F0F2F4',
+            color: "#F0F2F4",
             fontSize: 15,
             borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: "rgba(255,255,255,0.08)",
           }}
         />
       </View>
@@ -113,18 +121,25 @@ export default function ToolkitScreen() {
                 <Pressable
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    router.push({ pathname: '/toolkit/[id]', params: { id: t.id } });
+                    router.push({
+                      pathname: "/toolkit/[id]",
+                      params: { id: t.id },
+                    });
                   }}
                   className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
-                  style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+                  style={{ borderTopColor: "rgba(255,255,255,0.12)" }}
                 >
                   <View className="flex-row items-center justify-between mb-1">
                     <Text className="text-text-muted text-xs">
                       {CATEGORY_META[t.category].label} · {t.minutes} min
                     </Text>
-                    {isSaved(t.id) && <Text className="text-accent text-sm">★</Text>}
+                    {isSaved(t.id) && (
+                      <Text className="text-accent text-sm">★</Text>
+                    )}
                   </View>
-                  <Text className="text-text-primary text-lg font-semibold">{t.title}</Text>
+                  <Text className="text-text-primary text-lg font-semibold">
+                    {t.title}
+                  </Text>
                   <Text className="text-text-secondary text-sm leading-relaxed mt-0.5">
                     {t.teaser}
                   </Text>
@@ -142,16 +157,24 @@ export default function ToolkitScreen() {
               return (
                 <Animated.View
                   key={cat}
-                  entering={FadeInDown.duration(300).delay(Math.min(i * 40, 360))}
-                  style={{ width: '48%', marginBottom: 12 }}
+                  entering={FadeInDown.duration(300).delay(
+                    Math.min(i * 40, 360),
+                  )}
+                  style={{ width: "48%", marginBottom: 12 }}
                 >
                   <Pressable
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      router.push({ pathname: '/toolkit/c/[cat]', params: { cat } });
+                      router.push({
+                        pathname: "/toolkit/c/[cat]",
+                        params: { cat },
+                      });
                     }}
                     className="bg-surface rounded-2xl px-4 py-5 border border-white/8 active:border-white/20"
-                    style={{ borderTopColor: 'rgba(255,255,255,0.1)', minHeight: 116 }}
+                    style={{
+                      borderTopColor: "rgba(255,255,255,0.1)",
+                      minHeight: 116,
+                    }}
                   >
                     <Text className="text-text-primary text-lg font-semibold">
                       {meta.label}
@@ -160,7 +183,7 @@ export default function ToolkitScreen() {
                       {meta.blurb}
                     </Text>
                     <Text className="text-text-muted text-xs mt-3">
-                      {count} {count === 1 ? 'read' : 'reads'}
+                      {count} {count === 1 ? "read" : "reads"}
                     </Text>
                   </Pressable>
                 </Animated.View>
@@ -178,7 +201,7 @@ export default function ToolkitScreen() {
               about cutting down safely.
             </Text>
             <Pressable
-              onPress={() => router.push('/support/resources')}
+              onPress={() => router.push("/support/resources")}
               className="mt-3 self-start"
               hitSlop={8}
             >
@@ -192,6 +215,9 @@ export default function ToolkitScreen() {
       <CompanionMenu
         visible={companionMenuOpen}
         onClose={() => setCompanionMenuOpen(false)}
+        context="toolkit"
+        quietSignal={quietCompanionSignal}
+        onToolkitSearch={() => searchRef.current?.focus()}
       />
     </View>
   );
