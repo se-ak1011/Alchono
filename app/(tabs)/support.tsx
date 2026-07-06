@@ -3,8 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { CompanionArt } from "@/components/ui/CompanionArt";
-import { CompanionMenu } from "@/components/ui/CompanionMenu";
+import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { headingShadow } from "@/styles";
 import { useUnreadTotal } from "@/hooks/useMessages";
@@ -84,20 +83,29 @@ export default function SupportScreen() {
           </Pressable>
         </Animated.View>
 
-        {/* Tea companion — centred between the two cards */}
-        <Animated.View
-          entering={FadeIn.duration(500).delay(120)}
-          style={{ alignSelf: "center" }}
-        >
-          <CompanionArt
+        <Animated.View entering={FadeIn.duration(500).delay(120)}>
+          <CompanionActionZone
+            context="support"
+            visible={companionMenuOpen}
+            onClose={() => setCompanionMenuOpen(false)}
             source={require("../../assets/companions/image_07_tea.png")}
             width={130}
             height={154}
+            zoneHeight={companionMenuOpen ? 232 : 164}
+            companionLeft={98}
+            companionTop={companionMenuOpen ? 72 : 4}
+            points={[
+              { x: 0, y: -78 },
+              { x: -100, y: 46 },
+              { x: 100, y: 46 },
+            ]}
+            caption={{ x: 0, y: -96 }}
             onPress={() => setCompanionMenuOpen(true)}
             onLongPress={() => {
               if (!companionMenuOpen)
                 setQuietCompanionSignal((signal) => signal + 1);
             }}
+            quietSignal={quietCompanionSignal}
           />
         </Animated.View>
 
@@ -117,12 +125,7 @@ export default function SupportScreen() {
           </Pressable>
         </Animated.View>
       </View>
-      <CompanionMenu
-        visible={companionMenuOpen}
-        onClose={() => setCompanionMenuOpen(false)}
-        context="support"
-        quietSignal={quietCompanionSignal}
-      />
+
     </SafeArea>
   );
 }

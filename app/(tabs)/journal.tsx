@@ -15,8 +15,7 @@ import * as Haptics from "expo-haptics";
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { CompanionArt } from "@/components/ui/CompanionArt";
-import { CompanionMenu } from "@/components/ui/CompanionMenu";
+import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
 import {
   useJournalNotes,
@@ -30,26 +29,6 @@ import { headingShadow } from "@/styles";
 
 const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
 const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
-
-function JournalCompanionSection({
-  onPress,
-  onLongPress,
-}: {
-  onPress: () => void;
-  onLongPress: () => void;
-}) {
-  return (
-    <View style={{ alignItems: "center", paddingTop: 8, paddingBottom: 12 }}>
-      <CompanionArt
-        source={require("../../assets/companions/image_05_journal.png")}
-        width={JOURNAL_COMPANION_IMAGE_WIDTH}
-        height={JOURNAL_COMPANION_IMAGE_HEIGHT}
-        onPress={onPress}
-        onLongPress={onLongPress}
-      />
-    </View>
-  );
-}
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -334,12 +313,30 @@ export default function JournalScreen() {
           )}
         </View>
 
-        <JournalCompanionSection
+        <CompanionActionZone
+          context="journal"
+          visible={companionMenuOpen}
+          onClose={() => setCompanionMenuOpen(false)}
+          source={require("../../assets/companions/image_05_journal.png")}
+          width={JOURNAL_COMPANION_IMAGE_WIDTH}
+          height={JOURNAL_COMPANION_IMAGE_HEIGHT}
+          zoneHeight={companionMenuOpen ? 228 : 140}
+          companionLeft={112}
+          companionTop={companionMenuOpen ? 78 : 6}
+          points={[
+            { x: 0, y: -74 },
+            { x: -98, y: 42 },
+            { x: 96, y: 42 },
+          ]}
+          caption={{ x: 0, y: -94 }}
+          className="mx-6 mb-2"
           onPress={() => setCompanionMenuOpen(true)}
           onLongPress={() => {
             if (!companionMenuOpen)
               setQuietCompanionSignal((signal) => signal + 1);
           }}
+          quietSignal={quietCompanionSignal}
+          onVoiceNote={startRecording}
         />
 
         <View className="mx-6 mb-4">
@@ -408,13 +405,7 @@ export default function JournalScreen() {
           )}
         />
       </KeyboardAvoidingView>
-      <CompanionMenu
-        visible={companionMenuOpen}
-        onClose={() => setCompanionMenuOpen(false)}
-        context="journal"
-        quietSignal={quietCompanionSignal}
-        onVoiceNote={startRecording}
-      />
+
     </SafeArea>
   );
 }

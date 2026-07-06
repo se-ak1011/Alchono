@@ -5,8 +5,7 @@ import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { Card } from "@/components/ui/Card";
-import { CompanionArt } from "@/components/ui/CompanionArt";
-import { CompanionMenu } from "@/components/ui/CompanionMenu";
+import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { GreetingHeader } from "@/components/home/GreetingHeader";
 import { MoodCheckin } from "@/components/home/MoodCheckin";
 import { AnchorsCard } from "@/components/home/AnchorsCard";
@@ -140,25 +139,33 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: 48 }}
       >
         <GreetingHeader />
-        {/* Character (left) + Reasons card (right) */}
-        <View
-          className="flex-row mx-6 mt-2 items-start"
-          style={{ gap: 12, marginBottom: companionMenuOpen ? 86 : 0 }}
-        >
-          <CompanionArt
-            source={require("../../assets/companions/image_01_standing.png")}
-            width={HOME_COMPANION_IMAGE_WIDTH}
-            height={HOME_COMPANION_IMAGE_HEIGHT}
-            cropHeight={HOME_COMPANION_CROP_HEIGHT}
-            onPress={() => setCompanionMenuOpen(true)}
-            onLongPress={() => {
-              if (!companionMenuOpen)
-                setQuietCompanionSignal((signal) => signal + 1);
-            }}
-          />
-          <View className="flex-1">
-            <AnchorsCard inline compact />
-          </View>
+        <CompanionActionZone
+          context="home"
+          visible={companionMenuOpen}
+          onClose={() => setCompanionMenuOpen(false)}
+          source={require("../../assets/companions/image_01_standing.png")}
+          width={HOME_COMPANION_IMAGE_WIDTH}
+          height={HOME_COMPANION_IMAGE_HEIGHT}
+          cropHeight={HOME_COMPANION_CROP_HEIGHT}
+          zoneHeight={companionMenuOpen ? 252 : 158}
+          companionLeft={88}
+          companionTop={companionMenuOpen ? 80 : 10}
+          points={[
+            { x: -84, y: -58 },
+            { x: 84, y: -58 },
+            { x: -90, y: 48 },
+            { x: 92, y: 48 },
+          ]}
+          caption={{ x: 0, y: -104 }}
+          className="mx-6 mt-1"
+          onPress={() => setCompanionMenuOpen(true)}
+          onLongPress={() => {
+            if (!companionMenuOpen)
+              setQuietCompanionSignal((signal) => signal + 1);
+          }}
+        />
+        <View className="mx-6 mt-2">
+          <AnchorsCard inline compact />
         </View>
         <HomeSecondaryCards />
         <DrinkingSession />
@@ -183,12 +190,7 @@ export default function HomeScreen() {
         <MoodCheckin />
       </ScrollView>
       <PauseModal />
-      <CompanionMenu
-        visible={companionMenuOpen}
-        onClose={() => setCompanionMenuOpen(false)}
-        context="home"
-        quietSignal={quietCompanionSignal}
-      />
+
     </SafeArea>
   );
 }
