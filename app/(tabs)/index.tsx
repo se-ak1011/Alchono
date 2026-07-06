@@ -80,7 +80,14 @@ function HomeSecondaryCards() {
       </Pressable>
 
       {/* Progress */}
-      <View className="flex-1" style={{ minHeight: 112, maxHeight: 160 }}>
+      <Pressable
+        className="flex-1"
+        style={{ minHeight: 112, maxHeight: 160 }}
+        onPress={async () => {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/(tabs)/insights');
+        }}
+      >
         <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
@@ -93,12 +100,14 @@ function HomeSecondaryCards() {
             <Text className="text-text-muted text-sm">Your wins will appear here.</Text>
           )}
         </Card>
-      </View>
+      </Pressable>
     </Animated.View>
   );
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   useSmartReminder();
   useWidgetSync();
   // Drain any drinks logged offline via the "I had a drink" App Intent.
