@@ -25,10 +25,16 @@ struct LogDrinkIntent: AppIntent {
 
   func perform() async throws -> some IntentResult {
     let appGroup = "group.com.alchono.app"
-    guard let d = UserDefaults(suiteName: appGroup) else { return .result() }
+    print("[AppIntentTrace] LogDrinkIntent.perform: started")
+    guard let d = UserDefaults(suiteName: appGroup) else {
+      print("[AppIntentTrace] LogDrinkIntent.perform: STOP - UserDefaults suite unavailable for \(appGroup)")
+      return .result()
+    }
+    print("[AppIntentTrace] LogDrinkIntent.perform: opened UserDefaults suite \(appGroup)")
 
     let now = Int(Date().timeIntervalSince1970)
     let active = d.integer(forKey: "sessionActive") == 1 && d.integer(forKey: "sessionStart") > 0
+    print("[AppIntentTrace] LogDrinkIntent.perform: current shared state active=\(active) sessionActive=\(d.integer(forKey: "sessionActive")) sessionStart=\(d.integer(forKey: "sessionStart")) drinksCount=\(d.integer(forKey: "drinksCount")) pendingDrinks=\(d.integer(forKey: "pendingDrinks")) pendingSessionStart=\(d.integer(forKey: "pendingSessionStart"))")
 
     if !active {
       // Start a session optimistically so the widget reflects it at once.
@@ -36,13 +42,20 @@ struct LogDrinkIntent: AppIntent {
       d.set(now, forKey: "sessionStart")
       d.set(now, forKey: "pendingSessionStart")
       d.set(0, forKey: "drinksCount")
+      print("[AppIntentTrace] LogDrinkIntent.perform: created optimistic shared session at \(now)")
+    } else {
+      print("[AppIntentTrace] LogDrinkIntent.perform: reusing optimistic shared session")
     }
 
-    d.set(d.integer(forKey: "drinksCount") + 1, forKey: "drinksCount")
+    let nextDrinksCount = d.integer(forKey: "drinksCount") + 1
+    let nextPendingDrinks = d.integer(forKey: "pendingDrinks") + 1
+    d.set(nextDrinksCount, forKey: "drinksCount")
     // The unsynced queue the app drains into Supabase when it next opens.
-    d.set(d.integer(forKey: "pendingDrinks") + 1, forKey: "pendingDrinks")
+    d.set(nextPendingDrinks, forKey: "pendingDrinks")
+    print("[AppIntentTrace] LogDrinkIntent.perform: wrote shared queue drinksCount=\(nextDrinksCount) pendingDrinks=\(nextPendingDrinks)")
 
     WidgetCenter.shared.reloadAllTimelines()
+    print("[AppIntentTrace] LogDrinkIntent.perform: requested widget timeline reload; returning success")
     return .result()
   }
 }
