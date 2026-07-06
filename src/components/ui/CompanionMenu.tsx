@@ -77,14 +77,14 @@ const PLACEMENT: Record<
   CompanionContext,
   { top?: number; bottom?: number; left?: number; right?: number }
 > = {
-  home: { top: 96, left: 18 },
-  journal: { top: 300, left: 28 },
-  support: { top: 320, left: 70 },
-  toolkit: { top: 118, left: 80 },
-  insights: { top: 120, left: 72 },
-  constellation: { top: 104, left: 72 },
-  games: { top: 120, left: 72 },
-  profile: { top: 120, left: 72 },
+  home: { top: 172, left: 8 },
+  journal: { top: 330, left: 24 },
+  support: { top: 330, left: 52 },
+  toolkit: { top: 188, left: 44 },
+  insights: { top: 188, left: 44 },
+  constellation: { top: 188, left: 44 },
+  games: { top: 188, left: 44 },
+  profile: { top: 188, left: 44 },
 };
 
 function chipsForContext(
@@ -246,13 +246,13 @@ export function CompanionMenu({
           </Animated.View>
         )}
         {visible && (
-          <View style={{ width: 250, height: 150 }} pointerEvents="box-none">
+          <View style={{ width: 310, height: 168 }} pointerEvents="box-none">
             {chips.map((chip, index) => {
               const positions = [
-                { top: 0, left: 72 },
-                { top: 42, left: 132 },
-                { top: 82, left: 34 },
-                { top: 104, left: 126 },
+                { top: 0, left: 154 },
+                { top: 44, left: 184 },
+                { top: 92, left: 34 },
+                { top: 116, left: 142 },
               ];
               const anim = chipAnims[index] ?? new Animated.Value(1);
               return (
@@ -269,16 +269,22 @@ export function CompanionMenu({
                           outputRange: [8, 0],
                         }),
                       },
+                      {
+                        scale: anim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.96, 1],
+                        }),
+                      },
                     ],
                   }}
                 >
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => runChip(chip)}
-                    className={`rounded-full border px-3.5 py-2 ${chip.emergency ? "bg-accent border-accent" : "bg-black/55 border-white/10"}`}
+                    className={`rounded-full border px-3.5 py-2 ${chip.emergency ? "bg-accent border-accent" : "bg-black/60 border-stone-500/20"}`}
                   >
                     <Text
-                      className={`text-xs font-semibold ${chip.emergency ? "text-bg" : "text-text-secondary"}`}
+                      className={`text-xs font-semibold ${chip.emergency ? "text-bg" : "text-stone-300"}`}
                     >
                       {chip.label}
                     </Text>

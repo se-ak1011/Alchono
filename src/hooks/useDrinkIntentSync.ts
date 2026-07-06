@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AppState, Platform } from 'react-native';
 import { useLogDrink } from '@/hooks/useDrinkingSession';
 import { useAuthStore } from '@/store/authStore';
@@ -46,25 +46,39 @@ async function readInt(key: string): Promise<number> {
  */
 export function useDrinkIntentSync() {
   const userId = useAuthStore((s) => s.user?.id);
-  const { mutate: logDrink } = useLogDrink();
+  const { mutateAsync: logDrink } = useLogDrink();
+  const reconcileInFlight = useRef(false);
 
   useEffect(() => {
     if (!storage || !userId) return;
 
     const reconcile = async () => {
-      const pending = await readInt('pendingDrinks');
-      if (pending <= 0) return;
-      const startSec = await readInt('pendingSessionStart');
-      logDrink({
-        add: pending,
-        startedAtOverride: startSec > 0 ? startSec * 1000 : undefined,
-      });
-      // These are now the app's responsibility — clear so we never double-count.
+      if (reconcileInFlight.current) return;
+      reconcileInFlight.current = true;
       try {
-        storage.set('pendingDrinks', 0);
-        storage.set('pendingSessionStart', 0);
-      } catch {
-        /* best effort */
+        const pending = await readInt('pendingDrinks');
+        if (pending <= 0) return;
+        const startSec = await readInt('pendingSessionStart');
+
+        // Only drain the queue after Supabase accepts the existing drinking
+        // session mutation. If another intent lands while this is in flight,
+        // subtract only the batch we successfully logged and leave the rest for
+        // the next foreground pass.
+        await logDrink({
+          add: pending,
+          startedAtOverride: startSec > 0 ? startSec * 1000 : undefined,
+        });
+
+        try {
+          const latestPending = await readInt('pendingDrinks');
+          const remaining = Math.max(0, latestPending - pending);
+          storage.set('pendingDrinks', remaining);
+          if (remaining === 0) storage.set('pendingSessionStart', 0);
+        } catch {
+          /* best effort */
+        }
+      } finally {
+        reconcileInFlight.current = false;
       }
     };
 
@@ -73,5 +87,5 @@ export function useDrinkIntentSync() {
       if (s === 'active') reconcile();
     });
     return () => sub.remove();
-  }, [userId]);
+  }, [userId, logDrink]);
 }

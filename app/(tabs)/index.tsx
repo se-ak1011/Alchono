@@ -141,7 +141,10 @@ export default function HomeScreen() {
       >
         <GreetingHeader />
         {/* Character (left) + Reasons card (right) */}
-        <View className="flex-row mx-6 mt-2 items-start" style={{ gap: 12 }}>
+        <View
+          className="flex-row mx-6 mt-2 items-start"
+          style={{ gap: 12, marginBottom: companionMenuOpen ? 86 : 0 }}
+        >
           <CompanionArt
             source={require("../../assets/companions/image_01_standing.png")}
             width={HOME_COMPANION_IMAGE_WIDTH}

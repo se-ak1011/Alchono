@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, useWindowDimensions } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -127,6 +127,7 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const { width, height } = useWindowDimensions();
   const [nativeSplashHidden, setNativeSplashHidden] = useState(false);
   const [splashReady, setSplashReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
@@ -176,7 +177,16 @@ export default function RootLayout() {
               >
                 <Image
                   source={APP_SPLASH}
-                  style={StyleSheet.absoluteFill}
+                  style={[
+                    StyleSheet.absoluteFill,
+                    {
+                      width,
+                      height,
+                      // Match the native cover splash while biasing the crop a
+                      // little upward so tall iPhones keep the figure/title in view.
+                      transform: [{ translateY: -Math.round(height * 0.025) }],
+                    },
+                  ]}
                   resizeMode="cover"
                 />
               </View>
