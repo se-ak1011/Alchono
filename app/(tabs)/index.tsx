@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import { SafeArea } from '@/components/ui/SafeArea';
-import { Card } from '@/components/ui/Card';
-import { CompanionArt } from '@/components/ui/CompanionArt';
-import { CompanionMenu } from '@/components/ui/CompanionMenu';
-import { GreetingHeader } from '@/components/home/GreetingHeader';
-import { MoodCheckin } from '@/components/home/MoodCheckin';
-import { AnchorsCard } from '@/components/home/AnchorsCard';
-import { DrinkingSession } from '@/components/home/DrinkingSession';
-import { PauseModal } from '@/components/home/PauseModal';
-import { useGoals, daysUntil } from '@/hooks/useGoals';
-import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
-import { useSmartReminder } from '@/hooks/useSmartReminder';
-import { useWidgetSync } from '@/hooks/useWidgetSync';
-import { useDrinkIntentSync } from '@/hooks/useDrinkIntentSync';
+import React, { useState } from "react";
+import { ScrollView, View, Text, Pressable } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
+import { useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
+import { SafeArea } from "@/components/ui/SafeArea";
+import { Card } from "@/components/ui/Card";
+import { CompanionArt } from "@/components/ui/CompanionArt";
+import { CompanionMenu } from "@/components/ui/CompanionMenu";
+import { GreetingHeader } from "@/components/home/GreetingHeader";
+import { MoodCheckin } from "@/components/home/MoodCheckin";
+import { AnchorsCard } from "@/components/home/AnchorsCard";
+import { DrinkingSession } from "@/components/home/DrinkingSession";
+import { PauseModal } from "@/components/home/PauseModal";
+import { useGoals, daysUntil } from "@/hooks/useGoals";
+import { useUrgeStats, useAfMonthCount } from "@/hooks/useVictories";
+import { useSmartReminder } from "@/hooks/useSmartReminder";
+import { useWidgetSync } from "@/hooks/useWidgetSync";
+import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 
 const HOME_COMPANION_IMAGE_WIDTH = 140;
 const HOME_COMPANION_IMAGE_HEIGHT = 165;
@@ -34,22 +34,30 @@ function HomeSecondaryCards() {
   const victories: string[] = [];
   const urgesBeaten = urgeStats?.allTimePassed ?? 0;
   if (urgesBeaten > 0) {
-    victories.push(`${urgesBeaten} tough moment${urgesBeaten === 1 ? '' : 's'} you got through`);
+    victories.push(
+      `${urgesBeaten} tough moment${urgesBeaten === 1 ? "" : "s"} you got through`,
+    );
   }
   if (afMonth > 0) {
-    victories.push(`${afMonth} alcohol-free day${afMonth === 1 ? '' : 's'} this month`);
+    victories.push(
+      `${afMonth} alcohol-free day${afMonth === 1 ? "" : "s"} this month`,
+    );
   }
-  const victoryLine = victories.join(' · ');
+  const victoryLine = victories.join(" · ");
 
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="flex-row mx-6 mt-3 items-start" style={{ gap: 12 }}>
+    <Animated.View
+      entering={FadeIn.duration(400)}
+      className="flex-row mx-6 mt-3 items-start"
+      style={{ gap: 12 }}
+    >
       {/* Looking Forward To */}
       <Pressable
         className="flex-1"
         style={{ minHeight: 124, maxHeight: 160 }}
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          router.push('/goals');
+          router.push("/goals");
         }}
       >
         <Card className="border border-white/5 h-full">
@@ -58,13 +66,16 @@ function HomeSecondaryCards() {
           </Text>
           {firstGoal ? (
             <>
-              <Text className="text-text-secondary text-sm leading-relaxed" numberOfLines={3}>
+              <Text
+                className="text-text-secondary text-sm leading-relaxed"
+                numberOfLines={3}
+              >
                 {firstGoal.text}
               </Text>
               {firstGoal.target_date && (
                 <Text className="text-text-muted text-xs mt-2">
                   {daysUntil(firstGoal.target_date) <= 0
-                    ? 'now'
+                    ? "now"
                     : `${daysUntil(firstGoal.target_date)}d`}
                 </Text>
               )}
@@ -75,7 +86,9 @@ function HomeSecondaryCards() {
               )}
             </>
           ) : (
-            <Text className="text-text-muted text-sm">+ Add something to look forward to</Text>
+            <Text className="text-text-muted text-sm">
+              + Add something to look forward to
+            </Text>
           )}
         </Card>
       </Pressable>
@@ -86,7 +99,7 @@ function HomeSecondaryCards() {
         style={{ minHeight: 112, maxHeight: 160 }}
         onPress={async () => {
           await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          router.push('/(tabs)/insights');
+          router.push("/(tabs)/insights");
         }}
       >
         <Card className="border border-white/5 h-full">
@@ -94,11 +107,16 @@ function HomeSecondaryCards() {
             Progress
           </Text>
           {victoryLine ? (
-            <Text className="text-text-secondary text-sm leading-relaxed" numberOfLines={4}>
+            <Text
+              className="text-text-secondary text-sm leading-relaxed"
+              numberOfLines={4}
+            >
               ◆ {victoryLine}
             </Text>
           ) : (
-            <Text className="text-text-muted text-sm">Your wins will appear here.</Text>
+            <Text className="text-text-muted text-sm">
+              Your wins will appear here.
+            </Text>
           )}
         </Card>
       </Pressable>
@@ -109,6 +127,7 @@ function HomeSecondaryCards() {
 export default function HomeScreen() {
   const router = useRouter();
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
+  const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
 
   useSmartReminder();
   useWidgetSync();
@@ -124,11 +143,15 @@ export default function HomeScreen() {
         {/* Character (left) + Reasons card (right) */}
         <View className="flex-row mx-6 mt-2 items-start" style={{ gap: 12 }}>
           <CompanionArt
-            source={require('../../assets/companions/image_01_standing.png')}
+            source={require("../../assets/companions/image_01_standing.png")}
             width={HOME_COMPANION_IMAGE_WIDTH}
             height={HOME_COMPANION_IMAGE_HEIGHT}
             cropHeight={HOME_COMPANION_CROP_HEIGHT}
             onPress={() => setCompanionMenuOpen(true)}
+            onLongPress={() => {
+              if (!companionMenuOpen)
+                setQuietCompanionSignal((signal) => signal + 1);
+            }}
           />
           <View className="flex-1">
             <AnchorsCard inline compact />
@@ -141,7 +164,7 @@ export default function HomeScreen() {
           <Pressable
             onPress={async () => {
               await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/session/games');
+              router.push("/session/games");
             }}
           >
             <Card className="border border-white/5">
@@ -160,6 +183,8 @@ export default function HomeScreen() {
       <CompanionMenu
         visible={companionMenuOpen}
         onClose={() => setCompanionMenuOpen(false)}
+        context="home"
+        quietSignal={quietCompanionSignal}
       />
     </SafeArea>
   );
