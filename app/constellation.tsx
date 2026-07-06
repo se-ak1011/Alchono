@@ -29,7 +29,7 @@ export default function ConstellationScreen() {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <View className="flex-1" style={{ backgroundColor: '#060509' }}>
+    <View className="flex-1" style={{ backgroundColor: '#09070C' }}>
       {dates.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10">
           <Text className="text-text-secondary text-lg text-center leading-relaxed">
@@ -46,7 +46,7 @@ export default function ConstellationScreen() {
 
       {/* Ito, watching the sky fill — bottom-left, never blocking the stars */}
       <Image
-        source={require('../assets/companions/image_22_stars.png')}
+        source={require('../assets/companions/image_23_star.png')}
         pointerEvents="none"
         style={{
           position: 'absolute',

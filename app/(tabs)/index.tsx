@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View, Text, Pressable } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Card } from '@/components/ui/Card';
 import { CompanionArt } from '@/components/ui/CompanionArt';
+import { CompanionMenu } from '@/components/ui/CompanionMenu';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
@@ -80,7 +81,14 @@ function HomeSecondaryCards() {
       </Pressable>
 
       {/* Progress */}
-      <View className="flex-1" style={{ minHeight: 112, maxHeight: 160 }}>
+      <Pressable
+        className="flex-1"
+        style={{ minHeight: 112, maxHeight: 160 }}
+        onPress={async () => {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/(tabs)/insights');
+        }}
+      >
         <Card className="border border-white/5 h-full">
           <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
             Progress
@@ -93,12 +101,15 @@ function HomeSecondaryCards() {
             <Text className="text-text-muted text-sm">Your wins will appear here.</Text>
           )}
         </Card>
-      </View>
+      </Pressable>
     </Animated.View>
   );
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
+
   useSmartReminder();
   useWidgetSync();
   // Drain any drinks logged offline via the "I had a drink" App Intent.
@@ -117,6 +128,7 @@ export default function HomeScreen() {
             width={HOME_COMPANION_IMAGE_WIDTH}
             height={HOME_COMPANION_IMAGE_HEIGHT}
             cropHeight={HOME_COMPANION_CROP_HEIGHT}
+            onPress={() => setCompanionMenuOpen(true)}
           />
           <View className="flex-1">
             <AnchorsCard inline compact />
@@ -145,6 +157,10 @@ export default function HomeScreen() {
         <MoodCheckin />
       </ScrollView>
       <PauseModal />
+      <CompanionMenu
+        visible={companionMenuOpen}
+        onClose={() => setCompanionMenuOpen(false)}
+      />
     </SafeArea>
   );
 }

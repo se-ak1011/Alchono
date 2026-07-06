@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import React, { useEffect, useState } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -171,12 +171,12 @@ export default function RootLayout() {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  backgroundColor: '#0E0F10',
+                  backgroundColor: '#09070C',
                 }}
               >
                 <Image
                   source={APP_SPLASH}
-                  style={{ width: '100%', height: '100%' }}
+                  style={StyleSheet.absoluteFill}
                   resizeMode="cover"
                 />
               </View>

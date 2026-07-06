@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  Pressable,
   type ImageSourcePropType,
   type ImageStyle,
   type StyleProp,
@@ -16,6 +17,7 @@ type CompanionArtProps = {
   opacity?: number;
   containerStyle?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
+  onPress?: () => void;
 };
 
 export function CompanionArt({
@@ -26,9 +28,15 @@ export function CompanionArt({
   opacity = 0.8,
   containerStyle,
   imageStyle,
+  onPress,
 }: CompanionArtProps) {
+  const Container = onPress ? Pressable : View;
+
   return (
-    <View
+    <Container
+      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={onPress ? 'Ask the companion for help' : undefined}
+      onPress={onPress}
       style={[
         {
           width,
@@ -45,6 +53,6 @@ export function CompanionArt({
         resizeMode="contain"
         style={[{ width, height, opacity }, imageStyle]}
       />
-    </View>
+    </Container>
   );
 }

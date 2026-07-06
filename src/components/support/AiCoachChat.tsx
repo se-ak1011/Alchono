@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CompanionArt } from '@/components/ui/CompanionArt';
+import { CompanionMenu } from '@/components/ui/CompanionMenu';
 import { useAiCoach } from '@/hooks/useAiCoach';
 import type { ChatMessage } from '@/types';
 
@@ -39,6 +40,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
   const router = useRouter();
   const { messages, isTyping, sendMessage } = useAiCoach(sessionType);
   const [input, setInput] = useState('');
+  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
 
@@ -99,6 +101,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
                 source={require('../../../assets/companions/image_02_armchair.png')}
                 width={152}
                 height={179}
+                onPress={() => setCompanionMenuOpen(true)}
               />
             </View>
           ) : null
@@ -191,6 +194,10 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           <Text className="text-white text-lg">↑</Text>
         </Pressable>
       </View>
+      <CompanionMenu
+        visible={companionMenuOpen}
+        onClose={() => setCompanionMenuOpen(false)}
+      />
     </KeyboardAvoidingView>
   );
 }

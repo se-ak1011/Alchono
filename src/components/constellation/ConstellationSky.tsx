@@ -105,7 +105,7 @@ export function ConstellationSky({ sky, onSelectStar }: Props) {
   const lastDate = sky.stars.length ? sky.stars[sky.stars.length - 1].date : null;
 
   return (
-    <View onLayout={onLayout} style={{ flex: 1, overflow: 'hidden', backgroundColor: '#060509' }}>
+    <View onLayout={onLayout} style={{ flex: 1, overflow: 'hidden', backgroundColor: '#09070C' }}>
       <GestureDetector gesture={gesture}>
         <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
           <Svg
