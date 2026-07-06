@@ -9,6 +9,7 @@ import { CompanionArt } from '@/components/ui/CompanionArt';
 import { GreetingHeader } from '@/components/home/GreetingHeader';
 import { MoodCheckin } from '@/components/home/MoodCheckin';
 import { AnchorsCard } from '@/components/home/AnchorsCard';
+import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { PauseModal } from '@/components/home/PauseModal';
 import { useGoals, daysUntil } from '@/hooks/useGoals';
 import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
@@ -122,6 +123,25 @@ export default function HomeScreen() {
           </View>
         </View>
         <HomeSecondaryCards />
+        <DrinkingSession />
+        {/* Games card */}
+        <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-3">
+          <Pressable
+            onPress={async () => {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push('/session/games');
+            }}
+          >
+            <Card className="border border-white/5">
+              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
+                Games
+              </Text>
+              <Text className="text-text-secondary text-sm leading-relaxed">
+                3–5 minutes. Give your mind something else.
+              </Text>
+            </Card>
+          </Pressable>
+        </Animated.View>
         <MoodCheckin />
       </ScrollView>
       <PauseModal />
