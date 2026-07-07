@@ -8,8 +8,6 @@ import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { headingShadow } from '@/styles';
 
 type ShortcutState = 'checking' | 'saving' | 'saved' | 'already' | 'error';
-// This shortcut is intentionally one-way: it can mark today, never clear it.
-const MARK_ALCOHOL_FREE = true;
 
 export default function RecordAlcoholFreeDayShortcutScreen() {
   const router = useRouter();
@@ -30,7 +28,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
 
     startedRef.current = true;
     setState('saving');
-    toggleAlcoholFree(MARK_ALCOHOL_FREE, {
+    toggleAlcoholFree(true, {
       onSuccess: () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setState('saved');
@@ -58,14 +56,18 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
     setState('checking');
   };
 
-  const body =
-    state === 'saved'
-      ? 'Today is now recorded as alcohol-free.'
-      : state === 'already'
-        ? 'Today was already marked alcohol-free.'
-        : state === 'error'
-          ? 'We could not record today right now. Please try again in the app.'
-          : 'Recording today as alcohol-free…';
+  let body = 'Recording today as alcohol-free…';
+  switch (state) {
+    case 'saved':
+      body = 'Today is now recorded as alcohol-free.';
+      break;
+    case 'already':
+      body = 'Today was already marked alcohol-free.';
+      break;
+    case 'error':
+      body = 'We could not record today right now. Please try again in the app.';
+      break;
+  }
 
   return (
     <SafeArea>

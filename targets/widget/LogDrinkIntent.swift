@@ -2,27 +2,22 @@ import AppIntents
 
 @available(iOS 16.0, *)
 private enum AlchonoShortcutURL {
-  private static func make(_ value: String) -> URL {
-    guard let url = URL(string: value) else {
-      fatalError("Invalid Alchono shortcut URL: \(value)")
-    }
-    return url
-  }
-
+  // Hardcoded app routes for deterministic shortcuts; these literals are fixed
+  // at build time, so force-unwrapping keeps the declarations compact.
   // Opens the default home screen.
-  static let openApp = make("alchono://")
+  static let openApp = URL(string: "alchono://")!
   // Opens the urgent support chooser at /support/help-now.
-  static let urgeSupport = make("alchono://support/help-now")
+  static let urgeSupport = URL(string: "alchono://support/help-now")!
   // Opens the constellation screen at /constellation.
-  static let yourSky = make("alchono://constellation")
+  static let yourSky = URL(string: "alchono://constellation")!
   // Opens the in-app deterministic alcohol-free-day shortcut route.
-  static let recordAlcoholFreeDay = make("alchono://shortcut/record-alcohol-free-day")
+  static let recordAlcoholFreeDay = URL(string: "alchono://shortcut/record-alcohol-free-day")!
   // Opens the journal tab.
-  static let journal = make("alchono://journal")
+  static let journal = URL(string: "alchono://journal")!
   // Opens the emergency support screen at /support/sos.
-  static let emergencySupport = make("alchono://support/sos")
+  static let emergencySupport = URL(string: "alchono://support/sos")!
   // Opens the guided urge flow at /session/urge.
-  static let urgeFlow = make("alchono://session/urge")
+  static let urgeFlow = URL(string: "alchono://session/urge")!
 }
 
 @available(iOS 16.0, *)
