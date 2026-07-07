@@ -59,11 +59,11 @@ async function readInt(key: string): Promise<number> {
 }
 
 /**
- * Drains drinks logged by the "I had a drink" App Intent while the app was
- * closed. The intent can't reach Supabase, so it queues drinks in the shared
+ * Drains any legacy drink intents that may still be queued from older builds.
+ * The old shortcut could not reach Supabase, so it queued drinks in the shared
  * App Group; here we apply them to the real session (creating one if needed,
  * backdated to when the first offline drink was logged) and clear the queue.
- * Runs on mount and whenever the app returns to the foreground.
+ * Runs on mount and whenever the app returns to the foreground for cleanup.
  */
 export function useDrinkIntentSync() {
   const userId = useAuthStore((s) => s.user?.id);

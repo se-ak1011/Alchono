@@ -10,6 +10,9 @@ import { useAuthStore } from "@/store/authStore";
 import { buildSky, currentMilestone } from "@/lib/constellation";
 import { celebrationGlow } from "@/styles";
 
+// Prevents the subtitle from visually colliding with the first floating cluster.
+const CONSTELLATION_TOP_SPACING = 40;
+
 function formatDay(date: string): string {
   const d = new Date(`${date}T00:00:00`);
   return d.toLocaleDateString(undefined, {
@@ -43,7 +46,9 @@ export default function ConstellationScreen() {
           </Text>
         </View>
       ) : (
-        <ConstellationSky sky={sky} onSelectStar={setSelected} />
+        <View style={{ flex: 1, paddingTop: CONSTELLATION_TOP_SPACING }}>
+          <ConstellationSky sky={sky} onSelectStar={setSelected} />
+        </View>
       )}
 
       {/* Ito anchors a compact constellation menu in a local sky zone. */}
