@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/authStore";
 import { buildSky, currentMilestone } from "@/lib/constellation";
 import { celebrationGlow } from "@/styles";
 
+// Prevents the subtitle from visually colliding with the first floating cluster.
 const CONSTELLATION_TOP_SPACING = 40;
 
 function formatDay(date: string): string {

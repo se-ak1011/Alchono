@@ -10,12 +10,19 @@ private enum AlchonoShortcutURL {
     return url
   }
 
+  // Opens the default home screen.
   static let openApp = make("alchono://")
+  // Opens the urgent support chooser at /support/help-now.
   static let urgeSupport = make("alchono://support/help-now")
+  // Opens the constellation screen at /constellation.
   static let yourSky = make("alchono://constellation")
+  // Opens the in-app deterministic alcohol-free-day shortcut route.
   static let recordAlcoholFreeDay = make("alchono://shortcut/record-alcohol-free-day")
+  // Opens the journal tab.
   static let journal = make("alchono://journal")
+  // Opens the emergency support screen at /support/sos.
   static let emergencySupport = make("alchono://support/sos")
+  // Opens the guided urge flow at /session/urge.
   static let urgeFlow = make("alchono://session/urge")
 }
 

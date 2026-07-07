@@ -8,6 +8,7 @@ import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { headingShadow } from '@/styles';
 
 type ShortcutState = 'checking' | 'saving' | 'saved' | 'already' | 'error';
+const MARK_ALCOHOL_FREE = true;
 
 export default function RecordAlcoholFreeDayShortcutScreen() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
 
     startedRef.current = true;
     setState('saving');
-    toggleAlcoholFree(true, {
+    toggleAlcoholFree(MARK_ALCOHOL_FREE, {
       onSuccess: () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setState('saved');
