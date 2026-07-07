@@ -1,5 +1,4 @@
 import AppIntents
-import Foundation
 
 @available(iOS 16.0, *)
 private enum AlchonoShortcutURL {

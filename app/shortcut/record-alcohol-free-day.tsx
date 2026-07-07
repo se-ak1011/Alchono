@@ -8,12 +8,13 @@ import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { headingShadow } from '@/styles';
 
 type ShortcutState = 'checking' | 'saving' | 'saved' | 'already' | 'error';
+// This shortcut is intentionally one-way: it can mark today, never clear it.
 const MARK_ALCOHOL_FREE = true;
 
 export default function RecordAlcoholFreeDayShortcutScreen() {
   const router = useRouter();
   const { data: alcoholFreeMarked = false, isLoading } = useAfToday();
-  const { mutate: toggleAlcoholFree, isPending } = useToggleAlcoholFree();
+  const { mutate: toggleAlcoholFree } = useToggleAlcoholFree();
   const [state, setState] = useState<ShortcutState>('checking');
   const startedRef = useRef(false);
 
@@ -25,7 +26,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
       return;
     }
 
-    if (startedRef.current || isPending) return;
+    if (startedRef.current) return;
 
     startedRef.current = true;
     setState('saving');
@@ -39,7 +40,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
         setState('error');
       },
     });
-  }, [alcoholFreeMarked, isLoading, isPending, toggleAlcoholFree]);
+  }, [alcoholFreeMarked, isLoading, toggleAlcoholFree]);
 
   const openHome = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
