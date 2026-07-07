@@ -167,7 +167,7 @@ function chipsForContext(
   onToolkitSearch?: () => void,
 ): CompanionChip[] {
   const emergency = {
-    label: "I need a drink",
+    label: "Urge support",
     route: "/session/urge",
     emergency: true,
   };

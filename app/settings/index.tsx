@@ -102,22 +102,6 @@ export default function SettingsScreen() {
     );
   };
 
-  const shortcutActions = [
-    'Open Alchono',
-    'Open Urge Support',
-    'Open Your Sky',
-    'Record Alcohol-Free Day',
-    'Open Journal',
-    'Open Emergency Support',
-    'Start Urge Flow',
-  ];
-
-  const shortcutHelp =
-    'Use explicit Alchono shortcuts only.\n\n' +
-    `Available actions:\n${shortcutActions.map((action) => `• ${action}`).join('\n')}\n\n` +
-    'Add Alchono shortcuts to your Home Screen, Action Button, Lock Screen, or Shortcuts app.\n\n' +
-    'Back Tap can also run a shortcut, but only as an optional extra — phone cases can make it unreliable.';
-
   return (
     <SafeArea>
       <View className="px-6 pt-4 pb-5 flex-row items-center gap-3">
@@ -134,16 +118,6 @@ export default function SettingsScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         <NotificationSettings />
-
-        <SettingsSection
-          title="Shortcuts"
-          items={[
-            {
-              label: 'Safe shortcuts & accessibility',
-              onPress: () => Alert.alert('Deterministic shortcuts only', shortcutHelp),
-            },
-          ]}
-        />
 
         <SettingsSection
           title="Privacy"

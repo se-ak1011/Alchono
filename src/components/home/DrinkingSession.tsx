@@ -147,7 +147,7 @@ export function DrinkingSession() {
 
           {/* One tap to log a drink — no judgement, just awareness. */}
           <Button
-            title="I had a drink"
+            title="Add drink"
             variant="secondary"
             size="sm"
             fullWidth
