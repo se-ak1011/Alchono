@@ -3,13 +3,20 @@ import Foundation
 
 @available(iOS 16.0, *)
 private enum AlchonoShortcutURL {
-  static let openApp = URL(string: "alchono://")!
-  static let urgeSupport = URL(string: "alchono://support/help-now")!
-  static let yourSky = URL(string: "alchono://constellation")!
-  static let recordAlcoholFreeDay = URL(string: "alchono://shortcut/record-alcohol-free-day")!
-  static let journal = URL(string: "alchono://journal")!
-  static let emergencySupport = URL(string: "alchono://support/sos")!
-  static let urgeFlow = URL(string: "alchono://session/urge")!
+  private static func make(_ value: String) -> URL {
+    guard let url = URL(string: value) else {
+      fatalError("Invalid Alchono shortcut URL: \(value)")
+    }
+    return url
+  }
+
+  static let openApp = make("alchono://")
+  static let urgeSupport = make("alchono://support/help-now")
+  static let yourSky = make("alchono://constellation")
+  static let recordAlcoholFreeDay = make("alchono://shortcut/record-alcohol-free-day")
+  static let journal = make("alchono://journal")
+  static let emergencySupport = make("alchono://support/sos")
+  static let urgeFlow = make("alchono://session/urge")
 }
 
 @available(iOS 16.0, *)

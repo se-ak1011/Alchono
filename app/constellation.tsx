@@ -10,6 +10,8 @@ import { useAuthStore } from "@/store/authStore";
 import { buildSky, currentMilestone } from "@/lib/constellation";
 import { celebrationGlow } from "@/styles";
 
+const CONSTELLATION_TOP_SPACING = 40;
+
 function formatDay(date: string): string {
   const d = new Date(`${date}T00:00:00`);
   return d.toLocaleDateString(undefined, {
@@ -43,7 +45,7 @@ export default function ConstellationScreen() {
           </Text>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingTop: 40 }}>
+        <View style={{ flex: 1, paddingTop: CONSTELLATION_TOP_SPACING }}>
           <ConstellationSky sky={sky} onSelectStar={setSelected} />
         </View>
       )}

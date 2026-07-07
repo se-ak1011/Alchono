@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -14,7 +14,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
   const { data: alcoholFreeMarked = false, isLoading } = useAfToday();
   const { mutate: toggleAlcoholFree, isPending } = useToggleAlcoholFree();
   const [state, setState] = useState<ShortcutState>('checking');
-  const [started, setStarted] = useState(false);
+  const startedRef = useRef(false);
 
   useEffect(() => {
     if (isLoading) return;
@@ -24,9 +24,9 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
       return;
     }
 
-    if (started || isPending) return;
+    if (startedRef.current || isPending) return;
 
-    setStarted(true);
+    startedRef.current = true;
     setState('saving');
     toggleAlcoholFree(true, {
       onSuccess: () => {
@@ -38,7 +38,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
         setState('error');
       },
     });
-  }, [alcoholFreeMarked, isLoading, isPending, started, toggleAlcoholFree]);
+  }, [alcoholFreeMarked, isLoading, isPending, toggleAlcoholFree]);
 
   const openHome = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -52,7 +52,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
 
   const retry = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setStarted(false);
+    startedRef.current = false;
     setState('checking');
   };
 
