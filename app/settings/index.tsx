@@ -102,6 +102,22 @@ export default function SettingsScreen() {
     );
   };
 
+  const shortcutActions = [
+    'Open Alchono',
+    'Open Urge Support',
+    'Open Your Sky',
+    'Record Alcohol-Free Day',
+    'Open Journal',
+    'Open Emergency Support',
+    'Start Urge Flow',
+  ];
+
+  const shortcutHelp =
+    'Use explicit Alchono shortcuts only.\n\n' +
+    `Available actions:\n${shortcutActions.map((action) => `• ${action}`).join('\n')}\n\n` +
+    'Add Alchono shortcuts to your Home Screen, Action Button, Lock Screen, or Shortcuts app.\n\n' +
+    'Back Tap can also run a shortcut, but only as an optional extra — phone cases can make it unreliable.';
+
   return (
     <SafeArea>
       <View className="px-6 pt-4 pb-5 flex-row items-center gap-3">
@@ -120,21 +136,11 @@ export default function SettingsScreen() {
         <NotificationSettings />
 
         <SettingsSection
-          title="Quick log"
+          title="Shortcuts"
           items={[
             {
-              label: 'Log a drink with Siri or Back Tap',
-              onPress: () =>
-                Alert.alert(
-                  'Log a drink without opening the app',
-                  'Say "Hey Siri, I had a drink."\n\n' +
-                    'Back Tap: Settings → Accessibility → Touch → Back Tap → ' +
-                    'Triple Tap → Shortcuts → I had a drink.\n\n' +
-                    'Action Button (iPhone 15 Pro and later): Settings → ' +
-                    'Action Button → Shortcut → I had a drink.\n\n' +
-                    'It logs to your current session, or gently starts one — no ' +
-                    'need to open the app.',
-                ),
+              label: 'Safe shortcuts & accessibility',
+              onPress: () => Alert.alert('Deterministic shortcuts only', shortcutHelp),
             },
           ]}
         />

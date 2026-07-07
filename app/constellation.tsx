@@ -43,7 +43,9 @@ export default function ConstellationScreen() {
           </Text>
         </View>
       ) : (
-        <ConstellationSky sky={sky} onSelectStar={setSelected} />
+        <View style={{ flex: 1, paddingTop: 40 }}>
+          <ConstellationSky sky={sky} onSelectStar={setSelected} />
+        </View>
       )}
 
       {/* Ito anchors a compact constellation menu in a local sky zone. */}

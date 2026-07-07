@@ -1,79 +1,140 @@
 import AppIntents
-import WidgetKit
 import Foundation
 
-// "I had a drink" — exposes Alchono's drink logging to Shortcuts, Siri, Back
-// Tap, the Action Button, Widgets and Lock Screen shortcuts, so a drink can be
-// logged in one tap WITHOUT opening the app (the assumption being that someone
-// intoxicated simply won't open it). Named for the person, not the database:
-// "I had a drink", never "Log drink" — Alchono reduces shame.
-//
-// It never touches the network or the app's JS. It writes to the shared App
-// Group: it optimistically reflects the change so the widget updates instantly,
-// and queues the drink in `pendingDrinks` for the app to reconcile into the
-// real drinking session (Supabase) the next time it opens. Existing drinking
-// logic is untouched — this only records intent into shared storage.
 @available(iOS 16.0, *)
-struct LogDrinkIntent: AppIntent {
-  static var title: LocalizedStringResource = "I had a drink"
-  static var description = IntentDescription(
-    "Logs a drink to your current session — or gently starts one — without opening the app."
-  )
-  // Run silently. No shame, no app launch. Shortcuts still gives its normal
-  // success haptic from the returned result.
-  static var openAppWhenRun: Bool = false
+private enum AlchonoShortcutURL {
+  static let openApp = URL(string: "alchono://")!
+  static let urgeSupport = URL(string: "alchono://support/help-now")!
+  static let yourSky = URL(string: "alchono://constellation")!
+  static let recordAlcoholFreeDay = URL(string: "alchono://shortcut/record-alcohol-free-day")!
+  static let journal = URL(string: "alchono://journal")!
+  static let emergencySupport = URL(string: "alchono://support/sos")!
+  static let urgeFlow = URL(string: "alchono://session/urge")!
+}
 
-  func perform() async throws -> some IntentResult {
-    let appGroup = "group.com.alchono.app"
-    print("[AppIntentTrace] LogDrinkIntent.perform: started")
-    guard let d = UserDefaults(suiteName: appGroup) else {
-      print("[AppIntentTrace] LogDrinkIntent.perform: STOP - UserDefaults suite unavailable for \(appGroup)")
-      return .result()
-    }
-    print("[AppIntentTrace] LogDrinkIntent.perform: opened UserDefaults suite \(appGroup)")
+@available(iOS 16.0, *)
+struct OpenAlchonoIntent: AppIntent {
+  static var title: LocalizedStringResource = "Open Alchono"
+  static var description = IntentDescription("Opens the Alchono home screen.")
+  static var openAppWhenRun: Bool = true
 
-    let now = Int(Date().timeIntervalSince1970)
-    let active = d.integer(forKey: "sessionActive") == 1 && d.integer(forKey: "sessionStart") > 0
-    print("[AppIntentTrace] LogDrinkIntent.perform: current shared state active=\(active) sessionActive=\(d.integer(forKey: "sessionActive")) sessionStart=\(d.integer(forKey: "sessionStart")) drinksCount=\(d.integer(forKey: "drinksCount")) pendingDrinks=\(d.integer(forKey: "pendingDrinks")) pendingSessionStart=\(d.integer(forKey: "pendingSessionStart"))")
-
-    if !active {
-      // Start a session optimistically so the widget reflects it at once.
-      d.set(1, forKey: "sessionActive")
-      d.set(now, forKey: "sessionStart")
-      d.set(now, forKey: "pendingSessionStart")
-      d.set(0, forKey: "drinksCount")
-      print("[AppIntentTrace] LogDrinkIntent.perform: created optimistic shared session at \(now)")
-    } else {
-      print("[AppIntentTrace] LogDrinkIntent.perform: reusing optimistic shared session")
-    }
-
-    let nextDrinksCount = d.integer(forKey: "drinksCount") + 1
-    let nextPendingDrinks = d.integer(forKey: "pendingDrinks") + 1
-    d.set(nextDrinksCount, forKey: "drinksCount")
-    // The unsynced queue the app drains into Supabase when it next opens.
-    d.set(nextPendingDrinks, forKey: "pendingDrinks")
-    print("[AppIntentTrace] LogDrinkIntent.perform: wrote shared queue drinksCount=\(nextDrinksCount) pendingDrinks=\(nextPendingDrinks)")
-
-    WidgetCenter.shared.reloadAllTimelines()
-    print("[AppIntentTrace] LogDrinkIntent.perform: requested widget timeline reload; returning success")
-    return .result()
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.openApp))
   }
 }
 
-// Zero-config registration: makes the intent discoverable in Shortcuts and
-// enables "Hey Siri, I had a drink." Users can then assign it to Back Tap or
-// the Action Button from Settings.
+@available(iOS 16.0, *)
+struct OpenUrgeSupportIntent: AppIntent {
+  static var title: LocalizedStringResource = "Open Urge Support"
+  static var description = IntentDescription("Opens Alchono's urgent support options.")
+  static var openAppWhenRun: Bool = true
+
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.urgeSupport))
+  }
+}
+
+@available(iOS 16.0, *)
+struct OpenYourSkyIntent: AppIntent {
+  static var title: LocalizedStringResource = "Open Your Sky"
+  static var description = IntentDescription("Opens your alcohol-free day sky.")
+  static var openAppWhenRun: Bool = true
+
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.yourSky))
+  }
+}
+
+@available(iOS 16.0, *)
+struct RecordAlcoholFreeDayIntent: AppIntent {
+  static var title: LocalizedStringResource = "Record Alcohol-Free Day"
+  static var description = IntentDescription("Opens Alchono and records today as alcohol-free.")
+  static var openAppWhenRun: Bool = true
+
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.recordAlcoholFreeDay))
+  }
+}
+
+@available(iOS 16.0, *)
+struct OpenJournalIntent: AppIntent {
+  static var title: LocalizedStringResource = "Open Journal"
+  static var description = IntentDescription("Opens the Alchono journal.")
+  static var openAppWhenRun: Bool = true
+
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.journal))
+  }
+}
+
+@available(iOS 16.0, *)
+struct OpenEmergencySupportIntent: AppIntent {
+  static var title: LocalizedStringResource = "Open Emergency Support"
+  static var description = IntentDescription("Opens Alchono's emergency support screen.")
+  static var openAppWhenRun: Bool = true
+
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.emergencySupport))
+  }
+}
+
+@available(iOS 16.0, *)
+struct StartUrgeFlowIntent: AppIntent {
+  static var title: LocalizedStringResource = "Start Urge Flow"
+  static var description = IntentDescription("Opens the guided urge flow in Alchono.")
+  static var openAppWhenRun: Bool = true
+
+  func perform() async throws -> some IntentResult & OpensIntent {
+    return .result(opensIntent: OpenURLIntent(url: AlchonoShortcutURL.urgeFlow))
+  }
+}
+
 @available(iOS 16.0, *)
 struct AlchonoShortcuts: AppShortcutsProvider {
   static var appShortcuts: [AppShortcut] {
-    AppShortcut(
-      intent: LogDrinkIntent(),
-      phrases: [
-        "I had a drink in \(.applicationName)",
-        "Log a drink in \(.applicationName)",
-      ],
-      shortTitle: "I had a drink",
-      systemImageName: "wineglass"
-    )
+    [
+      AppShortcut(
+        intent: OpenAlchonoIntent(),
+        phrases: ["Open \(.applicationName)"],
+        shortTitle: "Open Alchono",
+        systemImageName: "house"
+      ),
+      AppShortcut(
+        intent: OpenUrgeSupportIntent(),
+        phrases: ["Open urge support in \(.applicationName)"],
+        shortTitle: "Open Urge Support",
+        systemImageName: "sparkles"
+      ),
+      AppShortcut(
+        intent: OpenYourSkyIntent(),
+        phrases: ["Open your sky in \(.applicationName)"],
+        shortTitle: "Open Your Sky",
+        systemImageName: "moon.stars"
+      ),
+      AppShortcut(
+        intent: RecordAlcoholFreeDayIntent(),
+        phrases: ["Record alcohol-free day in \(.applicationName)"],
+        shortTitle: "Record Alcohol-Free Day",
+        systemImageName: "checkmark.circle"
+      ),
+      AppShortcut(
+        intent: OpenJournalIntent(),
+        phrases: ["Open journal in \(.applicationName)"],
+        shortTitle: "Open Journal",
+        systemImageName: "book.closed"
+      ),
+      AppShortcut(
+        intent: OpenEmergencySupportIntent(),
+        phrases: ["Open emergency support in \(.applicationName)"],
+        shortTitle: "Open Emergency Support",
+        systemImageName: "cross.case"
+      ),
+      AppShortcut(
+        intent: StartUrgeFlowIntent(),
+        phrases: ["Start urge flow in \(.applicationName)"],
+        shortTitle: "Start Urge Flow",
+        systemImageName: "waveform.path.ecg"
+      ),
+    ]
   }
 }

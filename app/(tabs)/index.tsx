@@ -130,7 +130,7 @@ export default function HomeScreen() {
 
   useSmartReminder();
   useWidgetSync();
-  // Drain any drinks logged offline via the "I had a drink" App Intent.
+  // Drain any legacy drink intents that may still be queued from older builds.
   useDrinkIntentSync();
   return (
     <SafeArea>
