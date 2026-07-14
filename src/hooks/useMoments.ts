@@ -1,0 +1,163 @@
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { queryClient } from '@/lib/queryClient';
+import { useAuthStore } from '@/store/authStore';
+
+const BUCKET = 'moments';
+
+export interface FeedMoment {
+  id: string;
+  created_at: string;
+  media_type: 'photo' | 'video';
+  caption: string | null;
+  url: string | null;
+  thumb_url: string | null;
+  username: string | null; // null when the post is anonymous
+}
+
+export interface MyMoment {
+  id: string;
+  created_at: string;
+  media_path: string;
+  media_type: 'photo' | 'video';
+  thumb_path: string | null;
+  caption: string | null;
+  shared: boolean;
+  moderation_status: string; // 'private' | 'pending' | 'approved' | 'rejected'
+  url: string | null; // signed, filled client-side
+}
+
+function randomId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/** The community feed — shared + approved moments, via the service-role fn. */
+export function useCommunityMoments() {
+  return useQuery({
+    queryKey: ['community-moments'],
+    queryFn: async (): Promise<FeedMoment[]> => {
+      const { data, error } = await supabase.functions.invoke('good-feed', {
+        body: { limit: 40 },
+      });
+      if (error) throw error;
+      return (data?.items ?? []) as FeedMoment[];
+    },
+    staleTime: 60_000,
+  });
+}
+
+/** The user's own moments (private gallery), with signed URLs for own media. */
+export function useMyMoments() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useQuery({
+    queryKey: ['my-moments', userId],
+    queryFn: async (): Promise<MyMoment[]> => {
+      const { data } = await (supabase as any)
+        .from('moments')
+        .select('*')
+        .eq('user_id', userId!)
+        .order('created_at', { ascending: false });
+      const rows = (data ?? []) as any[];
+      return Promise.all(
+        rows.map(async (m) => {
+          const { data: s } = await supabase.storage
+            .from(BUCKET)
+            .createSignedUrl(m.thumb_path ?? m.media_path, 3600);
+          return { ...m, url: s?.signedUrl ?? null } as MyMoment;
+        }),
+      );
+    },
+    enabled: !!userId,
+  });
+}
+
+export function useUploadMoment() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: async (opts: {
+      uri: string;
+      mediaType: 'photo' | 'video';
+      thumbUri?: string;
+      caption?: string;
+      shared: boolean;
+      anonymous: boolean;
+      ext?: string;
+    }) => {
+      if (!userId) throw new Error('not signed in');
+      const id = randomId();
+      const ext = opts.ext ?? (opts.mediaType === 'video' ? 'mp4' : 'jpg');
+      // Shared media lives under shared/ (no user-id in the path) so anonymous
+      // posts reveal nothing; private media lives under the user's own prefix.
+      const prefix = opts.shared ? 'shared' : userId;
+      const media_path = `${prefix}/${id}.${ext}`;
+
+      const res = await fetch(opts.uri);
+      const buf = await res.arrayBuffer();
+      const contentType =
+        opts.mediaType === 'video'
+          ? ext === 'mov'
+            ? 'video/quicktime'
+            : 'video/mp4'
+          : ext === 'png'
+            ? 'image/png'
+            : 'image/jpeg';
+      const up = await supabase.storage.from(BUCKET).upload(media_path, buf, { contentType });
+      if (up.error) throw up.error;
+
+      // Videos get a first-frame thumbnail (feed grid + what moderation screens).
+      let thumb_path: string | null = null;
+      if (opts.mediaType === 'video' && opts.thumbUri) {
+        thumb_path = `${prefix}/${id}_t.jpg`;
+        const tr = await fetch(opts.thumbUri);
+        const tbuf = await tr.arrayBuffer();
+        const tup = await supabase.storage
+          .from(BUCKET)
+          .upload(thumb_path, tbuf, { contentType: 'image/jpeg' });
+        if (tup.error) throw tup.error;
+      }
+
+      const { data: row, error } = await (supabase as any)
+        .from('moments')
+        .insert({
+          user_id: userId,
+          media_path,
+          media_type: opts.mediaType,
+          thumb_path,
+          caption: opts.caption?.trim() || null,
+          shared: opts.shared,
+          anonymous: opts.anonymous,
+          moderation_status: opts.shared ? 'pending' : 'private',
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+
+      // Fire moderation for shared moments — the feed only ever shows approved.
+      if (opts.shared && row?.id) {
+        supabase.functions
+          .invoke('moderate-moment', { body: { momentId: row.id } })
+          .catch(() => {});
+      }
+      return row;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-moments'] });
+      queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+    },
+  });
+}
+
+export function useDeleteMoment() {
+  return useMutation({
+    mutationFn: async (m: { id: string; media_path: string; thumb_path?: string | null }) => {
+      const paths = [m.media_path, ...(m.thumb_path ? [m.thumb_path] : [])];
+      await supabase.storage.from(BUCKET).remove(paths).catch(() => {});
+      const { error } = await (supabase as any).from('moments').delete().eq('id', m.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-moments'] });
+      queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+    },
+  });
+}
