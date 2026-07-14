@@ -1,211 +1,130 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  Image,
-  Linking,
-  FlatList,
-  Dimensions,
-} from 'react-native';
+import React from 'react';
+import { View, Text, Pressable, Image, FlatList } from 'react-native';
+import { Video, ResizeMode } from 'expo-av';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import { SafeArea } from '@/components/ui/SafeArea';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Button } from '@/components/ui/Button';
-import { useGoodFeed, thumbnailUrl, watchUrl, type GoodFeedItem } from '@/hooks/useGoodFeed';
 import { headingShadow } from '@/styles';
+import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
 
-const SCREEN_W = Dimensions.get('window').width;
-const CARD_MARGIN = 24;
+function MomentCard({ item }: { item: FeedMoment }) {
+  return (
+    <Animated.View
+      entering={FadeIn.duration(300)}
+      className="mx-6 mb-5 bg-surface rounded-3xl overflow-hidden border border-white/8"
+    >
+      {item.media_type === 'video' && item.url ? (
+        <Video
+          source={{ uri: item.url }}
+          posterSource={item.thumb_url ? { uri: item.thumb_url } : undefined}
+          usePoster
+          useNativeControls
+          resizeMode={ResizeMode.COVER}
+          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#0E0F10' }}
+        />
+      ) : item.url ? (
+        <Image
+          source={{ uri: item.url }}
+          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#0E0F10' }}
+          resizeMode="cover"
+        />
+      ) : null}
 
-const CATEGORY_LABELS: Record<string, string> = {
-  kindness: 'Kindness',
-  animals: 'Animals',
-  reunions: 'Reunions',
-  fails: 'Fails',
-  rescues: 'Rescues',
-  wholesome: 'Wholesome',
-};
-
-type Slide = { kind: 'video'; item: GoodFeedItem } | { kind: 'end' };
+      <View className="px-5 py-4">
+        {item.caption ? (
+          <Text className="text-text-primary text-base leading-relaxed mb-2">
+            {item.caption}
+          </Text>
+        ) : null}
+        <Text className="text-text-muted text-sm">
+          {item.username ? `@${item.username}` : 'Anonymous'}
+          {'  ·  '}
+          {new Date(item.created_at).toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+          })}
+        </Text>
+      </View>
+    </Animated.View>
+  );
+}
 
 export default function GoodFeedScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
-  const { data: items, isLoading } = useGoodFeed();
-  const [page, setPage] = useState(0);
-
-  const slides: Slide[] = [
-    ...(items ?? []).map((item) => ({ kind: 'video' as const, item })),
-    { kind: 'end' as const },
-  ];
-  const videoCount = items?.length ?? 0;
-
-  const renderSlide = ({ item: slide }: { item: Slide }) => {
-    if (slide.kind === 'end') {
-      return (
-        <View
-          style={{
-            width: SCREEN_W,
-            paddingHorizontal: CARD_MARGIN,
-            justifyContent: 'center',
-          }}
-        >
-          <View className="bg-surface rounded-3xl px-6 py-12 border border-white/8 items-center">
-            <Text className="text-text-primary text-2xl font-semibold mb-3 text-center">
-              That's the good stuff.
-            </Text>
-            <Text className="text-text-secondary text-base mb-8 text-center leading-relaxed">
-              Fresh picks tomorrow.{'\n'}How are you feeling?
-            </Text>
-            <Button
-              title="Done"
-              variant="primary"
-              size="lg"
-              fullWidth
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.back();
-              }}
-            />
-          </View>
-        </View>
-      );
-    }
-
-    const { item } = slide;
-    return (
-      <View
-        style={{
-          width: SCREEN_W,
-          paddingHorizontal: CARD_MARGIN,
-          justifyContent: 'center',
-        }}
-      >
-        <Pressable
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            Linking.openURL(watchUrl(item.youtube_id)).catch(() => {});
-          }}
-          className="bg-surface rounded-3xl border border-white/8 active:border-white/20 overflow-hidden"
-        >
-          <Image
-            source={{ uri: thumbnailUrl(item.youtube_id) }}
-            style={{ width: '100%', aspectRatio: 16 / 9, backgroundColor: '#161718' }}
-            resizeMode="cover"
-          />
-          <View className="px-5 py-5">
-            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
-              {CATEGORY_LABELS[item.category] ?? item.category}
-            </Text>
-            <Text className="text-text-primary text-lg font-semibold leading-snug mb-2">
-              {item.title}
-            </Text>
-            <Text className="text-text-muted text-sm">Tap to play on YouTube →</Text>
-          </View>
-        </Pressable>
-      </View>
-    );
-  };
+  const { data: moments, isLoading } = useCommunityMoments();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#0E0F10',
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom + 8,
-      }}
-    >
+    <SafeArea>
       {/* Header */}
-      <Animated.View
-        entering={FadeIn.duration(300)}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 16,
-          paddingHorizontal: 24,
-          paddingTop: 16,
-          paddingBottom: 8,
-        }}
-      >
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              color: '#F0F2F4',
-              fontSize: 26,
-              fontFamily: 'Inter_600SemiBold',
-              ...headingShadow,
-            }}
-          >
-            Something good.
-          </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
-            One at a time. Swipe when you're ready.
-          </Text>
+      <View className="px-6 pt-4 pb-3 flex-row items-start justify-between">
+        <View className="flex-row items-start gap-3 flex-1">
+          <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 mt-1 active:opacity-60">
+            <Feather name="chevron-left" size={26} color="#9B98A8" />
+          </Pressable>
+          <View className="flex-1">
+            <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
+              Something good.
+            </Text>
+            <Text className="text-text-secondary text-sm mt-1">
+              Small, real moments — shared by people like you.
+            </Text>
+          </View>
         </View>
-        {page < videoCount && videoCount > 0 && (
-          <Text style={{ color: '#4B5563', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
-            {page + 1}/{videoCount}
-          </Text>
-        )}
-      </Animated.View>
+        <Pressable
+          onPress={() => router.push('/moments')}
+          hitSlop={8}
+          className="bg-surface-2 rounded-full px-3.5 py-2 border border-white/10 active:opacity-70 mt-1"
+        >
+          <Text className="text-text-secondary text-xs font-semibold">Yours</Text>
+        </Pressable>
+      </View>
 
       {isLoading ? (
         <LoadingSpinner message="Finding the good stuff…" />
-      ) : videoCount === 0 ? (
-        <View className="flex-1 items-center justify-center px-10">
-          <Text className="text-text-muted text-base text-center">
-            Nothing here yet — check back soon.
-          </Text>
-        </View>
       ) : (
-        <>
-          <FlatList
-            data={slides}
-            keyExtractor={(s, i) => (s.kind === 'video' ? s.item.id : `end-${i}`)}
-            renderItem={renderSlide}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={(e) => {
-              const next = Math.round(e.nativeEvent.contentOffset.x / SCREEN_W);
-              if (next !== page) {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setPage(next);
-              }
-            }}
-            style={{ flex: 1 }}
-          />
-
-          {/* Progress dots */}
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              gap: 6,
-              paddingVertical: 12,
-            }}
-          >
-            {slides.map((_, i) => (
-              <View
-                key={i}
-                style={{
-                  width: i === page ? 18 : 6,
-                  height: 6,
-                  borderRadius: 3,
-                  backgroundColor: i === page ? '#C4C9D0' : '#2A2D30',
-                }}
-              />
-            ))}
-          </View>
-        </>
+        <FlatList
+          data={moments ?? []}
+          keyExtractor={(m) => m.id}
+          contentContainerStyle={{ paddingTop: 8, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => <MomentCard item={item} />}
+          ListEmptyComponent={
+            <View className="items-center px-10 mt-24">
+              <Text className="text-text-secondary text-base text-center leading-relaxed">
+                Nothing here yet.
+              </Text>
+              <Text className="text-text-muted text-sm text-center leading-relaxed mt-2">
+                Be the first to share something good — a walk, a meal, a small
+                win from your day.
+              </Text>
+              <Pressable
+                onPress={() => router.push('/moments/new')}
+                className="mt-6 bg-accent rounded-2xl px-6 py-3 active:bg-accent-dark"
+              >
+                <Text className="text-bg text-base font-semibold">Share a moment</Text>
+              </Pressable>
+            </View>
+          }
+        />
       )}
-    </View>
+
+      {/* Share button */}
+      {(moments?.length ?? 0) > 0 && (
+        <Pressable
+          onPress={() => router.push('/moments/new')}
+          className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-accent items-center justify-center active:bg-accent-dark"
+          style={{
+            shadowColor: '#000',
+            shadowOpacity: 0.4,
+            shadowRadius: 10,
+            shadowOffset: { width: 0, height: 4 },
+          }}
+        >
+          <Feather name="plus" size={26} color="#09070C" />
+        </Pressable>
+      )}
+    </SafeArea>
   );
 }
