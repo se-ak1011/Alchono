@@ -16,8 +16,8 @@ interface Props {
   onSelectStar: (date: string) => void;
 }
 
-const STAR_COLOR = '#F4F1ED';
-const LINE_COLOR = '#A79FB2';
+const STAR_COLOR = '#F3F0F4';
+const LINE_COLOR = '#9B82D0';
 const HIT_RADIUS = 20; // canvas units — how close a tap must land to a star
 
 export function ConstellationSky({ sky, onSelectStar }: Props) {
@@ -105,7 +105,7 @@ export function ConstellationSky({ sky, onSelectStar }: Props) {
   const lastDate = sky.stars.length ? sky.stars[sky.stars.length - 1].date : null;
 
   return (
-    <View onLayout={onLayout} style={{ flex: 1, overflow: 'hidden', backgroundColor: '#060509' }}>
+    <View onLayout={onLayout} style={{ flex: 1, overflow: 'hidden', backgroundColor: '#15141A' }}>
       <GestureDetector gesture={gesture}>
         <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
           <Svg

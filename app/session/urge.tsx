@@ -217,7 +217,7 @@ export default function UrgeScreen() {
                     width: 200,
                     height: 200,
                     borderRadius: 100,
-                    backgroundColor: '#9CA3AF',
+                    backgroundColor: '#BDB6C5',
                     position: 'absolute',
                   },
                   circleStyle,
@@ -263,11 +263,11 @@ export default function UrgeScreen() {
               entering={FadeInDown.duration(350)}
               className="bg-urge-surface rounded-3xl px-6 py-8 border border-white/12 mb-6"
               style={{
-                shadowColor: '#120D17',
+                shadowColor: '#33283F',
                 shadowOpacity: 0.85,
                 shadowRadius: 14,
                 shadowOffset: { width: 0, height: 7 },
-                borderTopColor: 'rgba(255,255,255,0.16)',
+                borderTopColor: 'rgba(200, 185, 220, 0.24)',
               }}
             >
               <Text
@@ -346,7 +346,7 @@ export default function UrgeScreen() {
                 style={{
                   paddingHorizontal: 20,
                   paddingVertical: 22,
-                  shadowColor: '#120D17',
+                  shadowColor: '#33283F',
                   shadowOpacity: 0.8,
                   shadowRadius: 10,
                   shadowOffset: { width: 0, height: 5 },
@@ -366,7 +366,7 @@ export default function UrgeScreen() {
                 style={{
                   paddingHorizontal: 20,
                   paddingVertical: 22,
-                  shadowColor: '#120D17',
+                  shadowColor: '#33283F',
                   shadowOpacity: 0.8,
                   shadowRadius: 10,
                   shadowOffset: { width: 0, height: 5 },

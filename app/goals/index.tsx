@@ -296,14 +296,14 @@ export default function GoalsScreen() {
         <Animated.View entering={FadeIn.duration(400)} className="bg-surface rounded-2xl p-4 mb-6 border border-white/8">
           <TextInput
             placeholder="Something to look forward to…"
-            placeholderTextColor="#4B5563"
+            placeholderTextColor="#686271"
             value={text}
             onChangeText={setText}
             onSubmitEditing={handleAdd}
             returnKeyType="done"
             multiline
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 15,
               lineHeight: 22,
               marginBottom: 12,
@@ -333,7 +333,7 @@ export default function GoalsScreen() {
                 text.trim() ? 'bg-accent active:bg-accent-dark' : 'bg-surface-2'
               }`}
             >
-              <Text className={`text-sm font-semibold ${text.trim() ? 'text-[#0E0F10]' : 'text-text-muted'}`}>
+              <Text className={`text-sm font-semibold ${text.trim() ? 'text-[#15141A]' : 'text-text-muted'}`}>
                 {adding ? 'Adding…' : 'Add'}
               </Text>
             </Pressable>

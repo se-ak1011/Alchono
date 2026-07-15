@@ -29,7 +29,7 @@ export default function ConstellationScreen() {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <View className="flex-1" style={{ backgroundColor: '#060509' }}>
+    <View className="flex-1" style={{ backgroundColor: '#15141A' }}>
       {dates.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10">
           <Text className="text-text-secondary text-lg text-center leading-relaxed">

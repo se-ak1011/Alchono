@@ -48,7 +48,7 @@ export function SettingsSection({ title, items }: SettingsSectionProps) {
               )}
               {item.rightElement ??
                 (item.onPress && (
-                  <Feather name="chevron-right" size={16} color="#5E6472" />
+                  <Feather name="chevron-right" size={16} color="#8E8798" />
                 ))}
             </Pressable>
           </React.Fragment>

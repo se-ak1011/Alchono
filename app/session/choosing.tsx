@@ -114,10 +114,10 @@ export default function ChoosingScreen() {
                 value={other}
                 onChangeText={setOther}
                 placeholder="Today I chose to…"
-                placeholderTextColor="#5E6472"
+                placeholderTextColor="#8E8798"
                 autoFocus
                 className="bg-surface rounded-2xl px-5 py-4 text-text-primary text-base border border-white/5"
-                selectionColor="#9CA3AF"
+                selectionColor="#BDB6C5"
               />
             </Animated.View>
           )}

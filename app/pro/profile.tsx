@@ -13,14 +13,14 @@ import { queryClient } from '@/lib/queryClient';
 import { headingShadow } from '@/styles';
 
 const proInput = {
-  backgroundColor: '#161718',
+  backgroundColor: '#211E29',
   borderRadius: 10,
   paddingHorizontal: 14,
   paddingVertical: 12,
-  color: '#F0F2F4',
+  color: '#F3F0F4',
   fontSize: 15,
   borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
+  borderColor: 'rgba(243, 240, 244, 0.10)',
 } as const;
 
 export default function ProProfileScreen() {
@@ -153,17 +153,17 @@ export default function ProProfileScreen() {
           </Text>
           <View style={{ gap: 10 }}>
             <TextInput value={org} onChangeText={setOrg}
-              placeholder="Organisation / practice name" placeholderTextColor="#5E6472"
+              placeholder="Organisation / practice name" placeholderTextColor="#8E8798"
               style={proInput} />
             <TextInput value={bio} onChangeText={setBio} multiline maxLength={240}
-              placeholder="A few words about how you work…" placeholderTextColor="#5E6472"
+              placeholder="A few words about how you work…" placeholderTextColor="#8E8798"
               style={[proInput, { minHeight: 72 }]} textAlignVertical="top" />
             <TextInput value={website} onChangeText={setWebsite}
-              placeholder="Website (https://…)" placeholderTextColor="#5E6472"
+              placeholder="Website (https://…)" placeholderTextColor="#8E8798"
               autoCapitalize="none" autoCorrect={false} keyboardType="url"
               style={proInput} />
             <TextInput value={booking} onChangeText={setBooking}
-              placeholder="Booking link (Calendly, your site…)" placeholderTextColor="#5E6472"
+              placeholder="Booking link (Calendly, your site…)" placeholderTextColor="#8E8798"
               autoCapitalize="none" autoCorrect={false} keyboardType="url"
               style={proInput} />
             <Pressable

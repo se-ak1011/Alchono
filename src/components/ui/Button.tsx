@@ -35,7 +35,7 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const textClasses: Record<Variant, string> = {
-  primary: 'text-[#0E0F10] font-semibold',
+  primary: 'text-[#15141A] font-semibold',
   secondary: 'text-text-primary font-medium',
   ghost: 'text-text-secondary font-medium',
   danger: 'text-white font-semibold',
@@ -46,7 +46,7 @@ const textClasses: Record<Variant, string> = {
 // glow, dark buttons get a grounded drop shadow. Android maps to elevation.
 const variantShadows: Record<Variant, object> = {
   primary: {
-    shadowColor: '#F0F2F4',
+    shadowColor: '#F3F0F4',
     shadowOpacity: 0.28,
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 3 },
@@ -131,7 +131,7 @@ export function Button({
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={variant === 'primary' ? '#0E0F10' : variant === 'ghost' ? '#9CA3AF' : '#F0F2F4'}
+            color={variant === 'primary' ? '#15141A' : variant === 'ghost' ? '#BDB6C5' : '#F3F0F4'}
           />
         ) : (
           <>

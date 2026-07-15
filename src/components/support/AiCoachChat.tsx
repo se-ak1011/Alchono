@@ -149,7 +149,7 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           onPress={handleUrge}
           className="mx-4 mb-2 flex-row items-center justify-between bg-urge-surface rounded-xl px-5 py-4 border border-white/10 active:border-white/25"
           style={{
-            shadowColor: '#120D17',
+            shadowColor: '#33283F',
             shadowOpacity: 0.8,
             shadowRadius: 10,
             shadowOffset: { width: 0, height: 5 },
@@ -170,14 +170,14 @@ export function AiCoachChat({ sessionType = 'general' }: AiCoachChatProps) {
           value={input}
           onChangeText={setInput}
           placeholder="Say something…"
-          placeholderTextColor="#5E6472"
+          placeholderTextColor="#8E8798"
           multiline
           maxLength={500}
           onSubmitEditing={handleSend}
           returnKeyType="send"
           blurOnSubmit
           className="flex-1 bg-surface rounded-2xl px-4 py-3.5 text-text-primary text-base max-h-28"
-          selectionColor="#9CA3AF"
+          selectionColor="#BDB6C5"
         />
         <Pressable
           onPress={handleSend}
