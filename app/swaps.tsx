@@ -46,7 +46,7 @@ export default function SwapsScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -63,12 +63,12 @@ export default function SwapsScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -76,7 +76,7 @@ export default function SwapsScreen() {
           >
             Swap it, don't fight it.
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             Same ritual. Same glass. Zero alcohol.
           </Text>
         </View>

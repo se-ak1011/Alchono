@@ -151,11 +151,11 @@ export function CommunityFeed({
             if (justPosted) setJustPosted(false);
           }}
           placeholder="Struggling? Celebrating 10 days? Say it here…"
-          placeholderTextColor="#5E6472"
+          placeholderTextColor="#8E8798"
           multiline
           maxLength={280}
           className="text-text-primary text-base leading-relaxed min-h-[64px]"
-          selectionColor="#9CA3AF"
+          selectionColor="#BDB6C5"
         />
         {!!newPost.trim() && (
           <Text className="text-text-muted text-sm mt-2 leading-relaxed">
@@ -186,7 +186,7 @@ export function CommunityFeed({
             }`}
           >
             {isPending ? (
-              <ActivityIndicator size="small" color="#F6F5F2" />
+              <ActivityIndicator size="small" color="#F3F0F4" />
             ) : (
               <Text className="text-white text-sm font-semibold">Post</Text>
             )}
@@ -315,7 +315,7 @@ export function CommunityFeed({
         )}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator size="small" color="#9CA3AF" className="mt-4" />
+            <ActivityIndicator size="small" color="#BDB6C5" className="mt-4" />
           ) : null
         }
         ListEmptyComponent={

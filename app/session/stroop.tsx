@@ -102,7 +102,7 @@ export default function StroopScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -119,12 +119,12 @@ export default function StroopScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -132,14 +132,14 @@ export default function StroopScreen() {
           >
             {complete ? 'Done.' : 'Colour Match.'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             {complete
               ? `${score} of ${TOTAL_ROUNDS} correct`
               : 'Tap the ink colour, not the word'}
           </Text>
         </View>
         {!complete && (
-          <Text style={{ color: '#4B5563', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
+          <Text style={{ color: '#686271', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
             {round + 1}/{TOTAL_ROUNDS}
           </Text>
         )}
@@ -151,7 +151,7 @@ export default function StroopScreen() {
           style={{
             height: 2,
             marginHorizontal: 24,
-            backgroundColor: '#1A1C1E',
+            backgroundColor: '#272330',
             borderRadius: 1,
             marginBottom: 8,
           }}
@@ -160,7 +160,7 @@ export default function StroopScreen() {
             style={{
               height: 2,
               width: `${(round / TOTAL_ROUNDS) * 100}%`,
-              backgroundColor: '#C4C9D0',
+              backgroundColor: '#9B82D0',
               borderRadius: 1,
             }}
           />
@@ -180,7 +180,7 @@ export default function StroopScreen() {
         >
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 92,
               fontFamily: 'Inter_700Bold',
               lineHeight: 100,
@@ -188,21 +188,21 @@ export default function StroopScreen() {
           >
             {score}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 17, marginTop: 4, marginBottom: 48 }}>
+          <Text style={{ color: '#8E8798', fontSize: 17, marginTop: 4, marginBottom: 48 }}>
             out of {TOTAL_ROUNDS}
           </Text>
           <View style={{ gap: 12, width: '100%' }}>
             <Pressable
               onPress={restart}
               style={{
-                backgroundColor: '#C4C9D0',
+                backgroundColor: '#9B82D0',
                 borderRadius: 18,
                 paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
               <Text
-                style={{ color: '#0E0F10', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#15141A', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>
@@ -211,7 +211,7 @@ export default function StroopScreen() {
               onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 12, alignItems: 'center' }}
             >
-              <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>
+              <Text style={{ color: '#8E8798', fontSize: 15 }}>Done</Text>
             </Pressable>
           </View>
         </Animated.View>

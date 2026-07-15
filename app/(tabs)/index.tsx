@@ -14,6 +14,7 @@ import { useGoals, daysUntil } from '@/hooks/useGoals';
 import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
 import { useSmartReminder } from '@/hooks/useSmartReminder';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
+import { useDrinkIntentSync } from '@/hooks/useDrinkIntentSync';
 
 const HOME_COMPANION_IMAGE_WIDTH = 140;
 const HOME_COMPANION_IMAGE_HEIGHT = 165;

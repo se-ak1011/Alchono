@@ -49,7 +49,7 @@ export default function GamesScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -60,12 +60,12 @@ export default function GamesScreen() {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 4 }}>
           <Pressable onPress={() => router.back()} hitSlop={12}>
-            <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+            <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
           </Pressable>
           <View>
             <Text
               style={{
-                color: '#F0F2F4',
+                color: '#F3F0F4',
                 fontSize: 26,
                 fontFamily: 'Inter_600SemiBold',
                 ...headingShadow,
@@ -73,7 +73,7 @@ export default function GamesScreen() {
             >
               Games.
             </Text>
-            <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+            <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
               3–5 minutes. Give your mind something else.
             </Text>
           </View>
@@ -91,20 +91,20 @@ export default function GamesScreen() {
                   router.push((game.route + suffix) as any);
                 }}
                 style={{
-                  backgroundColor: '#161718',
+                  backgroundColor: '#211E29',
                   borderRadius: 22,
                   padding: 22,
                   borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.08)',
+                  borderColor: 'rgba(243, 240, 244, 0.10)',
                   minHeight: 155,
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ color: '#3D4450', fontSize: 30 }}>{game.symbol}</Text>
+                <Text style={{ color: '#686271', fontSize: 30 }}>{game.symbol}</Text>
                 <View style={{ marginTop: 20 }}>
                   <Text
                     style={{
-                      color: '#F0F2F4',
+                      color: '#F3F0F4',
                       fontSize: 17,
                       fontFamily: 'Inter_600SemiBold',
                       marginBottom: 5,
@@ -112,7 +112,7 @@ export default function GamesScreen() {
                   >
                     {game.name}
                   </Text>
-                  <Text style={{ color: '#6B7280', fontSize: 14, lineHeight: 19 }}>
+                  <Text style={{ color: '#8E8798', fontSize: 14, lineHeight: 19 }}>
                     {game.desc}
                   </Text>
                 </View>
@@ -131,20 +131,20 @@ export default function GamesScreen() {
                   router.push((game.route + suffix) as any);
                 }}
                 style={{
-                  backgroundColor: '#161718',
+                  backgroundColor: '#211E29',
                   borderRadius: 22,
                   padding: 22,
                   borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.08)',
+                  borderColor: 'rgba(243, 240, 244, 0.10)',
                   minHeight: 155,
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ color: '#3D4450', fontSize: 30 }}>{game.symbol}</Text>
+                <Text style={{ color: '#686271', fontSize: 30 }}>{game.symbol}</Text>
                 <View style={{ marginTop: 20 }}>
                   <Text
                     style={{
-                      color: '#F0F2F4',
+                      color: '#F3F0F4',
                       fontSize: 17,
                       fontFamily: 'Inter_600SemiBold',
                       marginBottom: 5,
@@ -152,7 +152,7 @@ export default function GamesScreen() {
                   >
                     {game.name}
                   </Text>
-                  <Text style={{ color: '#6B7280', fontSize: 14, lineHeight: 19 }}>
+                  <Text style={{ color: '#8E8798', fontSize: 14, lineHeight: 19 }}>
                     {game.desc}
                   </Text>
                 </View>
@@ -170,21 +170,21 @@ export default function GamesScreen() {
             router.push('/session/word-search' as any);
           }}
           style={{
-            backgroundColor: '#161718',
+            backgroundColor: '#211E29',
             borderRadius: 22,
             padding: 22,
             borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: 'rgba(243, 240, 244, 0.10)',
             flexDirection: 'row',
             alignItems: 'center',
             gap: 16,
           }}
         >
-          <Text style={{ color: '#3D4450', fontSize: 30 }}>◇</Text>
+          <Text style={{ color: '#686271', fontSize: 30 }}>◇</Text>
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                color: '#F0F2F4',
+                color: '#F3F0F4',
                 fontSize: 17,
                 fontFamily: 'Inter_600SemiBold',
                 marginBottom: 5,
@@ -192,11 +192,11 @@ export default function GamesScreen() {
             >
               Word Search
             </Text>
-            <Text style={{ color: '#6B7280', fontSize: 14, lineHeight: 19 }}>
+            <Text style={{ color: '#8E8798', fontSize: 14, lineHeight: 19 }}>
               No list, no clock. Happy words are hiding — just look.
             </Text>
           </View>
-          <Text style={{ color: '#6B7280', fontSize: 16 }}>→</Text>
+          <Text style={{ color: '#8E8798', fontSize: 16 }}>→</Text>
         </Pressable>
       </Animated.View>
     </View>

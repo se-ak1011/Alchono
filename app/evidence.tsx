@@ -16,7 +16,7 @@ export default function EvidenceScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -26,7 +26,7 @@ export default function EvidenceScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
       </Animated.View>
 
@@ -66,7 +66,7 @@ export default function EvidenceScreen() {
                   >
                     <View
                       className="bg-surface rounded-2xl px-5 py-5 border border-white/8"
-                      style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+                      style={{ borderTopColor: 'rgba(200, 185, 220, 0.24)' }}
                     >
                       <Text className="text-text-primary text-lg font-medium leading-relaxed">
                         {item.text}

@@ -150,18 +150,18 @@ export default function ProDashboard() {
             value={username}
             onChangeText={setUsername}
             placeholder="Exact username"
-            placeholderTextColor="#5E6472"
+            placeholderTextColor="#8E8798"
             autoCapitalize="none"
             autoCorrect={false}
             style={{
-              backgroundColor: '#161718',
+              backgroundColor: '#211E29',
               borderRadius: 10,
               paddingHorizontal: 14,
               paddingVertical: 12,
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 15,
               borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.08)',
+              borderColor: 'rgba(243, 240, 244, 0.10)',
               marginBottom: 10,
             }}
           />

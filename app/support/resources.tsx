@@ -19,7 +19,7 @@ export default function ResourcesScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -29,7 +29,7 @@ export default function ResourcesScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <Text
           className="text-text-primary text-2xl font-semibold tracking-tight"

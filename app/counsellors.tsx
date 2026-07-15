@@ -45,7 +45,7 @@ export default function CounsellorsScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -62,12 +62,12 @@ export default function CounsellorsScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -75,7 +75,7 @@ export default function CounsellorsScreen() {
           >
             Find a counsellor.
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             Verified recovery professionals on Alchono.
           </Text>
         </View>
@@ -86,18 +86,18 @@ export default function CounsellorsScreen() {
           value={query}
           onChangeText={setQuery}
           placeholder="Search by name or organisation…"
-          placeholderTextColor="#5E6472"
+          placeholderTextColor="#8E8798"
           autoCapitalize="none"
           autoCorrect={false}
           style={{
-            backgroundColor: '#161718',
+            backgroundColor: '#211E29',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
-            color: '#F0F2F4',
+            color: '#F3F0F4',
             fontSize: 15,
             borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: 'rgba(243, 240, 244, 0.10)',
           }}
         />
       </View>

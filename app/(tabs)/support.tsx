@@ -59,11 +59,11 @@ export default function SupportScreen() {
             onPress={() => go('/support/help-now', true)}
             className="bg-urge-surface rounded-3xl px-6 py-8 border border-white/15 active:border-white/35"
             style={{
-              shadowColor: '#120D17',
+              shadowColor: '#33283F',
               shadowOpacity: 0.85,
               shadowRadius: 16,
               shadowOffset: { width: 0, height: 8 },
-              borderTopColor: 'rgba(255,255,255,0.16)',
+              borderTopColor: 'rgba(200, 185, 220, 0.24)',
             }}
           >
             <Text className="text-text-primary text-2xl font-semibold">
@@ -89,7 +89,7 @@ export default function SupportScreen() {
           <Pressable
             onPress={() => go('/support/recovery')}
             className="bg-surface rounded-3xl px-6 py-8 border border-white/8 active:border-white/20"
-            style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+            style={{ borderTopColor: 'rgba(200, 185, 220, 0.24)' }}
           >
             <Text className="text-text-primary text-2xl font-semibold">Recovery</Text>
             <Text className="text-text-muted text-base mt-2 leading-relaxed">

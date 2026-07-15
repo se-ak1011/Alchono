@@ -55,11 +55,11 @@ export function HomeFeed() {
           value={newPost}
           onChangeText={setNewPost}
           placeholder="Share with the group…"
-          placeholderTextColor="#5E6472"
+          placeholderTextColor="#8E8798"
           multiline
           maxLength={280}
-          style={{ color: '#F6F5F2', fontSize: 16, lineHeight: 24, minHeight: 52 }}
-          selectionColor="#9CA3AF"
+          style={{ color: '#F3F0F4', fontSize: 16, lineHeight: 24, minHeight: 52 }}
+          selectionColor="#BDB6C5"
         />
         {newPost.trim().length > 0 && (
           <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-white/5">
@@ -74,7 +74,7 @@ export function HomeFeed() {
               className="bg-accent/90 rounded-lg px-4 py-2 active:bg-accent-dark"
             >
               {isPosting
-                ? <ActivityIndicator size="small" color="#F6F5F2" />
+                ? <ActivityIndicator size="small" color="#F3F0F4" />
                 : <Text className="text-white text-sm font-semibold tracking-wide">POST</Text>
               }
             </Pressable>
@@ -84,7 +84,7 @@ export function HomeFeed() {
 
       {/* Posts */}
       {isLoading ? (
-        <ActivityIndicator size="small" color="#5E6472" style={{ marginVertical: 24 }} />
+        <ActivityIndicator size="small" color="#8E8798" style={{ marginVertical: 24 }} />
       ) : posts.length === 0 ? (
         <View className="py-10 items-center">
           <Text className="text-text-muted text-base text-center">
