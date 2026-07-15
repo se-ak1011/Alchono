@@ -49,7 +49,7 @@ export default function RecoveryScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -59,7 +59,7 @@ export default function RecoveryScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
       </Animated.View>
 
@@ -90,7 +90,7 @@ export default function RecoveryScreen() {
                     router.push(r.route as any);
                   }}
                   className="bg-surface rounded-2xl px-5 py-5 border border-white/8 active:border-white/20"
-                  style={{ borderTopColor: 'rgba(255,255,255,0.1)' }}
+                  style={{ borderTopColor: 'rgba(243, 240, 244, 0.10)' }}
                 >
                   <View className="flex-row items-center justify-between">
                     <Text className="text-text-primary text-lg font-semibold flex-1 pr-3">

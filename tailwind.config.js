@@ -8,29 +8,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Premium near-black purple system. Reads as black at a glance, then
-        // a barely-perceptible deep violet undertone surfaces. Expensive, not
-        // colourful (see docs/theme.md).
-        bg: '#09070C',            // background — black with a violet whisper
-        surface: '#121017',       // cards — a hair lifted for natural depth
-        'surface-2': '#1A1423',   // elevated / active / current-session / streaks
-        'text-primary': '#F4F1ED', // warm off-white
-        'text-secondary': '#9B98A8', // reading text, violet-grey
-        'text-muted': '#666270',  // meta / hints, violet-grey
-        // Muted dusty mauve — darker & less saturated so it complements the
-        // background instead of standing apart. Never bright purple.
-        accent: '#A79FB2',
-        'accent-dark': '#8E86A0',
-        danger: '#C0392B',
-        'danger-light': '#E74C3C',
-        // Hairlines (spec: dividers 5%, borders 7%). Tokens for new work;
-        // existing border-white/X utilities already sit in this range.
-        divider: 'rgba(255,255,255,0.05)',
-        hairline: 'rgba(255,255,255,0.07)',
-        // The devil's tint — matches the purple in the app icon. Used as a
-        // near-subliminal cast over urge-flow surfaces.
-        urge: '#120D17',
-        'urge-surface': '#17121E',
+        // Dark charcoal-plum system: airy, readable, emotionally serious,
+        // and still unmistakably Alchono (see docs/theme.md).
+        bg: '#15141A',            // app background — early-morning charcoal plum
+        surface: '#211E29',       // primary cards — lifted but not glossy
+        'surface-2': '#272330',   // secondary cards / inputs
+        'text-primary': '#F3F0F4', // warm off-white
+        'text-secondary': '#BDB6C5', // reading text, violet-grey
+        'text-muted': '#8E8798',  // meta / hints, violet-grey
+        // Luminous but understated purple accent. Use it to guide attention,
+        // not flood the interface.
+        accent: '#9B82D0',
+        'accent-dark': '#B197E4',
+        danger: '#C98282',
+        'danger-light': '#C98282',
+        // Subtle warm-lavender hairlines for separation without harsh white.
+        divider: 'rgba(243, 240, 244, 0.10)',
+        hairline: 'rgba(243, 240, 244, 0.10)',
+        // Deep purple tint reserved for urge-flow emphasis.
+        urge: '#33283F',
+        'urge-surface': '#272330',
       },
       fontFamily: {
         sans: ['Inter_400Regular', 'System'],

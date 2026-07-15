@@ -9,17 +9,17 @@ packaging). Never neon, gaming RGB, cyberpunk, or obvious gradients.
 
 | Token | Hex | Use |
 |---|---|---|
-| `bg` | `#09070C` | Background — black with a violet whisper |
-| `surface` | `#121017` | Cards — a hair lifted for natural depth |
-| `surface-2` | `#1A1423` | Elevated / active / current session / streaks / primary actions |
-| `text-primary` | `#F4F1ED` | Titles + the one line that matters (warm off-white) |
-| `text-secondary` | `#9B98A8` | Reading text (violet-grey) |
-| `text-muted` | `#666270` | Meta, hints, anything skippable |
-| `accent` | `#A79FB2` | Muted dusty mauve — complements the bg, never bright purple |
-| `accent-dark` | `#8E86A0` | Pressed / hover accent |
-| `divider` | `rgba(255,255,255,0.05)` | Hairline dividers |
-| `hairline` | `rgba(255,255,255,0.07)` | Borders |
-| `urge` / `urge-surface` | `#120D17` / `#17121E` | The crisis tint (unchanged) |
+| `bg` | `#15141A` | Background — black with a violet whisper |
+| `surface` | `#211E29` | Cards — a hair lifted for natural depth |
+| `surface-2` | `#272330` | Secondary cards / inputs |
+| `text-primary` | `#F3F0F4` | Titles + the one line that matters (warm off-white) |
+| `text-secondary` | `#BDB6C5` | Reading text (violet-grey) |
+| `text-muted` | `#8E8798` | Meta, hints, anything skippable |
+| `accent` | `#9B82D0` | Muted dusty mauve — complements the bg, never bright purple |
+| `accent-dark` | `#B197E4` | Pressed / hover accent |
+| `divider` | `rgba(243, 240, 244, 0.10)` | Hairline dividers |
+| `hairline` | `rgba(243, 240, 244, 0.10)` | Borders |
+| `urge` / `urge-surface` | `#33283F` / `#272330` | The crisis tint (unchanged) |
 
 ## Depth (not flatness, not texture)
 

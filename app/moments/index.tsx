@@ -41,7 +41,7 @@ export default function MyMomentsScreen() {
       <View className="px-6 pt-4 pb-3 flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-            <Feather name="chevron-left" size={26} color="#9B98A8" />
+            <Feather name="chevron-left" size={26} color="#BDB6C5" />
           </Pressable>
           <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
             Your moments
@@ -52,7 +52,7 @@ export default function MyMomentsScreen() {
           hitSlop={8}
           className="w-10 h-10 rounded-full bg-accent items-center justify-center active:bg-accent-dark"
         >
-          <Feather name="plus" size={22} color="#09070C" />
+          <Feather name="plus" size={22} color="#15141A" />
         </Pressable>
       </View>
 
@@ -80,7 +80,7 @@ export default function MyMomentsScreen() {
               )}
               {item.media_type === 'video' && (
                 <View className="absolute top-1.5 right-1.5">
-                  <Feather name="video" size={14} color="#F4F1ED" />
+                  <Feather name="video" size={14} color="#F3F0F4" />
                 </View>
               )}
               {label && (

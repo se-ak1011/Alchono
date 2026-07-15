@@ -70,8 +70,8 @@ export function NotificationSettings() {
               <Switch
                 value={prefs?.[item.key] ?? true}
                 onValueChange={(value) => updatePref({ key: item.key, value })}
-                trackColor={{ false: '#1E2022', true: '#C4C9D0' }}
-                thumbColor="#F6F5F2"
+                trackColor={{ false: '#272330', true: '#9B82D0' }}
+                thumbColor="#F3F0F4"
               />
             </View>
           </React.Fragment>

@@ -36,7 +36,7 @@ export default function ToolkitScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -46,11 +46,11 @@ export default function ToolkitScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={{ ...headingShadow, fontSize: 26 }}>Toolkit.</Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             Small, practical things that actually help.
           </Text>
         </View>
@@ -71,18 +71,18 @@ export default function ToolkitScreen() {
           value={query}
           onChangeText={setQuery}
           placeholder="Search the toolkit…"
-          placeholderTextColor="#5E6472"
+          placeholderTextColor="#8E8798"
           autoCapitalize="none"
           autoCorrect={false}
           style={{
-            backgroundColor: '#161718',
+            backgroundColor: '#211E29',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
-            color: '#F0F2F4',
+            color: '#F3F0F4',
             fontSize: 15,
             borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: 'rgba(243, 240, 244, 0.10)',
           }}
         />
       </View>
@@ -113,7 +113,7 @@ export default function ToolkitScreen() {
                     router.push({ pathname: '/toolkit/[id]', params: { id: t.id } });
                   }}
                   className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
-                  style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+                  style={{ borderTopColor: 'rgba(200, 185, 220, 0.24)' }}
                 >
                   <View className="flex-row items-center justify-between mb-1">
                     <Text className="text-text-muted text-xs">
@@ -148,7 +148,7 @@ export default function ToolkitScreen() {
                       router.push({ pathname: '/toolkit/c/[cat]', params: { cat } });
                     }}
                     className="bg-surface rounded-2xl px-4 py-5 border border-white/8 active:border-white/20"
-                    style={{ borderTopColor: 'rgba(255,255,255,0.1)', minHeight: 116 }}
+                    style={{ borderTopColor: 'rgba(243, 240, 244, 0.10)', minHeight: 116 }}
                   >
                     <Text className="text-text-primary text-lg font-semibold">
                       {meta.label}

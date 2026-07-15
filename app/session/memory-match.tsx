@@ -80,15 +80,15 @@ function MemoryCard({
             justifyContent: 'center',
             backgroundColor: displaying
               ? matched
-                ? '#191B1D'
-                : '#1D1F21'
-              : '#161718',
+                ? '#302A3B'
+                : '#272330'
+              : '#211E29',
             borderWidth: 1,
             borderColor: displaying
               ? matched
-                ? 'rgba(196,201,208,0.18)'
-                : 'rgba(255,255,255,0.12)'
-              : 'rgba(255,255,255,0.06)',
+                ? 'rgba(155, 130, 208, 0.20)'
+                : 'rgba(200, 185, 220, 0.24)'
+              : 'rgba(243, 240, 244, 0.10)',
           },
           animStyle,
         ]}
@@ -96,7 +96,7 @@ function MemoryCard({
         {displaying ? (
           <Text style={{ fontSize: 32 }}>{emoji}</Text>
         ) : (
-          <Text style={{ fontSize: 18, color: '#2A2F38' }}>◇</Text>
+          <Text style={{ fontSize: 18, color: '#686271' }}>◇</Text>
         )}
       </Animated.View>
     </Pressable>
@@ -180,7 +180,7 @@ export default function MemoryMatchScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -197,12 +197,12 @@ export default function MemoryMatchScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -210,7 +210,7 @@ export default function MemoryMatchScreen() {
           >
             {complete ? 'All matched.' : 'Memory Match.'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             {complete
               ? `${moves} moves. Not bad.`
               : `${moves} moves · ${pairsFound} of ${EMOJIS.length} pairs`}
@@ -247,14 +247,14 @@ export default function MemoryMatchScreen() {
             <Pressable
               onPress={resetGame}
               style={{
-                backgroundColor: '#C4C9D0',
+                backgroundColor: '#9B82D0',
                 borderRadius: 18,
                 paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
               <Text
-                style={{ color: '#0E0F10', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#15141A', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>
@@ -263,12 +263,12 @@ export default function MemoryMatchScreen() {
               onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 10, alignItems: 'center' }}
             >
-              <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>
+              <Text style={{ color: '#8E8798', fontSize: 15 }}>Done</Text>
             </Pressable>
           </Animated.View>
         ) : (
           <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Text style={{ color: '#6B7280', fontSize: 15, textAlign: 'center' }}>Back</Text>
+            <Text style={{ color: '#8E8798', fontSize: 15, textAlign: 'center' }}>Back</Text>
           </Pressable>
         )}
       </View>

@@ -93,7 +93,7 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
     >
       <View className="w-9 h-9 rounded-full bg-accent items-center justify-center">
         {loading ? (
-          <ActivityIndicator size="small" color="#0E0F10" />
+          <ActivityIndicator size="small" color="#15141A" />
         ) : (
           <Text className="text-bg text-sm font-bold">{playing ? '■' : '▶'}</Text>
         )}
@@ -264,11 +264,11 @@ export default function JournalScreen() {
                 value={draft}
                 onChangeText={setDraft}
                 placeholder="What's on your mind? Tap the mic on your keyboard to just talk…"
-                placeholderTextColor="#5E6472"
+                placeholderTextColor="#8E8798"
                 multiline
                 maxLength={2000}
                 className="text-text-primary text-base leading-relaxed min-h-[72px]"
-                selectionColor="#9CA3AF"
+                selectionColor="#BDB6C5"
               />
               <View className="flex-row items-center justify-between mt-3">
                 <Pressable
@@ -277,7 +277,7 @@ export default function JournalScreen() {
                   className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-2 border border-white/10 active:border-white/25"
                 >
                   {savingVoice ? (
-                    <ActivityIndicator size="small" color="#9CA3AF" />
+                    <ActivityIndicator size="small" color="#BDB6C5" />
                   ) : (
                     <Text className="text-text-secondary text-sm font-semibold">
                       ● Record voice note
@@ -292,7 +292,7 @@ export default function JournalScreen() {
                   }`}
                 >
                   {savingText ? (
-                    <ActivityIndicator size="small" color="#F6F5F2" />
+                    <ActivityIndicator size="small" color="#F3F0F4" />
                   ) : (
                     <Text
                       className={`text-sm font-semibold ${

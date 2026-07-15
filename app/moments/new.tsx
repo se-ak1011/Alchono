@@ -158,11 +158,11 @@ export default function NewMomentScreen() {
                   value={caption}
                   onChangeText={setCaption}
                   placeholder="Add a caption… (optional)"
-                  placeholderTextColor="#5E6472"
+                  placeholderTextColor="#8E8798"
                   multiline
                   maxLength={280}
                   className="bg-surface rounded-2xl px-4 py-4 text-text-primary text-base leading-relaxed border border-white/8 min-h-[80px]"
-                  selectionColor="#A79FB2"
+                  selectionColor="#9B82D0"
                   textAlignVertical="top"
                 />
               </View>
@@ -244,7 +244,7 @@ export default function NewMomentScreen() {
                   }`}
                 >
                   {isPending ? (
-                    <ActivityIndicator size="small" color="#09070C" />
+                    <ActivityIndicator size="small" color="#15141A" />
                   ) : (
                     <Text className="text-bg text-base font-semibold">
                       {share ? 'Share it' : 'Save it'}

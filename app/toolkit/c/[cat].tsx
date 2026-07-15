@@ -25,7 +25,7 @@ export default function ToolkitCategoryScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -35,14 +35,14 @@ export default function ToolkitCategoryScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={{ ...headingShadow, fontSize: 26 }}>
             {meta?.label ?? 'Toolkit'}
           </Text>
           {!!meta && (
-            <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+            <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
               {meta.blurb}
             </Text>
           )}
@@ -64,7 +64,7 @@ export default function ToolkitCategoryScreen() {
                 router.push({ pathname: '/toolkit/[id]', params: { id: t.id } });
               }}
               className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5 active:border-white/20"
-              style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}
+              style={{ borderTopColor: 'rgba(200, 185, 220, 0.24)' }}
             >
               <View className="flex-row items-center justify-between mb-1">
                 <Text className="text-text-muted text-xs">{t.minutes} min read</Text>

@@ -76,7 +76,7 @@ export default function OddOneOutScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -93,12 +93,12 @@ export default function OddOneOutScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -106,14 +106,14 @@ export default function OddOneOutScreen() {
           >
             {failed ? 'Sharp eyes.' : 'Odd One Out.'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             {failed
               ? `Level ${level}${best > level ? ` · best ${best}` : ''}`
               : 'One shade is different. Tap it.'}
           </Text>
         </View>
         {!failed && (
-          <Text style={{ color: '#4B5563', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
+          <Text style={{ color: '#686271', fontSize: 15, fontFamily: 'Inter_600SemiBold' }}>
             Lv {level}
           </Text>
         )}
@@ -125,7 +125,7 @@ export default function OddOneOutScreen() {
           <Animated.View entering={FadeIn.duration(400)} style={{ alignItems: 'center' }}>
             <Text
               style={{
-                color: '#F0F2F4',
+                color: '#F3F0F4',
                 fontSize: 92,
                 fontFamily: 'Inter_700Bold',
                 lineHeight: 100,
@@ -133,7 +133,7 @@ export default function OddOneOutScreen() {
             >
               {level}
             </Text>
-            <Text style={{ color: '#6B7280', fontSize: 17, marginTop: 4 }}>
+            <Text style={{ color: '#8E8798', fontSize: 17, marginTop: 4 }}>
               levels of noticing the difference
             </Text>
           </Animated.View>
@@ -172,13 +172,13 @@ export default function OddOneOutScreen() {
             <Pressable
               onPress={restart}
               style={{
-                backgroundColor: '#C4C9D0',
+                backgroundColor: '#9B82D0',
                 borderRadius: 18,
                 paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
-              <Text style={{ color: '#0E0F10', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}>
+              <Text style={{ color: '#15141A', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}>
                 Play again
               </Text>
             </Pressable>
@@ -186,12 +186,12 @@ export default function OddOneOutScreen() {
               onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 10, alignItems: 'center' }}
             >
-              <Text style={{ color: '#6B7280', fontSize: 15 }}>Done</Text>
+              <Text style={{ color: '#8E8798', fontSize: 15 }}>Done</Text>
             </Pressable>
           </Animated.View>
         ) : (
           <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Text style={{ color: '#6B7280', fontSize: 15, textAlign: 'center' }}>Back</Text>
+            <Text style={{ color: '#8E8798', fontSize: 15, textAlign: 'center' }}>Back</Text>
           </Pressable>
         )}
       </View>

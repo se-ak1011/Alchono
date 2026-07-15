@@ -158,7 +158,7 @@ export default function SimonScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#15141A',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -175,12 +175,12 @@ export default function SimonScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F0F2F4',
+              color: '#F3F0F4',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -188,14 +188,14 @@ export default function SimonScreen() {
           >
             Pattern.
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
             {statusText()}
           </Text>
         </View>
         {phase !== 'failed' && level > 0 && (
           <Text
             style={{
-              color: '#4B5563',
+              color: '#686271',
               fontSize: 15,
               fontFamily: 'Inter_600SemiBold',
             }}
@@ -234,17 +234,17 @@ export default function SimonScreen() {
             <Pressable
               onPress={restart}
               style={{
-                backgroundColor: '#1E2022',
+                backgroundColor: '#272330',
                 borderRadius: 18,
                 paddingHorizontal: 44,
                 paddingVertical: 18,
                 borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.1)',
+                borderColor: 'rgba(243, 240, 244, 0.10)',
               }}
             >
               <Text
                 style={{
-                  color: '#F0F2F4',
+                  color: '#F3F0F4',
                   fontSize: 17,
                   fontFamily: 'Inter_600SemiBold',
                   textAlign: 'center',
@@ -260,7 +260,7 @@ export default function SimonScreen() {
       {/* Footer */}
       <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Text style={{ color: '#6B7280', fontSize: 15, textAlign: 'center' }}>Back</Text>
+          <Text style={{ color: '#8E8798', fontSize: 15, textAlign: 'center' }}>Back</Text>
         </Pressable>
       </View>
     </View>

@@ -148,7 +148,7 @@ export default function RootLayout() {
   const appReady = (fontsLoaded || !!fontError) && isInitialized;
   if (!appReady || !nativeSplashHidden) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0E0F10' }}>
+      <View style={{ flex: 1, backgroundColor: '#15141A' }}>
         <Image
           source={APP_SPLASH}
           style={{ width: '100%', height: '100%' }}
@@ -162,8 +162,8 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#09070C' }}>
-            <StatusBar style="light" backgroundColor="#09070C" />
+          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#15141A' }}>
+            <StatusBar style="light" backgroundColor="#15141A" />
             <RootLayoutNav />
           </GestureHandlerRootView>
         </SafeAreaProvider>

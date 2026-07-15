@@ -69,14 +69,14 @@ export default function TimelineScreen() {
   };
 
   const dateInput = {
-    backgroundColor: '#161718',
+    backgroundColor: '#211E29',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 12,
-    color: '#F0F2F4',
+    color: '#F3F0F4',
     fontSize: 15,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(243, 240, 244, 0.10)',
     textAlign: 'center' as const,
   };
 
@@ -130,28 +130,28 @@ export default function TimelineScreen() {
                 value={title}
                 onChangeText={setTitle}
                 placeholder="First wedding sober, first match, first holiday…"
-                placeholderTextColor="#5E6472"
+                placeholderTextColor="#8E8798"
                 style={{
-                  backgroundColor: '#161718',
+                  backgroundColor: '#211E29',
                   borderRadius: 10,
                   paddingHorizontal: 14,
                   paddingVertical: 12,
-                  color: '#F0F2F4',
+                  color: '#F3F0F4',
                   fontSize: 15,
                   borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.08)',
+                  borderColor: 'rgba(243, 240, 244, 0.10)',
                   marginBottom: 10,
                 }}
               />
               <View className="flex-row gap-2 mb-3">
                 <TextInput value={day} onChangeText={setDay} keyboardType="number-pad"
-                  maxLength={2} placeholder="DD" placeholderTextColor="#5E6472"
+                  maxLength={2} placeholder="DD" placeholderTextColor="#8E8798"
                   style={[dateInput, { flex: 1 }]} />
                 <TextInput value={month} onChangeText={setMonth} keyboardType="number-pad"
-                  maxLength={2} placeholder="MM" placeholderTextColor="#5E6472"
+                  maxLength={2} placeholder="MM" placeholderTextColor="#8E8798"
                   style={[dateInput, { flex: 1 }]} />
                 <TextInput value={year} onChangeText={setYear} keyboardType="number-pad"
-                  maxLength={4} placeholder="YYYY" placeholderTextColor="#5E6472"
+                  maxLength={4} placeholder="YYYY" placeholderTextColor="#8E8798"
                   style={[dateInput, { flex: 1.4 }]} />
               </View>
               <Pressable

@@ -112,7 +112,7 @@ export function MentorList() {
             it works when one's around.
           </Text>
 
-          <View className="bg-surface rounded-2xl px-5 py-5 border border-white/8 mb-4" style={{ borderTopColor: 'rgba(255,255,255,0.1)' }}>
+          <View className="bg-surface rounded-2xl px-5 py-5 border border-white/8 mb-4" style={{ borderTopColor: 'rgba(243, 240, 244, 0.10)' }}>
             {[
               ['Peers, not professionals', 'Mentors are people further along their own recovery — they’ve been where you are.'],
               ['Anonymous by default', 'Only your username is shared. No phone numbers, no real names, no contact details.'],
