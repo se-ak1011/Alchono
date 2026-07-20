@@ -7,27 +7,7 @@ import { useAppStore } from '@/store/appStore';
 import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
 import type { ChatMessage, UserPreferences } from '@/types';
 
-export function useAiConversation(sessionType = 'general') {
-  const userId = useAuthStore((s) => s.user?.id);
-
-  return useQuery({
-    queryKey: ['ai-conversation', userId, sessionType],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('ai_conversations')
-        .select('*')
-        .eq('user_id', userId!)
-        .eq('session_type', sessionType)
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!userId,
-  });
-}
-
-export function useAiCoach(sessionType = 'general') {
+export function useAiCoach(sessionType = 'general', initialGreeting?: string) {
   const userId = useAuthStore((s) => s.user?.id);
   const profile = useAuthStore((s) => s.profile);
   const activeSessionId = useAppStore((s) => s.activeSessionId);
@@ -42,9 +22,11 @@ export function useAiCoach(sessionType = 'general') {
       {
         id: '0',
         role: 'assistant',
-        content: name
-          ? `Hey ${name} — I'm here whenever you need to talk. What's on your mind?`
-          : "Hi, I'm here whenever you need to talk. What's on your mind today?",
+        content:
+          initialGreeting ??
+          (name
+            ? `Hey ${name} — I'm here whenever you need to talk. What's on your mind?`
+            : "Hi, I'm here whenever you need to talk. What's on your mind today?"),
         timestamp: new Date().toISOString(),
       },
     ];

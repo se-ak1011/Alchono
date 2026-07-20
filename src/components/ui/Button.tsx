@@ -6,7 +6,6 @@ import {
   View,
   type PressableProps,
 } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -119,10 +118,7 @@ export function Button({
         onPressOut={() => {
           scale.value = withSpring(1, { damping: 15, stiffness: 300 });
         }}
-        onPress={async (e) => {
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          onPress?.(e);
-        }}
+        onPress={onPress}
         disabled={isDisabled}
         style={isDisabled ? undefined : variantShadows[variant]}
         className={`flex-row items-center justify-center ${sizeClasses[size]} ${variantClasses[variant]} ${isDisabled ? 'opacity-50' : ''} ${className}`}

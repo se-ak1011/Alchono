@@ -54,25 +54,6 @@ export function useRequestMentor() {
   });
 }
 
-export function useMyMentorRequests() {
-  const userId = useAuthStore((s) => s.user?.id);
-
-  return useQuery({
-    queryKey: ['my-requests', userId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('mentor_requests')
-        .select('*')
-        .eq('requester_id', userId!)
-        .order('created_at', { ascending: false });
-      if (!data || data.length === 0) return [];
-      const names = await fetchUsernames(data.map((r) => r.mentor_id));
-      return data.map((r) => ({ ...r, mentorUsername: names[r.mentor_id] ?? 'Mentor' }));
-    },
-    enabled: !!userId,
-  });
-}
-
 export function useMyMentorProfile() {
   const userId = useAuthStore((s) => s.user?.id);
 

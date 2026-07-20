@@ -13,9 +13,13 @@ if (Platform.OS === 'ios') {
   try {
     ExtensionStorage = require('@bacons/apple-targets').ExtensionStorage;
     storage = new ExtensionStorage(APP_GROUP);
-  } catch {
+    console.log('[AppIntentTrace] useWidgetSync: ExtensionStorage initialized', { appGroup: APP_GROUP });
+  } catch (error) {
+    console.log('[AppIntentTrace] useWidgetSync: STOP - ExtensionStorage initialization failed', error);
     storage = null;
   }
+} else {
+  console.log('[AppIntentTrace] useWidgetSync: STOP - platform is not iOS', { platform: Platform.OS });
 }
 
 /**
@@ -39,8 +43,33 @@ export function useWidgetSync() {
   const drinksCount = (activeSession as any)?.drinks_count ?? 0;
 
   useEffect(() => {
-    if (!storage || urgesBeaten === null || afMonth === undefined) return;
+    console.log('[AppIntentTrace] useWidgetSync: effect evaluated', {
+      hasStorage: !!storage,
+      urgesBeaten,
+      afMonth,
+      sessionStart,
+      drinksCount,
+    });
+    if (!storage) {
+      console.log('[AppIntentTrace] useWidgetSync: STOP - no shared storage bridge');
+      return;
+    }
+    if (urgesBeaten === null) {
+      console.log('[AppIntentTrace] useWidgetSync: STOP - urge stats not loaded');
+      return;
+    }
+    if (afMonth === undefined) {
+      console.log('[AppIntentTrace] useWidgetSync: STOP - AF month count not loaded');
+      return;
+    }
     try {
+      console.log('[AppIntentTrace] useWidgetSync: writing widget shared state', {
+        urgesBeaten,
+        afDays: afMonth ?? 0,
+        sessionActive: sessionStart > 0 ? 1 : 0,
+        sessionStart,
+        drinksCount: sessionStart > 0 ? drinksCount : 0,
+      });
       // Numbers route to native setInt so Swift's integer(forKey:) reads real
       // Ints, not stringified values.
       storage.set('urgesBeaten', urgesBeaten);
@@ -49,7 +78,9 @@ export function useWidgetSync() {
       storage.set('sessionStart', sessionStart);
       storage.set('drinksCount', sessionStart > 0 ? drinksCount : 0);
       ExtensionStorage.reloadWidget();
-    } catch {
+      console.log('[AppIntentTrace] useWidgetSync: widget shared state write completed and reload requested');
+    } catch (error) {
+      console.log('[AppIntentTrace] useWidgetSync: STOP - widget shared state write failed', error);
       // Widget sync is best-effort — never let it touch the app.
     }
   }, [urgesBeaten, afMonth, sessionStart, drinksCount]);

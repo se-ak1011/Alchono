@@ -126,6 +126,7 @@ export default function SupportScreen() {
           </Pressable>
         </Animated.View>
       </View>
+
     </SafeArea>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,14 +9,14 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
-import { useRouter } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
-import { CompanionArt } from '@/components/ui/CompanionArt';
-import { SafeArea } from '@/components/ui/SafeArea';
+} from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
+import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
+import { useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
+import { SafeArea } from "@/components/ui/SafeArea";
 import {
   useJournalNotes,
   useAddTextNote,
@@ -24,28 +24,16 @@ import {
   useDeleteNote,
   getAudioUrl,
   type JournalNote,
-} from '@/hooks/useJournalNotes';
-import { headingShadow } from '@/styles';
+} from "@/hooks/useJournalNotes";
+import { headingShadow } from "@/styles";
 
 const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
 const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
 
-function JournalCompanionSection() {
-  return (
-    <View style={{ alignItems: 'center', paddingTop: 8, paddingBottom: 12 }}>
-      <CompanionArt
-        source={require('../../assets/companions/image_05_journal.png')}
-        width={JOURNAL_COMPANION_IMAGE_WIDTH}
-        height={JOURNAL_COMPANION_IMAGE_HEIGHT}
-      />
-    </View>
-  );
-}
-
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
-  return `${m}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
 }
 
 function VoiceNoteRow({ note }: { note: JournalNote }) {
@@ -70,7 +58,7 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
       setLoading(true);
       if (!soundRef.current) {
         const url = await getAudioUrl(note.audio_path!);
-        if (!url) throw new Error('no url');
+        if (!url) throw new Error("no url");
         const { sound } = await Audio.Sound.createAsync({ uri: url });
         sound.setOnPlaybackStatusUpdate((status) => {
           if (status.isLoaded && status.didJustFinish) setPlaying(false);
@@ -80,7 +68,7 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
       await soundRef.current.replayAsync();
       setPlaying(true);
     } catch {
-      Alert.alert('Could not play', 'Try again in a moment.');
+      Alert.alert("Could not play", "Try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -95,11 +83,15 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
         {loading ? (
           <ActivityIndicator size="small" color="#15141A" />
         ) : (
-          <Text className="text-bg text-sm font-bold">{playing ? '■' : '▶'}</Text>
+          <Text className="text-bg text-sm font-bold">
+            {playing ? "■" : "▶"}
+          </Text>
         )}
       </View>
       <View className="flex-1">
-        <Text className="text-text-primary text-sm font-medium">Voice note</Text>
+        <Text className="text-text-primary text-sm font-medium">
+          Voice note
+        </Text>
         <Text className="text-text-muted text-xs mt-0.5">
           {formatDuration(note.duration_seconds ?? 0)}
         </Text>
@@ -115,7 +107,9 @@ export default function JournalScreen() {
   const { mutate: addVoice, isPending: savingVoice } = useAddVoiceNote();
   const { mutate: deleteNote } = useDeleteNote();
 
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState("");
+  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
+  const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordSeconds, setRecordSeconds] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -130,10 +124,10 @@ export default function JournalScreen() {
     if (recording) return;
     try {
       const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
+      if (status !== "granted") {
         Alert.alert(
-          'Microphone needed',
-          'Voice notes need mic access. You can also dictate into the text box with your keyboard mic.',
+          "Microphone needed",
+          "Voice notes need mic access. You can also dictate into the text box with your keyboard mic.",
         );
         return;
       }
@@ -155,12 +149,15 @@ export default function JournalScreen() {
       );
       setRecording(rec);
       setRecordSeconds(0);
-      timerRef.current = setInterval(() => setRecordSeconds((s) => s + 1), 1000);
+      timerRef.current = setInterval(
+        () => setRecordSeconds((s) => s + 1),
+        1000,
+      );
     } catch (e) {
-      console.error('[journal] startRecording failed:', e);
+      console.error("[journal] startRecording failed:", e);
       Alert.alert(
-        'Could not start recording',
-        e instanceof Error ? e.message : 'Please try again.',
+        "Could not start recording",
+        e instanceof Error ? e.message : "Please try again.",
       );
       // Leave the session clean so the next attempt starts fresh.
       Audio.setAudioModeAsync({ allowsRecordingIOS: false }).catch(() => {});
@@ -184,8 +181,8 @@ export default function JournalScreen() {
           {
             onError: (e) =>
               Alert.alert(
-                'Could not save',
-                e instanceof Error ? e.message : 'Try again.',
+                "Could not save",
+                e instanceof Error ? e.message : "Try again.",
               ),
           },
         );
@@ -200,23 +197,26 @@ export default function JournalScreen() {
     if (!draft.trim() || savingText) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addText(draft, {
-      onSuccess: () => setDraft(''),
+      onSuccess: () => setDraft(""),
       onError: (e) =>
-        Alert.alert('Could not save', e instanceof Error ? e.message : 'Try again.'),
+        Alert.alert(
+          "Could not save",
+          e instanceof Error ? e.message : "Try again.",
+        ),
     });
   };
 
   const confirmDelete = (note: JournalNote) => {
-    Alert.alert('Delete this note?', 'Gone for good.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteNote(note) },
+    Alert.alert("Delete this note?", "Gone for good.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => deleteNote(note) },
     ]);
   };
 
   return (
     <SafeArea bottom={false}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
         keyboardVerticalOffset={90}
       >
@@ -233,11 +233,12 @@ export default function JournalScreen() {
         </View>
 
         {/* Compose */}
-        <View
-          className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8"
-        >
+        <View className="mx-6 mb-4 bg-surface rounded-2xl p-4 border border-white/8">
           {recording ? (
-            <Animated.View entering={FadeIn.duration(300)} className="items-center py-4">
+            <Animated.View
+              entering={FadeIn.duration(300)}
+              className="items-center py-4"
+            >
               <View className="w-3 h-3 rounded-full bg-danger-light mb-3" />
               <Text className="text-text-primary text-2xl font-semibold mb-1">
                 {formatDuration(recordSeconds)}
@@ -248,13 +249,17 @@ export default function JournalScreen() {
                   onPress={() => stopRecording(false)}
                   className="px-6 py-3 rounded-xl bg-surface-2 border border-white/10"
                 >
-                  <Text className="text-text-secondary text-sm font-semibold">Discard</Text>
+                  <Text className="text-text-secondary text-sm font-semibold">
+                    Discard
+                  </Text>
                 </Pressable>
                 <Pressable
                   onPress={() => stopRecording(true)}
                   className="px-6 py-3 rounded-xl bg-accent"
                 >
-                  <Text className="text-bg text-sm font-semibold">Save note</Text>
+                  <Text className="text-bg text-sm font-semibold">
+                    Save note
+                  </Text>
                 </Pressable>
               </View>
             </Animated.View>
@@ -288,7 +293,7 @@ export default function JournalScreen() {
                   onPress={handleSaveText}
                   disabled={!draft.trim() || savingText}
                   className={`px-5 py-2.5 rounded-xl ${
-                    draft.trim() && !savingText ? 'bg-accent' : 'bg-surface-2'
+                    draft.trim() && !savingText ? "bg-accent" : "bg-surface-2"
                   }`}
                 >
                   {savingText ? (
@@ -296,7 +301,7 @@ export default function JournalScreen() {
                   ) : (
                     <Text
                       className={`text-sm font-semibold ${
-                        draft.trim() ? 'text-bg' : 'text-text-muted'
+                        draft.trim() ? "text-bg" : "text-text-muted"
                       }`}
                     >
                       Save
@@ -308,19 +313,50 @@ export default function JournalScreen() {
           )}
         </View>
 
-        <JournalCompanionSection />
+        <CompanionActionZone
+          context="journal"
+          visible={companionMenuOpen}
+          onClose={() => setCompanionMenuOpen(false)}
+          source={require("../../assets/companions/image_05_journal.png")}
+          width={JOURNAL_COMPANION_IMAGE_WIDTH}
+          height={JOURNAL_COMPANION_IMAGE_HEIGHT}
+          zoneHeight={companionMenuOpen ? 228 : 140}
+          companionLeft={112}
+          companionTop={companionMenuOpen ? 78 : 6}
+          points={[
+            { x: 0, y: -74 },
+            { x: -98, y: 42 },
+            { x: 96, y: 42 },
+          ]}
+          caption={{ x: 0, y: -94 }}
+          className="mx-6 mb-2"
+          onPress={() => setCompanionMenuOpen(true)}
+          onLongPress={() => {
+            if (!companionMenuOpen)
+              setQuietCompanionSignal((signal) => signal + 1);
+          }}
+          quietSignal={quietCompanionSignal}
+          onVoiceNote={startRecording}
+        />
 
         <View className="mx-6 mb-4">
-          <Text className="text-text-primary text-xl font-semibold">Letters</Text>
+          <Text className="text-text-primary text-xl font-semibold">
+            Letters
+          </Text>
           <Text className="text-text-secondary text-sm mt-1 leading-relaxed">
-            Write to your future self. One day, when you least expect it, it comes back.
+            Write to your future self. One day, when you least expect it, it
+            comes back.
           </Text>
           <Pressable
-            onPress={() => router.push('/letters/write')}
+            onPress={() => router.push("/letters/write")}
             className="mt-3 bg-surface rounded-2xl px-5 py-4 border border-white/8 active:border-white/20"
           >
-            <Text className="text-text-primary text-base font-semibold">Write to Future You</Text>
-            <Text className="text-text-muted text-sm mt-1">Something they'll need to hear.</Text>
+            <Text className="text-text-primary text-base font-semibold">
+              Write to Future You
+            </Text>
+            <Text className="text-text-muted text-sm mt-1">
+              Something they'll need to hear.
+            </Text>
           </Pressable>
         </View>
 
@@ -334,24 +370,28 @@ export default function JournalScreen() {
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <Animated.View
-              entering={FadeInDown.duration(300).delay(Math.min(index * 30, 300))}
+              entering={FadeInDown.duration(300).delay(
+                Math.min(index * 30, 300),
+              )}
               className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/5"
             >
               <View className="flex-row items-center justify-between mb-2">
                 <Text className="text-text-muted text-xs">
-                  {new Date(item.created_at).toLocaleDateString('en-GB', {
-                    weekday: 'short',
-                    day: 'numeric',
-                    month: 'short',
-                  })}{' '}
-                  ·{' '}
-                  {new Date(item.created_at).toLocaleTimeString('en-GB', {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                  {new Date(item.created_at).toLocaleDateString("en-GB", {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                  })}{" "}
+                  ·{" "}
+                  {new Date(item.created_at).toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
                 </Text>
                 <Pressable onPress={() => confirmDelete(item)} hitSlop={12}>
-                  <Text className="text-text-muted text-base leading-none">×</Text>
+                  <Text className="text-text-muted text-base leading-none">
+                    ×
+                  </Text>
                 </Pressable>
               </View>
               {item.text ? (
@@ -363,18 +403,9 @@ export default function JournalScreen() {
               )}
             </Animated.View>
           )}
-          ListEmptyComponent={
-            !isLoading ? (
-              <View className="py-10 items-center px-6">
-                <Text className="text-text-muted text-base text-center leading-relaxed">
-                  Nothing here yet.{'\n'}Write it, type it, or just say it out
-                  loud — whatever's easiest tonight.
-                </Text>
-              </View>
-            ) : null
-          }
         />
       </KeyboardAvoidingView>
+
     </SafeArea>
   );
 }

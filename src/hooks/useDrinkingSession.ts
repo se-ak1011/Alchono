@@ -102,6 +102,11 @@ export function useLogDrink() {
   return useMutation({
     mutationFn: async (opts?: { add?: number; startedAtOverride?: number }) => {
       const add = Math.max(1, opts?.add ?? 1);
+      console.log('[AppIntentTrace] useLogDrink: mutation started', {
+        userId,
+        add,
+        startedAtOverride: opts?.startedAtOverride,
+      });
 
       // Fresh read — the intent may have run while the app was closed, so
       // don't trust cached state.
@@ -113,14 +118,29 @@ export function useLogDrink() {
         .order('started_at', { ascending: false })
         .limit(1)
         .maybeSingle();
+      console.log('[AppIntentTrace] useLogDrink: active session lookup completed', {
+        hasActiveSession: !!active?.id,
+        sessionId: active?.id,
+        drinksCount: active?.drinks_count,
+      });
 
       if (active?.id) {
         const next = (active.drinks_count ?? 0) + add;
+        console.log('[AppIntentTrace] useLogDrink: updating active session drink count', {
+          sessionId: active.id,
+          previous: active.drinks_count ?? 0,
+          add,
+          next,
+        });
         const { error } = await (supabase as any)
           .from('drinking_sessions')
           .update({ drinks_count: next })
           .eq('id', active.id);
-        if (error) throw error;
+        if (error) {
+          console.log('[AppIntentTrace] useLogDrink: STOP - active session update failed', error);
+          throw error;
+        }
+        console.log('[AppIntentTrace] useLogDrink: active session update succeeded', { sessionId: active.id, count: next });
         return { sessionId: active.id as string, count: next, created: false };
       }
 
@@ -129,15 +149,21 @@ export function useLogDrink() {
       if (opts?.startedAtOverride) {
         insert.started_at = new Date(opts.startedAtOverride).toISOString();
       }
+      console.log('[AppIntentTrace] useLogDrink: creating session for logged drink(s)', insert);
       const { data, error } = await (supabase as any)
         .from('drinking_sessions')
         .insert(insert)
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        console.log('[AppIntentTrace] useLogDrink: STOP - session insert failed', error);
+        throw error;
+      }
+      console.log('[AppIntentTrace] useLogDrink: session insert succeeded', { sessionId: data.id, count: add });
       return { sessionId: data.id as string, count: add, created: true };
     },
     onSuccess: async (res) => {
+      console.log('[AppIntentTrace] useLogDrink: onSuccess started', res);
       setActiveSession(res.sessionId);
       queryClient.invalidateQueries({ queryKey: ['active-session', userId] });
       queryClient.invalidateQueries({ queryKey: ['sessions', userId] });
@@ -152,6 +178,7 @@ export function useLogDrink() {
           .maybeSingle();
         if (prefs && np?.session_nudges !== false) scheduleSessionNudges(prefs);
       }
+      console.log('[AppIntentTrace] useLogDrink: onSuccess completed', res);
     },
   });
 }

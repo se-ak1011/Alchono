@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import React, { useEffect, useState } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, StyleSheet, useWindowDimensions } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -127,7 +127,9 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const { width, height } = useWindowDimensions();
   const [nativeSplashHidden, setNativeSplashHidden] = useState(false);
+  const [splashReady, setSplashReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -146,17 +148,14 @@ export default function RootLayout() {
   }, []);
 
   const appReady = (fontsLoaded || !!fontError) && isInitialized;
-  if (!appReady || !nativeSplashHidden) {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#15141A' }}>
-        <Image
-          source={APP_SPLASH}
-          style={{ width: '100%', height: '100%' }}
-          resizeMode="cover"
-        />
-      </View>
-    );
-  }
+
+  // Give AuthGate one event-loop tick to fire its navigation effect before the
+  // overlay lifts — prevents a wrong-screen flash on first render.
+  useEffect(() => {
+    if (!appReady || !nativeSplashHidden) return;
+    const t = setTimeout(() => setSplashReady(true), 0);
+    return () => clearTimeout(t);
+  }, [appReady, nativeSplashHidden]);
 
   return (
     <ErrorBoundary>
@@ -165,6 +164,33 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#15141A' }}>
             <StatusBar style="light" backgroundColor="#15141A" />
             <RootLayoutNav />
+            {!splashReady && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: '#15141A',
+                }}
+              >
+                <Image
+                  source={APP_SPLASH}
+                  style={[
+                    StyleSheet.absoluteFill,
+                    {
+                      width,
+                      height,
+                      // Match the native cover splash while biasing the crop a
+                      // little upward so tall iPhones keep the figure/title in view.
+                      transform: [{ translateY: -Math.round(height * 0.025) }],
+                    },
+                  ]}
+                  resizeMode="cover"
+                />
+              </View>
+            )}
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </QueryClientProvider>

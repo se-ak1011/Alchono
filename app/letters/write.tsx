@@ -35,7 +35,6 @@ export default function WriteLetterScreen() {
   const { mutate: write, isPending } = useWriteLetter();
 
   const addPrompt = (p: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setBody((prev) => (prev.trim() ? `${prev.trim()}\n\n${p}\n` : `${p}\n`));
   };
 
@@ -136,10 +135,7 @@ export default function WriteLetterScreen() {
                 return (
                   <Pressable
                     key={o.key}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      setChoice(o.key);
-                    }}
+                    onPress={() => setChoice(o.key)}
                     className={`px-4 py-2.5 rounded-full border ${
                       active
                         ? 'bg-surface-2 border-accent'

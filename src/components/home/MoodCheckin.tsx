@@ -36,7 +36,6 @@ export function MoodCheckin() {
             </Text>
             <Pressable
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 const current = new Set(moodValues.filter(Boolean));
                 setSelected(current);
                 setEditing(true);
@@ -76,7 +75,6 @@ export function MoodCheckin() {
         next.delete(option.value);
       } else {
         next.add(option.value);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       return next;
     });
