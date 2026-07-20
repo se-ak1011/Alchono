@@ -1,9 +1,44 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import * as FileSystem from 'expo-file-system';
+import { supabase, supabaseUrl, supabaseAnonKey } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 
 const BUCKET = 'moments';
+
+/**
+ * Streams a local file straight to Supabase Storage's REST endpoint.
+ *
+ * We deliberately do NOT use `fetch(uri).arrayBuffer()` + `storage.upload()`:
+ * in React Native that pattern loads the whole file into JS memory and then
+ * hangs indefinitely for anything larger than a small photo (videos never
+ * resolve). `FileSystem.uploadAsync` streams the bytes from disk, so videos
+ * upload reliably. The user's JWT is sent so storage RLS still applies.
+ */
+async function uploadToStorage(path: string, fileUri: string, contentType: string) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  if (!token) throw new Error('not signed in');
+
+  const result = await FileSystem.uploadAsync(
+    `${supabaseUrl}/storage/v1/object/${BUCKET}/${path}`,
+    fileUri,
+    {
+      httpMethod: 'POST',
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        apikey: supabaseAnonKey,
+        'Content-Type': contentType,
+        'x-upsert': 'true',
+        'cache-control': '3600',
+      },
+    },
+  );
+  if (result.status !== 200 && result.status !== 201) {
+    throw new Error(`storage upload failed (${result.status}): ${result.body}`);
+  }
+}
 
 export interface FeedMoment {
   id: string;
@@ -91,8 +126,6 @@ export function useUploadMoment() {
       const prefix = opts.shared ? 'shared' : userId;
       const media_path = `${prefix}/${id}.${ext}`;
 
-      const res = await fetch(opts.uri);
-      const buf = await res.arrayBuffer();
       const contentType =
         opts.mediaType === 'video'
           ? ext === 'mov'
@@ -101,19 +134,13 @@ export function useUploadMoment() {
           : ext === 'png'
             ? 'image/png'
             : 'image/jpeg';
-      const up = await supabase.storage.from(BUCKET).upload(media_path, buf, { contentType });
-      if (up.error) throw up.error;
+      await uploadToStorage(media_path, opts.uri, contentType);
 
       // Videos get a first-frame thumbnail (feed grid + what moderation screens).
       let thumb_path: string | null = null;
       if (opts.mediaType === 'video' && opts.thumbUri) {
         thumb_path = `${prefix}/${id}_t.jpg`;
-        const tr = await fetch(opts.thumbUri);
-        const tbuf = await tr.arrayBuffer();
-        const tup = await supabase.storage
-          .from(BUCKET)
-          .upload(thumb_path, tbuf, { contentType: 'image/jpeg' });
-        if (tup.error) throw tup.error;
+        await uploadToStorage(thumb_path, opts.thumbUri, 'image/jpeg');
       }
 
       const { data: row, error } = await (supabase as any)
