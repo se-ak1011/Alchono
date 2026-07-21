@@ -26,7 +26,7 @@ import {
   RhythmStep,
   DEFAULT_PREFERENCES,
 } from '@/components/preferences/PreferenceSections';
-import { CompanionPicker } from '@/components/companion/CompanionPicker';
+import { CompanionCarousel } from '@/components/companion/CompanionCarousel';
 import type { UserPreferences } from '@/types';
 
 const WELCOME_BULLETS = [
@@ -266,7 +266,7 @@ export default function OnboardingScreen() {
               />
             )}
             {currentStep.id === 'companion' && (
-              <CompanionPicker
+              <CompanionCarousel
                 value={prefs.companionId}
                 onChange={(id) => updatePrefs({ companionId: id })}
               />

@@ -27,7 +27,7 @@ export function CompanionArt({
   width,
   height,
   cropHeight,
-  opacity = 0.8,
+  opacity = 1,
   containerStyle,
   imageStyle,
   onPress,

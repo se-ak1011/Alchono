@@ -91,11 +91,11 @@ export default function SupportScreen() {
             visible={companionMenuOpen}
             onClose={() => setCompanionMenuOpen(false)}
             source={pose("tea")}
-            width={130}
-            height={154}
-            zoneHeight={companionMenuOpen ? 236 : 164}
-            companionLeft={98}
-            companionTop={companionMenuOpen ? 72 : 4}
+            width={152}
+            height={180}
+            zoneHeight={companionMenuOpen ? 258 : 188}
+            companionLeft={87}
+            companionTop={companionMenuOpen ? 72 : 6}
             points={[
               { x: -92, y: -56 },
               { x: 92, y: -56 },
