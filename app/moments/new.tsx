@@ -81,9 +81,16 @@ export default function NewMomentScreen() {
             [{ text: 'Done', onPress: () => router.back() }],
           );
         },
-        onError: () => {
+        onError: (err: any) => {
           setProgress(0);
-          Alert.alert('Could not upload', 'Please try again in a moment.');
+          const msg = String(err?.message ?? '');
+          const tooBig = /413|too large|maximum allowed|exceeded/i.test(msg);
+          Alert.alert(
+            'Could not upload',
+            tooBig
+              ? 'That video is over the size limit. Try a shorter clip, or raise the storage limit.'
+              : `Please try again in a moment.${msg ? `\n\n${msg}` : ''}`,
+          );
         },
       },
     );
