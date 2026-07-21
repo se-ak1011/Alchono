@@ -36,13 +36,9 @@ export const COMPANIONS: Companion[] = [
     name: 'Kai',
     blurb: 'Quiet and steady. Been there. Not going anywhere.',
     poses: {
-      standing: require('../../assets/companions/image_01_standing.png'),
-      tea: require('../../assets/companions/image_07_tea.png'),
-      armchair: require('../../assets/companions/image_02_armchair.png'),
-      journal: require('../../assets/companions/image_05_journal.png'),
-      reading: require('../../assets/companions/image_06_reading.png'),
-      elbows: require('../../assets/companions/image_14_elbows.png'),
-      smile: require('../../assets/companions/image_19_small_smile.png'),
+      // New Kai — standing only for now; other poses fall back to this until
+      // matching new-Kai poses arrive (the old character's poses were retired).
+      standing: require('../../assets/companions/kai_standing.png'),
     },
   },
   {
