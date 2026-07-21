@@ -53,8 +53,8 @@ const GAMES: ReadonlyArray<{
 ];
 
 const ivory = '#ECE9F1';
-const muted = '#7B8088';
-const violet = '#8D7AAE';
+const muted = '#B2ACC0';
+const violet = '#A489DE';
 const card = '#383243';
 const hairline = 'rgba(255,255,255,0.08)';
 
@@ -214,7 +214,7 @@ function WordPreview({ tick, reduceMotion }: { tick: number; reduceMotion: boole
               backgroundColor: isHighlighted ? 'rgba(141,122,174,0.20)' : 'transparent',
             }}
           >
-            <Text style={{ color: isHighlighted ? ivory : '#656B73', fontSize: 14, fontFamily: 'Inter_600SemiBold' }}>
+            <Text style={{ color: isHighlighted ? ivory : '#817B91', fontSize: 14, fontFamily: 'Inter_600SemiBold' }}>
               {letter}
             </Text>
           </View>
@@ -266,7 +266,7 @@ export default function GamesScreen() {
             >
               Games.
             </Text>
-            <Text style={{ color: '#8B929B', fontSize: 15, marginTop: 4, lineHeight: 21 }}>
+            <Text style={{ color: '#817B91', fontSize: 15, marginTop: 4, lineHeight: 21 }}>
               Premium little exercises for a busy mind.
             </Text>
           </View>
@@ -331,7 +331,7 @@ export default function GamesScreen() {
                 <Text style={{ color: muted, fontSize: 15, lineHeight: 21, paddingRight: 54 }}>{game.desc}</Text>
               </View>
 
-              <Text style={{ position: 'absolute', right: 20, bottom: 20, color: '#8D7AAE', fontSize: 13, fontFamily: 'Inter_600SemiBold' }}>
+              <Text style={{ position: 'absolute', right: 20, bottom: 20, color: '#A489DE', fontSize: 13, fontFamily: 'Inter_600SemiBold' }}>
                 {game.duration}
               </Text>
             </Pressable>
