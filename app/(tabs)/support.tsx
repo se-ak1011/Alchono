@@ -30,38 +30,35 @@ export default function SupportScreen() {
 
   return (
     <SafeArea>
-      <View className="flex-row items-start justify-between px-6 pt-6 pb-2">
-        <Text
-          className="text-text-primary text-3xl font-semibold tracking-tight"
-          style={headingShadow}
-        >
-          Support
-        </Text>
-        <Pressable
-          onPress={() => go("/messages")}
-          hitSlop={8}
-          className="flex-row items-center gap-2 bg-surface rounded-xl px-3.5 py-2.5 border border-white/8 active:border-white/20"
-        >
-          <Text className="text-text-secondary text-sm font-medium">
-            Messages
+      <View className="px-6 pt-6 pb-2">
+        <View className="flex-row items-start justify-between">
+          <Text
+            className="text-text-primary text-3xl font-semibold tracking-tight"
+            style={headingShadow}
+          >
+            Support
           </Text>
-          {!!unread && (
-            <View className="bg-accent rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
-              <Text className="text-bg text-xs font-bold">{unread}</Text>
-            </View>
-          )}
-        </Pressable>
+          <Pressable
+            onPress={() => go("/messages")}
+            hitSlop={8}
+            className="flex-row items-center gap-2 bg-surface rounded-xl px-3.5 py-2.5 border border-white/8 active:border-white/20"
+          >
+            <Text className="text-text-secondary text-sm font-medium">
+              Messages
+            </Text>
+            {!!unread && (
+              <View className="bg-accent rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
+                <Text className="text-bg text-xs font-bold">{unread}</Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
+        <Text className="text-text-secondary text-lg leading-relaxed mt-3">
+          Hard moment or steady recovery — pick one.
+        </Text>
       </View>
 
-      <View
-        className="flex-1 justify-center px-6"
-        style={{ gap: 18, marginTop: -40 }}
-      >
-        <Animated.View entering={FadeIn.duration(400)}>
-          <Text className="text-text-secondary text-lg leading-relaxed">
-            Hard moment or steady recovery — pick one.
-          </Text>
-        </Animated.View>
+      <View className="flex-1 justify-center px-6" style={{ gap: 18 }}>
 
         {/* Mode 1 — a hard moment right now */}
         <Animated.View entering={FadeInDown.duration(450).delay(80)}>

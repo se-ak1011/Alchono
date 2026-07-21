@@ -9,6 +9,7 @@ import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky, currentMilestone } from "@/lib/constellation";
 import { celebrationGlow } from "@/styles";
+import { useCompanion } from "@/hooks/useCompanion";
 
 // Prevents the subtitle from visually colliding with the first floating cluster.
 const CONSTELLATION_TOP_SPACING = 40;
@@ -32,6 +33,7 @@ export default function ConstellationScreen() {
   const milestone = currentMilestone(dates.length);
   const [selected, setSelected] = useState<string | null>(null);
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
+  const { pose } = useCompanion();
 
   return (
     <View className="flex-1" style={{ backgroundColor: '#201D28' }}>
@@ -74,7 +76,7 @@ export default function ConstellationScreen() {
           }}
         >
           <Image
-            source={require("../assets/companions/image_23_star.png")}
+            source={pose("bust")}
             style={{
               width: 150,
               height: 200,
