@@ -106,7 +106,7 @@ export default function SettingsScreen() {
     <SafeArea>
       <View className="px-6 pt-4 pb-5 flex-row items-center gap-3">
         <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-          <Feather name="chevron-left" size={26} color="#BDB6C5" />
+          <Feather name="chevron-left" size={26} color="#B2ACC0" />
         </Pressable>
         <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
           Settings

@@ -183,14 +183,14 @@ export default function BecomeMentorScreen() {
                 width: 46,
                 height: 26,
                 borderRadius: 13,
-                backgroundColor: available ? '#9B82D0' : '#272330',
+                backgroundColor: available ? '#A489DE' : '#3F3A4A',
                 justifyContent: 'center',
                 alignItems: available ? 'flex-end' : 'flex-start',
                 paddingHorizontal: 3,
               }}
             >
               <View
-                style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#F3F0F4' }}
+                style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#ECE9F1' }}
               />
             </View>
           </Pressable>

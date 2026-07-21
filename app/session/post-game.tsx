@@ -29,7 +29,7 @@ export default function PostGameScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -49,7 +49,7 @@ export default function PostGameScreen() {
         >
           <Text
             style={{
-              color: '#F3F0F4',
+              color: '#ECE9F1',
               fontSize: 44,
               fontFamily: 'Inter_600SemiBold',
               marginBottom: 16,
@@ -61,7 +61,7 @@ export default function PostGameScreen() {
           </Text>
           <Text
             style={{
-              color: '#BDB6C5',
+              color: '#B2ACC0',
               fontSize: 17,
               lineHeight: 28,
               textAlign: 'center',
@@ -80,7 +80,7 @@ export default function PostGameScreen() {
           <Pressable
             onPress={handleUrgePassed}
             style={{
-              backgroundColor: '#9B82D0',
+              backgroundColor: '#A489DE',
               borderRadius: 18,
               paddingVertical: 20,
               alignItems: 'center',
@@ -88,7 +88,7 @@ export default function PostGameScreen() {
           >
             <Text
               style={{
-                color: '#15141A',
+                color: '#2A2733',
                 fontSize: 17,
                 fontFamily: 'Inter_600SemiBold',
               }}
@@ -100,7 +100,7 @@ export default function PostGameScreen() {
           <Pressable
             onPress={handlePlayAnother}
             style={{
-              backgroundColor: '#211E29',
+              backgroundColor: '#363040',
               borderRadius: 18,
               paddingVertical: 20,
               alignItems: 'center',
@@ -110,7 +110,7 @@ export default function PostGameScreen() {
           >
             <Text
               style={{
-                color: '#F3F0F4',
+                color: '#ECE9F1',
                 fontSize: 17,
                 fontFamily: 'Inter_500Medium',
               }}
@@ -123,7 +123,7 @@ export default function PostGameScreen() {
             onPress={handleStillNeedHelp}
             style={{ paddingVertical: 16, alignItems: 'center' }}
           >
-            <Text style={{ color: '#8E8798', fontSize: 16 }}>
+            <Text style={{ color: '#817B91', fontSize: 16 }}>
               I still need help →
             </Text>
           </Pressable>

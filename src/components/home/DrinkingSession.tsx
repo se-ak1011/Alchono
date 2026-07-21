@@ -239,7 +239,7 @@ export function DrinkingSession() {
             }}
             className="flex-row items-center gap-4 bg-urge-surface rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
             style={{
-              shadowColor: '#33283F',
+              shadowColor: '#3B3352',
               shadowOpacity: 0.8,
               shadowRadius: 10,
               shadowOffset: { width: 0, height: 5 },

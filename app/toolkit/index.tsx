@@ -38,7 +38,7 @@ export default function ToolkitScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -48,11 +48,11 @@ export default function ToolkitScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={{ ...headingShadow, fontSize: 26 }}>Toolkit.</Text>
-          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             Small, practical things that actually help.
           </Text>
         </View>
@@ -73,15 +73,15 @@ export default function ToolkitScreen() {
           value={query}
           onChangeText={setQuery}
           placeholder="Search the toolkit…"
-          placeholderTextColor="#8E8798"
+          placeholderTextColor="#817B91"
           autoCapitalize="none"
           autoCorrect={false}
           style={{
-            backgroundColor: '#211E29',
+            backgroundColor: '#363040',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
-            color: '#F3F0F4',
+            color: '#ECE9F1',
             fontSize: 15,
             borderWidth: 1,
             borderColor: 'rgba(243, 240, 244, 0.10)',

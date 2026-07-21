@@ -48,7 +48,7 @@ export default function HelpNowScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom + 8,
       }}
@@ -58,7 +58,7 @@ export default function HelpNowScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
       </Animated.View>
 
@@ -100,7 +100,7 @@ export default function HelpNowScreen() {
                   style={
                     o.urge
                       ? {
-                          shadowColor: '#33283F',
+                          shadowColor: '#3B3352',
                           shadowOpacity: 0.8,
                           shadowRadius: 12,
                           shadowOffset: { width: 0, height: 6 },

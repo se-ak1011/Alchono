@@ -158,7 +158,7 @@ export default function SimonScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -175,12 +175,12 @@ export default function SimonScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F3F0F4',
+              color: '#ECE9F1',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -188,7 +188,7 @@ export default function SimonScreen() {
           >
             Pattern.
           </Text>
-          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             {statusText()}
           </Text>
         </View>
@@ -234,7 +234,7 @@ export default function SimonScreen() {
             <Pressable
               onPress={restart}
               style={{
-                backgroundColor: '#272330',
+                backgroundColor: '#3F3A4A',
                 borderRadius: 18,
                 paddingHorizontal: 44,
                 paddingVertical: 18,
@@ -244,7 +244,7 @@ export default function SimonScreen() {
             >
               <Text
                 style={{
-                  color: '#F3F0F4',
+                  color: '#ECE9F1',
                   fontSize: 17,
                   fontFamily: 'Inter_600SemiBold',
                   textAlign: 'center',
@@ -260,7 +260,7 @@ export default function SimonScreen() {
       {/* Footer */}
       <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Text style={{ color: '#8E8798', fontSize: 15, textAlign: 'center' }}>Back</Text>
+          <Text style={{ color: '#817B91', fontSize: 15, textAlign: 'center' }}>Back</Text>
         </Pressable>
       </View>
     </View>

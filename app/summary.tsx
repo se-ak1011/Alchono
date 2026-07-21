@@ -72,7 +72,7 @@ export default function SummaryScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom + 12,
       }}
@@ -82,7 +82,7 @@ export default function SummaryScreen() {
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <Text
           className="text-text-primary text-2xl font-semibold tracking-tight"

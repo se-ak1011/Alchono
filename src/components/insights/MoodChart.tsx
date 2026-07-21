@@ -12,8 +12,8 @@ const MOOD_SCORE: Record<string, number> = {
 };
 
 const MOOD_COLOR: Record<string, string> = {
-  good: '#BDB6C5',
-  okay: '#8E8798',
+  good: '#B2ACC0',
+  okay: '#817B91',
   struggling: '#374151',
   angry: '#4B1D1D',
   anxious: '#1D2B3A',
@@ -55,7 +55,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
               y1={y}
               x2={CHART_PADDING.left + chartW}
               y2={y}
-              stroke="#272330"
+              stroke="#3F3A4A"
               strokeWidth={1}
             />
           );
@@ -67,7 +67,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
           const score = point.mood ? MOOD_SCORE[point.mood] ?? 3 : 0;
           const barH = Math.max(4, (score / 5) * chartH);
           const y = CHART_PADDING.top + chartH - barH;
-          const color = point.mood ? MOOD_COLOR[point.mood] ?? '#BDB6C5' : '#272330';
+          const color = point.mood ? MOOD_COLOR[point.mood] ?? '#B2ACC0' : '#3F3A4A';
 
           return (
             <React.Fragment key={point.date}>
@@ -87,7 +87,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
                   width={4}
                   height={4}
                   rx={2}
-                  fill="#BDB6C5"
+                  fill="#B2ACC0"
                   opacity={0.6}
                 />
               )}
@@ -101,7 +101,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
             <SvgText
               x={CHART_PADDING.left + gap / 2}
               y={height - 4}
-              fill="#8E8798"
+              fill="#817B91"
               fontSize={9}
               textAnchor="middle"
             >
@@ -110,7 +110,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
             <SvgText
               x={CHART_PADDING.left + (recent.length - 0.5) * gap}
               y={height - 4}
-              fill="#8E8798"
+              fill="#817B91"
               fontSize={9}
               textAnchor="middle"
             >

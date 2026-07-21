@@ -81,8 +81,8 @@ function MemoryCard({
             backgroundColor: displaying
               ? matched
                 ? '#302A3B'
-                : '#272330'
-              : '#211E29',
+                : '#3F3A4A'
+              : '#363040',
             borderWidth: 1,
             borderColor: displaying
               ? matched
@@ -180,7 +180,7 @@ export default function MemoryMatchScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -197,12 +197,12 @@ export default function MemoryMatchScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F3F0F4',
+              color: '#ECE9F1',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -210,7 +210,7 @@ export default function MemoryMatchScreen() {
           >
             {complete ? 'All matched.' : 'Memory Match.'}
           </Text>
-          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             {complete
               ? `${moves} moves. Not bad.`
               : `${moves} moves · ${pairsFound} of ${EMOJIS.length} pairs`}
@@ -247,14 +247,14 @@ export default function MemoryMatchScreen() {
             <Pressable
               onPress={resetGame}
               style={{
-                backgroundColor: '#9B82D0',
+                backgroundColor: '#A489DE',
                 borderRadius: 18,
                 paddingVertical: 18,
                 alignItems: 'center',
               }}
             >
               <Text
-                style={{ color: '#15141A', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#2A2733', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>
@@ -263,12 +263,12 @@ export default function MemoryMatchScreen() {
               onPress={() => (from === 'urge' ? router.push('/session/post-game') : router.back())}
               style={{ paddingVertical: 10, alignItems: 'center' }}
             >
-              <Text style={{ color: '#8E8798', fontSize: 15 }}>Done</Text>
+              <Text style={{ color: '#817B91', fontSize: 15 }}>Done</Text>
             </Pressable>
           </Animated.View>
         ) : (
           <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Text style={{ color: '#8E8798', fontSize: 15, textAlign: 'center' }}>Back</Text>
+            <Text style={{ color: '#817B91', fontSize: 15, textAlign: 'center' }}>Back</Text>
           </Pressable>
         )}
       </View>

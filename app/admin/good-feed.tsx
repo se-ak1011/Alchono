@@ -26,11 +26,11 @@ import {
 const CATEGORIES = ['kindness', 'animals', 'reunions', 'fails', 'rescues', 'wholesome'];
 
 const inputStyle = {
-  backgroundColor: '#211E29',
+  backgroundColor: '#363040',
   borderRadius: 10,
   paddingHorizontal: 14,
   paddingVertical: 12,
-  color: '#F3F0F4',
+  color: '#ECE9F1',
   fontSize: 15,
   borderWidth: 1,
   borderColor: 'rgba(243, 240, 244, 0.10)',
@@ -110,7 +110,7 @@ export default function AdminGoodFeedScreen() {
               value={url}
               onChangeText={setUrl}
               placeholder="Paste a YouTube link…"
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               autoCapitalize="none"
               autoCorrect={false}
               style={inputStyle}
@@ -119,7 +119,7 @@ export default function AdminGoodFeedScreen() {
               value={title}
               onChangeText={setTitle}
               placeholder="Title shown in the app"
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               style={inputStyle}
             />
             <View className="flex-row flex-wrap gap-2">
@@ -162,7 +162,7 @@ export default function AdminGoodFeedScreen() {
               >
                 <Image
                   source={{ uri: thumbnailUrl(item.youtube_id) }}
-                  style={{ width: 72, height: 40, borderRadius: 6, backgroundColor: '#211E29' }}
+                  style={{ width: 72, height: 40, borderRadius: 6, backgroundColor: '#363040' }}
                   resizeMode="cover"
                 />
                 <View className="flex-1">

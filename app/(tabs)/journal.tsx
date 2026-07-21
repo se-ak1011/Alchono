@@ -82,7 +82,7 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
     >
       <View className="w-9 h-9 rounded-full bg-accent items-center justify-center">
         {loading ? (
-          <ActivityIndicator size="small" color="#15141A" />
+          <ActivityIndicator size="small" color="#2A2733" />
         ) : (
           <Text className="text-bg text-sm font-bold">
             {playing ? "■" : "▶"}
@@ -271,11 +271,11 @@ export default function JournalScreen() {
                 value={draft}
                 onChangeText={setDraft}
                 placeholder="What's on your mind? Tap the mic on your keyboard to just talk…"
-                placeholderTextColor="#8E8798"
+                placeholderTextColor="#817B91"
                 multiline
                 maxLength={2000}
                 className="text-text-primary text-base leading-relaxed min-h-[72px]"
-                selectionColor="#BDB6C5"
+                selectionColor="#B2ACC0"
               />
               <View className="flex-row items-center justify-between mt-3">
                 <Pressable
@@ -284,7 +284,7 @@ export default function JournalScreen() {
                   className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-2 border border-white/10 active:border-white/25"
                 >
                   {savingVoice ? (
-                    <ActivityIndicator size="small" color="#BDB6C5" />
+                    <ActivityIndicator size="small" color="#B2ACC0" />
                   ) : (
                     <Text className="text-text-secondary text-sm font-semibold">
                       ● Record voice note
@@ -299,7 +299,7 @@ export default function JournalScreen() {
                   }`}
                 >
                   {savingText ? (
-                    <ActivityIndicator size="small" color="#F3F0F4" />
+                    <ActivityIndicator size="small" color="#ECE9F1" />
                   ) : (
                     <Text
                       className={`text-sm font-semibold ${

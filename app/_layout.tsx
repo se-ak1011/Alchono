@@ -161,8 +161,8 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#15141A' }}>
-            <StatusBar style="light" backgroundColor="#15141A" />
+          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#2A2733' }}>
+            <StatusBar style="light" backgroundColor="#2A2733" />
             <RootLayoutNav />
             {!splashReady && (
               <View
@@ -172,7 +172,7 @@ export default function RootLayout() {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  backgroundColor: '#15141A',
+                  backgroundColor: '#2A2733',
                 }}
               >
                 <Image

@@ -37,7 +37,7 @@ export default function ChooseCompanionScreen() {
     <SafeArea>
       <View className="px-6 pt-4 pb-3 flex-row items-center gap-3">
         <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-          <Feather name="chevron-left" size={26} color="#9B98A8" />
+          <Feather name="chevron-left" size={26} color="#817B91" />
         </Pressable>
         <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
           Your companion

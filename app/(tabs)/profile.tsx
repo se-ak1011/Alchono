@@ -38,7 +38,7 @@ function HubCard({
           </Text>
         ) : null}
       </View>
-      <Feather name="chevron-right" size={18} color="#8E8798" />
+      <Feather name="chevron-right" size={18} color="#817B91" />
     </Pressable>
   );
 }
@@ -66,7 +66,7 @@ export default function ProfileScreen() {
             hitSlop={12}
             className="mt-1 p-2 -mr-2 active:opacity-60"
           >
-            <Feather name="settings" size={22} color="#BDB6C5" />
+            <Feather name="settings" size={22} color="#B2ACC0" />
           </Pressable>
         </View>
 

@@ -172,10 +172,10 @@ export default function HobbiesScreen() {
               onSubmitEditing={addCustom}
               returnKeyType="done"
               placeholder="e.g. Bouldering"
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               maxLength={40}
               className="flex-1 bg-surface rounded-xl px-4 py-3 text-text-primary text-base border border-white/8"
-              selectionColor="#BDB6C5"
+              selectionColor="#B2ACC0"
             />
             <Pressable
               onPress={addCustom}

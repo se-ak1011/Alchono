@@ -300,18 +300,18 @@ export default function ThreadScreen() {
             placeholder={
               composerLocked ? 'Messaging is closed on this thread' : 'Write a message…'
             }
-            placeholderTextColor="#8E8798"
+            placeholderTextColor="#817B91"
             multiline
             editable={!composerLocked}
             maxLength={2000}
             style={{
               flex: 1,
-              backgroundColor: '#211E29',
+              backgroundColor: '#363040',
               borderRadius: 20,
               paddingHorizontal: 16,
               paddingTop: 12,
               paddingBottom: 12,
-              color: '#F3F0F4',
+              color: '#ECE9F1',
               fontSize: 16,
               maxHeight: 120,
               borderWidth: 1,

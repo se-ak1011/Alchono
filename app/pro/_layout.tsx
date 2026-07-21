@@ -16,7 +16,7 @@ function ProTabBar({ state, navigation }: any) {
   return (
     <View
       style={{
-        backgroundColor: '#211E29',
+        backgroundColor: '#363040',
         borderTopWidth: 1,
         borderTopColor: 'rgba(255,255,255,0.06)',
         paddingBottom: insets.bottom,
@@ -49,7 +49,7 @@ function ProTabBar({ state, navigation }: any) {
             >
               <tab.Icon
                 size={26}
-                color={isFocused ? '#9B82D0' : '#8E8798'}
+                color={isFocused ? '#A489DE' : '#817B91'}
                 strokeWidth={isFocused ? 2 : 1.75}
               />
               <Text
@@ -57,7 +57,7 @@ function ProTabBar({ state, navigation }: any) {
                   fontSize: 12,
                   marginTop: 4,
                   fontFamily: isFocused ? 'Inter_600SemiBold' : 'Inter_400Regular',
-                  color: isFocused ? '#9B82D0' : '#8E8798',
+                  color: isFocused ? '#A489DE' : '#817B91',
                 }}
               >
                 {tab.label}

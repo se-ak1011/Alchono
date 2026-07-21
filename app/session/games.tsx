@@ -52,10 +52,10 @@ const GAMES: ReadonlyArray<{
   },
 ];
 
-const ivory = '#F4F1ED';
+const ivory = '#ECE9F1';
 const muted = '#7B8088';
 const violet = '#8D7AAE';
-const card = '#161718';
+const card = '#363040';
 const hairline = 'rgba(255,255,255,0.08)';
 
 function useReduceMotion() {
@@ -245,7 +245,7 @@ export default function GamesScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0E0F10',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
       }}
     >
@@ -255,7 +255,7 @@ export default function GamesScreen() {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 4 }}>
           <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Go back">
-            <Text style={{ color: '#6B7280', fontSize: 18 }}>←</Text>
+            <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1 }}>
             <Text

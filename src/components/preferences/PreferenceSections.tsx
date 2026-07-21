@@ -47,11 +47,11 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
 };
 
 export const nameInputStyle = {
-  backgroundColor: '#211E29',
+  backgroundColor: '#363040',
   borderRadius: 8,
   paddingHorizontal: 16,
   paddingVertical: 12,
-  color: '#F3F0F4',
+  color: '#ECE9F1',
   fontSize: 15,
   borderWidth: 1,
   borderColor: 'rgba(243, 240, 244, 0.10)',
@@ -87,14 +87,14 @@ export function CountPicker({
                 borderRadius: 10,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: selected ? '#9B82D0' : '#211E29',
+                backgroundColor: selected ? '#A489DE' : '#363040',
                 borderWidth: 1,
-                borderColor: selected ? '#9B82D0' : 'rgba(243, 240, 244, 0.10)',
+                borderColor: selected ? '#A489DE' : 'rgba(243, 240, 244, 0.10)',
               }}
             >
               <Text
                 style={{
-                  color: selected ? '#15141A' : '#BDB6C5',
+                  color: selected ? '#2A2733' : '#B2ACC0',
                   fontSize: 15,
                   fontFamily: 'Inter_600SemiBold',
                 }}
@@ -129,7 +129,7 @@ export function ToggleRow({
           width: 46,
           height: 26,
           borderRadius: 13,
-          backgroundColor: value ? '#9B82D0' : '#272330',
+          backgroundColor: value ? '#A489DE' : '#3F3A4A',
           justifyContent: 'center',
           alignItems: value ? 'flex-end' : 'flex-start',
           paddingHorizontal: 3,
@@ -140,7 +140,7 @@ export function ToggleRow({
             width: 20,
             height: 20,
             borderRadius: 10,
-            backgroundColor: '#F3F0F4',
+            backgroundColor: '#ECE9F1',
           }}
         />
       </View>
@@ -199,7 +199,7 @@ export function CircleStep({
                       value={prefs.partnerName}
                       onChangeText={(t) => onChange({ partnerName: t })}
                       placeholder="Their name?"
-                      placeholderTextColor="#8E8798"
+                      placeholderTextColor="#817B91"
                       style={nameInputStyle}
                     />
                   </Animated.View>
@@ -221,7 +221,7 @@ export function CircleStep({
                           ? "Their name?"
                           : "Their names? (e.g. Emma, Jake)"
                       }
-                      placeholderTextColor="#8E8798"
+                      placeholderTextColor="#817B91"
                       style={[nameInputStyle, { marginTop: 4 }]}
                     />
                   </Animated.View>
@@ -258,7 +258,7 @@ export function CircleStep({
               placeholder={
                 prefs.petCount === 1 ? "What's their name?" : "What are their names?"
               }
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               style={[nameInputStyle, { borderRadius: 12, marginTop: 4 }]}
             />
           </Animated.View>
@@ -362,7 +362,7 @@ export function RhythmStep({
           value={prefs.city}
           onChangeText={(t) => onChange({ city: t })}
           placeholder="City or area (optional — for local resources)"
-          placeholderTextColor="#8E8798"
+          placeholderTextColor="#817B91"
           style={nameInputStyle}
         />
 

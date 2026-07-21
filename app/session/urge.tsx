@@ -168,7 +168,7 @@ export default function UrgeScreen() {
                   {isTyping ? <Text className="text-text-secondary text-lg px-4 py-2">···</Text> : null}
                 </ScrollView>
                 <View className="flex-row items-end gap-3 pt-3 border-t border-white/5">
-                  <TextInput value={input} onChangeText={setInput} placeholder="Type if you want to…" placeholderTextColor="#5E6472" multiline maxLength={500} onSubmitEditing={handleSend} returnKeyType="send" blurOnSubmit className="flex-1 bg-surface-2 rounded-2xl px-4 py-3 text-text-primary text-base max-h-24" selectionColor="#9CA3AF" />
+                  <TextInput value={input} onChangeText={setInput} placeholder="Type if you want to…" placeholderTextColor="#817B91" multiline maxLength={500} onSubmitEditing={handleSend} returnKeyType="send" blurOnSubmit className="flex-1 bg-surface-2 rounded-2xl px-4 py-3 text-text-primary text-base max-h-24" selectionColor="#9CA3AF" />
                   <PressScale onPress={handleSend} className={`w-11 h-11 rounded-full items-center justify-center ${input.trim() && !isTyping ? 'bg-accent' : 'bg-surface-2'}`}><Text className="text-white text-lg">↑</Text></PressScale>
                 </View>
               </View>

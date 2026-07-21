@@ -209,7 +209,7 @@ export default function WordSearchScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -227,12 +227,12 @@ export default function WordSearchScreen() {
         }}
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: '#F3F0F4',
+              color: '#ECE9F1',
               fontSize: 26,
               fontFamily: 'Inter_600SemiBold',
               ...headingShadow,
@@ -240,7 +240,7 @@ export default function WordSearchScreen() {
           >
             Find the good words.
           </Text>
-          <Text style={{ color: '#8E8798', fontSize: 15, marginTop: 2 }}>
+          <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             No list. No clock. They're in there — drag when you spot one.
           </Text>
         </View>
@@ -279,7 +279,7 @@ export default function WordSearchScreen() {
                     >
                       <Text
                         style={{
-                          color: isFound ? '#9B82D0' : isSel ? '#F3F0F4' : '#686271',
+                          color: isFound ? '#A489DE' : isSel ? '#ECE9F1' : '#686271',
                           fontSize: 17,
                           fontFamily: 'Inter_600SemiBold',
                         }}
@@ -314,14 +314,14 @@ export default function WordSearchScreen() {
                 paddingHorizontal: 12,
                 paddingVertical: 7,
                 borderRadius: 8,
-                backgroundColor: '#272330',
+                backgroundColor: '#3F3A4A',
                 borderWidth: 1,
                 borderColor: 'rgba(200, 185, 220, 0.24)',
               }}
             >
               <Text
                 style={{
-                  color: '#9B82D0',
+                  color: '#A489DE',
                   fontSize: 14,
                   fontFamily: 'Inter_600SemiBold',
                   letterSpacing: 1.5,
@@ -348,7 +348,7 @@ export default function WordSearchScreen() {
           onPress={newGrid}
           style={{
             flex: 1,
-            backgroundColor: '#211E29',
+            backgroundColor: '#363040',
             borderRadius: 18,
             paddingVertical: 16,
             alignItems: 'center',
@@ -356,7 +356,7 @@ export default function WordSearchScreen() {
             borderColor: 'rgba(243, 240, 244, 0.10)',
           }}
         >
-          <Text style={{ color: '#BDB6C5', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
+          <Text style={{ color: '#B2ACC0', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
             New grid
           </Text>
         </Pressable>
@@ -364,13 +364,13 @@ export default function WordSearchScreen() {
           onPress={() => router.back()}
           style={{
             flex: 1,
-            backgroundColor: '#9B82D0',
+            backgroundColor: '#A489DE',
             borderRadius: 18,
             paddingVertical: 16,
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: '#15141A', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
+          <Text style={{ color: '#2A2733', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
             Done
           </Text>
         </Pressable>

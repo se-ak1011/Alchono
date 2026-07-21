@@ -24,12 +24,12 @@ function MomentCard({ item }: { item: FeedMoment }) {
           usePoster
           useNativeControls
           resizeMode={ResizeMode.COVER}
-          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#0E0F10' }}
+          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#2A2733' }}
         />
       ) : item.url ? (
         <Image
           source={{ uri: item.url }}
-          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#0E0F10' }}
+          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#2A2733' }}
           resizeMode="cover"
         />
       ) : null}
@@ -104,7 +104,7 @@ function LookFeed() {
             shadowOffset: { width: 0, height: 4 },
           }}
         >
-          <Feather name="plus" size={26} color="#09070C" />
+          <Feather name="plus" size={26} color="#2A2733" />
         </Pressable>
       )}
     </View>
@@ -119,7 +119,7 @@ export default function CommunityScreen() {
     <SafeArea bottom={false}>
       <View className="flex-row items-center gap-4 px-6 pt-4 pb-2">
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Feather name="chevron-left" size={26} color="#9B98A8" />
+          <Feather name="chevron-left" size={26} color="#817B91" />
         </Pressable>
         <View className="flex-1">
           <Text

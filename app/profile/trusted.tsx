@@ -37,8 +37,8 @@ function SignalChip({ on, onLabel, offLabel, tone }: {
       : tone === 'good'
         ? 'bg-accent/15 border-accent/40'
         : tone === 'warn'
-          ? 'bg-[#33283F] border-[#C8A878]'
-          : 'bg-[#33283F] border-[#C98282]';
+          ? 'bg-[#3B3352] border-[#C8A878]'
+          : 'bg-[#3B3352] border-[#C98282]';
   return (
     <View className={`px-3 py-2 rounded-lg border ${colors}`}>
       <Text className={`text-xs font-medium ${on ? 'text-text-primary' : 'text-text-muted'}`}>
@@ -145,15 +145,15 @@ export default function TrustedScreen() {
               value={username}
               onChangeText={setUsername}
               placeholder="Their exact username"
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               autoCapitalize="none"
               autoCorrect={false}
               style={{
-                backgroundColor: '#211E29',
+                backgroundColor: '#363040',
                 borderRadius: 10,
                 paddingHorizontal: 14,
                 paddingVertical: 12,
-                color: '#F3F0F4',
+                color: '#ECE9F1',
                 fontSize: 15,
                 borderWidth: 1,
                 borderColor: 'rgba(243, 240, 244, 0.10)',

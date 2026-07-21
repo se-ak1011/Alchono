@@ -85,7 +85,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
 
           {(state === 'checking' || state === 'saving') && (
             <View className="flex-row items-center gap-3 mt-6">
-              <ActivityIndicator color="#F0F2F4" />
+              <ActivityIndicator color="#ECE9F1" />
               <Text className="text-text-muted text-sm">
                 Keep Alchono open for a moment.
               </Text>

@@ -112,11 +112,11 @@ export default function WriteLetterScreen() {
               value={body}
               onChangeText={setBody}
               placeholder="Or just write whatever you want them to know…"
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               multiline
               maxLength={4000}
               className="bg-surface rounded-2xl px-4 py-4 text-text-primary text-base leading-relaxed border border-white/8 min-h-[180px]"
-              selectionColor="#9B82D0"
+              selectionColor="#A489DE"
               textAlignVertical="top"
             />
           </View>
@@ -164,7 +164,7 @@ export default function WriteLetterScreen() {
               }`}
             >
               {isPending ? (
-                <ActivityIndicator size="small" color="#15141A" />
+                <ActivityIndicator size="small" color="#2A2733" />
               ) : (
                 <Text
                   className={`text-base font-semibold ${

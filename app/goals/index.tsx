@@ -303,7 +303,7 @@ export default function GoalsScreen() {
             returnKeyType="done"
             multiline
             style={{
-              color: '#F3F0F4',
+              color: '#ECE9F1',
               fontSize: 15,
               lineHeight: 22,
               marginBottom: 12,
@@ -333,7 +333,7 @@ export default function GoalsScreen() {
                 text.trim() ? 'bg-accent active:bg-accent-dark' : 'bg-surface-2'
               }`}
             >
-              <Text className={`text-sm font-semibold ${text.trim() ? 'text-[#15141A]' : 'text-text-muted'}`}>
+              <Text className={`text-sm font-semibold ${text.trim() ? 'text-[#2A2733]' : 'text-text-muted'}`}>
                 {adding ? 'Adding…' : 'Add'}
               </Text>
             </Pressable>

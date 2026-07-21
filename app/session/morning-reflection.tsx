@@ -231,12 +231,12 @@ export default function MorningReflectionScreen() {
               value={notes}
               onChangeText={setNotes}
               placeholder="Write anything you'd like to remember…"
-              placeholderTextColor="#8E8798"
+              placeholderTextColor="#817B91"
               multiline
               numberOfLines={5}
               textAlignVertical="top"
               className="bg-surface rounded-2xl px-5 py-5 text-text-primary text-base leading-relaxed min-h-[140px] border border-white/5"
-              selectionColor="#BDB6C5"
+              selectionColor="#B2ACC0"
             />
             <View className="mt-8">
               <Button

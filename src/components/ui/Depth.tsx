@@ -20,7 +20,7 @@ export const Depth = React.memo(function Depth() {
       {/* Vertical lift: a hair warmer/lighter violet at the top, settling into
           the base near-black by the bottom. Barely perceptible on purpose. */}
       <LinearGradient
-        colors={['#1A1820', '#15141A', '#15141A'] as const}
+        colors={['#1A1820', '#2A2733', '#2A2733'] as const}
         locations={[0, 0.5, 1] as const}
         style={StyleSheet.absoluteFill}
       />

@@ -44,7 +44,7 @@ export default function LetterScreen() {
     return (
       <SafeArea>
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#9B82D0" />
+          <ActivityIndicator color="#A489DE" />
         </View>
       </SafeArea>
     );

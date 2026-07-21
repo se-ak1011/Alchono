@@ -179,7 +179,7 @@ export default function OnboardingScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: '#15141A' }}
+      style={{ flex: 1, backgroundColor: '#2A2733' }}
     >
       <View
         style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom + 16 }}

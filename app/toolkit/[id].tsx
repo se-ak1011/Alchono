@@ -27,7 +27,7 @@ function SectionView({ section }: { section: ToolSection }) {
       return (
         <View
           className="bg-surface rounded-2xl px-5 py-4 my-2 border border-white/8"
-          style={{ borderLeftWidth: 3, borderLeftColor: '#9B82D0' }}
+          style={{ borderLeftWidth: 3, borderLeftColor: '#A489DE' }}
         >
           <Text className="text-text-primary text-base leading-relaxed">
             {section.text}
@@ -92,11 +92,11 @@ export default function ToolDetailScreen() {
   if (!tool) {
     return (
       <View
-        style={{ flex: 1, backgroundColor: '#15141A', paddingTop: insets.top + 16 }}
+        style={{ flex: 1, backgroundColor: '#2A2733', paddingTop: insets.top + 16 }}
         className="px-6"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <Text className="text-text-muted text-base mt-8">
           That tool isn’t here anymore.
@@ -109,7 +109,7 @@ export default function ToolDetailScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#15141A',
+        backgroundColor: '#2A2733',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -119,7 +119,7 @@ export default function ToolDetailScreen() {
         className="flex-row items-center justify-between px-6 pt-4 pb-2"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#8E8798', fontSize: 18 }}>←</Text>
+          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <Pressable
           onPress={() => {
