@@ -67,7 +67,7 @@ function HomeSecondaryCards() {
           {firstGoal ? (
             <>
               <Text
-                className="text-text-secondary text-sm leading-relaxed"
+                className="text-text-primary text-sm font-medium leading-relaxed"
                 numberOfLines={3}
               >
                 {firstGoal.text}
@@ -108,7 +108,7 @@ function HomeSecondaryCards() {
           </Text>
           {victoryLine ? (
             <Text
-              className="text-text-secondary text-sm leading-relaxed"
+              className="text-text-primary text-sm font-medium leading-relaxed"
               numberOfLines={4}
             >
               ◆ {victoryLine}
@@ -184,9 +184,10 @@ export default function HomeScreen() {
               <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-2">
                 Games
               </Text>
-              <Text className="text-text-secondary text-sm leading-relaxed">
-                3–5 minutes. Give your mind something else.
+              <Text className="text-text-primary text-base font-medium">
+                Give your mind something else.
               </Text>
+              <Text className="text-text-muted text-xs mt-1.5">3–5 minutes</Text>
             </Card>
           </Pressable>
         </Animated.View>
