@@ -28,8 +28,8 @@ import {
 } from "@/hooks/useJournalNotes";
 import { headingShadow } from "@/styles";
 
-const JOURNAL_COMPANION_IMAGE_WIDTH = 108;
-const JOURNAL_COMPANION_IMAGE_HEIGHT = 128;
+const JOURNAL_COMPANION_IMAGE_WIDTH = 150;
+const JOURNAL_COMPANION_IMAGE_HEIGHT = 178;
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -319,12 +319,13 @@ export default function JournalScreen() {
           context="journal"
           visible={companionMenuOpen}
           onClose={() => setCompanionMenuOpen(false)}
-          source={pose("journal")}
+          source={pose("bust")}
           width={JOURNAL_COMPANION_IMAGE_WIDTH}
           height={JOURNAL_COMPANION_IMAGE_HEIGHT}
-          zoneHeight={companionMenuOpen ? 228 : 140}
-          companionLeft={112}
-          companionTop={companionMenuOpen ? 78 : 6}
+          cropHeight={152}
+          zoneHeight={companionMenuOpen ? 224 : 168}
+          companionLeft={91}
+          companionTop={companionMenuOpen ? 66 : 6}
           points={[
             { x: 0, y: -74 },
             { x: -98, y: 42 },

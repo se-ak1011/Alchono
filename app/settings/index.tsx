@@ -102,6 +102,39 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleReset = () => {
+    Alert.alert(
+      'Delete all data & start over?',
+      "This clears everything you've logged — check-ins, journal, goals, moments, and your answers — and takes you back through onboarding. Your account, username and email stay. This cannot be undone.",
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete & restart',
+          style: 'destructive',
+          onPress: async () => {
+            const { error } = await supabase.functions.invoke('reset-account', {});
+            if (error) {
+              Alert.alert('Could not reset', 'Please try again in a moment.');
+              return;
+            }
+            queryClient.clear();
+            resetApp();
+            // Keep the session; reflect the reset locally and re-onboard.
+            const profile = useAuthStore.getState().profile;
+            if (profile) {
+              useAuthStore.getState().setProfile({
+                ...profile,
+                onboarding_completed: false,
+                preferences: {} as any,
+              });
+            }
+            router.replace('/onboarding');
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <SafeArea>
       <View className="px-6 pt-4 pb-5 flex-row items-center gap-3">
@@ -178,6 +211,10 @@ export default function SettingsScreen() {
             {
               label: 'Sign out',
               onPress: handleSignOut,
+            },
+            {
+              label: 'Delete my data & start over',
+              onPress: handleReset,
             },
             {
               label: 'Delete account',

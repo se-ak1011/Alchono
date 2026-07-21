@@ -12,6 +12,7 @@ import type { ImageSourcePropType } from 'react-native';
 
 export type CompanionPose =
   | 'standing'
+  | 'bust'   // zoomed head-and-torso "first shot" for in-app presence
   | 'tea'
   | 'armchair'
   | 'journal'
@@ -39,6 +40,7 @@ export const COMPANIONS: Companion[] = [
       // New Kai — standing only for now; other poses fall back to this until
       // matching new-Kai poses arrive (the old character's poses were retired).
       standing: require('../../assets/companions/kai_standing.png'),
+      bust: require('../../assets/companions/kai_bust.png'),
     },
   },
   {
@@ -47,6 +49,7 @@ export const COMPANIONS: Companion[] = [
     blurb: 'Unhurried. Makes room for whatever you bring.',
     poses: {
       standing: require('../../assets/companions/amara_standing.png'),
+      bust: require('../../assets/companions/amara_bust.png'),
     },
   },
   {
@@ -55,6 +58,7 @@ export const COMPANIONS: Companion[] = [
     blurb: 'Straight with you, always gentle. Keeps you steady.',
     poses: {
       standing: require('../../assets/companions/marco_standing.png'),
+      bust: require('../../assets/companions/marco_bust.png'),
     },
   },
   {
@@ -63,6 +67,7 @@ export const COMPANIONS: Companion[] = [
     blurb: 'Gets it from the inside. Quietly in your corner.',
     poses: {
       standing: require('../../assets/companions/yara_standing.png'),
+      bust: require('../../assets/companions/yara_bust.png'),
     },
   },
   {
@@ -71,6 +76,7 @@ export const COMPANIONS: Companion[] = [
     blurb: 'Seen a lot of storms pass. Yours will too.',
     poses: {
       standing: require('../../assets/companions/amos_standing.png'),
+      bust: require('../../assets/companions/amos_bust.png'),
     },
   },
   {
@@ -79,6 +85,7 @@ export const COMPANIONS: Companion[] = [
     blurb: 'Soft, and stronger than she looks. Right beside you.',
     poses: {
       standing: require('../../assets/companions/rose_standing.png'),
+      bust: require('../../assets/companions/rose_bust.png'),
     },
   },
   // New mates slot in here — a single `standing` pose is enough to start.

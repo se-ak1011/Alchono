@@ -18,9 +18,9 @@ import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useCompanion } from "@/hooks/useCompanion";
 
-const HOME_COMPANION_IMAGE_WIDTH = 164;
-const HOME_COMPANION_IMAGE_HEIGHT = 193;
-const HOME_COMPANION_CROP_HEIGHT = 164;
+const HOME_COMPANION_IMAGE_WIDTH = 188;
+const HOME_COMPANION_IMAGE_HEIGHT = 222;
+const HOME_COMPANION_CROP_HEIGHT = 190;
 
 function HomeSecondaryCards() {
   const router = useRouter();
@@ -145,13 +145,13 @@ export default function HomeScreen() {
           context="home"
           visible={companionMenuOpen}
           onClose={() => setCompanionMenuOpen(false)}
-          source={pose("standing")}
+          source={pose("bust")}
           width={HOME_COMPANION_IMAGE_WIDTH}
           height={HOME_COMPANION_IMAGE_HEIGHT}
           cropHeight={HOME_COMPANION_CROP_HEIGHT}
-          zoneHeight={companionMenuOpen ? 276 : 182}
-          companionLeft={76}
-          companionTop={companionMenuOpen ? 72 : 12}
+          zoneHeight={companionMenuOpen ? 280 : 204}
+          companionLeft={62}
+          companionTop={companionMenuOpen ? 60 : 12}
           points={[
             { x: -84, y: -58 },
             { x: 84, y: -58 },

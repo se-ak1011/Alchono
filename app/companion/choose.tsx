@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
-import { CompanionPicker } from '@/components/companion/CompanionPicker';
+import { CompanionCarousel } from '@/components/companion/CompanionCarousel';
 import { DEFAULT_PREFERENCES } from '@/components/preferences/PreferenceSections';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
@@ -46,13 +46,13 @@ export default function ChooseCompanionScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 40, paddingTop: 4 }}
       >
-        <Text className="text-text-secondary text-base leading-relaxed mb-6">
+        <Text className="text-text-secondary text-base leading-relaxed mb-8 px-6">
           A mate to walk beside you — not a version of you. Pick whoever feels
           right. You can change your mind any time.
         </Text>
-        <CompanionPicker value={prefs?.companionId} onChange={choose} />
+        <CompanionCarousel value={prefs?.companionId} onChange={choose} />
       </ScrollView>
     </SafeArea>
   );

@@ -61,9 +61,10 @@ export default function ToolkitScreen() {
       {!q && (
         <View className="px-6 pt-1 pb-2 items-center">
           <CompanionArt
-            source={pose('reading')}
-            width={106}
-            height={118}
+            source={pose('bust')}
+            width={140}
+            height={166}
+            cropHeight={140}
           />
         </View>
       )}

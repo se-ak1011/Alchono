@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
-import { supabase, supabaseUrl, supabaseAnonKey } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 
@@ -21,21 +21,27 @@ async function uploadToStorage(
   contentType: string,
   onProgress?: (fraction: number) => void,
 ) {
-  const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData.session?.access_token;
-  if (!token) throw new Error('not signed in');
+  // Let supabase-js (correctly authenticated) mint a one-time signed upload
+  // URL — this is where RLS is enforced, as the real user. Hand-rolling the
+  // Authorization header on a raw REST upload made storage treat the request
+  // as anonymous, so RLS rejected it ("new row violates row-level security").
+  const { data: signed, error: signErr } = await (supabase.storage as any)
+    .from(BUCKET)
+    .createSignedUploadUrl(path);
+  if (signErr || !signed?.signedUrl) {
+    throw signErr ?? new Error('could not create upload url');
+  }
 
-  // createUploadTask (not uploadAsync) so we can report real byte progress —
-  // videos are big and a plain spinner looks frozen on a slow connection.
+  // Stream the bytes to the pre-authorised signed URL (PUT). createUploadTask
+  // (not uploadAsync) reports real byte progress; the URL carries its own
+  // token, so no auth header is needed here.
   const task = FileSystem.createUploadTask(
-    `${supabaseUrl}/storage/v1/object/${BUCKET}/${path}`,
+    signed.signedUrl,
     fileUri,
     {
-      httpMethod: 'POST',
+      httpMethod: 'PUT',
       uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
       headers: {
-        Authorization: `Bearer ${token}`,
-        apikey: supabaseAnonKey,
         'Content-Type': contentType,
         'x-upsert': 'true',
         'cache-control': '3600',
