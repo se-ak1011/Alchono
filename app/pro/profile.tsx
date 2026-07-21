@@ -13,7 +13,7 @@ import { queryClient } from '@/lib/queryClient';
 import { headingShadow } from '@/styles';
 
 const proInput = {
-  backgroundColor: '#363040',
+  backgroundColor: '#383243',
   borderRadius: 10,
   paddingHorizontal: 14,
   paddingVertical: 12,

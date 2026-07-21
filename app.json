@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-solid.png",
       "resizeMode": "cover",
-      "backgroundColor": "#2A2733"
+      "backgroundColor": "#201D28"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -33,7 +33,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2A2733"
+        "backgroundColor": "#201D28"
       },
       "package": "com.alchono.app",
       "versionCode": 1,
@@ -65,7 +65,7 @@
         {
           "image": "./assets/splash-solid.png",
           "resizeMode": "cover",
-          "backgroundColor": "#2A2733"
+          "backgroundColor": "#201D28"
         }
       ],
       "expo-font",

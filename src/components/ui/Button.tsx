@@ -34,7 +34,7 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const textClasses: Record<Variant, string> = {
-  primary: 'text-[#2A2733] font-semibold',
+  primary: 'text-[#201D28] font-semibold',
   secondary: 'text-text-primary font-medium',
   ghost: 'text-text-secondary font-medium',
   danger: 'text-white font-semibold',
@@ -127,7 +127,7 @@ export function Button({
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={variant === 'primary' ? '#2A2733' : variant === 'ghost' ? '#B2ACC0' : '#ECE9F1'}
+            color={variant === 'primary' ? '#201D28' : variant === 'ghost' ? '#B2ACC0' : '#ECE9F1'}
           />
         ) : (
           <>

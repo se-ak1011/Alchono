@@ -22,12 +22,12 @@ function MomentCard({ item }: { item: FeedMoment }) {
           usePoster
           useNativeControls
           resizeMode={ResizeMode.COVER}
-          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#2A2733' }}
+          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
         />
       ) : item.url ? (
         <Image
           source={{ uri: item.url }}
-          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#2A2733' }}
+          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
           resizeMode="cover"
         />
       ) : null}
@@ -122,7 +122,7 @@ export default function GoodFeedScreen() {
             shadowOffset: { width: 0, height: 4 },
           }}
         >
-          <Feather name="plus" size={26} color="#2A2733" />
+          <Feather name="plus" size={26} color="#201D28" />
         </Pressable>
       )}
     </SafeArea>

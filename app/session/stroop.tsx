@@ -102,7 +102,7 @@ export default function StroopScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -151,7 +151,7 @@ export default function StroopScreen() {
           style={{
             height: 2,
             marginHorizontal: 24,
-            backgroundColor: '#3F3A4A',
+            backgroundColor: '#474151',
             borderRadius: 1,
             marginBottom: 8,
           }}
@@ -202,7 +202,7 @@ export default function StroopScreen() {
               }}
             >
               <Text
-                style={{ color: '#2A2733', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#201D28', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>

@@ -306,7 +306,7 @@ export default function ThreadScreen() {
             maxLength={2000}
             style={{
               flex: 1,
-              backgroundColor: '#363040',
+              backgroundColor: '#383243',
               borderRadius: 20,
               paddingHorizontal: 16,
               paddingTop: 12,

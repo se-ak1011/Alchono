@@ -38,7 +38,7 @@ export default function ToolkitScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -77,7 +77,7 @@ export default function ToolkitScreen() {
           autoCapitalize="none"
           autoCorrect={false}
           style={{
-            backgroundColor: '#363040',
+            backgroundColor: '#383243',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,

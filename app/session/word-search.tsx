@@ -209,7 +209,7 @@ export default function WordSearchScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -314,7 +314,7 @@ export default function WordSearchScreen() {
                 paddingHorizontal: 12,
                 paddingVertical: 7,
                 borderRadius: 8,
-                backgroundColor: '#3F3A4A',
+                backgroundColor: '#474151',
                 borderWidth: 1,
                 borderColor: 'rgba(200, 185, 220, 0.24)',
               }}
@@ -348,7 +348,7 @@ export default function WordSearchScreen() {
           onPress={newGrid}
           style={{
             flex: 1,
-            backgroundColor: '#363040',
+            backgroundColor: '#383243',
             borderRadius: 18,
             paddingVertical: 16,
             alignItems: 'center',
@@ -370,7 +370,7 @@ export default function WordSearchScreen() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: '#2A2733', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
+          <Text style={{ color: '#201D28', fontSize: 16, fontFamily: 'Inter_600SemiBold' }}>
             Done
           </Text>
         </Pressable>

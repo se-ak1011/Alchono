@@ -55,7 +55,7 @@ const GAMES: ReadonlyArray<{
 const ivory = '#ECE9F1';
 const muted = '#7B8088';
 const violet = '#8D7AAE';
-const card = '#363040';
+const card = '#383243';
 const hairline = 'rgba(255,255,255,0.08)';
 
 function useReduceMotion() {
@@ -245,7 +245,7 @@ export default function GamesScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
       }}
     >

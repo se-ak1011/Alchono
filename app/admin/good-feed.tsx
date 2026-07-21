@@ -26,7 +26,7 @@ import {
 const CATEGORIES = ['kindness', 'animals', 'reunions', 'fails', 'rescues', 'wholesome'];
 
 const inputStyle = {
-  backgroundColor: '#363040',
+  backgroundColor: '#383243',
   borderRadius: 10,
   paddingHorizontal: 14,
   paddingVertical: 12,
@@ -162,7 +162,7 @@ export default function AdminGoodFeedScreen() {
               >
                 <Image
                   source={{ uri: thumbnailUrl(item.youtube_id) }}
-                  style={{ width: 72, height: 40, borderRadius: 6, backgroundColor: '#363040' }}
+                  style={{ width: 72, height: 40, borderRadius: 6, backgroundColor: '#383243' }}
                   resizeMode="cover"
                 />
                 <View className="flex-1">

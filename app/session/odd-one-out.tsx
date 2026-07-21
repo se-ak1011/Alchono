@@ -76,7 +76,7 @@ export default function OddOneOutScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -178,7 +178,7 @@ export default function OddOneOutScreen() {
                 alignItems: 'center',
               }}
             >
-              <Text style={{ color: '#2A2733', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}>
+              <Text style={{ color: '#201D28', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}>
                 Play again
               </Text>
             </Pressable>

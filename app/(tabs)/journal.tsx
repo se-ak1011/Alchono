@@ -82,7 +82,7 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
     >
       <View className="w-9 h-9 rounded-full bg-accent items-center justify-center">
         {loading ? (
-          <ActivityIndicator size="small" color="#2A2733" />
+          <ActivityIndicator size="small" color="#201D28" />
         ) : (
           <Text className="text-bg text-sm font-bold">
             {playing ? "■" : "▶"}

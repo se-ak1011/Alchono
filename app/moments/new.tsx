@@ -14,6 +14,7 @@ import {
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
+import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
@@ -41,9 +42,28 @@ export default function NewMomentScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images', 'videos'],
       quality: 0.7,
-      videoMaxDuration: 30,
+      videoMaxDuration: 15,
     });
-    if (!result.canceled && result.assets[0]) setAsset(result.assets[0]);
+    if (result.canceled || !result.assets[0]) return;
+    const picked = result.assets[0];
+    // Storage caps uploads at 50 MB. Reject oversized clips up front with a
+    // clear message rather than letting the upload fail at the end.
+    if (picked.type === 'video') {
+      try {
+        const info = await FileSystem.getInfoAsync(picked.uri, { size: true });
+        const size = (info as any).size ?? 0;
+        if (size > 48 * 1024 * 1024) {
+          Alert.alert(
+            'Video too large',
+            'That clip is over 48 MB — the current upload limit. Try a shorter one; around 10–15 seconds usually fits.',
+          );
+          return;
+        }
+      } catch {
+        /* size unknown — let the upload try, the server still enforces the cap */
+      }
+    }
+    setAsset(picked);
   };
 
   const submit = async () => {
@@ -157,7 +177,7 @@ export default function NewMomentScreen() {
                     + Choose a photo or video
                   </Text>
                   <Text className="text-text-muted text-sm mt-1 text-center">
-                    Videos up to 30 seconds.
+                    Videos up to 15 seconds.
                   </Text>
                 </View>
               )}

@@ -69,7 +69,7 @@ export default function TimelineScreen() {
   };
 
   const dateInput = {
-    backgroundColor: '#363040',
+    backgroundColor: '#383243',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 12,
@@ -132,7 +132,7 @@ export default function TimelineScreen() {
                 placeholder="First wedding sober, first match, first holiday…"
                 placeholderTextColor="#817B91"
                 style={{
-                  backgroundColor: '#363040',
+                  backgroundColor: '#383243',
                   borderRadius: 10,
                   paddingHorizontal: 14,
                   paddingVertical: 12,

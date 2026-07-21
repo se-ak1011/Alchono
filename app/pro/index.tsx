@@ -154,7 +154,7 @@ export default function ProDashboard() {
             autoCapitalize="none"
             autoCorrect={false}
             style={{
-              backgroundColor: '#363040',
+              backgroundColor: '#383243',
               borderRadius: 10,
               paddingHorizontal: 14,
               paddingVertical: 12,

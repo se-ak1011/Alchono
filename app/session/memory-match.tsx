@@ -81,8 +81,8 @@ function MemoryCard({
             backgroundColor: displaying
               ? matched
                 ? '#302A3B'
-                : '#3F3A4A'
-              : '#363040',
+                : '#474151'
+              : '#383243',
             borderWidth: 1,
             borderColor: displaying
               ? matched
@@ -180,7 +180,7 @@ export default function MemoryMatchScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -254,7 +254,7 @@ export default function MemoryMatchScreen() {
               }}
             >
               <Text
-                style={{ color: '#2A2733', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
+                style={{ color: '#201D28', fontSize: 17, fontFamily: 'Inter_600SemiBold' }}
               >
                 Play again
               </Text>

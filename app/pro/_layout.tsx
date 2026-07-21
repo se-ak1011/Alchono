@@ -16,7 +16,7 @@ function ProTabBar({ state, navigation }: any) {
   return (
     <View
       style={{
-        backgroundColor: '#363040',
+        backgroundColor: '#383243',
         borderTopWidth: 1,
         borderTopColor: 'rgba(255,255,255,0.06)',
         paddingBottom: insets.bottom,

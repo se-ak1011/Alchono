@@ -52,7 +52,7 @@ export default function MyMomentsScreen() {
           hitSlop={8}
           className="w-10 h-10 rounded-full bg-accent items-center justify-center active:bg-accent-dark"
         >
-          <Feather name="plus" size={22} color="#2A2733" />
+          <Feather name="plus" size={22} color="#201D28" />
         </Pressable>
       </View>
 

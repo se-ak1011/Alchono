@@ -10,9 +10,9 @@ module.exports = {
       colors: {
         // Plum-charcoal system: purple-undertoned charcoal — serious and calm,
         // but lifted and airy, never flat near-black (see docs/theme.md).
-        bg: '#2A2733',            // app background — lifted plum charcoal
-        surface: '#363040',       // primary cards — clearly raised off the bg
-        'surface-2': '#3F3A4A',   // secondary cards / inputs
+        bg: '#201D28',            // app background — deep plum charcoal (base layer)
+        surface: '#383243',       // primary cards — clearly raised off the bg
+        'surface-2': '#474151',   // secondary cards / inputs — highest layer
         'text-primary': '#ECE9F1', // soft lavender-white
         'text-secondary': '#B2ACC0', // reading text, violet-grey
         'text-muted': '#817B91',  // meta / hints, violet-grey
@@ -23,11 +23,11 @@ module.exports = {
         danger: '#C98282',
         'danger-light': '#C98282',
         // Subtle lavender hairlines for separation without harsh white.
-        divider: 'rgba(236, 233, 241, 0.10)',
-        hairline: 'rgba(236, 233, 241, 0.10)',
+        divider: 'rgba(236, 233, 241, 0.13)',
+        hairline: 'rgba(236, 233, 241, 0.13)',
         // Deep purple tint reserved for urge-flow emphasis.
         urge: '#3B3352',
-        'urge-surface': '#3A3448',
+        'urge-surface': '#413B50',
       },
       fontFamily: {
         sans: ['Inter_400Regular', 'System'],

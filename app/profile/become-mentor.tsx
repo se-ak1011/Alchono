@@ -183,7 +183,7 @@ export default function BecomeMentorScreen() {
                 width: 46,
                 height: 26,
                 borderRadius: 13,
-                backgroundColor: available ? '#A489DE' : '#3F3A4A',
+                backgroundColor: available ? '#A489DE' : '#474151',
                 justifyContent: 'center',
                 alignItems: available ? 'flex-end' : 'flex-start',
                 paddingHorizontal: 3,

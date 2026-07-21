@@ -333,7 +333,7 @@ export default function GoalsScreen() {
                 text.trim() ? 'bg-accent active:bg-accent-dark' : 'bg-surface-2'
               }`}
             >
-              <Text className={`text-sm font-semibold ${text.trim() ? 'text-[#2A2733]' : 'text-text-muted'}`}>
+              <Text className={`text-sm font-semibold ${text.trim() ? 'text-[#201D28]' : 'text-text-muted'}`}>
                 {adding ? 'Adding…' : 'Add'}
               </Text>
             </Pressable>

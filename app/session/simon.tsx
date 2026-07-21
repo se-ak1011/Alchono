@@ -158,7 +158,7 @@ export default function SimonScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -234,7 +234,7 @@ export default function SimonScreen() {
             <Pressable
               onPress={restart}
               style={{
-                backgroundColor: '#3F3A4A',
+                backgroundColor: '#474151',
                 borderRadius: 18,
                 paddingHorizontal: 44,
                 paddingVertical: 18,

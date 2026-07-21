@@ -55,7 +55,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
               y1={y}
               x2={CHART_PADDING.left + chartW}
               y2={y}
-              stroke="#3F3A4A"
+              stroke="#474151"
               strokeWidth={1}
             />
           );
@@ -67,7 +67,7 @@ export function MoodChart({ data, width = 320, height = 140 }: MoodChartProps) {
           const score = point.mood ? MOOD_SCORE[point.mood] ?? 3 : 0;
           const barH = Math.max(4, (score / 5) * chartH);
           const y = CHART_PADDING.top + chartH - barH;
-          const color = point.mood ? MOOD_COLOR[point.mood] ?? '#B2ACC0' : '#3F3A4A';
+          const color = point.mood ? MOOD_COLOR[point.mood] ?? '#B2ACC0' : '#474151';
 
           return (
             <React.Fragment key={point.date}>

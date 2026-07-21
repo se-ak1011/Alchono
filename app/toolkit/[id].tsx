@@ -92,7 +92,7 @@ export default function ToolDetailScreen() {
   if (!tool) {
     return (
       <View
-        style={{ flex: 1, backgroundColor: '#2A2733', paddingTop: insets.top + 16 }}
+        style={{ flex: 1, backgroundColor: '#201D28', paddingTop: insets.top + 16 }}
         className="px-6"
       >
         <Pressable onPress={() => router.back()} hitSlop={12}>
@@ -109,7 +109,7 @@ export default function ToolDetailScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}

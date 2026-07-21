@@ -79,7 +79,7 @@ export function CompanionCarousel({
                   isActive ? 'border-accent' : 'border-white/8'
                 }`}
                 style={{
-                  backgroundColor: '#3F3A4A',
+                  backgroundColor: '#474151',
                   opacity: isActive ? 1 : 0.55,
                   overflow: 'hidden',
                 }}

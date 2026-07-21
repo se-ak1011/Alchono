@@ -164,7 +164,7 @@ export default function WriteLetterScreen() {
               }`}
             >
               {isPending ? (
-                <ActivityIndicator size="small" color="#2A2733" />
+                <ActivityIndicator size="small" color="#201D28" />
               ) : (
                 <Text
                   className={`text-base font-semibold ${

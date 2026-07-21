@@ -47,7 +47,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
 };
 
 export const nameInputStyle = {
-  backgroundColor: '#363040',
+  backgroundColor: '#383243',
   borderRadius: 8,
   paddingHorizontal: 16,
   paddingVertical: 12,
@@ -87,14 +87,14 @@ export function CountPicker({
                 borderRadius: 10,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: selected ? '#A489DE' : '#363040',
+                backgroundColor: selected ? '#A489DE' : '#383243',
                 borderWidth: 1,
                 borderColor: selected ? '#A489DE' : 'rgba(243, 240, 244, 0.10)',
               }}
             >
               <Text
                 style={{
-                  color: selected ? '#2A2733' : '#B2ACC0',
+                  color: selected ? '#201D28' : '#B2ACC0',
                   fontSize: 15,
                   fontFamily: 'Inter_600SemiBold',
                 }}
@@ -129,7 +129,7 @@ export function ToggleRow({
           width: 46,
           height: 26,
           borderRadius: 13,
-          backgroundColor: value ? '#A489DE' : '#3F3A4A',
+          backgroundColor: value ? '#A489DE' : '#474151',
           justifyContent: 'center',
           alignItems: value ? 'flex-end' : 'flex-start',
           paddingHorizontal: 3,

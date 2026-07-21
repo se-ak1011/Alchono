@@ -29,7 +29,7 @@ export default function PostGameScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#2A2733',
+        backgroundColor: '#201D28',
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -88,7 +88,7 @@ export default function PostGameScreen() {
           >
             <Text
               style={{
-                color: '#2A2733',
+                color: '#201D28',
                 fontSize: 17,
                 fontFamily: 'Inter_600SemiBold',
               }}
@@ -100,7 +100,7 @@ export default function PostGameScreen() {
           <Pressable
             onPress={handlePlayAnother}
             style={{
-              backgroundColor: '#363040',
+              backgroundColor: '#383243',
               borderRadius: 18,
               paddingVertical: 20,
               alignItems: 'center',

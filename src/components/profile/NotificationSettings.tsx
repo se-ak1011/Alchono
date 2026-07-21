@@ -70,7 +70,7 @@ export function NotificationSettings() {
               <Switch
                 value={prefs?.[item.key] ?? true}
                 onValueChange={(value) => updatePref({ key: item.key, value })}
-                trackColor={{ false: '#3F3A4A', true: '#A489DE' }}
+                trackColor={{ false: '#474151', true: '#A489DE' }}
                 thumbColor="#ECE9F1"
               />
             </View>

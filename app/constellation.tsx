@@ -34,7 +34,7 @@ export default function ConstellationScreen() {
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
 
   return (
-    <View className="flex-1" style={{ backgroundColor: '#2A2733' }}>
+    <View className="flex-1" style={{ backgroundColor: '#201D28' }}>
       {dates.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10">
           <Text className="text-text-secondary text-lg text-center leading-relaxed">
