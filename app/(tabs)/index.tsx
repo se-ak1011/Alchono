@@ -16,6 +16,7 @@ import { useUrgeStats, useAfMonthCount } from "@/hooks/useVictories";
 import { useSmartReminder } from "@/hooks/useSmartReminder";
 import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
+import { useCompanion } from "@/hooks/useCompanion";
 
 const HOME_COMPANION_IMAGE_WIDTH = 140;
 const HOME_COMPANION_IMAGE_HEIGHT = 165;
@@ -125,6 +126,7 @@ function HomeSecondaryCards() {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { pose } = useCompanion();
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
   const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
 
@@ -143,7 +145,7 @@ export default function HomeScreen() {
           context="home"
           visible={companionMenuOpen}
           onClose={() => setCompanionMenuOpen(false)}
-          source={require("../../assets/companions/image_01_standing.png")}
+          source={pose("standing")}
           width={HOME_COMPANION_IMAGE_WIDTH}
           height={HOME_COMPANION_IMAGE_HEIGHT}
           cropHeight={HOME_COMPANION_CROP_HEIGHT}

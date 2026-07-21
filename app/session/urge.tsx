@@ -11,6 +11,7 @@ import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow, celebrationGlow } from '@/styles';
 import { useAiCoach } from '@/hooks/useAiCoach';
+import { useCompanion } from '@/hooks/useCompanion';
 import type { ChatMessage, UserPreferences } from '@/types';
 
 const BREATH_MS = 4000;
@@ -76,6 +77,7 @@ function PressScale({ children, onPress, className, style }: { children: React.R
 
 export default function UrgeScreen() {
   const router = useRouter();
+  const { pose } = useCompanion();
   const { profile } = useAuthStore();
   const { mutate: startSession } = useStartSession();
   const { mutate: logUrge } = useLogUrgeOutcome();
@@ -147,7 +149,7 @@ export default function UrgeScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {phase === 'choice' && (
             <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1, paddingTop: 12 }}>
-              <View className="items-center mb-4"><CompanionArt source={require('../../assets/companions/image_14_elbows.png')} width={86} height={102} /></View>
+              <View className="items-center mb-4"><CompanionArt source={pose('elbows')} width={86} height={102} /></View>
               <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">Take action</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingRight: 24 }} className="-mx-1 px-1 mb-5">
                 {actions.map((action) => (
@@ -199,7 +201,7 @@ export default function UrgeScreen() {
             <Animated.View entering={FadeIn.duration(500)} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 480 }}>
               <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">Logged</Text>
               <Text className="text-text-primary text-4xl font-semibold tracking-tight mb-3" style={celebrationGlow}>It passed.</Text>
-              <CompanionArt source={require('../../assets/companions/image_19_small_smile.png')} width={74} height={88} />
+              <CompanionArt source={pose('smile')} width={74} height={88} />
               <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">{survivedCount <= 1 ? 'You got through your first one.' : `That's ${survivedCount} times you've got through it.`}{'\n'}Proof this works.</Text>
               <Button title="Done" variant="primary" size="lg" fullWidth onPress={() => router.back()} />
             </Animated.View>

@@ -12,11 +12,13 @@ import {
   toolsByCategory,
 } from '@/lib/toolkit';
 import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
+import { useCompanion } from '@/hooks/useCompanion';
 import { headingShadow } from '@/styles';
 
 export default function ToolkitScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { pose } = useCompanion();
   const { isSaved } = useToolkitFavourites();
   const [query, setQuery] = useState('');
 
@@ -59,7 +61,7 @@ export default function ToolkitScreen() {
       {!q && (
         <View className="px-6 pt-1 pb-2 items-center">
           <CompanionArt
-            source={require('../../assets/companions/image_06_reading.png')}
+            source={pose('reading')}
             width={106}
             height={118}
           />

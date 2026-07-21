@@ -120,6 +120,7 @@ export type UserPreferences = {
   livesIsolated: boolean;
   interestedInAlternatives: boolean;
   hobbies: string[];         // "Things I enjoy" — personalisation for AI context
+  companionId?: string;      // chosen companion "mate"; falls back to default
 };
 
 export type ChatMessage = {

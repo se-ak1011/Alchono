@@ -26,6 +26,7 @@ import {
   RhythmStep,
   DEFAULT_PREFERENCES,
 } from '@/components/preferences/PreferenceSections';
+import { CompanionPicker } from '@/components/companion/CompanionPicker';
 import type { UserPreferences } from '@/types';
 
 const WELCOME_BULLETS = [
@@ -53,6 +54,12 @@ const STEPS = [
     id: 'rhythm',
     title: "What does your day look like?",
     body: "So we never ping you mid-shift or wake you up. All optional.",
+    custom: true,
+  },
+  {
+    id: 'companion',
+    title: "Who's walking with you?",
+    body: "Pick a companion — a mate who's just there with you, on the good days and the hard ones. You can change them any time.",
     custom: true,
     isLast: true,
   },
@@ -256,6 +263,12 @@ export default function OnboardingScreen() {
                 onChange={updatePrefs}
                 locationCaptured={!!latLng}
                 onCaptureLocation={captureLocation}
+              />
+            )}
+            {currentStep.id === 'companion' && (
+              <CompanionPicker
+                value={prefs.companionId}
+                onChange={(id) => updatePrefs({ companionId: id })}
               />
             )}
           </Animated.View>

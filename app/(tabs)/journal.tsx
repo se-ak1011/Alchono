@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
+import { useCompanion } from "@/hooks/useCompanion";
 import {
   useJournalNotes,
   useAddTextNote,
@@ -102,6 +103,7 @@ function VoiceNoteRow({ note }: { note: JournalNote }) {
 
 export default function JournalScreen() {
   const router = useRouter();
+  const { pose } = useCompanion();
   const { data: notes, isLoading } = useJournalNotes();
   const { mutate: addText, isPending: savingText } = useAddTextNote();
   const { mutate: addVoice, isPending: savingVoice } = useAddVoiceNote();
@@ -317,7 +319,7 @@ export default function JournalScreen() {
           context="journal"
           visible={companionMenuOpen}
           onClose={() => setCompanionMenuOpen(false)}
-          source={require("../../assets/companions/image_05_journal.png")}
+          source={pose("journal")}
           width={JOURNAL_COMPANION_IMAGE_WIDTH}
           height={JOURNAL_COMPANION_IMAGE_HEIGHT}
           zoneHeight={companionMenuOpen ? 228 : 140}

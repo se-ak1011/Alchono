@@ -120,6 +120,16 @@ export default function SettingsScreen() {
         <NotificationSettings />
 
         <SettingsSection
+          title="Personalise"
+          items={[
+            {
+              label: 'Your companion',
+              onPress: () => router.push('/companion/choose'),
+            },
+          ]}
+        />
+
+        <SettingsSection
           title="Privacy"
           items={[
             {

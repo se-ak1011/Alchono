@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CompanionArt } from "@/components/ui/CompanionArt";
 import { CompanionMenu } from "@/components/ui/CompanionMenu";
 import { useAiCoach } from "@/hooks/useAiCoach";
+import { useCompanion } from "@/hooks/useCompanion";
 import type { ChatMessage } from "@/types";
 
 interface AiCoachChatProps {
@@ -47,6 +48,7 @@ const QUICK_ACTIONS: { label: string; message: string; urge?: boolean }[] = [
 
 export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
   const router = useRouter();
+  const { pose } = useCompanion();
   const { messages, isTyping, sendMessage } = useAiCoach(sessionType);
   const [input, setInput] = useState("");
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
@@ -108,7 +110,7 @@ export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
           showQuickActions ? (
             <View className="pt-2 pb-1 items-center">
               <CompanionArt
-                source={require("../../../assets/companions/image_02_armchair.png")}
+                source={pose("armchair")}
                 width={152}
                 height={179}
                 onPress={() => setCompanionMenuOpen(true)}

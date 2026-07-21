@@ -7,6 +7,7 @@ import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { headingShadow } from "@/styles";
 import { useUnreadTotal } from "@/hooks/useMessages";
+import { useCompanion } from "@/hooks/useCompanion";
 
 /**
  * Support is a calm hub, not a wall of options. Two modes, nothing else:
@@ -15,6 +16,7 @@ import { useUnreadTotal } from "@/hooks/useMessages";
  */
 export default function SupportScreen() {
   const router = useRouter();
+  const { pose } = useCompanion();
   const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
   const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
   const { data: unread } = useUnreadTotal();
@@ -88,7 +90,7 @@ export default function SupportScreen() {
             context="support"
             visible={companionMenuOpen}
             onClose={() => setCompanionMenuOpen(false)}
-            source={require("../../assets/companions/image_07_tea.png")}
+            source={pose("tea")}
             width={130}
             height={154}
             zoneHeight={companionMenuOpen ? 236 : 164}
