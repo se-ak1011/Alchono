@@ -28,6 +28,7 @@ export default function NewMomentScreen() {
   const [caption, setCaption] = useState('');
   const [share, setShare] = useState(false);
   const [anonymous, setAnonymous] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const isVideo = asset?.type === 'video';
 
@@ -58,6 +59,7 @@ export default function NewMomentScreen() {
     }
     const ext = asset.uri.split('.').pop()?.toLowerCase();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setProgress(0);
     upload(
       {
         uri: asset.uri,
@@ -67,6 +69,7 @@ export default function NewMomentScreen() {
         shared: share,
         anonymous: share ? anonymous : false,
         ext,
+        onProgress: setProgress,
       },
       {
         onSuccess: () => {
@@ -78,7 +81,10 @@ export default function NewMomentScreen() {
             [{ text: 'Done', onPress: () => router.back() }],
           );
         },
-        onError: () => Alert.alert('Could not upload', 'Please try again in a moment.'),
+        onError: () => {
+          setProgress(0);
+          Alert.alert('Could not upload', 'Please try again in a moment.');
+        },
       },
     );
   };
@@ -239,17 +245,27 @@ export default function NewMomentScreen() {
                 <Pressable
                   onPress={submit}
                   disabled={isPending}
-                  className={`rounded-2xl py-4 items-center ${
+                  className={`rounded-2xl py-4 items-center justify-center overflow-hidden relative ${
                     isPending ? 'bg-surface-2' : 'bg-accent active:bg-accent-dark'
                   }`}
                 >
-                  {isPending ? (
-                    <ActivityIndicator size="small" color="#2A2733" />
-                  ) : (
-                    <Text className="text-bg text-base font-semibold">
-                      {share ? 'Share it' : 'Save it'}
-                    </Text>
+                  {isPending && (
+                    <View
+                      className="absolute left-0 top-0 bottom-0 bg-accent"
+                      style={{ width: `${Math.max(5, Math.round(progress * 100))}%` }}
+                    />
                   )}
+                  <Text
+                    className={`text-base font-semibold ${
+                      isPending ? 'text-text-primary' : 'text-bg'
+                    }`}
+                  >
+                    {isPending
+                      ? `Uploading… ${Math.round(progress * 100)}%`
+                      : share
+                        ? 'Share it'
+                        : 'Save it'}
+                  </Text>
                 </Pressable>
               </View>
             </>

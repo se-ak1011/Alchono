@@ -15,12 +15,19 @@ const BUCKET = 'moments';
  * resolve). `FileSystem.uploadAsync` streams the bytes from disk, so videos
  * upload reliably. The user's JWT is sent so storage RLS still applies.
  */
-async function uploadToStorage(path: string, fileUri: string, contentType: string) {
+async function uploadToStorage(
+  path: string,
+  fileUri: string,
+  contentType: string,
+  onProgress?: (fraction: number) => void,
+) {
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData.session?.access_token;
   if (!token) throw new Error('not signed in');
 
-  const result = await FileSystem.uploadAsync(
+  // createUploadTask (not uploadAsync) so we can report real byte progress —
+  // videos are big and a plain spinner looks frozen on a slow connection.
+  const task = FileSystem.createUploadTask(
     `${supabaseUrl}/storage/v1/object/${BUCKET}/${path}`,
     fileUri,
     {
@@ -34,9 +41,15 @@ async function uploadToStorage(path: string, fileUri: string, contentType: strin
         'cache-control': '3600',
       },
     },
+    (p) => {
+      if (onProgress && p.totalBytesExpectedToSend > 0) {
+        onProgress(p.totalBytesSent / p.totalBytesExpectedToSend);
+      }
+    },
   );
-  if (result.status !== 200 && result.status !== 201) {
-    throw new Error(`storage upload failed (${result.status}): ${result.body}`);
+  const result = await task.uploadAsync();
+  if (!result || (result.status !== 200 && result.status !== 201)) {
+    throw new Error(`storage upload failed (${result?.status}): ${result?.body}`);
   }
 }
 
@@ -117,6 +130,7 @@ export function useUploadMoment() {
       shared: boolean;
       anonymous: boolean;
       ext?: string;
+      onProgress?: (fraction: number) => void;
     }) => {
       if (!userId) throw new Error('not signed in');
       const id = randomId();
@@ -134,14 +148,21 @@ export function useUploadMoment() {
           : ext === 'png'
             ? 'image/png'
             : 'image/jpeg';
-      await uploadToStorage(media_path, opts.uri, contentType);
+      // The media file is the bulk of the work — map it to 0–92%, leaving a
+      // little headroom for the thumbnail and the DB write so the bar finishes.
+      await uploadToStorage(media_path, opts.uri, contentType, (f) =>
+        opts.onProgress?.(f * 0.92),
+      );
 
       // Videos get a first-frame thumbnail (feed grid + what moderation screens).
       let thumb_path: string | null = null;
       if (opts.mediaType === 'video' && opts.thumbUri) {
         thumb_path = `${prefix}/${id}_t.jpg`;
-        await uploadToStorage(thumb_path, opts.thumbUri, 'image/jpeg');
+        await uploadToStorage(thumb_path, opts.thumbUri, 'image/jpeg', (f) =>
+          opts.onProgress?.(0.92 + f * 0.05),
+        );
       }
+      opts.onProgress?.(0.98);
 
       const { data: row, error } = await (supabase as any)
         .from('moments')
@@ -158,6 +179,7 @@ export function useUploadMoment() {
         .select('id')
         .single();
       if (error) throw error;
+      opts.onProgress?.(1);
 
       // Fire moderation for shared moments — the feed only ever shows approved.
       if (opts.shared && row?.id) {
