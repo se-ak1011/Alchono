@@ -45,6 +45,46 @@ export const COMPANIONS: Companion[] = [
       smile: require('../../assets/companions/image_19_small_smile.png'),
     },
   },
+  {
+    id: 'amara',
+    name: 'Amara',
+    blurb: 'Unhurried. Makes room for whatever you bring.',
+    poses: {
+      standing: require('../../assets/companions/amara_standing.png'),
+    },
+  },
+  {
+    id: 'marco',
+    name: 'Marco',
+    blurb: 'Straight with you, always gentle. Keeps you steady.',
+    poses: {
+      standing: require('../../assets/companions/marco_standing.png'),
+    },
+  },
+  {
+    id: 'yara',
+    name: 'Yara',
+    blurb: 'Gets it from the inside. Quietly in your corner.',
+    poses: {
+      standing: require('../../assets/companions/yara_standing.png'),
+    },
+  },
+  {
+    id: 'amos',
+    name: 'Amos',
+    blurb: 'Seen a lot of storms pass. Yours will too.',
+    poses: {
+      standing: require('../../assets/companions/amos_standing.png'),
+    },
+  },
+  {
+    id: 'rose',
+    name: 'Rose',
+    blurb: 'Soft, and stronger than she looks. Right beside you.',
+    poses: {
+      standing: require('../../assets/companions/rose_standing.png'),
+    },
+  },
   // New mates slot in here — a single `standing` pose is enough to start.
 ];
 
