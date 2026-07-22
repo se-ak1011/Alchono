@@ -44,7 +44,58 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   livesIsolated: false,
   interestedInAlternatives: false,
   hobbies: [],
+  joinReasons: [],
+  drinkFrequency: null,
+  drinkTypes: [],
+  drinkAmount: null,
+  drinkTriggers: [],
 };
+
+// ── Onboarding option sets (shared by the onboarding screens + AI context) ──
+// Kept human and non-clinical: these describe a life, not a diagnosis.
+export const JOIN_REASONS = [
+  { key: 'stop', label: 'I want to stop drinking' },
+  { key: 'cut-down', label: 'I want to cut down' },
+  { key: 'worried', label: 'I’m worried alcohol is taking over' },
+  { key: 'someone-else', label: 'I’m here for someone else' },
+  { key: 'exploring', label: 'I’m just exploring' },
+] as const;
+
+export const DRINK_FREQUENCIES = [
+  { key: 'rarely', label: 'Rarely' },
+  { key: 'weekly', label: 'About once a week' },
+  { key: 'few-week', label: 'A few times a week' },
+  { key: 'most-days', label: 'Most days' },
+  { key: 'daily', label: 'Every day' },
+] as const;
+
+export const DRINK_TYPES = [
+  { key: 'beer', label: 'Beer' },
+  { key: 'wine', label: 'Wine' },
+  { key: 'spirits', label: 'Spirits' },
+  { key: 'cider', label: 'Cider' },
+  { key: 'cocktails', label: 'Cocktails' },
+  { key: 'mixed', label: 'A mix' },
+] as const;
+
+export const DRINK_AMOUNTS = [
+  { key: 'light', label: 'Just a little' },
+  { key: 'moderate', label: 'A moderate amount' },
+  { key: 'heavy', label: 'Quite a lot' },
+  { key: 'varies', label: 'It really varies' },
+] as const;
+
+export const DRINK_TRIGGERS = [
+  { key: 'stress', label: 'Stress' },
+  { key: 'anxiety', label: 'Anxiety' },
+  { key: 'pain', label: 'Pain' },
+  { key: 'habit', label: 'Habit' },
+  { key: 'social', label: 'Social' },
+  { key: 'sleep', label: 'Sleep' },
+  { key: 'loneliness', label: 'Loneliness' },
+  { key: 'celebration', label: 'Celebration' },
+  { key: 'other', label: 'Other' },
+] as const;
 
 export const nameInputStyle = {
   backgroundColor: '#383243',

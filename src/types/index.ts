@@ -121,6 +121,14 @@ export type UserPreferences = {
   interestedInAlternatives: boolean;
   hobbies: string[];         // "Things I enjoy" — personalisation for AI context
   companionId?: string;      // chosen companion "mate"; falls back to default
+  // ── Onboarding intent + drinking picture (all optional, never judged) ──
+  // These personalise the AI and recommendations only. Approximate by design:
+  // no medical units, no "how bad are you" scoring.
+  joinReasons: string[];     // why they're here: 'stop' | 'cut-down' | 'worried' | 'someone-else' | 'exploring'
+  drinkFrequency: string | null; // rough cadence: 'rarely' | 'weekly' | 'few-week' | 'most-days' | 'daily'
+  drinkTypes: string[];      // 'beer' | 'wine' | 'spirits' | 'cider' | 'cocktails' | 'mixed'
+  drinkAmount: string | null;    // rough amount, their words: 'light' | 'moderate' | 'heavy' | 'varies'
+  drinkTriggers: string[];   // 'stress' | 'anxiety' | 'pain' | 'habit' | 'social' | 'sleep' | 'loneliness' | 'celebration' | 'other'
 };
 
 export type ChatMessage = {

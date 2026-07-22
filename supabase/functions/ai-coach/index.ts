@@ -70,6 +70,20 @@ serve(async (req) => {
         lines.push('They are CURRENTLY in a drinking session — meet them there without judgement.');
       if (context.livesIsolated)
         lines.push('They live somewhere rural/isolated; in-person support is hard to reach.');
+      // Onboarding memory — their why, their picture, their triggers. Let it
+      // shape tone and suggestions; NEVER read it back, quantify it, or judge it.
+      if (Array.isArray(context.joinReasons) && context.joinReasons.length)
+        lines.push(`Why they came: ${context.joinReasons.join('; ')}.`);
+      if (context.drinkFrequency)
+        lines.push(`They describe drinking roughly: ${context.drinkFrequency}.`);
+      if (Array.isArray(context.drinkTypes) && context.drinkTypes.length)
+        lines.push(`Usually drinks: ${context.drinkTypes.join(', ')}.`);
+      if (context.drinkAmount)
+        lines.push(`Amount, in their words: ${context.drinkAmount}.`);
+      if (Array.isArray(context.drinkTriggers) && context.drinkTriggers.length)
+        lines.push(`What tends to lead them to drink: ${context.drinkTriggers.join(', ')}.`);
+      if (Array.isArray(context.hobbies) && context.hobbies.length)
+        lines.push(`Things they enjoy: ${context.hobbies.join(', ')}.`);
       if (lines.length > 0) {
         systemMessage +=
           '\n\nWhat you know about this person — use it naturally to make them feel seen: address them by name, and let what you know shape your questions (their people, their progress, their situation). Never recite it back as a list.\n- ' +

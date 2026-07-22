@@ -5,7 +5,32 @@ import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { useAppStore } from '@/store/appStore';
 import { useUrgeStats, useAfMonthCount } from '@/hooks/useVictories';
+import {
+  JOIN_REASONS,
+  DRINK_FREQUENCIES,
+  DRINK_TYPES,
+  DRINK_AMOUNTS,
+  DRINK_TRIGGERS,
+} from '@/components/preferences/PreferenceSections';
 import type { ChatMessage, UserPreferences } from '@/types';
+
+/** Turn stored option keys into the plain-English the coach should hear. */
+function labelsFor(
+  keys: string[] | undefined,
+  set: readonly { key: string; label: string }[],
+): string[] {
+  if (!keys?.length) return [];
+  return keys
+    .map((k) => set.find((o) => o.key === k)?.label)
+    .filter((l): l is string => !!l);
+}
+function labelFor(
+  key: string | null | undefined,
+  set: readonly { key: string; label: string }[],
+): string | null {
+  if (!key) return null;
+  return set.find((o) => o.key === key)?.label ?? null;
+}
 
 export function useAiCoach(sessionType = 'general', initialGreeting?: string) {
   const userId = useAuthStore((s) => s.user?.id);
@@ -68,6 +93,14 @@ export function useAiCoach(sessionType = 'general', initialGreeting?: string) {
               afDaysThisMonth: afMonth ?? 0,
               sessionActive: !!activeSessionId,
               livesIsolated: prefs?.livesIsolated ?? false,
+              // What they told us in onboarding — their why, their picture,
+              // their triggers. Personalises tone + suggestions; never judged.
+              joinReasons: labelsFor(prefs?.joinReasons, JOIN_REASONS),
+              drinkFrequency: labelFor(prefs?.drinkFrequency, DRINK_FREQUENCIES),
+              drinkTypes: labelsFor(prefs?.drinkTypes, DRINK_TYPES),
+              drinkAmount: labelFor(prefs?.drinkAmount, DRINK_AMOUNTS),
+              drinkTriggers: labelsFor(prefs?.drinkTriggers, DRINK_TRIGGERS),
+              hobbies: prefs?.hobbies ?? [],
             },
           },
         });
