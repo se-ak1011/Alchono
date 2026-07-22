@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 type GameId = 'memory' | 'pattern' | 'odd' | 'colour' | 'word';
@@ -249,6 +250,7 @@ export default function GamesScreen() {
         paddingTop: insets.top,
       }}
     >
+      <ZoneGlow zone="games" />
       <Animated.View
         entering={FadeIn.duration(300)}
         style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 20 }}

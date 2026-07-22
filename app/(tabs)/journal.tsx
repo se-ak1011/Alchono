@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
+import { ZoneGlow } from "@/components/ui/ZoneGlow";
 import { useCompanion } from "@/hooks/useCompanion";
 import {
   useJournalNotes,
@@ -217,6 +218,7 @@ export default function JournalScreen() {
 
   return (
     <SafeArea bottom={false}>
+      <ZoneGlow zone="writing" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"

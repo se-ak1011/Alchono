@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
 
@@ -125,6 +126,7 @@ export default function CommunityScreen() {
 
   return (
     <SafeArea bottom={false}>
+      <ZoneGlow zone="community" />
       <View className="flex-row items-center gap-4 px-6 pt-4 pb-2">
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Feather name="chevron-left" size={26} color="#817B91" />

@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { CompanionArt } from '@/components/ui/CompanionArt';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import {
   TOOLKIT,
   CATEGORY_META,
@@ -43,6 +44,7 @@ export default function ToolkitScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="reading" />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
@@ -51,7 +53,7 @@ export default function ToolkitScreen() {
           <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={{ ...headingShadow, fontSize: 26 }}>Toolkit.</Text>
+          <Text style={{ ...headingShadow, fontSize: 26 }}>Reading Corner</Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             Small, practical things that actually help.
           </Text>

@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
@@ -50,6 +51,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="me" />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}

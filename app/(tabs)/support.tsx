@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
+import { ZoneGlow } from "@/components/ui/ZoneGlow";
 import { headingShadow } from "@/styles";
 import { useUnreadTotal } from "@/hooks/useMessages";
 import { useCompanion } from "@/hooks/useCompanion";
@@ -31,6 +32,7 @@ export default function SupportScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="support" />
       <View className="px-6 pt-6 pb-2">
         <View className="flex-row items-start justify-between">
           <View className="flex-row items-center gap-3">
