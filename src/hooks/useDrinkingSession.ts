@@ -56,7 +56,10 @@ export function useStartSession() {
         .select('session_nudges')
         .eq('user_id', userId!)
         .maybeSingle();
-      if (prefs && np?.session_nudges !== false) scheduleSessionNudges(prefs);
+      // Opt-in: only buzz if they've deliberately turned nudges on. These
+      // personalise to loved ones ("Text Marta…") and buzz for ~3h after a
+      // session goes live — too intimate to inflict on anyone who never chose it.
+      if (prefs && np?.session_nudges === true) scheduleSessionNudges(prefs);
     },
   });
 }
@@ -176,7 +179,8 @@ export function useLogDrink() {
           .select('session_nudges')
           .eq('user_id', userId!)
           .maybeSingle();
-        if (prefs && np?.session_nudges !== false) scheduleSessionNudges(prefs);
+        // Opt-in — same guard as useStartSession (see note there).
+        if (prefs && np?.session_nudges === true) scheduleSessionNudges(prefs);
       }
       console.log('[AppIntentTrace] useLogDrink: onSuccess completed', res);
     },
