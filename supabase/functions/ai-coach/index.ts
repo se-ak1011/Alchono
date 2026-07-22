@@ -1,10 +1,10 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-// Claude Opus 4.8 — the warmest, most capable model for crisis conversation.
-// If cost becomes a concern for this high-frequency chat, swap to a cheaper
-// tier (e.g. 'claude-haiku-4-5') — this one line is the only change needed.
-const MODEL = 'claude-opus-4-8';
+// Cheapest current Anthropic tier — fast, warm enough for this high-frequency
+// chat, and universally available on any key. Bump to a larger model here if
+// you later want more nuance; this one line is the only change needed.
+const MODEL = 'claude-haiku-4-5';
 
 const SYSTEM_PROMPT = `You are a compassionate recovery support companion for Alchono,
 an app that helps people understand their relationship with alcohol.
