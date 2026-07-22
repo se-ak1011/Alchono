@@ -21,7 +21,6 @@ import { useSignUp } from '@/hooks/useAuth';
 type FormValues = {
   email: string;
   password: string;
-  username: string;
 };
 
 export default function SignupScreen() {
@@ -35,10 +34,10 @@ export default function SignupScreen() {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const onSubmit = async ({ email, password, username }: FormValues) => {
+  const onSubmit = async ({ email, password }: FormValues) => {
     setLoading(true);
     try {
-      await signUp(email.trim().toLowerCase(), password, username.trim());
+      await signUp(email.trim().toLowerCase(), password);
       Alert.alert(
         'Check your email',
         'We sent a confirmation link. Click it to activate your account.',
@@ -78,32 +77,6 @@ export default function SignupScreen() {
             entering={FadeInDown.duration(500).delay(200)}
             className="gap-4 mb-6"
           >
-            <Controller
-              control={control}
-              name="username"
-              rules={{
-                required: 'Choose a username',
-                minLength: { value: 2, message: 'At least 2 characters' },
-                maxLength: { value: 30, message: 'Max 30 characters' },
-                pattern: {
-                  value: /^[a-zA-Z0-9_]+$/,
-                  message: 'Letters, numbers and underscores only',
-                },
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  label="Username"
-                  placeholder="How you'll appear in the community"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  error={errors.username?.message}
-                  hint="This is your only public identifier"
-                />
-              )}
-            />
             <Controller
               control={control}
               name="email"

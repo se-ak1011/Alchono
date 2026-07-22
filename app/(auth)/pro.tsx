@@ -36,13 +36,14 @@ export default function ProSignupScreen() {
     }
     setLoading(true);
     try {
-      const { user } = await signUp(email.trim().toLowerCase(), password, username.trim());
+      const { user } = await signUp(email.trim().toLowerCase(), password);
       if (!user) throw new Error('Could not create the account.');
 
       // Professional role: skip member onboarding, register unverified.
+      // Username is saved here now that useSignUp no longer takes one.
       const { data: updated, error: profErr } = await supabase
         .from('profiles')
-        .update({ is_professional: true, onboarding_completed: true } as any)
+        .update({ is_professional: true, onboarding_completed: true, username: username.trim() } as any)
         .eq('id', user.id)
         .select()
         .maybeSingle();

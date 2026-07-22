@@ -337,6 +337,154 @@ export function CircleStep({
   );
 }
 
+/**
+ * A row of selectable pills — the app's quiet hierarchy (tone + border, never
+ * bold fills). Works as multi-select or single-select.
+ */
+export function SelectChips({
+  options,
+  selected,
+  onToggle,
+  multi = true,
+}: {
+  options: readonly { key: string; label: string }[];
+  selected: string[];
+  onToggle: (key: string) => void;
+  multi?: boolean;
+}) {
+  return (
+    <View className="flex-row flex-wrap gap-2">
+      {options.map(({ key, label }) => {
+        const isOn = selected.includes(key);
+        return (
+          <Pressable
+            key={key}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              onToggle(key);
+            }}
+            className={`px-4 py-2.5 rounded-xl border ${
+              isOn ? 'bg-surface border-white/25' : 'bg-surface border-white/8'
+            }`}
+          >
+            <Text
+              className={`text-sm font-medium ${
+                isOn ? 'text-text-primary' : 'text-text-muted'
+              }`}
+            >
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+/** "What brings you here?" — reasons for joining. Multi-select. */
+export function ReasonsStep({
+  prefs,
+  onChange,
+}: {
+  prefs: UserPreferences;
+  onChange: (p: Partial<UserPreferences>) => void;
+}) {
+  const toggle = (key: string) => {
+    const cur = prefs.joinReasons ?? [];
+    onChange({
+      joinReasons: cur.includes(key)
+        ? cur.filter((k) => k !== key)
+        : [...cur, key],
+    });
+  };
+  return (
+    <SelectChips
+      options={JOIN_REASONS}
+      selected={prefs.joinReasons ?? []}
+      onToggle={toggle}
+    />
+  );
+}
+
+/**
+ * The optional "understand your drinking a little better" step. Approximate,
+ * human, non-clinical: cadence, what, roughly how much, and what leads to it.
+ */
+export function DrinkingStep({
+  prefs,
+  onChange,
+}: {
+  prefs: UserPreferences;
+  onChange: (p: Partial<UserPreferences>) => void;
+}) {
+  const toggleType = (key: string) => {
+    const cur = prefs.drinkTypes ?? [];
+    onChange({
+      drinkTypes: cur.includes(key)
+        ? cur.filter((k) => k !== key)
+        : [...cur, key],
+    });
+  };
+  const toggleTrigger = (key: string) => {
+    const cur = prefs.drinkTriggers ?? [];
+    onChange({
+      drinkTriggers: cur.includes(key)
+        ? cur.filter((k) => k !== key)
+        : [...cur, key],
+    });
+  };
+  return (
+    <View style={{ gap: 22 }}>
+      <View>
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+          How often do you drink?
+        </Text>
+        <SelectChips
+          options={DRINK_FREQUENCIES}
+          selected={prefs.drinkFrequency ? [prefs.drinkFrequency] : []}
+          multi={false}
+          onToggle={(key) =>
+            onChange({ drinkFrequency: prefs.drinkFrequency === key ? null : key })
+          }
+        />
+      </View>
+      <View>
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+          What do you usually drink?
+        </Text>
+        <SelectChips
+          options={DRINK_TYPES}
+          selected={prefs.drinkTypes ?? []}
+          onToggle={toggleType}
+        />
+      </View>
+      <View>
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+          Roughly how much?
+        </Text>
+        <SelectChips
+          options={DRINK_AMOUNTS}
+          selected={prefs.drinkAmount ? [prefs.drinkAmount] : []}
+          multi={false}
+          onToggle={(key) =>
+            onChange({ drinkAmount: prefs.drinkAmount === key ? null : key })
+          }
+        />
+      </View>
+      <View>
+        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+          What usually leads you to drink?
+        </Text>
+        <SelectChips
+          options={DRINK_TRIGGERS}
+          selected={prefs.drinkTriggers ?? []}
+          onToggle={toggleTrigger}
+        />
+      </View>
+    </View>
+  );
+}
+
 export function RhythmStep({
   prefs,
   onChange,

@@ -117,18 +117,13 @@ export function useSignIn() {
 }
 
 export function useSignUp() {
-  return async (email: string, password: string, username: string) => {
+  // Signup is pure account creation now — just email + password. The username
+  // (and everything else) is chosen in onboarding, so the first screens the
+  // user sees are about them, not a form. The handle_new_user trigger creates
+  // the profile row; onboarding fills in the username.
+  return async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
-
-    if (data.user) {
-      // The handle_new_user trigger may have already created the profile row.
-      // Use upsert so the username is saved regardless of trigger timing.
-      const { error: upsertError } = await supabase
-        .from('profiles')
-        .upsert({ id: data.user.id, username }, { onConflict: 'id' });
-      if (upsertError) throw upsertError;
-    }
     return data;
   };
 }
