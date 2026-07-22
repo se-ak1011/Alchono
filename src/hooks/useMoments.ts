@@ -78,7 +78,8 @@ export interface MyMoment {
   caption: string | null;
   shared: boolean;
   moderation_status: string; // 'private' | 'pending' | 'approved' | 'rejected'
-  url: string | null; // signed, filled client-side
+  url: string | null; // signed preview (thumb for video, the photo otherwise)
+  mediaUrl: string | null; // signed full media — the video/photo itself, to play/open
 }
 
 function randomId(): string {
@@ -114,10 +115,19 @@ export function useMyMoments() {
       const rows = (data ?? []) as any[];
       return Promise.all(
         rows.map(async (m) => {
-          const { data: s } = await supabase.storage
+          // Preview = thumb for videos, the photo itself otherwise.
+          const { data: preview } = await supabase.storage
             .from(BUCKET)
             .createSignedUrl(m.thumb_path ?? m.media_path, 3600);
-          return { ...m, url: s?.signedUrl ?? null } as MyMoment;
+          // Full media = the actual video/photo, for playing/opening.
+          const media = m.thumb_path
+            ? await supabase.storage.from(BUCKET).createSignedUrl(m.media_path, 3600)
+            : { data: preview };
+          return {
+            ...m,
+            url: preview?.signedUrl ?? null,
+            mediaUrl: media.data?.signedUrl ?? null,
+          } as MyMoment;
         }),
       );
     },

@@ -67,6 +67,14 @@ export default function MyMomentsScreen() {
           const label = statusLabel(item);
           return (
             <Pressable
+              onPress={() => {
+                const uri = item.mediaUrl ?? item.url;
+                if (uri)
+                  router.push({
+                    pathname: '/moments/play',
+                    params: { uri, type: item.media_type },
+                  });
+              }}
               onLongPress={() => confirmDelete(item)}
               style={{ width: SIZE, height: SIZE }}
               className="bg-surface overflow-hidden"
@@ -79,8 +87,10 @@ export default function MyMomentsScreen() {
                 </View>
               )}
               {item.media_type === 'video' && (
-                <View className="absolute top-1.5 right-1.5">
-                  <Feather name="video" size={14} color="#ECE9F1" />
+                <View className="absolute inset-0 items-center justify-center">
+                  <View className="w-9 h-9 rounded-full bg-black/50 items-center justify-center">
+                    <Feather name="play" size={16} color="#fff" />
+                  </View>
                 </View>
               )}
               {label && (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable, Image, FlatList } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
@@ -10,26 +9,35 @@ import { headingShadow } from '@/styles';
 import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
 
 function MomentCard({ item }: { item: FeedMoment }) {
+  const router = useRouter();
+  const openPlayer = (uri: string, type: 'photo' | 'video') =>
+    router.push({ pathname: '/moments/play', params: { uri, type } });
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
       className="mx-6 mb-5 bg-surface rounded-3xl overflow-hidden border border-white/8"
     >
       {item.media_type === 'video' && item.url ? (
-        <Video
-          source={{ uri: item.url }}
-          posterSource={item.thumb_url ? { uri: item.thumb_url } : undefined}
-          usePoster
-          useNativeControls
-          resizeMode={ResizeMode.COVER}
-          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
-        />
+        <Pressable onPress={() => openPlayer(item.url!, 'video')}>
+          <Image
+            source={{ uri: item.thumb_url ?? item.url }}
+            style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
+            resizeMode="cover"
+          />
+          <View className="absolute inset-0 items-center justify-center">
+            <View className="w-16 h-16 rounded-full bg-black/45 items-center justify-center">
+              <Feather name="play" size={28} color="#fff" style={{ marginLeft: 3 }} />
+            </View>
+          </View>
+        </Pressable>
       ) : item.url ? (
-        <Image
-          source={{ uri: item.url }}
-          style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
-          resizeMode="cover"
-        />
+        <Pressable onPress={() => openPlayer(item.url!, 'photo')}>
+          <Image
+            source={{ uri: item.url }}
+            style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
+            resizeMode="cover"
+          />
+        </Pressable>
       ) : null}
 
       <View className="px-5 py-4">
