@@ -55,12 +55,21 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <View className="px-6 pt-5 pb-4 flex-row items-start justify-between">
-          <Text
-            className="text-text-primary text-3xl font-semibold tracking-tight"
-            style={headingShadow}
-          >
-            Profile
-          </Text>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={() => router.back()}
+              hitSlop={12}
+              className="p-1 -ml-1 active:opacity-60"
+            >
+              <Feather name="chevron-left" size={26} color="#B2ACC0" />
+            </Pressable>
+            <Text
+              className="text-text-primary text-3xl font-semibold tracking-tight"
+              style={headingShadow}
+            >
+              Me
+            </Text>
+          </View>
           <Pressable
             onPress={() => router.push('/settings')}
             hitSlop={12}
@@ -87,8 +96,36 @@ export default function ProfileScreen() {
           </View>
         </Pressable>
 
-        {/* Your circle — the people and support around your recovery */}
+        {/* Your journey — the tracking + progress that used to live on Home */}
         <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2.5 ml-7">
+          Your journey
+        </Text>
+        <View className="mx-6">
+          <HubCard
+            elevated
+            title="Tonight"
+            subtitle="Mark an alcohol-free day, or track a session with gentle nudges. Awareness, not judgement."
+            onPress={() => router.push('/session/track' as any)}
+          />
+          <HubCard
+            title="Progress"
+            subtitle="Your patterns, moods and the tough moments you got through."
+            onPress={() => router.push('/(tabs)/insights' as any)}
+          />
+          <HubCard
+            title="Looking forward to"
+            subtitle="The things you're staying the course for."
+            onPress={() => router.push('/goals' as any)}
+          />
+          <HubCard
+            title="Achievements"
+            subtitle="Your milestones, one star at a time."
+            onPress={() => router.push('/constellation' as any)}
+          />
+        </View>
+
+        {/* Your circle — the people and support around your recovery */}
+        <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2.5 mt-6 ml-7">
           Your circle
         </Text>
         <View className="mx-6">

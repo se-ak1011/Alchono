@@ -3,6 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
 import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { headingShadow } from "@/styles";
@@ -32,12 +33,21 @@ export default function SupportScreen() {
     <SafeArea>
       <View className="px-6 pt-6 pb-2">
         <View className="flex-row items-start justify-between">
-          <Text
-            className="text-text-primary text-3xl font-semibold tracking-tight"
-            style={headingShadow}
-          >
-            Support
-          </Text>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={() => router.back()}
+              hitSlop={12}
+              className="p-1 -ml-1 active:opacity-60"
+            >
+              <Feather name="chevron-left" size={26} color="#B2ACC0" />
+            </Pressable>
+            <Text
+              className="text-text-primary text-3xl font-semibold tracking-tight"
+              style={headingShadow}
+            >
+              Support
+            </Text>
+          </View>
           <Pressable
             onPress={() => go("/messages")}
             hitSlop={8}

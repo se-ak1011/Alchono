@@ -41,16 +41,16 @@ export default function ProSignupScreen() {
 
       // Professional role: skip member onboarding, register unverified.
       // Username is saved here now that useSignUp no longer takes one.
-      const { data: updated, error: profErr } = await supabase
+      const { data: updated, error: profErr } = await (supabase as any)
         .from('profiles')
-        .update({ is_professional: true, onboarding_completed: true, username: username.trim() } as any)
+        .update({ is_professional: true, onboarding_completed: true, username: username.trim() })
         .eq('id', user.id)
         .select()
         .maybeSingle();
       if (profErr) throw profErr;
 
-      const { error: proErr } = await supabase
-        .from('professionals' as any)
+      const { error: proErr } = await (supabase as any)
+        .from('professionals')
         .insert({ user_id: user.id, org: org.trim() || null, verified: false });
       if (proErr && proErr.code !== '23505') throw proErr;
 

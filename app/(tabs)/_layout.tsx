@@ -1,130 +1,27 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
-import { View, Pressable, Text, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
-import {
-  HomeIcon,
-  SupportIcon,
-  JournalIcon,
-  InsightsIcon,
-  ProfileIcon,
-} from '@/components/icons/TabIcons';
+import { Stack } from 'expo-router';
 
-const TABS = [
-  { name: 'index', label: 'Home', Icon: HomeIcon },
-  { name: 'support', label: 'Support', Icon: SupportIcon },
-  { name: 'journal', label: 'Journal', Icon: JournalIcon },
-  { name: 'insights', label: 'Insights', Icon: InsightsIcon },
-  { name: 'profile', label: 'Profile', Icon: ProfileIcon },
-] as const;
-
-function CustomTabBar({ state, descriptors, navigation }: any) {
-  const insets = useSafeAreaInsets();
-
-  return (
-    <View
-      style={{
-        backgroundColor: '#383243',
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(255,255,255,0.06)',
-        paddingBottom: insets.bottom,
-        paddingTop: 10,
-        paddingHorizontal: 8,
-        flexDirection: 'row',
-      }}
-    >
-      {state.routes.map((route: any, index: number) => {
-        const tab = TABS[index];
-        const isFocused = state.index === index;
-
-        return (
-          <TabItem
-            key={route.key}
-            tab={tab}
-            isFocused={isFocused}
-            onPress={() => {
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: route.key,
-                canPreventDefault: true,
-              });
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(route.name);
-              }
-            }}
-          />
-        );
-      })}
-    </View>
-  );
-}
-
-function TabItem({
-  tab,
-  isFocused,
-  onPress,
-}: {
-  tab: (typeof TABS)[number];
-  isFocused: boolean;
-  onPress: () => void;
-}) {
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Pressable
-      onPressIn={() => {
-        scale.value = withSpring(0.88, { damping: 12, stiffness: 300 });
-      }}
-      onPressOut={() => {
-        scale.value = withSpring(1, { damping: 12, stiffness: 300 });
-      }}
-      onPress={async () => {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onPress();
-      }}
-      style={{ flex: 1, alignItems: 'center' }}
-    >
-      <Animated.View style={[animatedStyle, { alignItems: 'center', paddingVertical: 6 }]}>
-        <tab.Icon
-          size={26}
-          color={isFocused ? '#A489DE' : '#817B91'}
-          strokeWidth={isFocused ? 2 : 1.75}
-        />
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 4,
-            fontFamily: isFocused ? 'Inter_600SemiBold' : 'Inter_400Regular',
-            color: isFocused ? '#A489DE' : '#817B91',
-          }}
-        >
-          {tab.label}
-        </Text>
-      </Animated.View>
-    </Pressable>
-  );
-}
-
+/**
+ * The bottom tab bar is gone. Home is the companion's world; every destination
+ * is reached from the orbit or the hamburger drawer, and returns here. These
+ * former tabs are now plain stacked screens (Home is the root), so going into
+ * Writing Room / Support / Me / Progress and coming back feels like stepping
+ * out and returning to the companion — not switching tabs.
+ */
 export default function TabLayout() {
   return (
-    <Tabs
-      tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        animation: 'fade',
+        contentStyle: { backgroundColor: '#201D28' },
+      }}
     >
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="support" />
-      <Tabs.Screen name="journal" />
-      <Tabs.Screen name="insights" />
-      <Tabs.Screen name="profile" />
-    </Tabs>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="support" />
+      <Stack.Screen name="journal" />
+      <Stack.Screen name="insights" />
+      <Stack.Screen name="profile" />
+    </Stack>
   );
 }

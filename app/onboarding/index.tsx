@@ -104,7 +104,7 @@ export default function OnboardingScreen() {
       Alert.alert('Session expired', 'Please sign in again.');
       return false;
     }
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('profiles')
       .update({ username: name })
       .eq('id', user.id);
@@ -124,11 +124,11 @@ export default function OnboardingScreen() {
 
   const stepSavePrefs = () => {
     if (!user) return;
-    supabase
+    (supabase as any)
       .from('profiles')
       .update({ preferences: prefs as any })
       .eq('id', user.id)
-      .then(({ error }) => {
+      .then(({ error }: { error: { message?: string } | null }) => {
         if (error) console.warn('[onboarding] prefs step-save failed:', error.message);
       });
   };
@@ -139,7 +139,7 @@ export default function OnboardingScreen() {
       return;
     }
     setSaving(true);
-    const { data: updatedRows, error } = await supabase
+    const { data: updatedRows, error } = await (supabase as any)
       .from('profiles')
       .update({ onboarding_completed: true, preferences: prefs as any })
       .eq('id', user.id)
@@ -149,7 +149,7 @@ export default function OnboardingScreen() {
 
     if (!error && !saved) {
       // Profile row missing (e.g. deleted during testing) — recreate it.
-      const { data: upserted } = await supabase
+      const { data: upserted } = await (supabase as any)
         .from('profiles')
         .upsert(
           {

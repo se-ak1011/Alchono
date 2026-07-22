@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, View, Text, Pressable, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { Card } from '@/components/ui/Card';
 import { InsightCard } from '@/components/insights/InsightCard';
@@ -122,13 +123,22 @@ export default function InsightsScreen() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         <View className="flex-row items-start justify-between px-6 pt-4 pb-3">
-          <View>
-            <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
-              Patterns
-            </Text>
-            <Text className="text-text-secondary text-sm mt-1">
-              Your record.
-            </Text>
+          <View className="flex-row items-start gap-3 flex-1">
+            <Pressable
+              onPress={() => router.back()}
+              hitSlop={12}
+              className="p-1 -ml-1 active:opacity-60"
+            >
+              <Feather name="chevron-left" size={24} color="#B2ACC0" />
+            </Pressable>
+            <View>
+              <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+                Progress
+              </Text>
+              <Text className="text-text-secondary text-sm mt-1">
+                Your record.
+              </Text>
+            </View>
           </View>
           <Pressable
             onPress={() => router.push('/timeline')}
