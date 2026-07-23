@@ -12,9 +12,9 @@ import {
 } from '@/hooks/useLetters';
 
 const REACTIONS = [
-  { key: 'needed_this', emoji: '❤️', label: 'I needed this' },
-  { key: 'wrote_back', emoji: '💬', label: 'Write one back' },
-  { key: 'keep_moving', emoji: '🌱', label: 'Keep moving' },
+  { key: 'needed_this', label: 'I needed this' },
+  { key: 'wrote_back', label: 'Write one back' },
+  { key: 'keep_moving', label: 'Keep moving' },
 ] as const;
 
 export default function LetterScreen() {
@@ -104,9 +104,8 @@ export default function LetterScreen() {
               <Pressable
                 key={r.key}
                 onPress={() => handleReaction(r.key)}
-                className="flex-row items-center justify-center gap-3 bg-surface rounded-2xl py-4 border border-white/8 active:border-white/25"
+                className="items-center justify-center bg-surface rounded-2xl py-4 border border-white/8 active:border-white/25"
               >
-                <Text className="text-lg">{r.emoji}</Text>
                 <Text className="text-text-primary text-base font-medium">{r.label}</Text>
               </Pressable>
             ))}

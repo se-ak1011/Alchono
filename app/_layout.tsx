@@ -122,6 +122,10 @@ function RootLayoutNav() {
         <Stack.Screen name="session/post-game" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/track" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
+          name="checkin"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
           name="moments/play"
           options={{ presentation: 'fullScreenModal', animation: 'fade' }}
         />

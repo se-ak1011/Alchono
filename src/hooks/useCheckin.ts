@@ -11,14 +11,19 @@ export function useTodayCheckin() {
   return useQuery({
     queryKey: ['checkin', userId, today],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('daily_checkins')
         .select('*')
         .eq('user_id', userId!)
         .gte('created_at', `${today}T00:00:00`)
         .lte('created_at', `${today}T23:59:59`)
         .maybeSingle();
-      return data;
+      return data as {
+        id: string;
+        mood: string;
+        mood_emoji?: string;
+        created_at: string;
+      } | null;
     },
     enabled: !!userId,
   });
@@ -39,7 +44,7 @@ export function useSubmitCheckin() {
       emoji: string;
       notes?: string;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('daily_checkins')
         .insert({
           user_id: userId!,
@@ -74,7 +79,7 @@ export function useUpdateCheckin() {
       mood: string;
       emoji: string;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('daily_checkins')
         .update({ mood, mood_emoji: emoji })
         .eq('id', id)

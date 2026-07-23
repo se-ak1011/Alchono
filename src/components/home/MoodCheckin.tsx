@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { MOOD_OPTIONS, type MoodOption } from '@/types';
 import { useTodayCheckin, useSubmitCheckin, useUpdateCheckin } from '@/hooks/useCheckin';
 
-export function MoodCheckin() {
+export function MoodCheckin({ onDone }: { onDone?: () => void } = {}) {
   const { data: todayCheckin, isLoading } = useTodayCheckin();
   const { mutate: submitCheckin, isPending: isSubmitting } = useSubmitCheckin();
   const { mutate: updateCheckin, isPending: isUpdating } = useUpdateCheckin();
@@ -90,10 +90,10 @@ export function MoodCheckin() {
     if (editing && todayCheckin) {
       updateCheckin(
         { id: todayCheckin.id, mood, emoji },
-        { onSuccess: () => setEditing(false) },
+        { onSuccess: () => { setEditing(false); onDone?.(); } },
       );
     } else {
-      submitCheckin({ mood, emoji });
+      submitCheckin({ mood, emoji }, { onSuccess: () => onDone?.() });
     }
   };
 

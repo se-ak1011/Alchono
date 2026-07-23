@@ -18,6 +18,7 @@ import { useSmartReminder } from "@/hooks/useSmartReminder";
 import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useActiveSession } from "@/hooks/useDrinkingSession";
+import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
 import { useAuthStore } from "@/store/authStore";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
@@ -94,6 +95,7 @@ export default function HomeScreen() {
   const { height } = useWindowDimensions();
   const username = useAuthStore((s) => s.profile?.username);
   const { data: activeSession } = useActiveSession();
+  const { data: todayCheckin } = useTodayCheckin();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [caption, setCaption] = useState<string | null>(null);
   const captionOpacity = useRef(new RNAnimated.Value(0)).current;
@@ -168,6 +170,22 @@ export default function HomeScreen() {
           <Text className="text-text-muted text-sm mt-1">
             {companion.name} is here with you.
           </Text>
+          {/* Daily check-in — a calm once-a-day prompt that vanishes once done */}
+          {!todayCheckin && (
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push("/checkin");
+              }}
+              className="mt-4 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70"
+              style={{ backgroundColor: "rgba(236,233,241,0.05)" }}
+            >
+              <Text className="text-text-secondary text-sm">
+                How are you feeling today?
+              </Text>
+              <Feather name="chevron-right" size={14} color="#817B91" />
+            </Pressable>
+          )}
         </View>
 
         {/* Companion, centred */}
