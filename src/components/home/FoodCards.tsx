@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { FOOD_LIST, type FoodSection } from '@/lib/food';
@@ -10,8 +9,7 @@ import { FOOD_LIST, type FoodSection } from '@/lib/food';
  * washed in its own colour, its name in the app's hand. No previews, no
  * clutter — press and you're in the feed.
  */
-export function FoodCards() {
-  const insets = useSafeAreaInsets();
+export function FoodCards({ top }: { top: number }) {
   const router = useRouter();
 
   return (
@@ -20,12 +18,12 @@ export function FoodCards() {
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 0,
+        top,
         flexDirection: 'row',
-        gap: 10,
-        paddingHorizontal: 16,
-        paddingTop: 4,
-        paddingBottom: insets.bottom + 8,
+        gap: 8,
+        paddingHorizontal: 14,
+        paddingTop: 8,
+        paddingBottom: 10,
       }}
     >
       {FOOD_LIST.map((section) => (
@@ -49,10 +47,11 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
       className="active:opacity-80"
       style={{
         flex: 1,
-        minHeight: 96,
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 14,
+        minHeight: 92,
+        borderRadius: 18,
+        paddingHorizontal: 8,
+        paddingTop: 13,
+        paddingBottom: 11,
         backgroundColor: section.tint,
         borderWidth: 1,
         borderColor: section.edge,
@@ -60,29 +59,41 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
         justifyContent: 'center',
       }}
     >
-      <Text
+      <View
         style={{
-          color: '#817B91',
-          fontSize: 9,
-          letterSpacing: 1.5,
-          fontFamily: 'Inter_600SemiBold',
-          marginBottom: 2,
+          alignItems: 'center',
+          transform: [{ translateY: section.key === 'giggles' ? 3 : 0 }],
         }}
       >
-        FOOD FOR
-      </Text>
-      <Text
-        style={{
-          color: section.accent,
-          fontFamily: 'SkinnyCustard',
-          fontSize: 24,
-          lineHeight: 26,
-          textAlign: 'center',
-        }}
-        numberOfLines={2}
-      >
-        {section.lead}
-      </Text>
+        <Text
+          style={{
+            color: '#817B91',
+            fontSize: 8,
+            letterSpacing: 1.25,
+            fontFamily: 'Inter_600SemiBold',
+            marginBottom: 3,
+          }}
+        >
+          FOOD FOR
+        </Text>
+        <Text
+          style={{
+            color: section.accent,
+            fontFamily: 'SkinnyCustard',
+            fontSize: 22,
+            // SkinnyCustard's capital T rises above its reported font bounds.
+            // Give the one-line Thought label enough leading so its top renders.
+            lineHeight: section.key === 'thought' ? 32 : 27,
+            textAlign: 'center',
+            paddingHorizontal: 2,
+            paddingTop: section.key === 'thought' ? 5 : 1,
+            paddingBottom: section.key === 'thought' ? 2 : 0,
+          }}
+          numberOfLines={2}
+        >
+          {section.lead}
+        </Text>
+      </View>
     </Pressable>
   );
 }

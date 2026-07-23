@@ -86,8 +86,8 @@ export const ZONES: Record<ZoneKey, Zone> = {
     tint: 'rgba(170,164,150,0.18)',
     edge: 'rgba(198,191,176,0.40)',
   },
-  // The urge flow — the one place boldness is allowed. Dark aubergine, always
-  // findable at the base of Home as a filled pill (not an orbit disc).
+  // The urge flow — the one place boldness is allowed. Dark aubergine and
+  // always visible in Home's orbit, even while the calm destinations are shut.
   urge: {
     key: 'urge',
     label: 'I want a drink',
@@ -99,14 +99,15 @@ export const ZONES: Record<ZoneKey, Zone> = {
   },
 };
 
-/** The six calm zones that orbit the companion (urge is handled separately). */
-export const ORBIT_ZONES: Zone[] = [
+/** Home's orbit; the urge action remains visible when the other items collapse. */
+export const HOME_ORBIT_ZONES: Zone[] = [
   ZONES.reading,
   ZONES.writing,
   ZONES.community,
   ZONES.games,
   ZONES.support,
   ZONES.me,
+  ZONES.urge,
 ];
 
 /** Every destination, in the order the hamburger drawer lists them. */
