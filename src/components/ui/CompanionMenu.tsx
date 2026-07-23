@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Dimensions, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
+import { OrbitChip } from "@/components/ui/OrbitChip";
 
 type CompanionContext =
   | "home"
@@ -235,6 +236,9 @@ export function CompanionMenu({
   const [renderMenu, setRenderMenu] = useState(visible);
   const lastMessage = useRef<string | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
+  const [chipSizes, setChipSizes] = useState<
+    Record<number, { width: number; height: number }>
+  >({});
   const [constellationPrompt, setConstellationPrompt] = useState<string | null>(
     null,
   );
@@ -377,8 +381,8 @@ export function CompanionMenu({
                         outputRange: [0, point.y],
                       }),
                     },
-                    { translateX: -44 },
-                    { translateY: -18 },
+                    { translateX: -(chipSizes[index]?.width ?? 88) / 2 },
+                    { translateY: -(chipSizes[index]?.height ?? 38) / 2 },
                     {
                       scale: anim.interpolate({
                         inputRange: [0, 1],
@@ -388,17 +392,23 @@ export function CompanionMenu({
                   ],
                 }}
               >
-                <Pressable
-                  accessibilityRole="button"
+                <OrbitChip
+                  label={chip.label}
+                  emergency={chip.emergency}
                   onPress={() => runChip(chip)}
-                  className={`rounded-full border px-3.5 py-2 ${chip.emergency ? "bg-accent border-accent" : "bg-black/60 border-stone-500/20"}`}
-                >
-                  <Text
-                    className={`text-xs font-semibold ${chip.emergency ? "text-bg" : "text-stone-300"}`}
-                  >
-                    {chip.label}
-                  </Text>
-                </Pressable>
+                  onLayout={(event) => {
+                    const { width, height } = event.nativeEvent.layout;
+                    setChipSizes((current) => {
+                      const previous = current[index];
+                      if (
+                        previous?.width === width &&
+                        previous.height === height
+                      )
+                        return current;
+                      return { ...current, [index]: { width, height } };
+                    });
+                  }}
+                />
               </Animated.View>
             );
           })}

@@ -103,9 +103,9 @@ export default function SupportScreen() {
             width={174}
             height={206}
             cropHeight={178}
-            zoneHeight={companionMenuOpen ? 266 : 198}
+            zoneHeight={250}
             companionLeft={76}
-            companionTop={companionMenuOpen ? 60 : 6}
+            companionTop={32}
             points={[
               { x: -92, y: -56 },
               { x: 92, y: -56 },
