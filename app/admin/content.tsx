@@ -9,6 +9,7 @@ import {
   useAdminPending,
   usePublishContent,
   useRemoveContent,
+  useGenerateContent,
   type ContentTable,
 } from '@/hooks/useAdminContent';
 import { headingShadow } from '@/styles';
@@ -67,6 +68,7 @@ export default function AdminContentScreen() {
   const router = useRouter();
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
   const { data, isLoading } = useAdminPending();
+  const { mutate: generate, isPending: generating } = useGenerateContent();
 
   const stories = data?.stories ?? [];
   const dilemmas = data?.dilemmas ?? [];
@@ -86,6 +88,25 @@ export default function AdminContentScreen() {
             Nothing publishes until you approve it.
           </Text>
         </View>
+        {isAdmin && (
+          <Pressable
+            disabled={generating}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              generate();
+            }}
+            className="bg-surface-2 rounded-full px-3.5 py-2 border border-white/10 active:opacity-70 flex-row items-center gap-2"
+          >
+            {generating ? (
+              <ActivityIndicator size="small" color="#B2ACC0" />
+            ) : (
+              <Feather name="refresh-cw" size={14} color="#B2ACC0" />
+            )}
+            <Text className="text-text-secondary text-xs font-semibold">
+              {generating ? 'Writing…' : 'Generate'}
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {!adminLoading && !isAdmin ? (

@@ -64,6 +64,22 @@ export function usePublishContent() {
   });
 }
 
+/** Ask the generator for a fresh batch (admins only, server-verified). */
+export function useGenerateContent() {
+  return useMutation({
+    mutationFn: async (): Promise<{ giggles: number; dilemmas: number }> => {
+      const { data, error } = await supabase.functions.invoke('generate-content', {
+        body: { kind: 'both' },
+      });
+      if (error) throw error;
+      return { giggles: data?.giggles ?? 0, dilemmas: data?.dilemmas ?? 0 };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-pending-content'] });
+    },
+  });
+}
+
 /** Bin a pending item for good. */
 export function useRemoveContent() {
   return useMutation({
