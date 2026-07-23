@@ -20,7 +20,8 @@ export type ZoneKey =
 export interface Zone {
   key: ZoneKey;
   label: string;
-  emoji: string;
+  /** Single-letter monogram (in the display font) — replaces emojis. */
+  monogram: string;
   route: string;
   /** Solid accent hue for headers/icons. */
   accent: string;
@@ -34,7 +35,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   reading: {
     key: 'reading',
     label: 'Reading Corner',
-    emoji: '📖',
+    monogram: 'R',
     route: '/toolkit',
     accent: '#B296D0', // heather purple
     tint: 'rgba(139,107,168,0.20)',
@@ -43,7 +44,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   writing: {
     key: 'writing',
     label: 'Writing Room',
-    emoji: '✍️',
+    monogram: 'W',
     route: '/(tabs)/journal',
     accent: '#CE969E', // dusty rose
     tint: 'rgba(178,120,130,0.18)',
@@ -52,7 +53,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   community: {
     key: 'community',
     label: 'Community Hub',
-    emoji: '🤝',
+    monogram: 'C',
     route: '/community',
     accent: '#9EBE96', // muted sage
     tint: 'rgba(122,150,120,0.18)',
@@ -61,7 +62,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   games: {
     key: 'games',
     label: 'Games Arcade',
-    emoji: '🎮',
+    monogram: 'G',
     route: '/session/games',
     accent: '#D6B678', // muted amber
     tint: 'rgba(190,158,96,0.18)',
@@ -70,7 +71,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   support: {
     key: 'support',
     label: 'Support',
-    emoji: '💜',
+    monogram: 'S',
     route: '/(tabs)/support',
     accent: '#A082BE', // deep plum
     tint: 'rgba(120,90,150,0.22)',
@@ -79,7 +80,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   me: {
     key: 'me',
     label: 'Me',
-    emoji: '👤',
+    monogram: 'M',
     route: '/(tabs)/profile',
     accent: '#B4AEA2', // warm grey
     tint: 'rgba(150,144,132,0.16)',
@@ -90,7 +91,7 @@ export const ZONES: Record<ZoneKey, Zone> = {
   urge: {
     key: 'urge',
     label: 'I want a drink',
-    emoji: '🍷',
+    monogram: '!',
     route: '/session/urge',
     accent: '#3B3352',
     tint: 'rgba(59,51,82,0.9)',

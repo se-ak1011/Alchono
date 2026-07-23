@@ -140,6 +140,10 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    // The app's display face — thin, handwritten. Used only for identity:
+    // hero titles, the greeting, the wordmark and the orbit monograms. Body
+    // and UI stay on Inter for legibility.
+    SkinnyCustard: require('../assets/fonts/SkinnyCustardLemonCake.ttf'),
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);
 

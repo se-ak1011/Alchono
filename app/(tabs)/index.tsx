@@ -67,7 +67,16 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
           shadowOffset: { width: 0, height: 5 },
         }}
       >
-        <Text style={{ fontSize: 25 }}>{zone.emoji}</Text>
+        <Text
+          style={{
+            fontFamily: "SkinnyCustard",
+            fontSize: 30,
+            lineHeight: 34,
+            color: zone.accent,
+          }}
+        >
+          {zone.monogram}
+        </Text>
       </View>
       <Text className="text-text-secondary text-xs font-semibold text-center mt-1.5">
         {zone.label}
@@ -256,8 +265,10 @@ export default function HomeScreen() {
               shadowOffset: { width: 0, height: 7 },
             }}
           >
-            <Text style={{ fontSize: 19 }}>{urge.emoji}</Text>
-            <Text className="text-text-primary text-base font-bold">
+            <Text
+              className="text-text-primary"
+              style={{ fontFamily: "SkinnyCustard", fontSize: 23, lineHeight: 27 }}
+            >
               {urge.label}
             </Text>
           </Pressable>

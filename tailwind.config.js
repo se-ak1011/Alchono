@@ -34,6 +34,9 @@ module.exports = {
         medium: ['Inter_500Medium', 'System'],
         semibold: ['Inter_600SemiBold', 'System'],
         bold: ['Inter_700Bold', 'System'],
+        // The handwritten display face — identity only (monograms, the urge
+        // pill, anywhere we want the wordmark's character).
+        display: ['SkinnyCustard'],
       },
       borderRadius: {
         '2xl': '8px',

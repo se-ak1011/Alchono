@@ -23,7 +23,7 @@ function rgba(hex: string, alpha: number): string {
 
 export function ZoneGlow({
   zone,
-  height = 360,
+  height = 400,
   intensity = 1,
 }: {
   zone: ZoneKey;
@@ -40,8 +40,8 @@ export function ZoneGlow({
     >
       <LinearGradient
         colors={[
-          rgba(accent, 0.16 * intensity),
-          rgba(accent, 0.06 * intensity),
+          rgba(accent, 0.32 * intensity),
+          rgba(accent, 0.13 * intensity),
           'rgba(32, 29, 40, 0)', // plum base (#201D28) at zero alpha → clean fade
         ]}
         locations={[0, 0.45, 1]}

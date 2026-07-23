@@ -3,7 +3,10 @@
 // fully bold, crisp. No shadow (see docs/theme.md).
 export const headingShadow = {
   color: '#ECE9F1',
-  fontFamily: 'Inter_700Bold',
+  // The display face carries every hero title and the greeting. It has a
+  // single (medium) weight — at title size its thin, handwritten character
+  // reads as premium identity, so we no longer lean on a bold weight here.
+  fontFamily: 'SkinnyCustard',
 };
 
 // Reserved for the few moments that should feel luminous: streaks, milestone

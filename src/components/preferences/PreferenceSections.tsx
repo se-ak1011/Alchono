@@ -57,7 +57,6 @@ export const JOIN_REASONS = [
   { key: 'stop', label: 'I want to stop drinking' },
   { key: 'cut-down', label: 'I want to cut down' },
   { key: 'worried', label: 'I’m worried alcohol is taking over' },
-  { key: 'someone-else', label: 'I’m here for someone else' },
   { key: 'exploring', label: 'I’m just exploring' },
 ] as const;
 

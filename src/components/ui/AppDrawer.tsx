@@ -119,7 +119,16 @@ export function AppDrawer({
                 borderColor: zone.edge,
               }}
             >
-              <Text style={{ fontSize: 20 }}>{zone.emoji}</Text>
+              <Text
+                style={{
+                  fontFamily: 'SkinnyCustard',
+                  fontSize: 23,
+                  lineHeight: 26,
+                  color: zone.accent,
+                }}
+              >
+                {zone.monogram}
+              </Text>
             </View>
             <Text className="text-text-primary text-base font-medium flex-1">
               {zone.label}
