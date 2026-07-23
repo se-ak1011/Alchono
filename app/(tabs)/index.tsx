@@ -14,6 +14,7 @@ import { SafeArea } from "@/components/ui/SafeArea";
 import { CompanionArt } from "@/components/ui/CompanionArt";
 import { AppDrawer } from "@/components/ui/AppDrawer";
 import { PauseModal } from "@/components/home/PauseModal";
+import { GoodNewsBand } from "@/components/home/GoodNewsBand";
 import { useSmartReminder } from "@/hooks/useSmartReminder";
 import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
@@ -22,6 +23,10 @@ import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
+
+// Roughly how tall the good-news footer stands; the orbit reserves this space.
+// (Approximate — includes the home-indicator inset on most phones.)
+const NEWS_BAND_HEIGHT = 150;
 
 // Gentle lines the companion offers when tapped — presence, not tasks.
 const QUIET_LINES = [
@@ -97,15 +102,17 @@ export default function HomeScreen() {
   useWidgetSync();
   useDrinkIntentSync();
 
-  // Vertical anchors as fractions of the available height, so the orbit keeps
-  // its shape from small phones to tall ones.
+  // The good-news band is a fixed footer; the companion + orbit live in the
+  // space above it. Anchors are fractions of that available height, so the
+  // orbit keeps its shape from small phones to tall ones.
+  const AH = height - NEWS_BAND_HEIGHT;
   const rows = useMemo(
     () => ({
-      top: height * 0.26,
-      mid: height * 0.46,
-      low: height * 0.64,
+      top: AH * 0.24,
+      mid: AH * 0.44,
+      low: AH * 0.62,
     }),
-    [height],
+    [AH],
   );
 
   const showQuietLine = () => {
@@ -125,7 +132,7 @@ export default function HomeScreen() {
   const urge = ZONES.urge;
 
   return (
-    <SafeArea>
+    <SafeArea bottom={false}>
       <View style={{ flex: 1, position: "relative" }}>
         {/* Header: hamburger + brand mark */}
         <View className="flex-row items-center justify-between px-6 pt-3">
@@ -191,13 +198,13 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* Companion, centred */}
+        {/* Companion, centred in the space above the news band */}
         <View
           style={{
             position: "absolute",
             left: 0,
             right: 0,
-            top: height * 0.5 - 150,
+            top: AH * 0.44 - 100,
             alignItems: "center",
             zIndex: 5,
           }}
@@ -221,9 +228,9 @@ export default function HomeScreen() {
           ) : null}
           <CompanionArt
             source={pose("bust")}
-            width={230}
-            height={272}
-            cropHeight={232}
+            width={172}
+            height={204}
+            cropHeight={176}
             onPress={showQuietLine}
           />
         </View>
@@ -240,7 +247,13 @@ export default function HomeScreen() {
             When a session is live, a slim chip sits just above it. */}
         <Animated.View
           entering={FadeIn.duration(400)}
-          style={{ position: "absolute", left: 0, right: 0, bottom: 24, alignItems: "center" }}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: NEWS_BAND_HEIGHT + 18,
+            alignItems: "center",
+          }}
         >
           {activeSession ? (
             <Pressable
@@ -297,6 +310,9 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
         </Animated.View>
+
+        {/* A little good news — a calm footer, outside the orbit entirely */}
+        <GoodNewsBand />
       </View>
 
       <PauseModal />
