@@ -334,13 +334,13 @@ export default function JournalScreen() {
           width={JOURNAL_COMPANION_IMAGE_WIDTH}
           height={JOURNAL_COMPANION_IMAGE_HEIGHT}
           cropHeight={152}
-          zoneHeight={companionMenuOpen ? 224 : 168}
+          zoneHeight={224}
           companionLeft={91}
-          companionTop={companionMenuOpen ? 66 : 6}
+          companionTop={36}
           points={[
-            { x: 0, y: -74 },
-            { x: -98, y: 42 },
-            { x: 96, y: 42 },
+            { x: 0, y: -82 },
+            { x: -106, y: 44 },
+            { x: 106, y: 44 },
           ]}
           caption={{ x: 0, y: -94 }}
           className="mx-6 mb-2"
