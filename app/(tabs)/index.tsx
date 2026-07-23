@@ -48,39 +48,33 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         router.push(zone.route as any);
       }}
-      style={[{ position: "absolute", width: 96, alignItems: "center", zIndex: 10 }, style]}
+      style={[{ position: "absolute", zIndex: 10 }, style]}
       className="active:opacity-70"
     >
+      {/* A calm glassy pill: the zone's colour rides the little dot, the label
+          reads itself. Floats over the companion (as in the reference). */}
       <View
         style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
+          flexDirection: "row",
           alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: zone.tint,
+          gap: 9,
+          paddingHorizontal: 16,
+          paddingVertical: 11,
+          borderRadius: 22,
+          backgroundColor: "rgba(236,233,241,0.055)",
           borderWidth: 1,
-          borderColor: zone.edge,
+          borderColor: "rgba(236,233,241,0.10)",
           shadowColor: "#000",
-          shadowOpacity: 0.35,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: 5 },
+          shadowOpacity: 0.3,
+          shadowRadius: 9,
+          shadowOffset: { width: 0, height: 4 },
         }}
       >
-        <Text
-          style={{
-            fontFamily: "SkinnyCustard",
-            fontSize: 30,
-            lineHeight: 34,
-            color: zone.accent,
-          }}
-        >
-          {zone.monogram}
-        </Text>
+        <View
+          style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
+        />
+        <Text className="text-text-primary text-sm font-semibold">{zone.label}</Text>
       </View>
-      <Text className="text-text-secondary text-xs font-semibold text-center mt-1.5">
-        {zone.label}
-      </Text>
     </Pressable>
   );
 }
@@ -204,13 +198,13 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Orbit chips */}
-        <OrbitChip zone={ORBIT_ZONES[0]} style={{ left: 22, top: rows.top }} />
-        <OrbitChip zone={ORBIT_ZONES[1]} style={{ right: 22, top: rows.top }} />
-        <OrbitChip zone={ORBIT_ZONES[2]} style={{ left: 6, top: rows.mid }} />
-        <OrbitChip zone={ORBIT_ZONES[3]} style={{ right: 6, top: rows.mid }} />
-        <OrbitChip zone={ORBIT_ZONES[4]} style={{ left: 42, top: rows.low }} />
-        <OrbitChip zone={ORBIT_ZONES[5]} style={{ right: 42, top: rows.low }} />
+        {/* Orbit chips — pills anchored to the edges, floating around the mate */}
+        <OrbitChip zone={ORBIT_ZONES[0]} style={{ left: 16, top: rows.top }} />
+        <OrbitChip zone={ORBIT_ZONES[1]} style={{ right: 16, top: rows.top }} />
+        <OrbitChip zone={ORBIT_ZONES[2]} style={{ left: 10, top: rows.mid }} />
+        <OrbitChip zone={ORBIT_ZONES[3]} style={{ right: 10, top: rows.mid }} />
+        <OrbitChip zone={ORBIT_ZONES[4]} style={{ left: 28, top: rows.low }} />
+        <OrbitChip zone={ORBIT_ZONES[5]} style={{ right: 28, top: rows.low }} />
 
         {/* The one bold thing — always at the base, always findable.
             When a session is live, a slim chip sits just above it. */}
