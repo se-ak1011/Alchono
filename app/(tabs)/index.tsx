@@ -73,7 +73,16 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
         <View
           style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
         />
-        <Text className="text-text-primary text-sm font-semibold">{zone.label}</Text>
+        <Text
+          style={{
+            color: "#ECE9F1",
+            fontFamily: "SkinnyCustard",
+            fontSize: 17,
+            lineHeight: 20,
+          }}
+        >
+          {zone.label}
+        </Text>
       </View>
     </Pressable>
   );
