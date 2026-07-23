@@ -17,21 +17,9 @@ type Option = {
 // Deliberately only four. Nothing to scroll past, nothing to weigh up.
 const OPTIONS: Option[] = [
   {
-    title: 'I want a drink',
-    subtitle: 'Say it here first. The app takes it from there.',
-    route: '/session/urge',
-    urge: true,
-    warn: true,
-  },
-  {
     title: 'Talk to the AI coach',
     subtitle: 'Always awake. No judgement, any hour.',
     route: '/support/coach',
-  },
-  {
-    title: 'Open the Toolkit',
-    subtitle: 'One small thing that helps, right now.',
-    route: '/toolkit',
   },
   {
     title: 'Emergency help',

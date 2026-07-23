@@ -93,7 +93,10 @@ export function AppDrawer({
         ]}
       >
         <View className="flex-row items-center justify-between px-2 mb-6">
-          <Text className="text-text-primary text-xl font-semibold tracking-tight">
+          <Text
+            className="text-text-primary"
+            style={{ fontFamily: 'SkinnyCustard', fontSize: 26 }}
+          >
             Where to?
           </Text>
           <Pressable onPress={onClose} hitSlop={10} className="p-1 active:opacity-60">
@@ -130,7 +133,16 @@ export function AppDrawer({
                 {zone.monogram}
               </Text>
             </View>
-            <Text className="text-text-primary text-base font-medium flex-1">
+            <Text
+              style={{
+                flex: 1,
+                color: '#ECE9F1',
+                fontFamily: 'SkinnyCustard',
+                fontSize: 21,
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+              }}
+            >
               {zone.label}
             </Text>
             <Feather name="chevron-right" size={18} color="#817B91" />

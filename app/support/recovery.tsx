@@ -10,19 +10,9 @@ type Row = { title: string; subtitle: string; route: string };
 
 const ROWS: Row[] = [
   {
-    title: 'Community',
-    subtitle: 'Share a win, ask for help, or just read along.',
-    route: '/support/community',
-  },
-  {
     title: 'Mentors',
     subtitle: "People who've walked it, a message away.",
     route: '/support/mentors',
-  },
-  {
-    title: 'Learn',
-    subtitle: 'The Toolkit — understand cravings, triggers, and more.',
-    route: '/toolkit',
   },
   {
     title: 'Your progress',
@@ -72,7 +62,7 @@ export default function RecoveryScreen() {
             className="text-text-primary text-4xl font-semibold tracking-tight leading-tight mt-6 mb-3"
             style={headingShadow}
           >
-            Recovery.
+            Recovery
           </Text>
           <Text className="text-text-secondary text-lg leading-relaxed mb-8">
             Not in a hard moment — just here. Look around.

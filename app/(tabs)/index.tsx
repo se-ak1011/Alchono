@@ -59,9 +59,10 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
           flexDirection: "row",
           alignItems: "center",
           gap: 9,
-          paddingHorizontal: 16,
-          paddingVertical: 11,
-          borderRadius: 22,
+          paddingHorizontal: 15,
+          paddingVertical: 10,
+          borderRadius: 20,
+          maxWidth: 148,
           backgroundColor: "rgba(236,233,241,0.055)",
           borderWidth: 1,
           borderColor: "rgba(236,233,241,0.10)",
@@ -75,11 +76,13 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
           style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
         />
         <Text
+          numberOfLines={2}
           style={{
             color: "#ECE9F1",
             fontFamily: "SkinnyCustard",
-            fontSize: 17,
-            lineHeight: 20,
+            fontSize: 20,
+            lineHeight: 22,
+            flexShrink: 1,
           }}
         >
           {zone.label}

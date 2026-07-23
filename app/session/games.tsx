@@ -266,7 +266,7 @@ export default function GamesScreen() {
                 ...headingShadow,
               }}
             >
-              Games.
+              Games Arcade
             </Text>
             <Text style={{ color: '#817B91', fontSize: 15, marginTop: 4, lineHeight: 21 }}>
               Premium little exercises for a busy mind.
