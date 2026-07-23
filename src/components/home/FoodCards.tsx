@@ -77,10 +77,13 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
           color: section.accent,
           fontFamily: 'SkinnyCustard',
           fontSize: 22,
-          lineHeight: 27,
+          // SkinnyCustard's capital T rises above its reported font bounds.
+          // Give the one-line Thought label enough leading so its top renders.
+          lineHeight: section.key === 'thought' ? 32 : 27,
           textAlign: 'center',
           paddingHorizontal: 2,
-          paddingTop: 1,
+          paddingTop: section.key === 'thought' ? 5 : 1,
+          paddingBottom: section.key === 'thought' ? 2 : 0,
         }}
         numberOfLines={2}
       >
