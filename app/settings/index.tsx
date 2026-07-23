@@ -188,6 +188,10 @@ export default function SettingsScreen() {
             title="Admin"
             items={[
               {
+                label: 'Review content',
+                onPress: () => router.push('/admin/content'),
+              },
+              {
                 label: 'Reports & disputes',
                 onPress: () => router.push('/admin/reports'),
               },

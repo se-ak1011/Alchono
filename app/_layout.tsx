@@ -84,6 +84,7 @@ function RootLayoutNav() {
         <Stack.Screen name="messages/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="messages/[requestId]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/reports" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="admin/content" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="timeline" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="summary" options={{ animation: 'slide_from_right' }} />
