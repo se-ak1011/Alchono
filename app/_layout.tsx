@@ -129,6 +129,7 @@ function RootLayoutNav() {
         <Stack.Screen name="soul" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="giggles" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="thought" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="thought/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="moments/play"
           options={{ presentation: 'fullScreenModal', animation: 'fade' }}
