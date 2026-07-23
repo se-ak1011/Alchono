@@ -13,6 +13,7 @@ type OrbitChipProps = {
   onPress: () => void;
   accent?: string;
   emergency?: boolean;
+  numberOfLines?: 1 | 2;
   onLayout?: (event: LayoutChangeEvent) => void;
   style?: StyleProp<ViewStyle>;
 };
@@ -22,6 +23,7 @@ export function OrbitChip({
   onPress,
   accent,
   emergency = false,
+  numberOfLines = 1,
   onLayout,
   style,
 }: OrbitChipProps) {
@@ -33,14 +35,14 @@ export function OrbitChip({
       className="active:opacity-70"
       style={[
         {
-          minHeight: 38,
+          minHeight: numberOfLines === 2 ? 52 : 38,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
           gap: 8,
           paddingHorizontal: 13,
           paddingVertical: 6,
-          borderRadius: 19,
+          borderRadius: numberOfLines === 2 ? 24 : 19,
           backgroundColor: emergency
             ? "rgba(59,51,82,0.96)"
             : "rgba(20,18,24,0.88)",
@@ -67,12 +69,13 @@ export function OrbitChip({
         />
       ) : null}
       <Text
-        numberOfLines={1}
+        numberOfLines={numberOfLines}
         style={{
           color: "#ECE9F1",
           fontFamily: "SkinnyCustard",
           fontSize: 20,
           lineHeight: 23,
+          textAlign: "center",
         }}
       >
         {label}

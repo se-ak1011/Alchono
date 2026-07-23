@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { FOOD_LIST, type FoodSection } from '@/lib/food';
@@ -10,8 +9,7 @@ import { FOOD_LIST, type FoodSection } from '@/lib/food';
  * washed in its own colour, its name in the app's hand. No previews, no
  * clutter — press and you're in the feed.
  */
-export function FoodCards() {
-  const insets = useSafeAreaInsets();
+export function FoodCards({ top }: { top: number }) {
   const router = useRouter();
 
   return (
@@ -20,12 +18,12 @@ export function FoodCards() {
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 0,
+        top,
         flexDirection: 'row',
         gap: 8,
         paddingHorizontal: 14,
         paddingTop: 8,
-        paddingBottom: insets.bottom + 10,
+        paddingBottom: 10,
       }}
     >
       {FOOD_LIST.map((section) => (

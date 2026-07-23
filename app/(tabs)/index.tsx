@@ -68,8 +68,9 @@ function HomeOrbitChip({
       ]}
     >
       <OrbitChip
-        label={zone.label}
+        label={zone.key === "community" ? "Community\nHub" : zone.label}
         accent={zone.accent}
+        numberOfLines={zone.key === "community" ? 2 : 1}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push(zone.route as any);
@@ -128,15 +129,15 @@ export default function HomeScreen() {
   // space above it. Anchors are fractions of that available height, so the
   // orbit keeps its shape from small phones to tall ones.
   const AH = height - NEWS_BAND_HEIGHT;
-  const companionTop = AH * 0.44 - 100;
+  const companionTop = Math.min(230, Math.max(190, AH * 0.4 - 80));
   const orbitPositions = useMemo(
     () => [
-      { left: 10, right: undefined, top: companionTop - 26, fromX: 82, fromY: 84 },
-      { left: undefined, right: 10, top: companionTop - 26, fromX: -82, fromY: 84 },
-      { left: 4, right: undefined, top: companionTop + 46, fromX: 82, fromY: 12 },
-      { left: undefined, right: 4, top: companionTop + 46, fromX: -82, fromY: 12 },
-      { left: 22, right: undefined, top: companionTop + 119, fromX: 70, fromY: -55 },
-      { left: undefined, right: 34, top: companionTop + 119, fromX: -70, fromY: -55 },
+      { left: 12, right: undefined, top: companionTop - 38, fromX: 88, fromY: 88 },
+      { left: undefined, right: 12, top: companionTop - 38, fromX: -88, fromY: 88 },
+      { left: 8, right: undefined, top: companionTop + 36, fromX: 92, fromY: 14 },
+      { left: undefined, right: 6, top: companionTop + 44, fromX: -92, fromY: 8 },
+      { left: 20, right: undefined, top: companionTop + 126, fromX: 82, fromY: -64 },
+      { left: undefined, right: 30, top: companionTop + 126, fromX: -82, fromY: -64 },
     ],
     [companionTop],
   );
@@ -262,10 +263,10 @@ export default function HomeScreen() {
               pointerEvents="none"
               style={{
                 position: "absolute",
-                top: 12,
-                width: 150,
-                height: 150,
-                borderRadius: 75,
+                top: 10,
+                width: 190,
+                height: 190,
+                borderRadius: 95,
                 backgroundColor: "rgba(164,137,222,0.22)",
                 opacity: haloOpacity,
                 transform: [{ scale: haloScale }],
@@ -274,9 +275,9 @@ export default function HomeScreen() {
           )}
           <CompanionArt
             source={pose("bust")}
-            width={172}
-            height={204}
-            cropHeight={176}
+            width={232}
+            height={276}
+            cropHeight={216}
             onPress={toggleOrbit}
           />
         </View>
@@ -303,7 +304,7 @@ export default function HomeScreen() {
             position: "absolute",
             left: 0,
             right: 0,
-            top: companionTop + 181,
+            top: companionTop + 211,
             zIndex: 10,
             alignItems: "center",
           }}
@@ -325,7 +326,7 @@ export default function HomeScreen() {
               position: "absolute",
               left: 0,
               right: 0,
-              bottom: NEWS_BAND_HEIGHT + 8,
+              top: companionTop + 258,
               alignItems: "center",
             }}
           >
@@ -359,7 +360,7 @@ export default function HomeScreen() {
         ) : null}
 
         {/* Food for the Soul / Giggles / Thought — a calm three-card footer */}
-        <FoodCards />
+        <FoodCards top={companionTop + (activeSession ? 307 : 266)} />
       </View>
 
       <PauseModal />
