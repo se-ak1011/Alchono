@@ -37,7 +37,7 @@ Rules:
 Return ONLY a JSON array, no prose, no markdown fences:
 [{"title": "...", "story": "..."}]`;
 
-async function generate(prompt: string): Promise<any[]> {
+async function claude(prompt: string, maxTokens: number): Promise<string> {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -47,8 +47,8 @@ async function generate(prompt: string): Promise<any[]> {
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 3000,
-      temperature: 1,
+      max_tokens: maxTokens,
+      temperature: prompt.startsWith('REVIEW') ? 0 : 1,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -56,8 +56,10 @@ async function generate(prompt: string): Promise<any[]> {
   if (!res.ok || data.type === 'error') {
     throw new Error(`Anthropic ${res.status}: ${data.error?.message ?? JSON.stringify(data)}`);
   }
-  const text: string = data.content?.[0]?.text ?? '';
-  // Be forgiving: strip fences, then take the outermost [ ... ].
+  return data.content?.[0]?.text ?? '';
+}
+
+function parseArray(text: string): any[] {
   const cleaned = text.replace(/```json/gi, '').replace(/```/g, '');
   const start = cleaned.indexOf('[');
   const end = cleaned.lastIndexOf(']');
@@ -68,6 +70,35 @@ async function generate(prompt: string): Promise<any[]> {
   } catch {
     return [];
   }
+}
+
+/**
+ * A strict second-lens moderation pass — like moderate-moment for the feed.
+ * Returns a boolean per item: true = safe to auto-publish. Anything it can't
+ * confidently approve comes back false and waits for a human.
+ */
+async function review(items: { text: string }[], kind: 'giggle' | 'dilemma'): Promise<boolean[]> {
+  if (items.length === 0) return [];
+  const rubric =
+    kind === 'giggle'
+      ? 'Approve ONLY if it is genuinely wholesome and light: no cruelty, meanness, politics, sexual content, or anything dark; nothing about alcohol, drugs, or recovery; no real or identifiable people; and it is actually kind and appropriate for people in a vulnerable moment.'
+      : 'Approve ONLY if it is an everyday, NON-triggering moral dilemma: nothing about addiction, alcohol, drugs, self-harm, abuse, violence, infidelity or grief as the core; no politics; genuinely ambiguous; and appropriate for people in a vulnerable moment.';
+  const list = items.map((it, i) => `#${i + 1}:\n${it.text}`).join('\n\n');
+  const prompt = `REVIEW. You are a strict content reviewer for a calm alcohol-recovery app. ${rubric}\n\nReview each numbered item and return ONLY a JSON array, one object per item:\n[{"i": 1, "ok": true}]\n\nItems:\n\n${list}`;
+  try {
+    const text = await claude(prompt, 800);
+    const verdicts = parseArray(text) as { i: number; ok: boolean }[];
+    return items.map((_, idx) => {
+      const v = verdicts.find((x) => Number(x.i) === idx + 1);
+      return v ? v.ok === true : false; // unknown → hold for a human
+    });
+  } catch {
+    return items.map(() => false); // review failed → hold, don't auto-publish
+  }
+}
+
+async function generate(prompt: string): Promise<any[]> {
+  return parseArray(await claude(prompt, 3000));
 }
 
 serve(async (req) => {
@@ -89,35 +120,48 @@ serve(async (req) => {
     if (!adminRow) return new Response(JSON.stringify({ error: 'not an admin' }), { status: 403, headers: corsHeaders });
 
     const { kind = 'both', giggles = 6, dilemmas = 4 } = await req.json().catch(() => ({}));
-    let insertedGiggles = 0;
-    let insertedDilemmas = 0;
+    const out = { published: 0, held: 0 };
 
     if (kind === 'giggles' || kind === 'both') {
-      const items = await generate(GIGGLES_PROMPT(giggles));
-      const rows = items
-        .filter((it) => it?.title && it?.body)
-        .map((it) => ({ kind: 'giggle', title: String(it.title).slice(0, 200), body: String(it.body).slice(0, 4000), category: it.category ? String(it.category).slice(0, 40) : null, published: false }));
+      const items = (await generate(GIGGLES_PROMPT(giggles))).filter((it) => it?.title && it?.body);
+      const verdicts = await review(items.map((it) => ({ text: `${it.title}\n${it.body}` })), 'giggle');
+      const rows = items.map((it, i) => ({
+        kind: 'giggle',
+        title: String(it.title).slice(0, 200),
+        body: String(it.body).slice(0, 4000),
+        category: it.category ? String(it.category).slice(0, 40) : null,
+        published: verdicts[i] === true,
+      }));
       if (rows.length) {
         const { error } = await admin.from('curated_stories').insert(rows);
-        if (!error) insertedGiggles = rows.length;
+        if (!error) {
+          out.published += rows.filter((r) => r.published).length;
+          out.held += rows.filter((r) => !r.published).length;
+        }
       }
     }
 
     if (kind === 'dilemmas' || kind === 'both') {
-      const items = await generate(DILEMMAS_PROMPT(dilemmas));
-      const rows = items
-        .filter((it) => it?.title && it?.story)
-        .map((it) => ({ title: String(it.title).slice(0, 200), story: String(it.story).slice(0, 4000), published: false }));
+      const items = (await generate(DILEMMAS_PROMPT(dilemmas))).filter((it) => it?.title && it?.story);
+      const verdicts = await review(items.map((it) => ({ text: `${it.title}\n${it.story}` })), 'dilemma');
+      const rows = items.map((it, i) => ({
+        title: String(it.title).slice(0, 200),
+        story: String(it.story).slice(0, 4000),
+        published: verdicts[i] === true,
+      }));
       if (rows.length) {
         const { error } = await admin.from('dilemmas').insert(rows);
-        if (!error) insertedDilemmas = rows.length;
+        if (!error) {
+          out.published += rows.filter((r) => r.published).length;
+          out.held += rows.filter((r) => !r.published).length;
+        }
       }
     }
 
-    return new Response(
-      JSON.stringify({ ok: true, giggles: insertedGiggles, dilemmas: insertedDilemmas }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    // published = auto-approved and live; held = waiting for a human.
+    return new Response(JSON.stringify({ ok: true, ...out }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('[generate-content] FAILED', error);
     return new Response(JSON.stringify({ error: String(error) }), {

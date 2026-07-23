@@ -64,18 +64,21 @@ export function usePublishContent() {
   });
 }
 
-/** Ask the generator for a fresh batch (admins only, server-verified). */
+/** Ask the generator for a fresh batch (admins only, server-verified). The AI
+ *  auto-publishes what clearly passes; `held` is what it wasn't sure about. */
 export function useGenerateContent() {
   return useMutation({
-    mutationFn: async (): Promise<{ giggles: number; dilemmas: number }> => {
+    mutationFn: async (): Promise<{ published: number; held: number }> => {
       const { data, error } = await supabase.functions.invoke('generate-content', {
         body: { kind: 'both' },
       });
       if (error) throw error;
-      return { giggles: data?.giggles ?? 0, dilemmas: data?.dilemmas ?? 0 };
+      return { published: data?.published ?? 0, held: data?.held ?? 0 };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pending-content'] });
+      queryClient.invalidateQueries({ queryKey: ['curated-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['dilemmas'] });
     },
   });
 }

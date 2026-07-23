@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -85,7 +85,7 @@ export default function AdminContentScreen() {
             Review content
           </Text>
           <Text className="text-text-muted text-sm mt-0.5">
-            Nothing publishes until you approve it.
+            AI publishes what's clearly good. It only holds the maybes here.
           </Text>
         </View>
         {isAdmin && (
@@ -93,7 +93,15 @@ export default function AdminContentScreen() {
             disabled={generating}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              generate();
+              generate(undefined, {
+                onSuccess: (r) =>
+                  Alert.alert(
+                    'Fresh batch',
+                    `${r.published} auto-published${r.held ? ` · ${r.held} held for you to check below` : ''}.`,
+                  ),
+                onError: () =>
+                  Alert.alert('Could not generate', 'Please try again in a moment.'),
+              });
             }}
             className="bg-surface-2 rounded-full px-3.5 py-2 border border-white/10 active:opacity-70 flex-row items-center gap-2"
           >
@@ -123,8 +131,9 @@ export default function AdminContentScreen() {
           showsVerticalScrollIndicator={false}
         >
           {total === 0 ? (
-            <Text className="text-text-secondary text-base text-center leading-relaxed mt-24">
-              Nothing waiting. Generate a fresh batch and it'll appear here.
+            <Text className="text-text-secondary text-base text-center leading-relaxed mt-24 px-6">
+              Nothing held — the AI cleared everything it generated. Tap Generate
+              for more any time.
             </Text>
           ) : null}
 
