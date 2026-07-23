@@ -46,6 +46,7 @@ function HomeOrbitChip({
   fromY: number;
 }) {
   const router = useRouter();
+  const multiline = zone.key === "community" || zone.key === "games";
   return (
     <RNAnimated.View
       pointerEvents={open ? "auto" : "none"}
@@ -68,9 +69,9 @@ function HomeOrbitChip({
       ]}
     >
       <OrbitChip
-        label={zone.key === "community" ? "Community\nHub" : zone.label}
+        label={multiline ? zone.label.replace(" ", "\n") : zone.label}
         accent={zone.accent}
-        numberOfLines={zone.key === "community" ? 2 : 1}
+        numberOfLines={multiline ? 2 : 1}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push(zone.route as any);

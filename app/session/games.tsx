@@ -327,7 +327,15 @@ export default function GamesScreen() {
               </View>
 
               <View style={{ flex: 1 }}>
-                <Text style={{ color: ivory, fontSize: 21, fontFamily: 'Inter_700Bold', marginBottom: 6 }}>
+                <Text
+                  style={{
+                    color: ivory,
+                    fontSize: 27,
+                    lineHeight: 31,
+                    fontFamily: 'SkinnyCustard',
+                    marginBottom: 6,
+                  }}
+                >
                   {game.name}
                 </Text>
                 <Text style={{ color: muted, fontSize: 15, lineHeight: 21, paddingRight: 54 }}>{game.desc}</Text>
