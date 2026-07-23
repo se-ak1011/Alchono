@@ -59,7 +59,7 @@ export default function HelpNowScreen() {
             className="text-text-primary text-4xl font-semibold tracking-tight leading-tight mt-6 mb-3"
             style={headingShadow}
           >
-            Right now.
+            Right now
           </Text>
           <Text className="text-text-secondary text-lg leading-relaxed mb-10">
             You're overwhelmed. That's okay. Pick one thing.

@@ -139,7 +139,7 @@ export default function CommunityScreen() {
             Community
           </Text>
           <Text className="text-text-muted text-sm mt-0.5">
-            See what others share, or talk it through.
+            Real moments from people like you. Look, or talk.
           </Text>
         </View>
       </View>

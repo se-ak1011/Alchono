@@ -65,7 +65,7 @@ export default function RecoveryScreen() {
             Recovery
           </Text>
           <Text className="text-text-secondary text-lg leading-relaxed mb-8">
-            Not in a hard moment — just here. Look around.
+            Not a hard moment — just here. Take your time.
           </Text>
 
           <View style={{ gap: 12 }}>

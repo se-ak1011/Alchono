@@ -66,7 +66,7 @@ export default function SupportScreen() {
           </Pressable>
         </View>
         <Text className="text-text-secondary text-lg leading-relaxed mt-3">
-          Hard moment or steady recovery — pick one.
+          Rough patch or steady day — I'm here for both.
         </Text>
       </View>
 

@@ -24,6 +24,13 @@ import { useAuthStore } from "@/store/authStore";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Morning";
+  if (h < 18) return "Afternoon";
+  return "Evening";
+}
+
 // Gentle lines the companion offers when tapped — presence, not tasks.
 const QUIET_LINES = [
   "Still here.",
@@ -161,7 +168,7 @@ export default function HomeScreen() {
             className="text-text-primary text-3xl"
             style={{ ...headingShadow, fontSize: 30 }}
           >
-            Hey{username ? `, ${username}` : ""}
+            {greeting()}{username ? `, ${username}` : ""}
           </Text>
           {/* Daily check-in — the first (and only) thing asked, once a day */}
           {!todayCheckin && (
