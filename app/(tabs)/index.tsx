@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Animated as RNAnimated,
 } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
@@ -24,66 +25,81 @@ import { useCompanion } from "@/hooks/useCompanion";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 
-// Roughly how tall the good-news footer stands; the orbit reserves this space.
-// (Approximate — includes the home-indicator inset on most phones.)
-const NEWS_BAND_HEIGHT = 150;
+// Roughly how tall the Food-for-the-Soul footer stands; the orbit reserves
+// this space. (Approximate — includes the home-indicator inset on most phones.)
+const NEWS_BAND_HEIGHT = 182;
+const HINT_KEY = "alchono:orbit-hint-seen";
 
-// Gentle lines the companion offers when tapped — presence, not tasks.
-const QUIET_LINES = [
-  "Still here.",
-  "One step at a time.",
-  "No rush.",
-  "You've done harder things.",
-  "Glad you came by.",
-  "I'm not going anywhere.",
-];
-
-function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
+function OrbitChip({
+  zone,
+  style,
+  anim,
+  open,
+}: {
+  zone: Zone;
+  style: any;
+  anim: RNAnimated.Value;
+  open: boolean;
+}) {
   const router = useRouter();
   return (
-    <Pressable
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        router.push(zone.route as any);
-      }}
-      style={[{ position: "absolute", zIndex: 10 }, style]}
-      className="active:opacity-70"
+    <RNAnimated.View
+      pointerEvents={open ? "auto" : "none"}
+      style={[
+        {
+          position: "absolute",
+          zIndex: 10,
+          opacity: anim,
+          transform: [
+            { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.86, 1] }) },
+          ],
+        },
+        style,
+      ]}
     >
-      {/* A calm glassy pill: the zone's colour rides the little dot, the label
-          reads itself. Floats over the companion (as in the reference). */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 9,
-          paddingHorizontal: 15,
-          paddingVertical: 10,
-          borderRadius: 20,
-          backgroundColor: "rgba(236,233,241,0.055)",
-          borderWidth: 1,
-          borderColor: "rgba(236,233,241,0.10)",
-          shadowColor: "#000",
-          shadowOpacity: 0.3,
-          shadowRadius: 9,
-          shadowOffset: { width: 0, height: 4 },
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push(zone.route as any);
         }}
+        className="active:opacity-70"
       >
+        {/* A calm glassy pill: the zone's colour rides the little dot, the
+            label reads itself. */}
         <View
-          style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
-        />
-        <Text
           style={{
-            color: "#ECE9F1",
-            fontFamily: "SkinnyCustard",
-            fontSize: 23,
-            lineHeight: 25,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 9,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            borderRadius: 20,
+            backgroundColor: "rgba(236,233,241,0.055)",
+            borderWidth: 1,
+            borderColor: "rgba(236,233,241,0.10)",
+            shadowColor: "#000",
+            shadowOpacity: 0.3,
+            shadowRadius: 9,
+            shadowOffset: { width: 0, height: 4 },
           }}
         >
-          {/* Break two-word labels onto two lines deterministically */}
-          {zone.label.includes(" ") ? zone.label.replace(" ", "\n") : zone.label}
-        </Text>
-      </View>
-    </Pressable>
+          <View
+            style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
+          />
+          <Text
+            style={{
+              color: "#ECE9F1",
+              fontFamily: "SkinnyCustard",
+              fontSize: 23,
+              lineHeight: 25,
+            }}
+          >
+            {/* Break two-word labels onto two lines deterministically */}
+            {zone.label.includes(" ") ? zone.label.replace(" ", "\n") : zone.label}
+          </Text>
+        </View>
+      </Pressable>
+    </RNAnimated.View>
   );
 }
 
@@ -94,13 +110,41 @@ export default function HomeScreen() {
   const { data: activeSession } = useActiveSession();
   const { data: todayCheckin } = useTodayCheckin();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [caption, setCaption] = useState<string | null>(null);
-  const captionOpacity = useRef(new RNAnimated.Value(0)).current;
-  const lastLine = useRef<string | null>(null);
+
+  // The orbit is hidden until you tap the companion — Home stays calm.
+  const [orbitOpen, setOrbitOpen] = useState(false);
+  const orbitAnim = useRef(new RNAnimated.Value(0)).current;
+
+  // A one-time breathing halo behind the companion, so first-timers know
+  // there's something to tap. Dismissed the moment they open the orbit.
+  const [showHint, setShowHint] = useState(false);
+  const haloOpacity = useRef(new RNAnimated.Value(0)).current;
+  const haloScale = useRef(new RNAnimated.Value(0.85)).current;
 
   useSmartReminder();
   useWidgetSync();
   useDrinkIntentSync();
+
+  useEffect(() => {
+    AsyncStorage.getItem(HINT_KEY).then((v) => {
+      if (!v) setShowHint(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!showHint) return;
+    const pulse = RNAnimated.sequence([
+      RNAnimated.parallel([
+        RNAnimated.timing(haloOpacity, { toValue: 0.45, duration: 750, useNativeDriver: true }),
+        RNAnimated.timing(haloScale, { toValue: 1.12, duration: 750, useNativeDriver: true }),
+      ]),
+      RNAnimated.parallel([
+        RNAnimated.timing(haloOpacity, { toValue: 0, duration: 750, useNativeDriver: true }),
+        RNAnimated.timing(haloScale, { toValue: 0.85, duration: 1, useNativeDriver: true }),
+      ]),
+    ]);
+    RNAnimated.loop(pulse, { iterations: 3 }).start();
+  }, [showHint, haloOpacity, haloScale]);
 
   // The good-news band is a fixed footer; the companion + orbit live in the
   // space above it. Anchors are fractions of that available height, so the
@@ -115,18 +159,22 @@ export default function HomeScreen() {
     [AH],
   );
 
-  const showQuietLine = () => {
-    const pool = QUIET_LINES.filter((l) => l !== lastLine.current);
-    const line = pool[Math.floor(Math.random() * pool.length)] ?? QUIET_LINES[0];
-    lastLine.current = line;
-    setCaption(line);
-    captionOpacity.stopAnimation();
-    captionOpacity.setValue(0);
-    RNAnimated.sequence([
-      RNAnimated.timing(captionOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-      RNAnimated.delay(2400),
-      RNAnimated.timing(captionOpacity, { toValue: 0, duration: 260, useNativeDriver: true }),
-    ]).start(() => setCaption(null));
+  const setOrbit = (next: boolean) => {
+    setOrbitOpen(next);
+    RNAnimated.timing(orbitAnim, {
+      toValue: next ? 1 : 0,
+      duration: next ? 260 : 220,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const toggleOrbit = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (showHint) {
+      setShowHint(false);
+      AsyncStorage.setItem(HINT_KEY, "1").catch(() => {});
+    }
+    setOrbit(!orbitOpen);
   };
 
   const urge = ZONES.urge;
@@ -198,7 +246,17 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* Companion, centred in the space above the news band */}
+        {/* Tap-anywhere-outside catcher — only while the orbit is open. Sits
+            above the companion so tapping it (or the companion) collapses. */}
+        {orbitOpen && (
+          <Pressable
+            onPress={() => setOrbit(false)}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 8 }}
+          />
+        )}
+
+        {/* Companion — the tap target. Stays perfectly still through expand /
+            collapse; only the chips animate. */}
         <View
           style={{
             position: "absolute",
@@ -210,38 +268,38 @@ export default function HomeScreen() {
           }}
           pointerEvents="box-none"
         >
-          {caption ? (
+          {/* Discovery halo — a soft breath behind the mate on first launch */}
+          {showHint && (
             <RNAnimated.View
+              pointerEvents="none"
               style={{
-                opacity: captionOpacity,
-                marginBottom: 8,
-                backgroundColor: "#383243",
-                borderColor: "rgba(236,233,241,0.13)",
-                borderWidth: 1,
-                borderRadius: 16,
-                paddingHorizontal: 14,
-                paddingVertical: 8,
+                position: "absolute",
+                top: 12,
+                width: 150,
+                height: 150,
+                borderRadius: 75,
+                backgroundColor: "rgba(164,137,222,0.22)",
+                opacity: haloOpacity,
+                transform: [{ scale: haloScale }],
               }}
-            >
-              <Text className="text-text-secondary text-sm">{caption}</Text>
-            </RNAnimated.View>
-          ) : null}
+            />
+          )}
           <CompanionArt
             source={pose("bust")}
             width={172}
             height={204}
             cropHeight={176}
-            onPress={showQuietLine}
+            onPress={toggleOrbit}
           />
         </View>
 
-        {/* Orbit chips — pills anchored to the edges, floating around the mate */}
-        <OrbitChip zone={ORBIT_ZONES[0]} style={{ left: 16, top: rows.top }} />
-        <OrbitChip zone={ORBIT_ZONES[1]} style={{ right: 16, top: rows.top }} />
-        <OrbitChip zone={ORBIT_ZONES[2]} style={{ left: 10, top: rows.mid }} />
-        <OrbitChip zone={ORBIT_ZONES[3]} style={{ right: 10, top: rows.mid }} />
-        <OrbitChip zone={ORBIT_ZONES[4]} style={{ left: 28, top: rows.low }} />
-        <OrbitChip zone={ORBIT_ZONES[5]} style={{ right: 28, top: rows.low }} />
+        {/* Orbit chips — hidden until the companion is tapped */}
+        <OrbitChip zone={ORBIT_ZONES[0]} anim={orbitAnim} open={orbitOpen} style={{ left: 14, top: rows.top }} />
+        <OrbitChip zone={ORBIT_ZONES[1]} anim={orbitAnim} open={orbitOpen} style={{ right: 14, top: rows.top }} />
+        <OrbitChip zone={ORBIT_ZONES[2]} anim={orbitAnim} open={orbitOpen} style={{ left: 10, top: rows.mid }} />
+        <OrbitChip zone={ORBIT_ZONES[3]} anim={orbitAnim} open={orbitOpen} style={{ right: 10, top: rows.mid }} />
+        <OrbitChip zone={ORBIT_ZONES[4]} anim={orbitAnim} open={orbitOpen} style={{ left: 14, top: rows.low }} />
+        <OrbitChip zone={ORBIT_ZONES[5]} anim={orbitAnim} open={orbitOpen} style={{ right: 14, top: rows.low }} />
 
         {/* The one bold thing — always at the base, always findable.
             When a session is live, a slim chip sits just above it. */}

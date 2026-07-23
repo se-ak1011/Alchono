@@ -83,7 +83,7 @@ export default function WriteLetterScreen() {
               className="text-text-primary text-4xl font-semibold tracking-tight"
               style={headingShadow}
             >
-              Write to{'\n'}Future You.
+              Write to{'\n'}Future You
             </Text>
             <Text className="text-text-secondary text-lg mt-3 leading-relaxed">
               What do you hope they remember?

@@ -28,13 +28,12 @@ const FEEDS: { url: string; source: string }[] = [
 ];
 
 // Real, evergreen, verifiable — only shown if every live feed is unreachable.
-const FALLBACK: { headline: string; source: string }[] = [
-  { headline: 'The ozone layer is on track to fully heal within decades — the hole is shrinking.', source: 'UN Environment' },
-  { headline: 'Global child mortality has more than halved since 1990.', source: 'UNICEF' },
-  { headline: 'Spending on other people boosts your own happiness more than spending on yourself.', source: 'Greater Good' },
-  { headline: 'Guinea worm disease has gone from millions of cases a year to just a handful.', source: 'The Carter Center' },
-  { headline: 'A single act of kindness gives the brain a genuine lift — the “helper’s high” is real.', source: 'Greater Good' },
-  { headline: 'More than half the world now uses the internet to stay connected to the people they love.', source: 'ITU' },
+const FALLBACK: Item[] = [
+  { title: 'The ozone layer is healing', summary: 'After the world agreed to phase out CFCs, the ozone layer is on track to fully recover within decades — the hole over Antarctica is measurably shrinking.', source: 'UN Environment' },
+  { title: 'Child mortality has more than halved', summary: 'Since 1990, the number of children who die before their fifth birthday has fallen by more than half worldwide — millions of lives saved every year through vaccines, clean water and better care.', source: 'UNICEF' },
+  { title: 'Giving makes us happier than getting', summary: 'Studies find that spending money on other people lifts your own happiness more than spending it on yourself — generosity, it turns out, is a reliable route to feeling good.', source: 'Greater Good' },
+  { title: 'The “helper’s high” is real', summary: 'A single act of kindness gives the brain a genuine chemical lift. Small, everyday kindness measurably lowers stress — for the giver as much as the receiver.', source: 'Greater Good' },
+  { title: 'Guinea worm is nearly gone', summary: 'A disease that once caused millions of cases a year is down to just a handful — one of the great quiet public-health victories, achieved without a vaccine, through patience and community effort.', source: 'The Carter Center' },
 ];
 
 function decode(s: string): string {
@@ -54,7 +53,30 @@ function decode(s: string): string {
     .trim();
 }
 
-async function fetchFeed(url: string, source: string): Promise<{ headline: string; source: string }[]> {
+interface Item {
+  title: string;
+  summary: string;
+  source: string;
+}
+
+// Turn a feed's <description>/<content> excerpt into a clean, complete little
+// summary — the publisher's own words, minus the RSS cruft. Keep 1–3 sentences.
+function toSummary(raw: string): string {
+  let s = decode(raw)
+    // WordPress feed footer + "read more" artefacts.
+    .replace(/The post .*? appeared first on .*?\.?$/s, '')
+    .replace(/\[[…\.]+\]/g, '')
+    .replace(/(Continue reading|Read more|Read the full story).*$/is, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (s.length <= 300) return s;
+  // Trim to a sentence boundary near ~280 chars so nothing is mid-word.
+  const cut = s.slice(0, 300);
+  const lastStop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+  return (lastStop > 120 ? cut.slice(0, lastStop + 1) : cut.trim() + '…').trim();
+}
+
+async function fetchFeed(url: string, source: string): Promise<Item[]> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 6000);
   try {
@@ -65,14 +87,18 @@ async function fetchFeed(url: string, source: string): Promise<{ headline: strin
     if (!res.ok) return [];
     const xml = await res.text();
     const items = xml.match(/<item[\s\S]*?<\/item>/g) ?? [];
-    const out: { headline: string; source: string }[] = [];
+    const out: Item[] = [];
     for (const it of items.slice(0, 8)) {
-      const m = it.match(/<title>([\s\S]*?)<\/title>/);
-      if (!m) continue;
-      const headline = decode(m[1]);
-      // Skip empties and over-long titles that won't sit on the band.
-      if (headline.length >= 12 && headline.length <= 140) {
-        out.push({ headline, source });
+      const tm = it.match(/<title>([\s\S]*?)<\/title>/);
+      if (!tm) continue;
+      const title = decode(tm[1]);
+      const dm =
+        it.match(/<description>([\s\S]*?)<\/description>/) ||
+        it.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/);
+      const summary = dm ? toSummary(dm[1]) : '';
+      // Need a title and a real summary the reader can actually understand.
+      if (title.length >= 12 && summary.length >= 40) {
+        out.push({ title, summary, source });
       }
     }
     return out;
@@ -89,13 +115,13 @@ serve(async (req) => {
     const lists = await Promise.all(FEEDS.map((f) => fetchFeed(f.url, f.source)));
 
     // Round-robin interleave so the mix never clumps into one source in a row.
-    const merged: { headline: string; source: string }[] = [];
+    const merged: Item[] = [];
     const seen = new Set<string>();
     for (let i = 0; i < 8; i++) {
       for (const list of lists) {
         const item = list[i];
-        if (item && !seen.has(item.headline.toLowerCase())) {
-          seen.add(item.headline.toLowerCase());
+        if (item && !seen.has(item.title.toLowerCase())) {
+          seen.add(item.title.toLowerCase());
           merged.push(item);
         }
       }

@@ -2,25 +2,26 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
 export interface GoodNewsItem {
-  headline: string;
+  title: string;
+  summary: string; // a complete little summary — never truncated in the UI
   source: string;
 }
 
 // Shown until the live feed loads (and if it ever can't be reached). Real,
 // evergreen, verifiable — never invented. Mirrors the edge function's fallback.
 const FALLBACK: GoodNewsItem[] = [
-  { headline: 'The ozone layer is on track to fully heal within decades — the hole is shrinking.', source: 'UN Environment' },
-  { headline: 'Global child mortality has more than halved since 1990.', source: 'UNICEF' },
-  { headline: 'Spending on other people boosts your own happiness more than spending on yourself.', source: 'Greater Good' },
-  { headline: 'A single act of kindness gives the brain a genuine lift — the “helper’s high” is real.', source: 'Greater Good' },
-  { headline: 'Guinea worm disease has gone from millions of cases a year to just a handful.', source: 'The Carter Center' },
+  { title: 'The ozone layer is healing', summary: 'After the world agreed to phase out CFCs, the ozone layer is on track to fully recover within decades — the hole over Antarctica is measurably shrinking.', source: 'UN Environment' },
+  { title: 'Child mortality has more than halved', summary: 'Since 1990, the number of children who die before their fifth birthday has fallen by more than half worldwide — millions of lives saved every year through vaccines, clean water and better care.', source: 'UNICEF' },
+  { title: 'Giving makes us happier than getting', summary: 'Studies find that spending money on other people lifts your own happiness more than spending it on yourself — generosity, it turns out, is a reliable route to feeling good.', source: 'Greater Good' },
+  { title: 'The “helper’s high” is real', summary: 'A single act of kindness gives the brain a genuine chemical lift. Small, everyday kindness measurably lowers stress — for the giver as much as the receiver.', source: 'Greater Good' },
+  { title: 'Guinea worm is nearly gone', summary: 'A disease that once caused millions of cases a year is down to just a handful — one of the great quiet public-health victories, achieved without a vaccine, through patience and community effort.', source: 'The Carter Center' },
 ];
 
 /**
- * A small, slow window of good news for Home. Pulls curated-positive sources
- * (human kindness + the science/psychology of wellbeing) via the good-news
- * edge function, cached for hours so it costs almost nothing. Never empty —
- * falls back to evergreen truths if the feed is unreachable.
+ * Food for the Soul — a small, slow window of good news. Pulls curated-positive
+ * sources (human kindness + the science/psychology of wellbeing) via the
+ * good-news edge function, cached for hours so it costs almost nothing. Never
+ * empty — falls back to evergreen truths if the feed is unreachable.
  */
 export function useGoodNews() {
   return useQuery({
@@ -31,8 +32,14 @@ export function useGoodNews() {
           body: {},
         });
         if (error) throw error;
-        const items = (data?.items ?? []) as GoodNewsItem[];
-        return items.length ? items : FALLBACK;
+        const raw = (data?.items ?? []) as Partial<GoodNewsItem>[];
+        // Only trust items in the new shape (title + complete summary). If the
+        // deployed function is still the old headline-only version, fall back
+        // to evergreen summaries rather than render blanks.
+        const valid = raw.filter(
+          (it): it is GoodNewsItem => !!it && !!it.summary && !!it.title,
+        );
+        return valid.length ? valid : FALLBACK;
       } catch {
         return FALLBACK;
       }
