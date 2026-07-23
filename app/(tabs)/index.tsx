@@ -15,7 +15,7 @@ import { SafeArea } from "@/components/ui/SafeArea";
 import { CompanionArt } from "@/components/ui/CompanionArt";
 import { AppDrawer } from "@/components/ui/AppDrawer";
 import { PauseModal } from "@/components/home/PauseModal";
-import { GoodNewsBand } from "@/components/home/GoodNewsBand";
+import { FoodCards } from "@/components/home/FoodCards";
 import { useSmartReminder } from "@/hooks/useSmartReminder";
 import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
@@ -25,9 +25,9 @@ import { useCompanion } from "@/hooks/useCompanion";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 
-// Roughly how tall the Food-for-the-Soul footer stands; the orbit reserves
-// this space. (Approximate — includes the home-indicator inset on most phones.)
-const NEWS_BAND_HEIGHT = 182;
+// Roughly how tall the three-card footer stands; the orbit reserves this
+// space. (Approximate — includes the home-indicator inset on most phones.)
+const NEWS_BAND_HEIGHT = 150;
 const HINT_KEY = "alchono:orbit-hint-seen";
 
 function OrbitChip({
@@ -369,8 +369,8 @@ export default function HomeScreen() {
           </Pressable>
         </Animated.View>
 
-        {/* A little good news — a calm footer, outside the orbit entirely */}
-        <GoodNewsBand />
+        {/* Food for the Soul / Giggles / Thought — a calm three-card footer */}
+        <FoodCards />
       </View>
 
       <PauseModal />
