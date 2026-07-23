@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { FOOD_LIST, type FoodSection } from '@/lib/food';
-import { useGoodNews } from '@/hooks/useGoodNews';
 
 /**
- * The three compact "Food for the ..." cards — Home's calm footer. Equal
- * thirds, each its own colour, tapping into its feed. The Soul card carries a
- * live one-line teaser of the latest good news so the warmth still lives on
- * Home; the full summaries live inside the feed. No scroll, no clutter.
+ * The three "Food for the ..." cards — Home's calm footer. Equal thirds, each
+ * washed in its own colour, its name in the app's hand. No previews, no
+ * clutter — press and you're in the feed.
  */
 export function FoodCards() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { data: news = [] } = useGoodNews();
-  const [teaseIdx, setTeaseIdx] = useState(0);
-
-  useEffect(() => {
-    if (news.length < 2) return;
-    const t = setInterval(() => setTeaseIdx((i) => (i + 1) % news.length), 6000);
-    return () => clearInterval(t);
-  }, [news.length]);
-
-  const soulTeaser = news.length
-    ? news[teaseIdx % news.length].title
-    : FOOD_LIST[0].blurb;
 
   return (
     <View
@@ -46,7 +32,6 @@ export function FoodCards() {
         <FoodCard
           key={section.key}
           section={section}
-          teaser={section.key === 'soul' ? soulTeaser : section.blurb}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             router.push(section.route as any);
@@ -57,62 +42,46 @@ export function FoodCards() {
   );
 }
 
-function FoodCard({
-  section,
-  teaser,
-  onPress,
-}: {
-  section: FoodSection;
-  teaser: string;
-  onPress: () => void;
-}) {
+function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
       className="active:opacity-80"
       style={{
         flex: 1,
-        minHeight: 116,
+        minHeight: 96,
         borderRadius: 20,
-        paddingHorizontal: 13,
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 14,
         backgroundColor: section.tint,
         borderWidth: 1,
         borderColor: section.edge,
-        justifyContent: 'space-between',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      <View>
-        <Text
-          style={{
-            color: '#817B91',
-            fontSize: 9,
-            letterSpacing: 1.5,
-            fontFamily: 'Inter_600SemiBold',
-          }}
-        >
-          FOOD FOR
-        </Text>
-        <Text
-          style={{
-            color: section.accent,
-            fontFamily: 'SkinnyCustard',
-            fontSize: 22,
-            lineHeight: 24,
-            marginTop: 2,
-          }}
-          numberOfLines={2}
-        >
-          {section.lead}
-        </Text>
-      </View>
       <Text
-        className="text-text-secondary"
-        style={{ fontSize: 11, lineHeight: 15, marginTop: 8 }}
-        numberOfLines={3}
+        style={{
+          color: '#817B91',
+          fontSize: 9,
+          letterSpacing: 1.5,
+          fontFamily: 'Inter_600SemiBold',
+          marginBottom: 2,
+        }}
       >
-        {teaser}
+        FOOD FOR
+      </Text>
+      <Text
+        style={{
+          color: section.accent,
+          fontFamily: 'SkinnyCustard',
+          fontSize: 24,
+          lineHeight: 26,
+          textAlign: 'center',
+        }}
+        numberOfLines={2}
+      >
+        {section.lead}
       </Text>
     </Pressable>
   );

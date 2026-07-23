@@ -27,7 +27,7 @@ import { headingShadow } from "@/styles";
 
 // Roughly how tall the three-card footer stands; the orbit reserves this
 // space. (Approximate — includes the home-indicator inset on most phones.)
-const NEWS_BAND_HEIGHT = 150;
+const NEWS_BAND_HEIGHT = 132;
 const HINT_KEY = "alchono:orbit-hint-seen";
 
 function OrbitChip({
