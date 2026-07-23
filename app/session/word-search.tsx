@@ -6,6 +6,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 const GRID_SIZE = 9;
@@ -214,6 +215,7 @@ export default function WordSearchScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="games" intensity={0.55} />
       {/* Header */}
       <Animated.View
         entering={FadeIn.duration(300)}

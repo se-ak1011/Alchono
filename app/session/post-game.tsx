@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 export default function PostGameScreen() {
@@ -34,6 +35,7 @@ export default function PostGameScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="games" intensity={0.55} />
       <View
         style={{
           flex: 1,

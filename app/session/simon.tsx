@@ -9,6 +9,7 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 const COLORS = ['#5B8DD9', '#5DB87D', '#D9A84A', '#B56FB8'] as const;
@@ -163,6 +164,7 @@ export default function SimonScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="games" intensity={0.55} />
       {/* Header */}
       <View
         style={{

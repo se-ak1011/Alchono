@@ -10,6 +10,7 @@ import {
   type ToolkitCategory,
 } from '@/lib/toolkit';
 import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 export default function ToolkitCategoryScreen() {
@@ -30,6 +31,7 @@ export default function ToolkitCategoryScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="reading" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"

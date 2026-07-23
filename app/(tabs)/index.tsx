@@ -20,16 +20,8 @@ import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useActiveSession } from "@/hooks/useDrinkingSession";
 import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
-import { useAuthStore } from "@/store/authStore";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
-
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return "Morning";
-  if (h < 18) return "Afternoon";
-  return "Evening";
-}
 
 // Gentle lines the companion offers when tapped — presence, not tasks.
 const QUIET_LINES = [
@@ -94,7 +86,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const { pose } = useCompanion();
   const { height } = useWindowDimensions();
-  const username = useAuthStore((s) => s.profile?.username);
   const { data: activeSession } = useActiveSession();
   const { data: todayCheckin } = useTodayCheckin();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -180,7 +171,7 @@ export default function HomeScreen() {
             className="text-text-primary"
             style={{ ...headingShadow, fontSize: 34 }}
           >
-            {greeting()}{username ? `, ${username}` : ""}
+            Hey
           </Text>
           {/* Daily check-in — the first (and only) thing asked, once a day */}
           {!todayCheckin && (

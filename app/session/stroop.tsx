@@ -4,6 +4,7 @@ import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 const COLORS = [
@@ -107,6 +108,7 @@ export default function StroopScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="games" intensity={0.55} />
       {/* Header */}
       <View
         style={{

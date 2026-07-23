@@ -5,6 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { toolById, CATEGORY_META, type ToolSection } from '@/lib/toolkit';
 import { useToolkitFavourites } from '@/hooks/useToolkitFavourites';
 import { headingShadow } from '@/styles';
@@ -114,6 +115,7 @@ export default function ToolDetailScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="reading" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center justify-between px-6 pt-4 pb-2"
