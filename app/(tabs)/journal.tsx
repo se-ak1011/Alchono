@@ -234,7 +234,7 @@ export default function JournalScreen() {
           </Pressable>
           <View className="flex-1">
             <Text
-              className="text-text-primary text-3xl font-semibold tracking-tight"
+              className="text-text-primary text-4xl tracking-tight"
               style={headingShadow}
             >
               Writing Room

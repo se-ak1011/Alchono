@@ -126,14 +126,14 @@ export default function CommunityScreen() {
 
   return (
     <SafeArea bottom={false}>
-      <ZoneGlow zone="community" />
+      <ZoneGlow zone="community" intensity={1.35} />
       <View className="flex-row items-center gap-4 px-6 pt-4 pb-2">
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Feather name="chevron-left" size={26} color="#817B91" />
         </Pressable>
         <View className="flex-1">
           <Text
-            className="text-text-primary text-3xl font-semibold tracking-tight"
+            className="text-text-primary text-4xl tracking-tight"
             style={headingShadow}
           >
             Community

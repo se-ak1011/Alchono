@@ -132,7 +132,7 @@ export default function InsightsScreen() {
               <Feather name="chevron-left" size={24} color="#B2ACC0" />
             </Pressable>
             <View>
-              <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+              <Text className="text-text-primary text-3xl tracking-tight" style={headingShadow}>
                 Progress
               </Text>
               <Text className="text-text-secondary text-sm mt-1">

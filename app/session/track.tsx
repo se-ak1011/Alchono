@@ -24,7 +24,7 @@ export default function TrackScreen() {
           <Feather name="chevron-left" size={26} color="#B2ACC0" />
         </Pressable>
         <View>
-          <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
+          <Text className="text-text-primary text-4xl tracking-tight" style={headingShadow}>
             Tonight
           </Text>
           <Text className="text-text-muted text-sm mt-0.5">

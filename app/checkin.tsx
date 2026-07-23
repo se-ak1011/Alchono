@@ -20,7 +20,7 @@ export default function CheckinScreen() {
   return (
     <SafeArea>
       <View className="px-6 pt-4 pb-1 flex-row items-center justify-between">
-        <Text className="text-text-primary text-3xl" style={{ ...headingShadow, fontSize: 30 }}>
+        <Text className="text-text-primary" style={{ ...headingShadow, fontSize: 34 }}>
           How are you?
         </Text>
         <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 active:opacity-60">

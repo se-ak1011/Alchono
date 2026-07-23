@@ -95,7 +95,7 @@ export function AppDrawer({
         <View className="flex-row items-center justify-between px-2 mb-6">
           <Text
             className="text-text-primary"
-            style={{ fontFamily: 'SkinnyCustard', fontSize: 26 }}
+            style={{ fontFamily: 'SkinnyCustard', fontSize: 30 }}
           >
             Where to?
           </Text>
@@ -138,7 +138,7 @@ export function AppDrawer({
                 flex: 1,
                 color: '#ECE9F1',
                 fontFamily: 'SkinnyCustard',
-                fontSize: 21,
+                fontSize: 23,
                 letterSpacing: 1.5,
                 textTransform: 'uppercase',
               }}

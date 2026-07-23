@@ -62,7 +62,6 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
           paddingHorizontal: 15,
           paddingVertical: 10,
           borderRadius: 20,
-          maxWidth: 148,
           backgroundColor: "rgba(236,233,241,0.055)",
           borderWidth: 1,
           borderColor: "rgba(236,233,241,0.10)",
@@ -76,16 +75,15 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
           style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
         />
         <Text
-          numberOfLines={2}
           style={{
             color: "#ECE9F1",
             fontFamily: "SkinnyCustard",
-            fontSize: 20,
-            lineHeight: 22,
-            flexShrink: 1,
+            fontSize: 23,
+            lineHeight: 25,
           }}
         >
-          {zone.label}
+          {/* Break two-word labels onto two lines deterministically */}
+          {zone.label.includes(" ") ? zone.label.replace(" ", "\n") : zone.label}
         </Text>
       </View>
     </Pressable>
@@ -153,20 +151,34 @@ export default function HomeScreen() {
           </Pressable>
           <View
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 9,
-              backgroundColor: "#A489DE",
-              opacity: 0.9,
+              width: 36,
+              height: 36,
+              borderRadius: 11,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(164,137,222,0.16)",
+              borderWidth: 1,
+              borderColor: "rgba(164,137,222,0.5)",
             }}
-          />
+          >
+            <Text
+              style={{
+                fontFamily: "SkinnyCustard",
+                fontSize: 24,
+                lineHeight: 27,
+                color: "#B9A4EC",
+              }}
+            >
+              A
+            </Text>
+          </View>
         </View>
 
         {/* Greeting — the companion's world greets you directly; no narration */}
         <View className="items-center mt-3">
           <Text
-            className="text-text-primary text-3xl"
-            style={{ ...headingShadow, fontSize: 30 }}
+            className="text-text-primary"
+            style={{ ...headingShadow, fontSize: 34 }}
           >
             {greeting()}{username ? `, ${username}` : ""}
           </Text>

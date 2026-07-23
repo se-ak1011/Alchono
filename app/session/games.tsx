@@ -250,7 +250,7 @@ export default function GamesScreen() {
         paddingTop: insets.top,
       }}
     >
-      <ZoneGlow zone="games" />
+      <ZoneGlow zone="games" intensity={1.5} />
       <Animated.View
         entering={FadeIn.duration(300)}
         style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 20 }}
@@ -262,7 +262,7 @@ export default function GamesScreen() {
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                fontSize: 30,
+                fontSize: 34,
                 ...headingShadow,
               }}
             >

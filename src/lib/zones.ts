@@ -55,18 +55,18 @@ export const ZONES: Record<ZoneKey, Zone> = {
     label: 'Community Hub',
     monogram: 'C',
     route: '/community',
-    accent: '#9EBE96', // muted sage
-    tint: 'rgba(122,150,120,0.18)',
-    edge: 'rgba(158,190,150,0.40)',
+    accent: '#A9D19E', // sage — brighter/cooler so the wash reads on OLED
+    tint: 'rgba(140,180,132,0.20)',
+    edge: 'rgba(169,209,158,0.46)',
   },
   games: {
     key: 'games',
     label: 'Games Arcade',
     monogram: 'G',
     route: '/session/games',
-    accent: '#D6B678', // muted amber
-    tint: 'rgba(190,158,96,0.18)',
-    edge: 'rgba(214,182,120,0.42)',
+    accent: '#E6C56A', // amber — brighter, more golden (was reading brown)
+    tint: 'rgba(214,184,108,0.20)',
+    edge: 'rgba(230,197,106,0.48)',
   },
   support: {
     key: 'support',
@@ -82,9 +82,9 @@ export const ZONES: Record<ZoneKey, Zone> = {
     label: 'Me',
     monogram: 'M',
     route: '/(tabs)/profile',
-    accent: '#B4AEA2', // warm grey
-    tint: 'rgba(150,144,132,0.16)',
-    edge: 'rgba(180,174,162,0.34)',
+    accent: '#C6BFB0', // warm grey — lifted so it isn't muddy
+    tint: 'rgba(170,164,150,0.18)',
+    edge: 'rgba(198,191,176,0.40)',
   },
   // The urge flow — the one place boldness is allowed. Dark aubergine, always
   // findable at the base of Home as a filled pill (not an orbit disc).

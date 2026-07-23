@@ -40,7 +40,7 @@ export default function ToolkitScreen() {
           <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={{ ...headingShadow, fontSize: 30 }}>Reading Corner</Text>
+          <Text style={{ ...headingShadow, fontSize: 34 }}>Reading Corner</Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             Small, practical things that actually help.
           </Text>

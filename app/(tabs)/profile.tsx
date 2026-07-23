@@ -51,7 +51,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeArea>
-      <ZoneGlow zone="me" />
+      <ZoneGlow zone="me" intensity={1.4} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
@@ -66,7 +66,7 @@ export default function ProfileScreen() {
               <Feather name="chevron-left" size={26} color="#B2ACC0" />
             </Pressable>
             <Text
-              className="text-text-primary text-3xl font-semibold tracking-tight"
+              className="text-text-primary text-4xl tracking-tight"
               style={headingShadow}
             >
               Me

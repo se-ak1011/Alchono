@@ -44,7 +44,7 @@ export default function SupportScreen() {
               <Feather name="chevron-left" size={26} color="#B2ACC0" />
             </Pressable>
             <Text
-              className="text-text-primary text-3xl font-semibold tracking-tight"
+              className="text-text-primary text-4xl tracking-tight"
               style={headingShadow}
             >
               Support
@@ -133,7 +133,7 @@ export default function SupportScreen() {
               Recovery
             </Text>
             <Text className="text-text-muted text-base mt-2 leading-relaxed">
-              Ongoing support: progress, toolkit, and people when you want them.
+              Ongoing support: progress, reading, and people when you want them.
             </Text>
           </Pressable>
         </Animated.View>
