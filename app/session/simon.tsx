@@ -188,7 +188,7 @@ export default function SimonScreen() {
               ...headingShadow,
             }}
           >
-            Pattern.
+            Pattern
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             {statusText()}

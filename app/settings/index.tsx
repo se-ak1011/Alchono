@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View, Text, Alert, Share, Linking, Pressable } from 'react-native';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
@@ -137,6 +138,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="me" intensity={0.55} />
       <View className="px-6 pt-4 pb-5 flex-row items-center gap-3">
         <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
           <Feather name="chevron-left" size={26} color="#B2ACC0" />

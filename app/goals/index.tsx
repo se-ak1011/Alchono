@@ -11,6 +11,7 @@ import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 import {
   useGoals,
@@ -277,13 +278,14 @@ export default function GoalsScreen() {
       className="flex-1 bg-bg"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
+      <ZoneGlow zone="me" intensity={0.55} />
       {/* Header */}
       <View className="flex-row items-center gap-4 px-6 pt-4 pb-3">
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Text className="text-text-muted text-sm">←</Text>
         </Pressable>
         <Text className="text-text-primary text-2xl font-semibold tracking-tight flex-1" style={headingShadow}>
-          Looking forward to.
+          Looking forward to
         </Text>
       </View>
 

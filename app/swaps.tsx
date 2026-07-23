@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 
 const SWAP_SECTIONS: {
@@ -51,6 +52,7 @@ export default function SwapsScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="reading" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         style={{
@@ -74,7 +76,7 @@ export default function SwapsScreen() {
               ...headingShadow,
             }}
           >
-            Swap it, don't fight it.
+            Swap it, don't fight it
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             Same ritual. Same glass. Zero alcohol.

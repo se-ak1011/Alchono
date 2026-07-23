@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import * as Haptics from 'expo-haptics';
 import { headingShadow } from '@/styles';
 
@@ -41,6 +42,7 @@ export default function EcosystemScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="me" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
@@ -62,7 +64,7 @@ export default function EcosystemScreen() {
             className="text-text-primary text-3xl font-semibold tracking-tight mt-1 mb-8"
             style={headingShadow}
           >
-            Recovery ecosystem.
+            Recovery ecosystem
           </Text>
 
           <View className="bg-surface rounded-2xl px-5 py-4 mb-8 border border-white/8">

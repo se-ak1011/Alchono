@@ -132,7 +132,7 @@ export default function StroopScreen() {
               ...headingShadow,
             }}
           >
-            {complete ? 'Done.' : 'Colour Match.'}
+            {complete ? 'Done' : 'Colour Match'}
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             {complete

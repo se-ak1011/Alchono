@@ -4,6 +4,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { Card } from '@/components/ui/Card';
 import { InsightCard } from '@/components/insights/InsightCard';
 import { MoodChart } from '@/components/insights/MoodChart';
@@ -118,6 +119,7 @@ export default function InsightsScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="me" intensity={0.7} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 32 }}

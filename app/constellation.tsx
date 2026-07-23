@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useRouter } from "expo-router";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { ConstellationSky } from "@/components/constellation/ConstellationSky";
@@ -37,6 +38,7 @@ export default function ConstellationScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: '#201D28' }}>
+      <ZoneGlow zone="me" intensity={0.55} />
       {dates.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10">
           <Text className="text-text-secondary text-lg text-center leading-relaxed">

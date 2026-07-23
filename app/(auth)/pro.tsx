@@ -80,7 +80,7 @@ export default function ProSignupScreen() {
         keyboardDismissMode="on-drag"
       >
         <Text className="text-text-primary text-3xl font-semibold mb-2" style={headingShadow}>
-          For counsellors.
+          For counsellors
         </Text>
         <Text className="text-text-secondary text-base leading-relaxed mb-8">
           A consent-first window into how your clients are coping between

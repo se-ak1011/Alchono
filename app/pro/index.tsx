@@ -109,7 +109,7 @@ export default function ProDashboard() {
       <View className="flex-row items-start justify-between px-6 mb-4">
         <View className="flex-1">
           <Text className="text-text-primary text-2xl font-semibold" style={headingShadow}>
-            Your clients.
+            Your clients
           </Text>
           <Text className="text-text-muted text-sm mt-0.5">
             {profile?.username ?? 'Counsellor'}{pro?.org ? ` · ${pro.org}` : ''}

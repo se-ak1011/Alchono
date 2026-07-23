@@ -106,7 +106,7 @@ export default function OddOneOutScreen() {
               ...headingShadow,
             }}
           >
-            {failed ? 'Sharp eyes.' : 'Odd One Out.'}
+            {failed ? 'Sharp eyes' : 'Odd One Out'}
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             {failed

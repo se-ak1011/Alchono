@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Image, FlatList, Alert, Dimensions } from 'react-native';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -38,6 +39,7 @@ export default function MyMomentsScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="community" intensity={0.55} />
       <View className="px-6 pt-4 pb-3 flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">

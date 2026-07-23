@@ -17,6 +17,7 @@ import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 import { useUploadMoment } from '@/hooks/useMoments';
 import { useAuthStore } from '@/store/authStore';
@@ -118,6 +119,7 @@ export default function NewMomentScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="community" intensity={0.55} />
       <View className="px-6 pt-4 pb-2 flex-row justify-between items-center">
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Text className="text-text-muted text-base">Close</Text>
@@ -139,7 +141,7 @@ export default function NewMomentScreen() {
               className="text-text-primary text-4xl font-semibold tracking-tight"
               style={headingShadow}
             >
-              Add a moment.
+              Add a moment
             </Text>
             <Text className="text-text-secondary text-base mt-2 leading-relaxed">
               Something small and good. Yours to keep, or to share.

@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import * as Haptics from 'expo-haptics';
 import { headingShadow } from '@/styles';
 
@@ -44,6 +45,7 @@ export default function RecoveryScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="support" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"

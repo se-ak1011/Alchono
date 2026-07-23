@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Image, FlatList } from 'react-native';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
@@ -65,6 +66,7 @@ export default function GoodFeedScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="community" intensity={0.55} />
       {/* Header */}
       <View className="px-6 pt-4 pb-3 flex-row items-start justify-between">
         <View className="flex-row items-start gap-3 flex-1">
@@ -73,7 +75,7 @@ export default function GoodFeedScreen() {
           </Pressable>
           <View className="flex-1">
             <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
-              Something good.
+              Something good
             </Text>
             <Text className="text-text-secondary text-sm mt-1">
               Small, real moments — shared by people like you.

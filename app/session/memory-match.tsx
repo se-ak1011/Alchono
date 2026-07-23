@@ -210,7 +210,7 @@ export default function MemoryMatchScreen() {
               ...headingShadow,
             }}
           >
-            {complete ? 'All matched.' : 'Memory Match.'}
+            {complete ? 'All matched' : 'Memory Match'}
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             {complete

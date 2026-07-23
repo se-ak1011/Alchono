@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { AiCoachChat } from '@/components/support/AiCoachChat';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useAuthStore } from '@/store/authStore';
 import { logSupportTap } from '@/hooks/useTrustedPerson';
 
@@ -23,6 +24,7 @@ export default function SosScreen() {
       className="flex-1 bg-bg"
       style={{ paddingTop: insets.top + 8 }}
     >
+      <ZoneGlow zone="support" intensity={0.55} />
       <Animated.View
         entering={FadeInDown.duration(400)}
         className="flex-row items-center px-6 mb-4"

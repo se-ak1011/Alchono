@@ -240,7 +240,7 @@ export default function WordSearchScreen() {
               ...headingShadow,
             }}
           >
-            Find the good words.
+            Find the good words
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             No list. No clock. They're in there — drag when you spot one.

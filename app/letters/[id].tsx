@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { ScrollView, View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
@@ -71,6 +72,7 @@ export default function LetterScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="writing" intensity={0.55} />
       <View className="px-6 pt-4 pb-2">
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Text className="text-text-muted text-base">Close</Text>

@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 import {
   useWriteLetter,
@@ -60,6 +61,7 @@ export default function WriteLetterScreen() {
 
   return (
     <SafeArea>
+      <ZoneGlow zone="writing" intensity={0.55} />
       <View className="px-6 pt-4 pb-2 flex-row justify-between items-center">
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Text className="text-text-muted text-base">Close</Text>

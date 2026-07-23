@@ -11,6 +11,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import * as Haptics from 'expo-haptics';
 import { Avatar } from '@/components/ui/Avatar';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -50,6 +51,7 @@ export default function CounsellorsScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="support" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         style={{
@@ -73,7 +75,7 @@ export default function CounsellorsScreen() {
               ...headingShadow,
             }}
           >
-            Find a counsellor.
+            Find a counsellor
           </Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
             Verified recovery professionals on Alchono.

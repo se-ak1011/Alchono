@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Linking } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import * as Haptics from 'expo-haptics';
 import { RESOURCE_SECTIONS, SWAPS_SECTION } from '@/lib/resources';
 import { useAuthStore } from '@/store/authStore';
@@ -24,6 +25,7 @@ export default function ResourcesScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="support" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
@@ -35,7 +37,7 @@ export default function ResourcesScreen() {
           className="text-text-primary text-2xl font-semibold tracking-tight"
           style={headingShadow}
         >
-          Resources.
+          Resources
         </Text>
       </Animated.View>
 

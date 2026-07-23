@@ -12,6 +12,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import * as Haptics from 'expo-haptics';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import {
@@ -89,13 +90,14 @@ export default function TimelineScreen() {
         className="flex-1"
         style={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom }}
       >
+        <ZoneGlow zone="me" intensity={0.55} />
         <View className="flex-row items-center px-6 mb-2">
           <Pressable onPress={() => router.back()} className="mr-4" hitSlop={12}>
             <Text className="text-text-secondary text-lg">←</Text>
           </Pressable>
           <View className="flex-1">
             <Text className="text-text-primary text-2xl font-semibold" style={headingShadow}>
-              Your story.
+              Your story
             </Text>
             <Text className="text-text-muted text-sm mt-0.5">
               Not numbers. Moments.

@@ -65,7 +65,7 @@ export default function LoginScreen() {
             <View className="items-center mb-10">
               <SoulIcon size={64} />
               <Text className="text-text-primary text-4xl font-semibold tracking-tight mt-4" style={headingShadow}>
-                Welcome back.
+                Welcome back
               </Text>
               <Text className="text-text-secondary text-lg mt-2 text-center">
                 Your journey continues here.

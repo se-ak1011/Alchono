@@ -65,7 +65,7 @@ export default function SignupScreen() {
             <View className="items-center mb-10">
               <SoulIcon size={64} />
               <Text className="text-text-primary text-4xl font-semibold tracking-tight mt-4" style={headingShadow}>
-                Start here.
+                Start here
               </Text>
               <Text className="text-text-secondary text-lg mt-2 text-center leading-relaxed">
                 Private. Compassionate. Yours.

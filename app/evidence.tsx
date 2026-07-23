@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useEvidence } from '@/hooks/useEvidence';
 import { headingShadow } from '@/styles';
@@ -21,6 +22,7 @@ export default function EvidenceScreen() {
         paddingBottom: insets.bottom,
       }}
     >
+      <ZoneGlow zone="me" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
@@ -42,7 +44,7 @@ export default function EvidenceScreen() {
               className="text-text-primary text-3xl font-semibold tracking-tight mt-4 mb-4"
               style={headingShadow}
             >
-              Evidence.
+              Evidence
             </Text>
             <Text className="text-text-secondary text-base leading-relaxed mb-8">
               It might not feel like you're making progress today. Here's what

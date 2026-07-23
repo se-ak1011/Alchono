@@ -59,7 +59,7 @@ export default function PostGameScreen() {
               ...headingShadow,
             }}
           >
-            Well done.
+            Well done
           </Text>
           <Text
             style={{

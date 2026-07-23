@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Share } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import * as Haptics from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
 import { useInsights, useTotalPauses } from '@/hooks/useInsights';
@@ -77,6 +78,7 @@ export default function SummaryScreen() {
         paddingBottom: insets.bottom + 12,
       }}
     >
+      <ZoneGlow zone="me" intensity={0.55} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
