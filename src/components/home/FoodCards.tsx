@@ -22,10 +22,10 @@ export function FoodCards() {
         right: 0,
         bottom: 0,
         flexDirection: 'row',
-        gap: 10,
-        paddingHorizontal: 16,
-        paddingTop: 4,
-        paddingBottom: insets.bottom + 8,
+        gap: 8,
+        paddingHorizontal: 14,
+        paddingTop: 8,
+        paddingBottom: insets.bottom + 10,
       }}
     >
       {FOOD_LIST.map((section) => (
@@ -49,10 +49,11 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
       className="active:opacity-80"
       style={{
         flex: 1,
-        minHeight: 96,
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 14,
+        minHeight: 92,
+        borderRadius: 18,
+        paddingHorizontal: 8,
+        paddingTop: 13,
+        paddingBottom: 11,
         backgroundColor: section.tint,
         borderWidth: 1,
         borderColor: section.edge,
@@ -63,10 +64,10 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
       <Text
         style={{
           color: '#817B91',
-          fontSize: 9,
-          letterSpacing: 1.5,
+          fontSize: 8,
+          letterSpacing: 1.25,
           fontFamily: 'Inter_600SemiBold',
-          marginBottom: 2,
+          marginBottom: 3,
         }}
       >
         FOOD FOR
@@ -75,9 +76,11 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
         style={{
           color: section.accent,
           fontFamily: 'SkinnyCustard',
-          fontSize: 24,
-          lineHeight: 26,
+          fontSize: 22,
+          lineHeight: 27,
           textAlign: 'center',
+          paddingHorizontal: 2,
+          paddingTop: 1,
         }}
         numberOfLines={2}
       >
