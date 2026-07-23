@@ -24,13 +24,6 @@ import { useAuthStore } from "@/store/authStore";
 import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return "Morning";
-  if (h < 18) return "Afternoon";
-  return "Evening";
-}
-
 // Gentle lines the companion offers when tapped — presence, not tasks.
 const QUIET_LINES = [
   "Still here.",
@@ -94,7 +87,7 @@ function OrbitChip({ zone, style }: { zone: Zone; style: any }) {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { pose, companion } = useCompanion();
+  const { pose } = useCompanion();
   const { height } = useWindowDimensions();
   const username = useAuthStore((s) => s.profile?.username);
   const { data: activeSession } = useActiveSession();
@@ -162,29 +155,26 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Greeting */}
+        {/* Greeting — the companion's world greets you directly; no narration */}
         <View className="items-center mt-3">
           <Text
-            className="text-text-primary text-2xl font-semibold tracking-tight"
-            style={headingShadow}
+            className="text-text-primary text-3xl"
+            style={{ ...headingShadow, fontSize: 30 }}
           >
-            {greeting()}{username ? `, ${username}.` : "."}
+            Hey{username ? `, ${username}` : ""}
           </Text>
-          <Text className="text-text-muted text-sm mt-1">
-            {companion.name} is here with you.
-          </Text>
-          {/* Daily check-in — a calm once-a-day prompt that vanishes once done */}
+          {/* Daily check-in — the first (and only) thing asked, once a day */}
           {!todayCheckin && (
             <Pressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 router.push("/checkin");
               }}
-              className="mt-4 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70"
+              className="mt-3 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70"
               style={{ backgroundColor: "rgba(236,233,241,0.05)" }}
             >
               <Text className="text-text-secondary text-sm">
-                How are you feeling today?
+                How are you today?
               </Text>
               <Feather name="chevron-right" size={14} color="#817B91" />
             </Pressable>
