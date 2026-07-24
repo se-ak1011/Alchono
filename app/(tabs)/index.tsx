@@ -6,13 +6,13 @@ import {
   useWindowDimensions,
   Animated as RNAnimated,
 } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { CompanionArt } from "@/components/ui/CompanionArt";
+import { OrbitChip } from "@/components/ui/OrbitChip";
 import { AppDrawer } from "@/components/ui/AppDrawer";
 import { PauseModal } from "@/components/home/PauseModal";
 import { FoodCards } from "@/components/home/FoodCards";
@@ -22,7 +22,7 @@ import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useActiveSession } from "@/hooks/useDrinkingSession";
 import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
-import { ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
+import { HOME_ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 
 // Roughly how tall the three-card footer stands; the orbit reserves this
@@ -30,18 +30,23 @@ import { headingShadow } from "@/styles";
 const NEWS_BAND_HEIGHT = 132;
 const HINT_KEY = "alchono:orbit-hint-seen";
 
-function OrbitChip({
+function HomeOrbitChip({
   zone,
   style,
   anim,
   open,
+  fromX,
+  fromY,
 }: {
   zone: Zone;
   style: any;
   anim: RNAnimated.Value;
   open: boolean;
+  fromX: number;
+  fromY: number;
 }) {
   const router = useRouter();
+  const multiline = zone.key === "community" || zone.key === "games";
   return (
     <RNAnimated.View
       pointerEvents={open ? "auto" : "none"}
@@ -51,54 +56,27 @@ function OrbitChip({
           zIndex: 10,
           opacity: anim,
           transform: [
+            {
+              translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [fromX, 0] }),
+            },
+            {
+              translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [fromY, 0] }),
+            },
             { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.86, 1] }) },
           ],
         },
         style,
       ]}
     >
-      <Pressable
+      <OrbitChip
+        label={multiline ? zone.label.replace(" ", "\n") : zone.label}
+        accent={zone.accent}
+        numberOfLines={multiline ? 2 : 1}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push(zone.route as any);
         }}
-        className="active:opacity-70"
-      >
-        {/* A calm glassy pill: the zone's colour rides the little dot, the
-            label reads itself. */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 9,
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            borderRadius: 20,
-            backgroundColor: "rgba(236,233,241,0.055)",
-            borderWidth: 1,
-            borderColor: "rgba(236,233,241,0.10)",
-            shadowColor: "#000",
-            shadowOpacity: 0.3,
-            shadowRadius: 9,
-            shadowOffset: { width: 0, height: 4 },
-          }}
-        >
-          <View
-            style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: zone.accent }}
-          />
-          <Text
-            style={{
-              color: "#ECE9F1",
-              fontFamily: "SkinnyCustard",
-              fontSize: 23,
-              lineHeight: 25,
-            }}
-          >
-            {/* Break two-word labels onto two lines deterministically */}
-            {zone.label.includes(" ") ? zone.label.replace(" ", "\n") : zone.label}
-          </Text>
-        </View>
-      </Pressable>
+      />
     </RNAnimated.View>
   );
 }
@@ -113,7 +91,9 @@ export default function HomeScreen() {
 
   // The orbit is hidden until you tap the companion — Home stays calm.
   const [orbitOpen, setOrbitOpen] = useState(false);
-  const orbitAnim = useRef(new RNAnimated.Value(0)).current;
+  const orbitAnims = useRef(
+    HOME_ORBIT_ZONES.slice(0, 6).map(() => new RNAnimated.Value(0)),
+  ).current;
 
   // A one-time breathing halo behind the companion, so first-timers know
   // there's something to tap. Dismissed the moment they open the orbit.
@@ -150,22 +130,32 @@ export default function HomeScreen() {
   // space above it. Anchors are fractions of that available height, so the
   // orbit keeps its shape from small phones to tall ones.
   const AH = height - NEWS_BAND_HEIGHT;
-  const rows = useMemo(
-    () => ({
-      top: AH * 0.24,
-      mid: AH * 0.44,
-      low: AH * 0.62,
-    }),
-    [AH],
+  const companionTop = Math.min(230, Math.max(190, AH * 0.4 - 80));
+  const orbitPositions = useMemo(
+    () => [
+      { left: 12, right: undefined, top: companionTop - 38, fromX: 88, fromY: 88 },
+      { left: undefined, right: 12, top: companionTop - 38, fromX: -88, fromY: 88 },
+      { left: 8, right: undefined, top: companionTop + 36, fromX: 92, fromY: 14 },
+      { left: undefined, right: 6, top: companionTop + 44, fromX: -92, fromY: 8 },
+      { left: 20, right: undefined, top: companionTop + 126, fromX: 82, fromY: -64 },
+      { left: undefined, right: 30, top: companionTop + 126, fromX: -82, fromY: -64 },
+    ],
+    [companionTop],
   );
 
   const setOrbit = (next: boolean) => {
     setOrbitOpen(next);
-    RNAnimated.timing(orbitAnim, {
-      toValue: next ? 1 : 0,
-      duration: next ? 260 : 220,
-      useNativeDriver: true,
-    }).start();
+    const animations = orbitAnims.map((anim) =>
+      RNAnimated.timing(anim, {
+        toValue: next ? 1 : 0,
+        duration: next ? 230 : 170,
+        useNativeDriver: true,
+      }),
+    );
+    (next
+      ? RNAnimated.stagger(45, animations)
+      : RNAnimated.stagger(25, [...animations].reverse())
+    ).start();
   };
 
   const toggleOrbit = () => {
@@ -262,7 +252,7 @@ export default function HomeScreen() {
             position: "absolute",
             left: 0,
             right: 0,
-            top: AH * 0.44 - 100,
+            top: companionTop,
             alignItems: "center",
             zIndex: 5,
           }}
@@ -274,10 +264,10 @@ export default function HomeScreen() {
               pointerEvents="none"
               style={{
                 position: "absolute",
-                top: 12,
-                width: 150,
-                height: 150,
-                borderRadius: 75,
+                top: 10,
+                width: 190,
+                height: 190,
+                borderRadius: 95,
                 backgroundColor: "rgba(164,137,222,0.22)",
                 opacity: haloOpacity,
                 transform: [{ scale: haloScale }],
@@ -286,34 +276,61 @@ export default function HomeScreen() {
           )}
           <CompanionArt
             source={pose("bust")}
-            width={172}
-            height={204}
-            cropHeight={176}
+            width={232}
+            height={276}
+            cropHeight={216}
             onPress={toggleOrbit}
           />
         </View>
 
-        {/* Orbit chips — hidden until the companion is tapped */}
-        <OrbitChip zone={ORBIT_ZONES[0]} anim={orbitAnim} open={orbitOpen} style={{ left: 14, top: rows.top }} />
-        <OrbitChip zone={ORBIT_ZONES[1]} anim={orbitAnim} open={orbitOpen} style={{ right: 14, top: rows.top }} />
-        <OrbitChip zone={ORBIT_ZONES[2]} anim={orbitAnim} open={orbitOpen} style={{ left: 10, top: rows.mid }} />
-        <OrbitChip zone={ORBIT_ZONES[3]} anim={orbitAnim} open={orbitOpen} style={{ right: 10, top: rows.mid }} />
-        <OrbitChip zone={ORBIT_ZONES[4]} anim={orbitAnim} open={orbitOpen} style={{ left: 14, top: rows.low }} />
-        <OrbitChip zone={ORBIT_ZONES[5]} anim={orbitAnim} open={orbitOpen} style={{ right: 14, top: rows.low }} />
+        {/* The six calm destinations join the always-visible SOS chip. */}
+        {HOME_ORBIT_ZONES.slice(0, 6).map((zone, index) => (
+          <HomeOrbitChip
+            key={zone.key}
+            zone={zone}
+            anim={orbitAnims[index]}
+            open={orbitOpen}
+            fromX={orbitPositions[index].fromX}
+            fromY={orbitPositions[index].fromY}
+            style={{
+              left: orbitPositions[index].left,
+              right: orbitPositions[index].right,
+              top: orbitPositions[index].top,
+            }}
+          />
+        ))}
 
-        {/* The one bold thing — always at the base, always findable.
-            When a session is live, a slim chip sits just above it. */}
-        <Animated.View
-          entering={FadeIn.duration(400)}
+        <View
           style={{
             position: "absolute",
             left: 0,
             right: 0,
-            bottom: NEWS_BAND_HEIGHT + 18,
+            top: companionTop + 211,
+            zIndex: 10,
             alignItems: "center",
           }}
         >
-          {activeSession ? (
+          <OrbitChip
+            label={urge.label}
+            emergency
+            onPress={() => {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              router.push(urge.route as any);
+            }}
+          />
+        </View>
+
+        {/* An active session remains findable without becoming part of the orbit. */}
+        {activeSession ? (
+          <View
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              top: companionTop + 258,
+              alignItems: "center",
+            }}
+          >
             <Pressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -340,37 +357,11 @@ export default function HomeScreen() {
               </Text>
               <Feather name="chevron-right" size={15} color="#817B91" />
             </Pressable>
-          ) : null}
-          <Pressable
-            onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-              router.push(urge.route as any);
-            }}
-            className="flex-row items-center gap-2.5 active:opacity-80"
-            style={{
-              paddingHorizontal: 24,
-              paddingVertical: 15,
-              borderRadius: 30,
-              backgroundColor: urge.tint,
-              borderWidth: 1,
-              borderColor: urge.edge,
-              shadowColor: "#120D17",
-              shadowOpacity: 0.8,
-              shadowRadius: 16,
-              shadowOffset: { width: 0, height: 7 },
-            }}
-          >
-            <Text
-              className="text-text-primary"
-              style={{ fontFamily: "SkinnyCustard", fontSize: 23, lineHeight: 27 }}
-            >
-              {urge.label}
-            </Text>
-          </Pressable>
-        </Animated.View>
+          </View>
+        ) : null}
 
         {/* Food for the Soul / Giggles / Thought — a calm three-card footer */}
-        <FoodCards />
+        <FoodCards top={companionTop + (activeSession ? 307 : 266)} />
       </View>
 
       <PauseModal />
