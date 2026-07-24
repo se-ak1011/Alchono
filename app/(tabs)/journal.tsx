@@ -338,7 +338,7 @@ export default function JournalScreen() {
           companionLeft={91}
           companionTop={36}
           points={[
-            { x: 0, y: -96 },
+            { x: 0, y: -82 },
             { x: -106, y: 44 },
             { x: 106, y: 44 },
           ]}

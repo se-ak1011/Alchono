@@ -2,9 +2,9 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-// Content is generated infrequently and cached, so prefer Sonnet's stronger
-// writing quality here; the high-frequency AI coach intentionally uses Haiku.
-const MODEL = Deno.env.get('ANTHROPIC_CONTENT_MODEL') ?? 'claude-sonnet-4-5';
+// Infrequent + cached + curated, so quality is worth it here (unlike the
+// high-frequency coach). Sonnet writes warmer humour and better dilemmas.
+const MODEL = 'claude-sonnet-5';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,7 +20,9 @@ Rules:
 - Vary the flavour across: harmless malicious compliance, gentle petty revenge, funny misunderstandings, workplace humour, customer-service moments, wholesome animal antics, everyday mishaps.
 - No real or identifiable people, brands, politics, cruelty, sexual content, or anything dark. Nothing about alcohol, drugs or recovery.
 - Give each a short, playful title.
-- Submit every completed item through the provided tool.`;
+
+Return ONLY a JSON array, no prose, no markdown fences:
+[{"title": "...", "body": "...", "category": "misunderstanding"}]`;
 
 const DILEMMAS_PROMPT = (n: number) => `Write ${n} ORIGINAL first-person moral dilemmas for a "Food for Thought" feed inside a calm alcohol-recovery app, where readers vote on who was in the wrong.
 
@@ -31,28 +33,9 @@ Rules:
 - Keep it light-to-moderate and NON-triggering: no addiction, alcohol, drugs, self-harm, abuse, violence, infidelity or grief as the core. No politics.
 - First person, 2–3 short paragraphs. End with the narrator unsure if they were unreasonable.
 - Give each a short, plain title (no "AITA").
-- Submit every completed item through the provided tool.`;
 
-const GIGGLE_ITEM_SCHEMA = {
-  type: 'object',
-  properties: {
-    title: { type: 'string' },
-    body: { type: 'string' },
-    category: { type: 'string' },
-  },
-  required: ['title', 'body'],
-  additionalProperties: false,
-};
-
-const DILEMMA_ITEM_SCHEMA = {
-  type: 'object',
-  properties: {
-    title: { type: 'string' },
-    story: { type: 'string' },
-  },
-  required: ['title', 'story'],
-  additionalProperties: false,
-};
+Return ONLY a JSON array, no prose, no markdown fences:
+[{"title": "...", "story": "..."}]`;
 
 async function claude(prompt: string, maxTokens: number): Promise<string> {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -114,57 +97,13 @@ async function review(items: { text: string }[], kind: 'giggle' | 'dilemma'): Pr
   }
 }
 
-async function generate(
-  prompt: string,
-  toolName: string,
-  itemSchema: Record<string, unknown>,
-): Promise<any[]> {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': ANTHROPIC_API_KEY!,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 3000,
-      temperature: 1,
-      messages: [{ role: 'user', content: prompt }],
-      tools: [{
-        name: toolName,
-        description: 'Submit the completed content batch.',
-        input_schema: {
-          type: 'object',
-          properties: { items: { type: 'array', items: itemSchema } },
-          required: ['items'],
-          additionalProperties: false,
-        },
-      }],
-      tool_choice: { type: 'tool', name: toolName },
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok || data.type === 'error') {
-    throw new Error(`Anthropic ${res.status}: ${data.error?.message ?? JSON.stringify(data)}`);
-  }
-  const toolUse = data.content?.find(
-    (block: { type?: string; name?: string }) => block.type === 'tool_use' && block.name === toolName,
-  );
-  const items = toolUse?.input?.items;
-  if (!Array.isArray(items) || items.length === 0) {
-    throw new Error(`Anthropic returned no structured items for ${toolName}`);
-  }
-  return items;
+async function generate(prompt: string): Promise<any[]> {
+  return parseArray(await claude(prompt, 3000));
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    console.log('[generate-content] invoked', {
-      hasApiKey: !!ANTHROPIC_API_KEY,
-      model: MODEL,
-    });
     if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is not set');
 
     const admin = createClient(
@@ -181,22 +120,10 @@ serve(async (req) => {
     if (!adminRow) return new Response(JSON.stringify({ error: 'not an admin' }), { status: 403, headers: corsHeaders });
 
     const { kind = 'both', giggles = 6, dilemmas = 4 } = await req.json().catch(() => ({}));
-    const emptyResult = () => ({ received: 0, valid: 0, published: 0, held: 0 });
-    const out = {
-      published: 0,
-      held: 0,
-      giggles: emptyResult(),
-      dilemmas: emptyResult(),
-    };
+    const out = { published: 0, held: 0 };
 
     if (kind === 'giggles' || kind === 'both') {
-      const generated = await generate(GIGGLES_PROMPT(giggles), 'submit_giggles', GIGGLE_ITEM_SCHEMA);
-      const items = generated.filter((it) => it?.title && it?.body);
-      out.giggles.received = generated.length;
-      out.giggles.valid = items.length;
-      if (items.length === 0) {
-        throw new Error(`Giggles contained no valid title/body items; keys: ${Object.keys(generated[0] ?? {}).join(', ')}`);
-      }
+      const items = (await generate(GIGGLES_PROMPT(giggles))).filter((it) => it?.title && it?.body);
       const verdicts = await review(items.map((it) => ({ text: `${it.title}\n${it.body}` })), 'giggle');
       const rows = items.map((it, i) => ({
         kind: 'giggle',
@@ -207,22 +134,15 @@ serve(async (req) => {
       }));
       if (rows.length) {
         const { error } = await admin.from('curated_stories').insert(rows);
-        if (error) throw new Error(`Could not save Giggles: ${error.message}`);
-        out.giggles.published = rows.filter((r) => r.published).length;
-        out.giggles.held = rows.filter((r) => !r.published).length;
-        out.published += out.giggles.published;
-        out.held += out.giggles.held;
+        if (!error) {
+          out.published += rows.filter((r) => r.published).length;
+          out.held += rows.filter((r) => !r.published).length;
+        }
       }
     }
 
     if (kind === 'dilemmas' || kind === 'both') {
-      const generated = await generate(DILEMMAS_PROMPT(dilemmas), 'submit_dilemmas', DILEMMA_ITEM_SCHEMA);
-      const items = generated.filter((it) => it?.title && it?.story);
-      out.dilemmas.received = generated.length;
-      out.dilemmas.valid = items.length;
-      if (items.length === 0) {
-        throw new Error(`Dilemmas contained no valid title/story items; keys: ${Object.keys(generated[0] ?? {}).join(', ')}`);
-      }
+      const items = (await generate(DILEMMAS_PROMPT(dilemmas))).filter((it) => it?.title && it?.story);
       const verdicts = await review(items.map((it) => ({ text: `${it.title}\n${it.story}` })), 'dilemma');
       const rows = items.map((it, i) => ({
         title: String(it.title).slice(0, 200),
@@ -231,11 +151,10 @@ serve(async (req) => {
       }));
       if (rows.length) {
         const { error } = await admin.from('dilemmas').insert(rows);
-        if (error) throw new Error(`Could not save dilemmas: ${error.message}`);
-        out.dilemmas.published = rows.filter((r) => r.published).length;
-        out.dilemmas.held = rows.filter((r) => !r.published).length;
-        out.published += out.dilemmas.published;
-        out.held += out.dilemmas.held;
+        if (!error) {
+          out.published += rows.filter((r) => r.published).length;
+          out.held += rows.filter((r) => !r.published).length;
+        }
       }
     }
 
