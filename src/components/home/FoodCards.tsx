@@ -59,7 +59,7 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
         justifyContent: 'center',
       }}
     >
-      <Text
+      <View
         style={{
           position: 'absolute',
           top: 27,
