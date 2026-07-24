@@ -61,21 +61,30 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
     >
       <View
         style={{
-          alignItems: 'center',
-          transform: [{ translateY: section.key === 'giggles' ? 3 : 0 }],
+          position: 'absolute',
+          top: 27,
+          left: 0,
+          right: 0,
+          color: '#817B91',
+          fontSize: 8,
+          letterSpacing: 1.25,
+          fontFamily: 'Inter_600SemiBold',
+          textAlign: 'center',
         }}
       >
-        <Text
-          style={{
-            color: '#817B91',
-            fontSize: 8,
-            letterSpacing: 1.25,
-            fontFamily: 'Inter_600SemiBold',
-            marginBottom: 3,
-          }}
-        >
-          FOOD FOR
-        </Text>
+        FOOD FOR
+      </Text>
+      <View
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 14,
+          height: 38,
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+        }}
+      >
         <Text
           style={{
             color: section.accent,
@@ -87,7 +96,6 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
             textAlign: 'center',
             paddingHorizontal: 2,
             paddingTop: section.key === 'thought' ? 5 : 1,
-            paddingBottom: section.key === 'thought' ? 2 : 0,
           }}
           numberOfLines={2}
         >

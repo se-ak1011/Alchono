@@ -18,6 +18,26 @@ export interface PendingDilemma {
 }
 
 export type ContentTable = 'curated_stories' | 'dilemmas';
+type GeneratedKindResult = { received: number; valid: number; published: number; held: number };
+export type GenerateContentResult = {
+  published: number;
+  held: number;
+  giggles: GeneratedKindResult;
+  dilemmas: GeneratedKindResult;
+};
+
+async function functionErrorMessage(error: unknown): Promise<string> {
+  const context = (error as { context?: Response })?.context;
+  if (context && typeof context.json === 'function') {
+    try {
+      const body = await context.json();
+      if (body?.error) return String(body.error);
+    } catch {
+      // Fall through to the client error below when the response is not JSON.
+    }
+  }
+  return error instanceof Error ? error.message : 'Unknown function error';
+}
 
 /** Everything awaiting approval — admins only. */
 export function useAdminPending() {
@@ -68,12 +88,19 @@ export function usePublishContent() {
  *  auto-publishes what clearly passes; `held` is what it wasn't sure about. */
 export function useGenerateContent() {
   return useMutation({
-    mutationFn: async (): Promise<{ published: number; held: number }> => {
+    mutationFn: async (): Promise<GenerateContentResult> => {
       const { data, error } = await supabase.functions.invoke('generate-content', {
         body: { kind: 'both' },
       });
-      if (error) throw error;
-      return { published: data?.published ?? 0, held: data?.held ?? 0 };
+      if (error) throw new Error(await functionErrorMessage(error));
+      if (!data?.ok) throw new Error(data?.error ?? 'The generator returned an invalid response');
+      const empty = { received: 0, valid: 0, published: 0, held: 0 };
+      return {
+        published: data?.published ?? 0,
+        held: data?.held ?? 0,
+        giggles: data?.giggles ?? empty,
+        dilemmas: data?.dilemmas ?? empty,
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pending-content'] });

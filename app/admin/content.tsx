@@ -97,10 +97,13 @@ export default function AdminContentScreen() {
                 onSuccess: (r) =>
                   Alert.alert(
                     'Fresh batch',
-                    `${r.published} auto-published${r.held ? ` · ${r.held} held for you to check below` : ''}.`,
+                    `Giggles: ${r.giggles.published} live · ${r.giggles.held} held\nThought: ${r.dilemmas.published} live · ${r.dilemmas.held} held`,
                   ),
-                onError: () =>
-                  Alert.alert('Could not generate', 'Please try again in a moment.'),
+                onError: (error) =>
+                  Alert.alert(
+                    'Could not generate',
+                    error instanceof Error ? error.message : 'Please try again in a moment.',
+                  ),
               });
             }}
             className="bg-surface-2 rounded-full px-3.5 py-2 border border-white/10 active:opacity-70 flex-row items-center gap-2"
