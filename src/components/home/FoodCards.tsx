@@ -65,15 +65,21 @@ function FoodCard({ section, onPress }: { section: FoodSection; onPress: () => v
           top: 27,
           left: 0,
           right: 0,
-          color: '#817B91',
-          fontSize: 8,
-          letterSpacing: 1.25,
-          fontFamily: 'Inter_600SemiBold',
-          textAlign: 'center',
+          alignItems: 'center',
         }}
       >
-        FOOD FOR
-      </Text>
+        <Text
+          style={{
+            color: '#817B91',
+            fontSize: 8,
+            letterSpacing: 1.25,
+            fontFamily: 'Inter_600SemiBold',
+            textAlign: 'center',
+          }}
+        >
+          FOOD FOR
+        </Text>
+      </View>
       <View
         style={{
           position: 'absolute',
