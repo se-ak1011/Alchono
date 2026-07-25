@@ -13,11 +13,10 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
-import { useCommunityFeed, useCreatePost, useReactToPost } from '@/hooks/useCommunity';
-import { useBlockUser, useReportUser } from '@/hooks/useMessages';
+import { useCommunityFeed, useCreatePost, useReactToPost, usePostComments, useAddComment, useReportPost, TALK_REPORT_REASONS } from '@/hooks/useCommunity';
+import { useBlockUser } from '@/hooks/useMessages';
 import { useSendMessageRequest } from '@/hooks/useDirectMessages';
 import { useAuthStore } from '@/store/authStore';
-import { REPORT_REASONS } from '@/types';
 
 const REACTIONS = [
   { key: 'heart' as const, emoji: '❤️' },
@@ -28,24 +27,30 @@ const REACTIONS = [
 export function CommunityFeed({
   onTalkToAi,
   onFindMentor,
+  initialPostId,
 }: {
   onTalkToAi?: () => void;
   onFindMentor?: () => void;
+  initialPostId?: string;
 }) {
   const router = useRouter();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommunityFeed();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isRefetching, isError, refetch } = useCommunityFeed();
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const { mutate: blockUser } = useBlockUser();
-  const { mutate: reportUser } = useReportUser();
   const { mutate: sendMessageRequest } = useSendMessageRequest();
   const myUserId = useAuthStore((s) => s.user?.id);
   const myUsername = useAuthStore((s) => s.profile?.username);
   const [newPost, setNewPost] = useState('');
   const [isAnon, setIsAnon] = useState(true);
   const [justPosted, setJustPosted] = useState(false);
+  const [openComments, setOpenComments] = useState<string | null>(initialPostId ?? null);
+  const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
 
   const posts = data?.pages.flat() ?? [];
+  const { data: comments = [], isError: commentsError, refetch: refetchComments } = usePostComments(openComments);
+  const { mutate: addComment, isPending: isSavingComment } = useAddComment();
+  const { mutate: reportPost } = useReportPost();
 
   const handleMessageRequest = (post: { user_id: string; username?: string | null }) => {
     sendMessageRequest(post.user_id, {
@@ -68,6 +73,17 @@ export function CommunityFeed({
     });
   };
 
+  const showReportReasons = (postId: string) => Alert.alert('Why are you reporting this?', undefined, [
+    { text: 'Cancel', style: 'cancel' },
+    ...TALK_REPORT_REASONS.map((reason) => ({
+      text: reason,
+      onPress: () => reportPost({ postId, reason }, {
+        onSuccess: () => Alert.alert('Reported', 'Thank you. We will review it.'),
+        onError: (error) => Alert.alert('Could not report', error instanceof Error ? error.message : 'Please try again.'),
+      }),
+    })),
+  ]);
+
   const showPostActions = (post: {
     id: string;
     user_id: string;
@@ -84,25 +100,7 @@ export function CommunityFeed({
         : []),
       {
         text: 'Report post',
-        onPress: () =>
-          Alert.alert('Why are you reporting this?', undefined, [
-            { text: 'Cancel', style: 'cancel' },
-            ...REPORT_REASONS.map((reason) => ({
-              text: reason,
-              onPress: () =>
-                reportUser(
-                  {
-                    reportedUserId: post.user_id,
-                    reason: `[community post ${post.id}] ${reason}`,
-                  },
-                  {
-                    onSuccess: () =>
-                      Alert.alert('Reported', 'Thank you. We will review it.'),
-                    onError: () => Alert.alert('Error', 'Could not send the report.'),
-                  },
-                ),
-            })),
-          ]),
+        onPress: () => showReportReasons(post.id),
       },
       {
         text: 'Block this poster',
@@ -159,7 +157,7 @@ export function CommunityFeed({
         />
         {!!newPost.trim() && (
           <Text className="text-text-muted text-sm mt-2 leading-relaxed">
-            People can send ❤️ 👏 🤝 — but nobody can reply to posts.
+            People can send ❤️ 👏 🤝 or leave up to three comments.
           </Text>
         )}
         <View className="flex-row items-center justify-between mt-3">
@@ -261,6 +259,8 @@ export function CommunityFeed({
         showsVerticalScrollIndicator={false}
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.3}
+        refreshing={isRefetching && !isFetchingNextPage}
+        onRefresh={() => refetch()}
         renderItem={({ item, index }) => (
           <Animated.View
             entering={FadeInDown.duration(300).delay(index * 30).springify()}
@@ -292,19 +292,21 @@ export function CommunityFeed({
               <Text className="text-text-primary text-base leading-relaxed mb-4">
                 {item.content}
               </Text>
-              <View className="flex-row gap-3">
+              <View className="flex-row flex-wrap gap-3">
                 {REACTIONS.map(({ key, emoji }) => {
                   const reactions = (item.reactions as Record<string, number>) ?? {};
                   const count = reactions[key] ?? 0;
                   return (
                     <Pressable
                       key={key}
-                      disabled={(item as any).is_seed_content}
+                      disabled={(item as any).is_seed_content || item.user_id === myUserId || (item as any).my_reaction === key}
                       onPress={async () => {
                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        react({ postId: item.id, reaction: key, currentReactions: reactions });
+                        react({ postId: item.id, reaction: key, currentReactions: reactions, currentReaction: (item as any).my_reaction }, {
+                          onError: () => Alert.alert('Could not react', 'Please try again.'),
+                        });
                       }}
-                      className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
+                      className={`flex-row items-center gap-1.5 rounded-lg px-3 py-2 ${(item as any).my_reaction === key ? 'bg-accent/25 border border-accent/50' : 'bg-surface-2'} ${(item as any).is_seed_content || item.user_id === myUserId ? 'opacity-60' : 'active:bg-white/10'}`}
                     >
                       <Text className="text-base">{emoji}</Text>
                       {count > 0 && (
@@ -313,7 +315,62 @@ export function CommunityFeed({
                     </Pressable>
                   );
                 })}
+                <Pressable
+                  disabled={(item as any).is_seed_content}
+                  onPress={() => setOpenComments(openComments === item.id ? null : item.id)}
+                  className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
+                >
+                  <Text className="text-text-secondary text-sm">Comment</Text>
+                  {((item as any).comment_count ?? 0) > 0 && (
+                    <Text className="text-text-muted text-sm">{(item as any).comment_count}</Text>
+                  )}
+                </Pressable>
               </View>
+              {item.user_id !== myUserId && !(item as any).is_official && (
+                <Pressable onPress={() => showReportReasons(item.id)} hitSlop={8} className="self-end mt-2">
+                  <Text className="text-text-muted text-xs">Report</Text>
+                </Pressable>
+              )}
+              {openComments === item.id && (() => {
+                const postComments = comments.filter((comment) => comment.post_id === item.id);
+                const mine = postComments.filter((comment) => comment.user_id === myUserId).length;
+                const atLimit = mine >= 3;
+                const draft = commentDrafts[item.id] ?? '';
+                return (
+                  <View className="mt-4 border-t border-white/5 pt-3">
+                    {commentsError && (
+                      <Pressable onPress={() => refetchComments()} className="mb-3">
+                        <Text className="text-danger text-sm">Comments couldn't load. Tap to retry.</Text>
+                      </Pressable>
+                    )}
+                    {postComments.map((comment) => (
+                      <View key={comment.id} className="flex-row gap-2 mb-3">
+                        <Avatar username={comment.username} size="sm" />
+                        <View className="flex-1">
+                          <Text className="text-text-secondary text-sm font-medium">{comment.username}</Text>
+                          <Text className="text-text-muted text-xs mb-1">{new Date(comment.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</Text>
+                          <Text className="text-text-primary text-sm leading-relaxed">{comment.content}</Text>
+                        </View>
+                      </View>
+                    ))}
+                    {atLimit ? (
+                      <Text className="text-text-muted text-sm">You've reached the 3 comment limit for this post.</Text>
+                    ) : (
+                      <View className="flex-row items-end gap-2">
+                        <TextInput value={draft} onChangeText={(text) => setCommentDrafts((current) => ({ ...current, [item.id]: text }))}
+                          editable={!isSavingComment} placeholder="Add a comment…" placeholderTextColor="#817B91" multiline maxLength={500}
+                          className="flex-1 bg-surface-2 rounded-xl px-3 py-2 text-text-primary text-sm" />
+                        <Pressable disabled={!draft.trim() || isSavingComment} onPress={() => addComment({ postId: item.id, content: draft }, {
+                          onSuccess: () => setCommentDrafts((current) => ({ ...current, [item.id]: '' })),
+                          onError: (error) => Alert.alert('Could not comment', error instanceof Error ? error.message : 'Please try again.'),
+                        })} className={`rounded-xl px-3 py-2 ${draft.trim() && !isSavingComment ? 'bg-accent' : 'bg-surface-2'}`}>
+                          {isSavingComment ? <ActivityIndicator size="small" color="#ECE9F1" /> : <Text className="text-bg text-sm font-semibold">Send</Text>}
+                        </Pressable>
+                      </View>
+                    )}
+                  </View>
+                );
+              })()}
             </Card>
           </Animated.View>
         )}
@@ -325,9 +382,10 @@ export function CommunityFeed({
         ListEmptyComponent={
           <View className="py-12 items-center">
             <Text className="text-text-muted text-base text-center leading-relaxed">
-              Be the first to share something.{'\n'}
-              Bad day, good day, day one, day ninety —{'\n'}it all belongs here.
+              {isError ? "Community couldn't load." : 'Be the first to share something.'}{'\n'}
+              {!isError && <>Bad day, good day, day one, day ninety —{'\n'}it all belongs here.</>}
             </Text>
+            {isError && <Pressable onPress={() => refetch()} className="mt-4 bg-surface-2 rounded-xl px-4 py-2"><Text className="text-text-secondary text-sm">Try again</Text></Pressable>}
           </View>
         }
       />

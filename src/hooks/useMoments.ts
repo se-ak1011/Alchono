@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from '@/lib/supabase';
@@ -15,7 +17,7 @@ const BUCKET = 'moments';
  * resolve). `FileSystem.uploadAsync` streams the bytes from disk, so videos
  * upload reliably. The user's JWT is sent so storage RLS still applies.
  */
-async function uploadToStorage(
+export async function uploadToStorage(
   path: string,
   fileUri: string,
   contentType: string,
@@ -47,7 +49,7 @@ async function uploadToStorage(
         'cache-control': '3600',
       },
     },
-    (p) => {
+    (p: FileSystem.UploadProgressData) => {
       if (onProgress && p.totalBytesExpectedToSend > 0) {
         onProgress(p.totalBytesSent / p.totalBytesExpectedToSend);
       }
@@ -69,6 +71,15 @@ export interface FeedMoment {
   username: string | null; // null when the post is anonymous
 }
 
+/** Mint the private full-video URL only after the user chooses to play it. */
+export async function getMomentPlaybackUrl(momentId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('good-feed', {
+    body: { action: 'play', momentId },
+  });
+  if (error || !data?.url) throw error ?? new Error('video unavailable');
+  return data.url as string;
+}
+
 export interface MyMoment {
   id: string;
   created_at: string;
@@ -88,7 +99,8 @@ function randomId(): string {
 
 /** The community feed — shared + approved moments, via the service-role fn. */
 export function useCommunityMoments(limit = 40) {
-  return useQuery({
+  const channelId = useRef(Math.random().toString(36).slice(2));
+  const query = useQuery({
     queryKey: ['community-moments', limit],
     queryFn: async (): Promise<FeedMoment[]> => {
       const { data, error } = await supabase.functions.invoke('good-feed', {
@@ -99,6 +111,17 @@ export function useCommunityMoments(limit = 40) {
     },
     staleTime: 60_000,
   });
+  useEffect(() => {
+    const channel = supabase.channel(`community-moments-${channelId.current}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'moments' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+      }).subscribe();
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+    });
+    return () => { appState.remove(); supabase.removeChannel(channel); };
+  }, []);
+  return query;
 }
 
 /** The user's own moments (private gallery), with signed URLs for own media. */

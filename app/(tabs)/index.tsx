@@ -4,6 +4,7 @@ import {
   Text,
   Pressable,
   ScrollView,
+  RefreshControl,
   Animated as RNAnimated,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -26,6 +27,7 @@ import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
 import { HOME_ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
+import { queryClient } from "@/lib/queryClient";
 
 const HINT_KEY = "alchono:orbit-hint-seen";
 
@@ -86,6 +88,7 @@ export default function HomeScreen() {
   const { data: activeSession } = useActiveSession();
   const { data: todayCheckin } = useTodayCheckin();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   // Home's destinations stay visible by default; other companion menus and
   // screens retain their existing behaviour.
   const [orbitOpen, setOrbitOpen] = useState(true);
@@ -150,10 +153,21 @@ export default function HomeScreen() {
     setOrbit(!orbitOpen);
   };
   const urge = ZONES.urge;
+  const refreshHome = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ['community-feed'] }),
+        queryClient.refetchQueries({ queryKey: ['community-moments'] }),
+      ]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <SafeArea bottom={false}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshHome} tintColor="#B9A4EC" />}>
         <View className="flex-row items-center justify-between px-6 pt-3">
           <Pressable onPress={() => setDrawerOpen(true)} hitSlop={12} className="p-1 -ml-1 active:opacity-60" accessibilityLabel="Open menu">
             <Feather name="menu" size={24} color="#B2ACC0" />

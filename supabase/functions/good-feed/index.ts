@@ -18,7 +18,29 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
-    const { limit = 30, before } = await req.json().catch(() => ({}));
+    const { limit = 30, before, action, momentId } = await req.json().catch(() => ({}));
+
+    // Full media URLs are minted only after a tap; feed requests never sign or
+    // encourage loading every video while somebody scrolls.
+    if (action === 'play') {
+      if (!momentId) throw new Error('momentId required');
+      const { data: moment, error: momentError } = await supabase
+        .from('moments').select('media_path, media_type')
+        .eq('id', momentId).eq('shared', true).eq('moderation_status', 'approved')
+        .maybeSingle();
+      if (momentError) throw momentError;
+      if (!moment || moment.media_type !== 'video') {
+        return new Response(JSON.stringify({ error: 'video unavailable' }), {
+          status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const { data: signed, error: signError } = await supabase.storage
+        .from('moments').createSignedUrl(moment.media_path, 900);
+      if (signError) throw signError;
+      return new Response(JSON.stringify({ url: signed?.signedUrl ?? null }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     let query = supabase
       .from('moments')
@@ -32,29 +54,28 @@ serve(async (req) => {
     const { data: rows, error } = await query;
     if (error) throw error;
 
-    const items = await Promise.all((rows ?? []).map(async (m: any) => {
-      const signed = await supabase.storage
-        .from('moments')
-        .createSignedUrl(m.media_path, 3600);
-      const thumb = m.thumb_path
-        ? await supabase.storage.from('moments').createSignedUrl(m.thumb_path, 3600)
-        : { data: null };
+    const namedUserIds = [...new Set((rows ?? []).filter((m: any) => !m.anonymous).map((m: any) => m.user_id))];
+    const { data: profiles } = namedUserIds.length
+      ? await supabase.from('profiles').select('id, username').in('id', namedUserIds)
+      : { data: [] };
+    const usernames = new Map((profiles ?? []).map((profile: any) => [profile.id, profile.username]));
 
-      let username: string | null = null;
-      if (!m.anonymous) {
-        const { data: prof } = await supabase
-          .from('profiles').select('username').eq('id', m.user_id).maybeSingle();
-        username = prof?.username ?? null;
-      }
+    const items = await Promise.all((rows ?? []).map(async (m: any) => {
+      // Photos use their media as the preview. Videos use only the small poster;
+      // their full URL is deliberately omitted until the play action above.
+      const previewPath = m.media_type === 'video' ? m.thumb_path : m.media_path;
+      const preview = previewPath
+        ? await supabase.storage.from('moments').createSignedUrl(previewPath, 3600)
+        : { data: null };
 
       return {
         id: m.id,
         created_at: m.created_at,
         media_type: m.media_type,
         caption: m.caption,
-        url: signed.data?.signedUrl ?? null,
-        thumb_url: (thumb as any).data?.signedUrl ?? null,
-        username, // null when anonymous; user_id is never included
+        url: m.media_type === 'photo' ? (preview as any).data?.signedUrl ?? null : null,
+        thumb_url: m.media_type === 'video' ? (preview as any).data?.signedUrl ?? null : null,
+        username: m.anonymous ? null : usernames.get(m.user_id) ?? null,
       };
     }));
 

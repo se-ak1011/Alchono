@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { AppState } from 'react-native';
 import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
@@ -5,71 +7,193 @@ import { useAuthStore } from '@/store/authStore';
 import { fetchUsernames } from '@/lib/publicProfiles';
 import { getOfficialTalkPosts } from '@/data/officialSeed';
 
+export type CommunityComment = {
+  id: string; post_id: string; user_id: string; created_at: string; content: string;
+  username: string;
+};
+
+function updatePostInFeed(postId: string, update: (post: any) => any) {
+  queryClient.setQueriesData({ queryKey: ['community-feed'] }, (old: any) => {
+    if (!old?.pages) return old;
+    return { ...old, pages: old.pages.map((page: any[]) => page.map((post) => post.id === postId ? update(post) : post)) };
+  });
+}
+
 const PAGE_SIZE = 20;
 
 export function useCommunityFeed(pageSize = PAGE_SIZE) {
   const userId = useAuthStore((s) => s.user?.id);
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: ['community-feed', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
       const pageOffset = pageParam * pageSize;
       const officialPosts = getOfficialTalkPosts();
-      if (pageOffset < officialPosts.length) {
-        return officialPosts.slice(pageOffset, pageOffset + pageSize);
-      }
-      const databaseOffset = pageOffset - officialPosts.length;
+      // Seed records decorate the first page; database pagination is completely
+      // independent so local starter content can never hide real member posts.
+      let officialPage = pageParam === 0 ? officialPosts : [];
+      const databaseOffset = pageOffset;
+      const databaseLimit = pageSize;
       // Nearby people first (server-side, coordinates never leave the DB);
       // falls back to plain recency if the function isn't deployed yet.
       const [nearby, { data: blocks }] = await Promise.all([
-        supabase.rpc('community_feed_nearby', {
-          p_limit: pageSize,
+        (supabase as any).rpc('community_feed_nearby', {
+          p_limit: databaseLimit,
           p_offset: databaseOffset,
         }),
-        supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
+        (supabase as any).from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
       ]);
 
       let data = nearby.data;
       let error = nearby.error;
       if (error) {
-        const fallback = await supabase
+        const fallback = await (supabase as any)
           .from('community_posts')
           .select('*')
+          .is('removed_at', null)
+          .eq('moderation_status', 'published')
           .lte('created_at', new Date().toISOString())
           .order('created_at', { ascending: false })
-          .range(databaseOffset, databaseOffset + pageSize - 1);
+          .range(databaseOffset, databaseOffset + databaseLimit - 1);
         data = fallback.data;
         error = fallback.error;
       }
       if (error) throw error;
-      if (!data || data.length === 0) return [];
+      if (!data || data.length === 0) return officialPage;
 
       // Hide posts from people the user has blocked.
-      const blocked = new Set((blocks ?? []).map((b) => b.blocked_id));
+      const blocked = new Set((blocks ?? []).map((b: any) => b.blocked_id));
       const now = Date.now();
       const visible = data.filter(
-        (p) => !blocked.has(p.user_id) && new Date(p.created_at).getTime() <= now,
+        (p: any) => !blocked.has(p.user_id) && new Date(p.created_at).getTime() <= now,
       );
+      if (visible.some((post: any) => post.is_official)) officialPage = [];
+
+      const { data: myReactions } = visible.length
+        ? await (supabase as any).from('community_post_reactions').select('post_id, reaction')
+          .eq('user_id', userId!).in('post_id', visible.map((post: any) => post.id))
+        : { data: [] };
+      const selectedReactions = new Map((myReactions ?? []).map((row: any) => [row.post_id, row.reaction]));
 
       // Usernames only matter for non-anonymous posts; profiles is
       // owner-only under RLS so they come from the public_profiles view.
       const names = await fetchUsernames(
-        visible.filter((p) => !p.is_anonymous).map((p) => p.user_id),
+        visible.filter((p: any) => !p.is_anonymous).map((p: any) => p.user_id),
       );
-      return visible.map((p) => ({
+      const databasePosts = visible.map((p: any) => ({
         ...p,
         username: p.is_anonymous ? null : names[p.user_id] ?? 'Member',
+        my_reaction: selectedReactions.get(p.id) ?? null,
       }));
+      return [...officialPage, ...databasePosts].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
     },
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.length === pageSize ? allPages.length : undefined,
+      lastPage.filter((post) => !(post as any).is_seed_content).length === pageSize
+        ? allPages.length
+        : undefined,
     initialPageParam: 0,
     enabled: !!userId,
+  });
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase.channel(`community-talk-posts-${pageSize}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'community_posts' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+      }).subscribe();
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+    });
+    return () => { appState.remove(); supabase.removeChannel(channel); };
+  }, [pageSize, userId]);
+  return query;
+}
+
+export function usePostComments(postId: string | null) {
+  const userId = useAuthStore((s) => s.user?.id);
+  const databasePostId = postId && /^[0-9a-f-]{36}$/i.test(postId) ? postId : null;
+  useEffect(() => {
+    if (!userId || !databasePostId) return;
+    const channel = supabase.channel(`community-comments-${databasePostId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_comments', filter: `post_id=eq.${databasePostId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ['community-comments', databasePostId] });
+      }).subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [userId, databasePostId]);
+  return useQuery({
+    queryKey: ['community-comments', databasePostId],
+    queryFn: async (): Promise<CommunityComment[]> => {
+      if (!databasePostId) return [];
+      const { data, error } = await (supabase as any).from('community_comments').select('*')
+        .eq('post_id', databasePostId).order('created_at', { ascending: true });
+      if (error) throw error;
+      const names = await fetchUsernames((data ?? []).map((comment: any) => comment.user_id));
+      return (data ?? []).map((comment: any) => ({
+        ...comment, username: names[comment.user_id] ?? 'Member',
+      }));
+    },
+    enabled: !!userId && !!databasePostId,
+  });
+}
+
+export function useAddComment() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const username = useAuthStore((s) => s.profile?.username) ?? 'Member';
+  return useMutation({
+    mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
+      const clean = content.trim();
+      if (!clean) throw new Error('Comment cannot be empty.');
+      const { data, error } = await (supabase as any).from('community_comments').insert({
+        post_id: postId, user_id: userId!, content: clean,
+      }).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onMutate: async ({ postId, content }) => {
+      await queryClient.cancelQueries({ queryKey: ['community-comments', postId] });
+      const previous = queryClient.getQueryData<CommunityComment[]>(['community-comments', postId]);
+      queryClient.setQueryData<CommunityComment[]>(['community-comments', postId], (old = []) => [...old, {
+        id: `pending-${Date.now()}`, post_id: postId, user_id: userId!, created_at: new Date().toISOString(), content: content.trim(), username,
+      }]);
+      updatePostInFeed(postId, (post) => ({ ...post, comment_count: (post.comment_count ?? 0) + 1 }));
+      return { previous };
+    },
+    onError: (_error, variables, context) => {
+      queryClient.setQueryData(['community-comments', variables.postId], context?.previous ?? []);
+      updatePostInFeed(variables.postId, (post) => ({ ...post, comment_count: Math.max((post.comment_count ?? 1) - 1, 0) }));
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['community-comments', variables.postId] });
+    },
+  });
+}
+
+export const TALK_REPORT_REASONS = [
+  'Spam', 'Harassment', 'Hate speech', 'Self-harm concern', 'Misinformation', 'Other',
+] as const;
+
+export type TalkReportReason = typeof TALK_REPORT_REASONS[number];
+
+export function useReportPost() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: async ({ postId, reason }: { postId: string; reason: TalkReportReason }) => {
+      const { error } = await (supabase as any).from('community_post_reports').insert({
+        post_id: postId, reporter_id: userId!, reason,
+      });
+      if (error) {
+        if (error.code === '23505') throw new Error('You have already reported this post.');
+        throw error;
+      }
+    },
   });
 }
 
 export function useCreatePost() {
   const userId = useAuthStore((s) => s.user?.id);
+  const username = useAuthStore((s) => s.profile?.username);
 
   return useMutation({
     mutationFn: async ({
@@ -79,20 +203,34 @@ export function useCreatePost() {
       content: string;
       isAnonymous?: boolean;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('community_posts')
         .insert({
           user_id: userId!,
           content,
           is_anonymous: isAnonymous,
           reactions: { heart: 0, clap: 0, handshake: 0 },
+          moderation_status: 'published',
         })
         .select()
         .single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onMutate: async ({ content, isAnonymous = true }) => {
+      await queryClient.cancelQueries({ queryKey: ['community-feed'] });
+      const previous = queryClient.getQueriesData({ queryKey: ['community-feed'] });
+      queryClient.setQueriesData({ queryKey: ['community-feed'] }, (old: any) => {
+        if (!old?.pages?.[0]) return old;
+        const pending = { id: `pending-${Date.now()}`, user_id: userId!, created_at: new Date().toISOString(), content, reactions: { heart: 0, clap: 0, handshake: 0 }, is_anonymous: isAnonymous, username: isAnonymous ? null : username ?? 'Member', moderation_status: 'published', removed_at: null, moderated_at: null, comment_count: 0, is_pending: true };
+        return { ...old, pages: [[pending, ...old.pages[0]], ...old.pages.slice(1)] };
+      });
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      context?.previous.forEach(([key, value]) => queryClient.setQueryData(key, value));
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['community-feed'] });
     },
   });
@@ -103,24 +241,30 @@ export function useReactToPost() {
     mutationFn: async ({
       postId,
       reaction,
-      currentReactions,
     }: {
       postId: string;
       reaction: 'heart' | 'clap' | 'handshake';
       currentReactions: Record<string, number>;
+      currentReaction?: string | null;
     }) => {
-      const updated = {
-        ...currentReactions,
-        [reaction]: (currentReactions[reaction] ?? 0) + 1,
-      };
-      const { error } = await supabase
-        .from('community_posts')
-        .update({ reactions: updated })
-        .eq('id', postId);
+      const { data, error } = await (supabase as any).rpc('react_to_community_post', { p_post_id: postId, p_reaction: reaction });
       if (error) throw error;
+      return data as { reactions: Record<string, number>; my_reaction: string };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+    onMutate: ({ postId, reaction, currentReactions, currentReaction }) => {
+      updatePostInFeed(postId, (post) => {
+        const previous = currentReaction ?? (post.my_reaction as string | null);
+        const next = { ...currentReactions };
+        if (previous && previous !== reaction) next[previous] = Math.max((next[previous] ?? 1) - 1, 0);
+        if (previous !== reaction) next[reaction] = (next[reaction] ?? 0) + 1;
+        return { ...post, reactions: next, my_reaction: reaction };
+      });
+    },
+    onSuccess: (reactions, variables) => {
+      updatePostInFeed(variables.postId, (post) => ({ ...post, reactions: reactions.reactions, my_reaction: reactions.my_reaction }));
+    },
+    onError: (_error, variables) => {
+      updatePostInFeed(variables.postId, (post) => ({ ...post, reactions: variables.currentReactions, my_reaction: variables.currentReaction ?? null }));
     },
   });
 }
