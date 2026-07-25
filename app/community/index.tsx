@@ -9,7 +9,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
-import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
+import { useCommunityMoments, ensureLegacyMomentThumbnail, type FeedMoment } from '@/hooks/useMoments';
 
 function MomentCard({ item }: { item: FeedMoment }) {
   const router = useRouter();

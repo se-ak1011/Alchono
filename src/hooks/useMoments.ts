@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
@@ -58,6 +59,28 @@ export async function uploadToStorage(
   const result = await task.uploadAsync();
   if (!result || (result.status !== 200 && result.status !== 201)) {
     throw new Error(`storage upload failed (${result?.status}): ${result?.body}`);
+  }
+}
+
+const thumbnailAttempts = new Set<string>();
+
+/** Creates and persists the missing preview for a legacy shared video once. */
+export async function ensureLegacyMomentThumbnail(moment: FeedMoment) {
+  if (moment.media_type !== 'video' || moment.thumb_url || !moment.url || thumbnailAttempts.has(moment.id)) return;
+  thumbnailAttempts.add(moment.id);
+  const localVideo = `${FileSystem.cacheDirectory}moment-${moment.id}.mp4`;
+  const path = `shared/${moment.id}_legacy_t.jpg`;
+  try {
+    await FileSystem.downloadAsync(moment.url, localVideo);
+    const thumbnail = await VideoThumbnails.getThumbnailAsync(localVideo, { time: 500 });
+    await uploadToStorage(path, thumbnail.uri, 'image/jpeg');
+    const { error } = await (supabase as any).rpc('save_legacy_moment_thumbnail', {
+      p_moment_id: moment.id, p_thumb_path: path,
+    });
+    if (error) throw error;
+    queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+  } finally {
+    FileSystem.deleteAsync(localVideo, { idempotent: true }).catch(() => {});
   }
 }
 
