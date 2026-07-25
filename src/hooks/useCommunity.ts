@@ -3,21 +3,28 @@ import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { fetchUsernames } from '@/lib/publicProfiles';
+import { getOfficialTalkPosts } from '@/data/officialSeed';
 
 const PAGE_SIZE = 20;
 
-export function useCommunityFeed() {
+export function useCommunityFeed(pageSize = PAGE_SIZE) {
   const userId = useAuthStore((s) => s.user?.id);
 
   return useInfiniteQuery({
-    queryKey: ['community-feed'],
+    queryKey: ['community-feed', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
+      const pageOffset = pageParam * pageSize;
+      const officialPosts = getOfficialTalkPosts();
+      if (pageOffset < officialPosts.length) {
+        return officialPosts.slice(pageOffset, pageOffset + pageSize);
+      }
+      const databaseOffset = pageOffset - officialPosts.length;
       // Nearby people first (server-side, coordinates never leave the DB);
       // falls back to plain recency if the function isn't deployed yet.
       const [nearby, { data: blocks }] = await Promise.all([
         supabase.rpc('community_feed_nearby', {
-          p_limit: PAGE_SIZE,
-          p_offset: pageParam * PAGE_SIZE,
+          p_limit: pageSize,
+          p_offset: databaseOffset,
         }),
         supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
       ]);
@@ -28,8 +35,9 @@ export function useCommunityFeed() {
         const fallback = await supabase
           .from('community_posts')
           .select('*')
+          .lte('created_at', new Date().toISOString())
           .order('created_at', { ascending: false })
-          .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+          .range(databaseOffset, databaseOffset + pageSize - 1);
         data = fallback.data;
         error = fallback.error;
       }
@@ -38,7 +46,10 @@ export function useCommunityFeed() {
 
       // Hide posts from people the user has blocked.
       const blocked = new Set((blocks ?? []).map((b) => b.blocked_id));
-      const visible = data.filter((p) => !blocked.has(p.user_id));
+      const now = Date.now();
+      const visible = data.filter(
+        (p) => !blocked.has(p.user_id) && new Date(p.created_at).getTime() <= now,
+      );
 
       // Usernames only matter for non-anonymous posts; profiles is
       // owner-only under RLS so they come from the public_profiles view.
@@ -51,7 +62,7 @@ export function useCommunityFeed() {
       }));
     },
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.length === PAGE_SIZE ? allPages.length : undefined,
+      lastPage.length === pageSize ? allPages.length : undefined,
     initialPageParam: 0,
     enabled: !!userId,
   });

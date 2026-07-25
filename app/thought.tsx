@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
-import { useDilemmas, type Dilemma } from '@/hooks/useDilemmas';
+import { useDilemmas, useReflectionPrompts, type Dilemma } from '@/hooks/useDilemmas';
 import { FOOD } from '@/lib/food';
 import { headingShadow } from '@/styles';
 
@@ -49,6 +49,7 @@ function DilemmaCard({ item, i, onPress }: { item: Dilemma; i: number; onPress: 
 export default function ThoughtScreen() {
   const router = useRouter();
   const { data: dilemmas = [], isLoading } = useDilemmas();
+  const { data: reflections = [] } = useReflectionPrompts();
 
   return (
     <SafeArea>
@@ -82,6 +83,29 @@ export default function ThoughtScreen() {
             }}
           />
         )}
+        ListHeaderComponent={
+          reflections.length > 0 ? (
+            <View className="mb-5">
+              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
+                Official reflections
+              </Text>
+              {reflections.map((item) => (
+                <View key={item.id} className="bg-surface rounded-3xl px-5 py-5 mb-3 border border-white/8">
+                  <View className="flex-row items-center gap-2 mb-2">
+                    <Text style={{ color: S.accent, fontSize: 12, fontFamily: 'Inter_600SemiBold' }}>ALCHONO</Text>
+                    <Text className="text-text-muted text-xs">Official</Text>
+                  </View>
+                  <Text className="text-text-primary text-lg font-semibold leading-relaxed">{item.body}</Text>
+                </View>
+              ))}
+              {dilemmas.length > 0 ? (
+                <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mt-3 mb-1">
+                  Dilemmas
+                </Text>
+              ) : null}
+            </View>
+          ) : null
+        }
         ListEmptyComponent={
           !isLoading ? (
             <View className="items-center px-10 mt-24">
