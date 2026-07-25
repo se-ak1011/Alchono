@@ -6,18 +6,18 @@ import { fetchUsernames } from '@/lib/publicProfiles';
 
 const PAGE_SIZE = 20;
 
-export function useCommunityFeed() {
+export function useCommunityFeed(pageSize = PAGE_SIZE) {
   const userId = useAuthStore((s) => s.user?.id);
 
   return useInfiniteQuery({
-    queryKey: ['community-feed'],
+    queryKey: ['community-feed', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
       // Nearby people first (server-side, coordinates never leave the DB);
       // falls back to plain recency if the function isn't deployed yet.
       const [nearby, { data: blocks }] = await Promise.all([
         supabase.rpc('community_feed_nearby', {
-          p_limit: PAGE_SIZE,
-          p_offset: pageParam * PAGE_SIZE,
+          p_limit: pageSize,
+          p_offset: pageParam * pageSize,
         }),
         supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
       ]);
@@ -29,7 +29,7 @@ export function useCommunityFeed() {
           .from('community_posts')
           .select('*')
           .order('created_at', { ascending: false })
-          .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+          .range(pageParam * pageSize, (pageParam + 1) * pageSize - 1);
         data = fallback.data;
         error = fallback.error;
       }
@@ -51,7 +51,7 @@ export function useCommunityFeed() {
       }));
     },
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.length === PAGE_SIZE ? allPages.length : undefined,
+      lastPage.length === pageSize ? allPages.length : undefined,
     initialPageParam: 0,
     enabled: !!userId,
   });
