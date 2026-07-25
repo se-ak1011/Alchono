@@ -87,12 +87,12 @@ function randomId(): string {
 }
 
 /** The community feed — shared + approved moments, via the service-role fn. */
-export function useCommunityMoments() {
+export function useCommunityMoments(limit = 40) {
   return useQuery({
-    queryKey: ['community-moments'],
+    queryKey: ['community-moments', limit],
     queryFn: async (): Promise<FeedMoment[]> => {
       const { data, error } = await supabase.functions.invoke('good-feed', {
-        body: { limit: 40 },
+        body: { limit },
       });
       if (error) throw error;
       return (data?.items ?? []) as FeedMoment[];

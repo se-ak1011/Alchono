@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, FlatList, Image } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
@@ -122,7 +122,8 @@ function LookFeed() {
 
 export default function CommunityScreen() {
   const router = useRouter();
-  const [tab, setTab] = useState<'look' | 'talk'>('look');
+  const params = useLocalSearchParams<{ tab?: string }>();
+  const [tab, setTab] = useState<'look' | 'talk'>(params.tab === 'talk' ? 'talk' : 'look');
 
   return (
     <SafeArea bottom={false}>
