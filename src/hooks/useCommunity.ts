@@ -162,64 +162,12 @@ export const TALK_REPORT_REASONS = [
   'Spam', 'Harassment', 'Hate speech', 'Self-harm concern', 'Misinformation', 'Other',
 ] as const;
 
-export function useReportPost() {
-  const userId = useAuthStore((s) => s.user?.id);
-  return useMutation({
-    mutationFn: async ({ postId, reason }: { postId: string; reason: typeof TALK_REPORT_REASONS[number] }) => {
-      const { error } = await (supabase as any).from('community_post_reports').insert({
-        post_id: postId, reporter_id: userId!, reason,
-      });
-      if (error) {
-        if (error.code === '23505') throw new Error('You have already reported this post.');
-        throw error;
-      }
-    },
-  });
-}
-
-export function usePostComments(postIds: string[]) {
-  const userId = useAuthStore((s) => s.user?.id);
-  const databasePostIds = postIds.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
-  return useQuery({
-    queryKey: ['community-comments', databasePostIds],
-    queryFn: async (): Promise<CommunityComment[]> => {
-      if (!databasePostIds.length) return [];
-      const { data, error } = await (supabase as any).from('community_comments').select('*')
-        .in('post_id', databasePostIds).order('created_at', { ascending: true });
-      if (error) throw error;
-      const names = await fetchUsernames((data ?? []).map((comment) => comment.user_id));
-      return (data ?? []).map((comment) => ({
-        ...comment, username: names[comment.user_id] ?? 'Member',
-      }));
-    },
-    enabled: !!userId && databasePostIds.length > 0,
-  });
-}
-
-export function useAddComment() {
-  const userId = useAuthStore((s) => s.user?.id);
-  return useMutation({
-    mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
-      const clean = content.trim();
-      if (!clean) throw new Error('Comment cannot be empty.');
-      const { data, error } = await (supabase as any).from('community_comments').insert({
-        post_id: postId, user_id: userId!, content: clean,
-      }).select().single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['community-comments'] }),
-  });
-}
-
-export const TALK_REPORT_REASONS = [
-  'Spam', 'Harassment', 'Hate speech', 'Self-harm concern', 'Misinformation', 'Other',
-] as const;
+export type TalkReportReason = typeof TALK_REPORT_REASONS[number];
 
 export function useReportPost() {
   const userId = useAuthStore((s) => s.user?.id);
   return useMutation({
-    mutationFn: async ({ postId, reason }: { postId: string; reason: typeof TALK_REPORT_REASONS[number] }) => {
+    mutationFn: async ({ postId, reason }: { postId: string; reason: TalkReportReason }) => {
       const { error } = await (supabase as any).from('community_post_reports').insert({
         post_id: postId, reporter_id: userId!, reason,
       });

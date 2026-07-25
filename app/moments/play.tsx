@@ -64,17 +64,6 @@ export default function PlayMomentScreen() {
         </View>
       )}
 
-      {loading && !error && (
-        <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: '#ECE9F1' }}>Loading video…</Text>
-        </View>
-      )}
-      {error && (
-        <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <Text style={{ color: '#ECE9F1', textAlign: 'center' }}>This video could not be played. Please try again.</Text>
-        </View>
-      )}
-
       <Pressable
         onPress={() => router.back()}
         hitSlop={12}
