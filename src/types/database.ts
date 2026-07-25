@@ -201,6 +201,9 @@ export interface Database {
           content: string;
           reactions: Json;
           is_anonymous: boolean;
+          moderation_status: string;
+          removed_at: string | null;
+          moderated_at: string | null;
         };
         Insert: {
           id?: string;
@@ -209,10 +212,16 @@ export interface Database {
           content: string;
           reactions?: Json;
           is_anonymous?: boolean;
+          moderation_status?: string;
+          removed_at?: string | null;
+          moderated_at?: string | null;
         };
         Update: {
           content?: string;
           reactions?: Json;
+          moderation_status?: string;
+          removed_at?: string | null;
+          moderated_at?: string | null;
         };
       };
       mentor_profiles: {

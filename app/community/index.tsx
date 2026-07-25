@@ -9,24 +9,29 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
-import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
+import { useCommunityMoments, ensureLegacyMomentThumbnail, type FeedMoment } from '@/hooks/useMoments';
 
 function MomentCard({ item }: { item: FeedMoment }) {
   const router = useRouter();
   const openPlayer = (uri: string, type: 'photo' | 'video') =>
-    router.push({ pathname: '/moments/play', params: { uri, type } });
+    router.push({ pathname: '/moments/play', params: { uri, type, poster: item.thumb_url ?? '' } });
+  React.useEffect(() => {
+    ensureLegacyMomentThumbnail(item).catch(() => {});
+  }, [item.id, item.thumb_url]);
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
       className="mx-6 mb-5 bg-surface rounded-3xl overflow-hidden border border-white/8"
     >
       {item.media_type === 'video' && item.url ? (
-        <Pressable onPress={() => openPlayer(item.url!, 'video')}>
-          <Image
-            source={{ uri: item.thumb_url ?? item.url }}
-            style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
-            resizeMode="cover"
-          />
+        <Pressable onPress={() => openPlayer(item.url!, 'video')} accessibilityLabel="Play video">
+          {item.thumb_url ? (
+            <Image source={{ uri: item.thumb_url }} style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }} resizeMode="cover" />
+          ) : (
+            <View style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }} className="items-center justify-center">
+              <Text className="text-text-muted text-sm">Preparing preview…</Text>
+            </View>
+          )}
           <View className="absolute inset-0 items-center justify-center">
             <View className="w-16 h-16 rounded-full bg-black/45 items-center justify-center">
               <Feather name="play" size={28} color="#fff" style={{ marginLeft: 3 }} />

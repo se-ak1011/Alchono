@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image, Pressable, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,7 +9,9 @@ import { Feather } from '@expo/vector-icons';
 export default function PlayMomentScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { uri, type } = useLocalSearchParams<{ uri?: string; type?: string }>();
+  const { uri, type, poster } = useLocalSearchParams<{ uri?: string; type?: string; poster?: string }>();
+  const [loading, setLoading] = useState(type === 'video');
+  const [error, setError] = useState(false);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
@@ -19,6 +21,11 @@ export default function PlayMomentScreen() {
             source={{ uri }}
             shouldPlay
             useNativeControls
+            usePoster={!!poster}
+            posterSource={poster ? { uri: poster } : undefined}
+            onLoadStart={() => { setLoading(true); setError(false); }}
+            onReadyForDisplay={() => setLoading(false)}
+            onError={() => { setLoading(false); setError(true); }}
             resizeMode={ResizeMode.CONTAIN}
             style={{ flex: 1 }}
           />
@@ -28,6 +35,17 @@ export default function PlayMomentScreen() {
       ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: '#817B91' }}>Nothing to play.</Text>
+        </View>
+      )}
+
+      {loading && !error && (
+        <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: '#ECE9F1' }}>Loading video…</Text>
+        </View>
+      )}
+      {error && (
+        <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+          <Text style={{ color: '#ECE9F1', textAlign: 'center' }}>This video could not be played. Please try again.</Text>
         </View>
       )}
 
