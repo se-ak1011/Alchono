@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { getOfficialThoughts } from '@/data/officialSeed';
+
+export function useReflectionPrompts() {
+  return { data: getOfficialThoughts(), isLoading: false };
+}
 
 export interface Dilemma {
   id: string;
@@ -21,6 +26,7 @@ export function useDilemmas() {
           .from('dilemmas')
           .select('id, title, story, created_at')
           .eq('published', true)
+          .lte('created_at', new Date().toISOString())
           .order('created_at', { ascending: false })
           .limit(40);
         if (error) return [];
