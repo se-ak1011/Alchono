@@ -10,6 +10,8 @@ import {
   useAdminReports,
   useUpdateReportStatus,
   type AdminReport,
+  useModeratedTalkPosts,
+  useModerateTalkPost,
 } from '@/hooks/useAdmin';
 
 type Filter = 'open' | 'all';
@@ -94,6 +96,8 @@ export default function AdminReportsScreen() {
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
   const { data: reports, isLoading } = useAdminReports();
   const [filter, setFilter] = useState<Filter>('open');
+  const { data: talkPosts = [] } = useModeratedTalkPosts();
+  const { mutate: moderateTalk, isPending: moderatingTalk } = useModerateTalkPost();
 
   if (adminLoading) return <LoadingSpinner message="Checking access…" />;
 
@@ -128,7 +132,7 @@ export default function AdminReportsScreen() {
           <Text className="text-text-secondary text-lg">←</Text>
         </Pressable>
         <Text className="text-text-primary text-lg font-semibold flex-1">
-          Reports {openCount > 0 ? `· ${openCount} open` : ''}
+          Moderation {openCount > 0 ? `· ${openCount} open` : ''}
         </Text>
       </View>
 
@@ -160,6 +164,28 @@ export default function AdminReportsScreen() {
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
         >
+          {talkPosts.length > 0 && (
+            <View className="mb-6">
+              <Text className="text-text-primary text-lg font-semibold mb-3">Reported Talk posts</Text>
+              {talkPosts.map((post) => {
+                const openReports = post.reports.filter((report) => report.status === 'open');
+                return (
+                  <View key={post.id} className="bg-surface rounded-2xl px-5 py-5 mb-3 border border-danger/30">
+                    <Text className="text-text-muted text-xs uppercase tracking-widest">{post.moderation_status} · {post.reports.length} {post.reports.length === 1 ? 'report' : 'reports'}</Text>
+                    <Text className="text-text-primary text-sm font-semibold mt-2">{post.author} · {new Date(post.created_at).toLocaleDateString('en-GB')}</Text>
+                    <Text className="text-text-secondary text-base leading-relaxed mt-2">{post.content}</Text>
+                    <Text className="text-text-muted text-sm mt-3">Reasons: {post.reports.map((report) => report.reason).join(', ')}</Text>
+                    {openReports.length > 0 && post.moderation_status !== 'removed' && (
+                      <View className="flex-row gap-2 mt-4">
+                        <Pressable disabled={moderatingTalk} onPress={() => moderateTalk({ postId: post.id, action: 'ignore' })} className="flex-1 items-center py-3 rounded-xl bg-surface-2"><Text className="text-text-secondary text-sm font-semibold">Ignore report</Text></Pressable>
+                        <Pressable disabled={moderatingTalk} onPress={() => moderateTalk({ postId: post.id, action: 'remove' })} className="flex-1 items-center py-3 rounded-xl bg-danger"><Text className="text-white text-sm font-semibold">Remove post</Text></Pressable>
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          )}
           {visible.length === 0 ? (
             <View className="py-16 items-center">
               <Text className="text-text-muted text-base text-center">

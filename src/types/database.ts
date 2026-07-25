@@ -201,6 +201,10 @@ export interface Database {
           content: string;
           reactions: Json;
           is_anonymous: boolean;
+          moderation_status: string;
+          removed_at: string | null;
+          moderated_at: string | null;
+          comment_count: number;
         };
         Insert: {
           id?: string;
@@ -209,10 +213,18 @@ export interface Database {
           content: string;
           reactions?: Json;
           is_anonymous?: boolean;
+          moderation_status?: string;
+          removed_at?: string | null;
+          moderated_at?: string | null;
+          comment_count?: number;
         };
         Update: {
           content?: string;
           reactions?: Json;
+          moderation_status?: string;
+          removed_at?: string | null;
+          moderated_at?: string | null;
+          comment_count?: number;
         };
       };
       mentor_profiles: {
@@ -500,6 +512,10 @@ export interface Database {
       community_feed_nearby: {
         Args: { p_limit: number; p_offset: number };
         Returns: Database['public']['Tables']['community_posts']['Row'][];
+      };
+      react_to_community_post: {
+        Args: { p_post_id: string; p_reaction: string };
+        Returns: Json;
       };
       get_peer_city: {
         Args: { p_thread_id: string };
