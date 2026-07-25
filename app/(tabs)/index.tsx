@@ -86,9 +86,11 @@ export default function HomeScreen() {
   const { data: activeSession } = useActiveSession();
   const { data: todayCheckin } = useTodayCheckin();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [orbitOpen, setOrbitOpen] = useState(false);
+  // Home's destinations stay visible by default; other companion menus and
+  // screens retain their existing behaviour.
+  const [orbitOpen, setOrbitOpen] = useState(true);
   const orbitAnims = useRef(
-    HOME_ORBIT_ZONES.slice(0, 6).map(() => new RNAnimated.Value(0)),
+    HOME_ORBIT_ZONES.slice(0, 6).map(() => new RNAnimated.Value(1)),
   ).current;
   const [showHint, setShowHint] = useState(false);
   const haloOpacity = useRef(new RNAnimated.Value(0)).current;
@@ -100,7 +102,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     AsyncStorage.getItem(HINT_KEY).then((v) => {
-      if (!v) setShowHint(true);
+      if (!v && !orbitOpen) setShowHint(true);
     });
   }, []);
 

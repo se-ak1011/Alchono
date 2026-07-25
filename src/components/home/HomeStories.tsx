@@ -6,7 +6,12 @@ import { useCommunityMoments } from '@/hooks/useMoments';
 
 export function HomeStories() {
   const router = useRouter();
-  const { data: moments = [], isLoading } = useCommunityMoments(8);
+  // Deliberately use the exact same query/cache entry as Community → Look.
+  // Home is only a view over that feed, never a separate stories collection.
+  const { data: moments = [], isLoading } = useCommunityMoments();
+  const videos = moments
+    .filter((moment) => moment.media_type === 'video' && !!moment.url)
+    .slice(0, 8);
 
   const openCommunity = () => router.push({ pathname: '/community', params: { tab: 'look' } });
 
@@ -20,13 +25,24 @@ export function HomeStories() {
       </View>
       {isLoading ? (
         <View className="h-24 items-center justify-center"><ActivityIndicator color="#817B91" /></View>
-      ) : moments.length === 0 ? (
-        <View className="mx-6 rounded-2xl bg-surface border border-white/8 px-4 py-4">
-          <Text className="text-text-muted text-sm">No stories yet.</Text>
-        </View>
       ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, gap: 14 }}>
-          {moments.map((moment) => (
+          <Pressable
+            onPress={() => router.push('/moments/new')}
+            className="items-center active:opacity-70"
+            style={{ width: 70 }}
+            accessibilityLabel="Add your story"
+          >
+            <View className="items-center justify-center bg-surface border border-white/10" style={{ width: 66, height: 66, borderRadius: 33 }}>
+              <Feather name="plus" size={27} color="#B9A4EC" />
+              <View className="absolute right-0 bottom-0 items-center justify-center bg-accent border-2 border-bg" style={{ width: 23, height: 23, borderRadius: 12 }}>
+                <Feather name="plus" size={14} color="#201D28" />
+              </View>
+            </View>
+            <Text className="text-text-secondary text-xs mt-1.5" numberOfLines={1}>Your story</Text>
+          </Pressable>
+
+          {videos.map((moment) => (
             <Pressable
               key={moment.id}
               onPress={() => moment.url && router.push({ pathname: '/moments/play', params: { uri: moment.url, type: moment.media_type } })}
@@ -44,6 +60,11 @@ export function HomeStories() {
               </Text>
             </Pressable>
           ))}
+          {videos.length === 0 ? (
+            <View className="justify-center pl-1 pr-5" style={{ height: 66 }}>
+              <Text className="text-text-muted text-sm">No shared videos yet.</Text>
+            </View>
+          ) : null}
         </ScrollView>
       )}
     </View>
