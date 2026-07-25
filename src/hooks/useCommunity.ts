@@ -5,6 +5,11 @@ import { useAuthStore } from '@/store/authStore';
 import { fetchUsernames } from '@/lib/publicProfiles';
 import { getOfficialTalkPosts } from '@/data/officialSeed';
 
+export type CommunityComment = {
+  id: string; post_id: string; user_id: string; created_at: string; content: string;
+  username: string;
+};
+
 const PAGE_SIZE = 20;
 
 export function useCommunityFeed(pageSize = PAGE_SIZE) {
@@ -35,6 +40,8 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
         const fallback = await supabase
           .from('community_posts')
           .select('*')
+          .is('removed_at', null)
+          .eq('moderation_status', 'published')
           .lte('created_at', new Date().toISOString())
           .order('created_at', { ascending: false })
           .range(databaseOffset, databaseOffset + pageSize - 1);
@@ -68,6 +75,60 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
   });
 }
 
+export function usePostComments(postIds: string[]) {
+  const userId = useAuthStore((s) => s.user?.id);
+  const databasePostIds = postIds.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
+  return useQuery({
+    queryKey: ['community-comments', databasePostIds],
+    queryFn: async (): Promise<CommunityComment[]> => {
+      if (!databasePostIds.length) return [];
+      const { data, error } = await (supabase as any).from('community_comments').select('*')
+        .in('post_id', databasePostIds).order('created_at', { ascending: true });
+      if (error) throw error;
+      const names = await fetchUsernames((data ?? []).map((comment) => comment.user_id));
+      return (data ?? []).map((comment) => ({
+        ...comment, username: names[comment.user_id] ?? 'Member',
+      }));
+    },
+    enabled: !!userId && databasePostIds.length > 0,
+  });
+}
+
+export function useAddComment() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
+      const clean = content.trim();
+      if (!clean) throw new Error('Comment cannot be empty.');
+      const { data, error } = await (supabase as any).from('community_comments').insert({
+        post_id: postId, user_id: userId!, content: clean,
+      }).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['community-comments'] }),
+  });
+}
+
+export const TALK_REPORT_REASONS = [
+  'Spam', 'Harassment', 'Hate speech', 'Self-harm concern', 'Misinformation', 'Other',
+] as const;
+
+export function useReportPost() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: async ({ postId, reason }: { postId: string; reason: typeof TALK_REPORT_REASONS[number] }) => {
+      const { error } = await (supabase as any).from('community_post_reports').insert({
+        post_id: postId, reporter_id: userId!, reason,
+      });
+      if (error) {
+        if (error.code === '23505') throw new Error('You have already reported this post.');
+        throw error;
+      }
+    },
+  });
+}
+
 export function useCreatePost() {
   const userId = useAuthStore((s) => s.user?.id);
 
@@ -86,6 +147,7 @@ export function useCreatePost() {
           content,
           is_anonymous: isAnonymous,
           reactions: { heart: 0, clap: 0, handshake: 0 },
+          moderation_status: 'published',
         })
         .select()
         .single();
