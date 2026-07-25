@@ -15,7 +15,7 @@ const BUCKET = 'moments';
  * resolve). `FileSystem.uploadAsync` streams the bytes from disk, so videos
  * upload reliably. The user's JWT is sent so storage RLS still applies.
  */
-async function uploadToStorage(
+export async function uploadToStorage(
   path: string,
   fileUri: string,
   contentType: string,
@@ -67,6 +67,15 @@ export interface FeedMoment {
   url: string | null;
   thumb_url: string | null;
   username: string | null; // null when the post is anonymous
+}
+
+/** Mint the private full-video URL only after the user chooses to play it. */
+export async function getMomentPlaybackUrl(momentId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('good-feed', {
+    body: { action: 'play', momentId },
+  });
+  if (error || !data?.url) throw error ?? new Error('video unavailable');
+  return data.url as string;
 }
 
 export interface MyMoment {

@@ -80,3 +80,52 @@ export function useUpdateReportStatus() {
     },
   });
 }
+
+export type ModeratedTalkPost = {
+  id: string; content: string; created_at: string; moderation_status: string;
+  author: string; reports: Array<{ id: string; reason: string; status: string }>;
+};
+
+export function useModeratedTalkPosts() {
+  const { data: isAdmin } = useIsAdmin();
+  return useQuery({
+    queryKey: ['admin-talk-moderation'],
+    queryFn: async (): Promise<ModeratedTalkPost[]> => {
+      const { data: reports, error } = await (supabase as any).from('community_post_reports').select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const postIds = [...new Set((reports ?? []).map((report) => report.post_id))];
+      if (!postIds.length) return [];
+      const { data: posts, error: postsError } = await supabase.from('community_posts').select('*').in('id', postIds);
+      if (postsError) throw postsError;
+      const names = await fetchUsernames((posts ?? []).map((post) => post.user_id));
+      return (posts ?? []).map((post) => ({
+        id: post.id, content: post.content, created_at: post.created_at,
+        moderation_status: post.moderation_status,
+        author: post.is_anonymous ? 'Anonymous' : names[post.user_id] ?? 'Member',
+        reports: (reports ?? []).filter((report) => report.post_id === post.id),
+      }));
+    },
+    enabled: !!isAdmin,
+  });
+}
+
+export function useModerateTalkPost() {
+  return useMutation({
+    mutationFn: async ({ postId, action }: { postId: string; action: 'ignore' | 'remove' }) => {
+      const status = action === 'remove' ? 'removed' : 'ignored';
+      const { error: reportError } = await (supabase as any).from('community_post_reports').update({ status }).eq('post_id', postId).eq('status', 'open');
+      if (reportError) throw reportError;
+      if (action === 'remove') {
+        const { error } = await supabase.from('community_posts').update({
+          moderation_status: 'removed', removed_at: new Date().toISOString(), moderated_at: new Date().toISOString(),
+        }).eq('id', postId);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-talk-moderation'] });
+      queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+    },
+  });
+}

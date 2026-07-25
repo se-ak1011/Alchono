@@ -13,20 +13,22 @@ import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
 
 function MomentCard({ item }: { item: FeedMoment }) {
   const router = useRouter();
-  const openPlayer = (uri: string, type: 'photo' | 'video') =>
-    router.push({ pathname: '/moments/play', params: { uri, type } });
+  const openPlayer = (type: 'photo' | 'video') =>
+    router.push({ pathname: '/moments/play', params: { uri: item.url ?? '', momentId: item.id, type, poster: item.thumb_url ?? '' } });
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
       className="mx-6 mb-5 bg-surface rounded-3xl overflow-hidden border border-white/8"
     >
-      {item.media_type === 'video' && item.url ? (
-        <Pressable onPress={() => openPlayer(item.url!, 'video')}>
-          <Image
-            source={{ uri: item.thumb_url ?? item.url }}
-            style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
-            resizeMode="cover"
-          />
+      {item.media_type === 'video' ? (
+        <Pressable onPress={() => openPlayer('video')} accessibilityLabel="Play video">
+          {item.thumb_url ? (
+            <Image source={{ uri: item.thumb_url }} style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }} resizeMode="cover" />
+          ) : (
+            <View style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }} className="items-center justify-center">
+              <Text className="text-text-muted text-sm">Preparing preview…</Text>
+            </View>
+          )}
           <View className="absolute inset-0 items-center justify-center">
             <View className="w-16 h-16 rounded-full bg-black/45 items-center justify-center">
               <Feather name="play" size={28} color="#fff" style={{ marginLeft: 3 }} />
@@ -34,7 +36,7 @@ function MomentCard({ item }: { item: FeedMoment }) {
           </View>
         </Pressable>
       ) : item.url ? (
-        <Pressable onPress={() => openPlayer(item.url!, 'photo')}>
+        <Pressable onPress={() => openPlayer('photo')}>
           <Image
             source={{ uri: item.url }}
             style={{ width: '100%', aspectRatio: 1, backgroundColor: '#201D28' }}
@@ -63,9 +65,17 @@ function MomentCard({ item }: { item: FeedMoment }) {
 
 function LookFeed() {
   const router = useRouter();
-  const { data: moments, isLoading } = useCommunityMoments();
+  const { data: moments, isLoading, isError, refetch } = useCommunityMoments();
 
   if (isLoading) return <LoadingSpinner message="Finding the good stuff…" />;
+  if (isError) return (
+    <View className="flex-1 items-center justify-center px-8">
+      <Text className="text-text-secondary text-base text-center">Moments couldn't load.</Text>
+      <Pressable onPress={() => refetch()} className="mt-4 bg-surface-2 rounded-xl px-4 py-2">
+        <Text className="text-text-secondary text-sm">Try again</Text>
+      </Pressable>
+    </View>
+  );
 
   return (
     <View className="flex-1">
