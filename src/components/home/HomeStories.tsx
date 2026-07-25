@@ -10,7 +10,7 @@ export function HomeStories() {
   // Home is only a view over that feed, never a separate stories collection.
   const { data: moments = [], isLoading } = useCommunityMoments();
   const videos = moments
-    .filter((moment) => moment.media_type === 'video' && !!moment.url)
+    .filter((moment) => moment.media_type === 'video')
     .slice(0, 8);
 
   const openCommunity = () => router.push({ pathname: '/community', params: { tab: 'look' } });
@@ -45,12 +45,12 @@ export function HomeStories() {
           {videos.map((moment) => (
             <Pressable
               key={moment.id}
-              onPress={() => moment.url && router.push({ pathname: '/moments/play', params: { uri: moment.url, type: moment.media_type, poster: moment.thumb_url ?? '' } })}
+              onPress={() => router.push({ pathname: '/moments/play', params: { momentId: moment.id, type: moment.media_type, poster: moment.thumb_url ?? '' } })}
               className="items-center active:opacity-70"
               style={{ width: 70 }}
             >
               <View style={{ width: 66, height: 66, borderRadius: 33, padding: 2, borderWidth: 2, borderColor: '#A489DE' }}>
-                <Image source={{ uri: moment.thumb_url ?? moment.url ?? undefined }} style={{ flex: 1, borderRadius: 30, backgroundColor: '#302B3A' }} />
+                {moment.thumb_url ? <Image source={{ uri: moment.thumb_url }} style={{ flex: 1, borderRadius: 30, backgroundColor: '#302B3A' }} /> : <View style={{ flex: 1, borderRadius: 30, backgroundColor: '#302B3A' }} />}
                 {moment.media_type === 'video' ? (
                   <View className="absolute inset-0 items-center justify-center"><Feather name="play" size={18} color="#fff" /></View>
                 ) : null}

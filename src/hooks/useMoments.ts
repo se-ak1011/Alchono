@@ -92,6 +92,15 @@ export interface FeedMoment {
   username: string | null; // null when the post is anonymous
 }
 
+/** Mint the private full-video URL only after the user chooses to play it. */
+export async function getMomentPlaybackUrl(momentId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('good-feed', {
+    body: { action: 'play', momentId },
+  });
+  if (error || !data?.url) throw error ?? new Error('video unavailable');
+  return data.url as string;
+}
+
 export interface MyMoment {
   id: string;
   created_at: string;

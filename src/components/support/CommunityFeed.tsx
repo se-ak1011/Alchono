@@ -32,7 +32,7 @@ export function CommunityFeed({
   onFindMentor?: () => void;
 }) {
   const router = useRouter();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommunityFeed();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, refetch } = useCommunityFeed();
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const { mutate: blockUser } = useBlockUser();
@@ -46,7 +46,7 @@ export function CommunityFeed({
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
 
   const posts = data?.pages.flat() ?? [];
-  const { data: comments = [] } = usePostComments(posts.map((post) => post.id));
+  const { data: comments = [], isError: commentsError, refetch: refetchComments } = usePostComments(openComments);
   const { mutate: addComment, isPending: isSavingComment } = useAddComment();
   const { mutate: reportPost } = useReportPost();
 
@@ -288,7 +288,7 @@ export function CommunityFeed({
               <Text className="text-text-primary text-base leading-relaxed mb-4">
                 {item.content}
               </Text>
-              <View className="flex-row gap-3">
+              <View className="flex-row flex-wrap gap-3">
                 {REACTIONS.map(({ key, emoji }) => {
                   const reactions = (item.reactions as Record<string, number>) ?? {};
                   const count = reactions[key] ?? 0;
@@ -298,7 +298,9 @@ export function CommunityFeed({
                       disabled={(item as any).is_seed_content}
                       onPress={async () => {
                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        react({ postId: item.id, reaction: key, currentReactions: reactions });
+                        react({ postId: item.id, reaction: key, currentReactions: reactions }, {
+                          onError: () => Alert.alert('Could not react', 'Please try again.'),
+                        });
                       }}
                       className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
                     >
@@ -315,8 +317,8 @@ export function CommunityFeed({
                   className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
                 >
                   <Text className="text-text-secondary text-sm">Comment</Text>
-                  {comments.filter((comment) => comment.post_id === item.id).length > 0 && (
-                    <Text className="text-text-muted text-sm">{comments.filter((comment) => comment.post_id === item.id).length}</Text>
+                  {((item as any).comment_count ?? 0) > 0 && (
+                    <Text className="text-text-muted text-sm">{(item as any).comment_count}</Text>
                   )}
                 </Pressable>
               </View>
@@ -332,6 +334,11 @@ export function CommunityFeed({
                 const draft = commentDrafts[item.id] ?? '';
                 return (
                   <View className="mt-4 border-t border-white/5 pt-3">
+                    {commentsError && (
+                      <Pressable onPress={() => refetchComments()} className="mb-3">
+                        <Text className="text-danger text-sm">Comments couldn't load. Tap to retry.</Text>
+                      </Pressable>
+                    )}
                     {postComments.map((comment) => (
                       <View key={comment.id} className="flex-row gap-2 mb-3">
                         <Avatar username={comment.username} size="sm" />
@@ -371,9 +378,10 @@ export function CommunityFeed({
         ListEmptyComponent={
           <View className="py-12 items-center">
             <Text className="text-text-muted text-base text-center leading-relaxed">
-              Be the first to share something.{'\n'}
-              Bad day, good day, day one, day ninety —{'\n'}it all belongs here.
+              {isError ? "Community couldn't load." : 'Be the first to share something.'}{'\n'}
+              {!isError && <>Bad day, good day, day one, day ninety —{'\n'}it all belongs here.</>}
             </Text>
+            {isError && <Pressable onPress={() => refetch()} className="mt-4 bg-surface-2 rounded-xl px-4 py-2"><Text className="text-text-secondary text-sm">Try again</Text></Pressable>}
           </View>
         }
       />

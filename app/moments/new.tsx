@@ -31,6 +31,7 @@ export default function NewMomentScreen() {
   const [share, setShare] = useState(false);
   const [anonymous, setAnonymous] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [videoThumb, setVideoThumb] = useState<string | null>(null);
 
   const isVideo = asset?.type === 'video';
 
@@ -65,6 +66,15 @@ export default function NewMomentScreen() {
       }
     }
     setAsset(picked);
+    setVideoThumb(null);
+    if (picked.type === 'video') {
+      try {
+        const thumbnail = await VideoThumbnails.getThumbnailAsync(picked.uri, { time: 500, quality: 0.7 });
+        setVideoThumb(thumbnail.uri);
+      } catch {
+        // Sharing is blocked below until a safe poster exists for the feed and moderation.
+      }
+    }
   };
 
   const submit = async () => {
@@ -72,10 +82,15 @@ export default function NewMomentScreen() {
     let thumbUri: string | undefined;
     if (isVideo) {
       try {
-        const t = await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 500 });
+        const t = videoThumb
+          ? { uri: videoThumb }
+          : await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 500, quality: 0.7 });
         thumbUri = t.uri;
       } catch {
-        /* no thumb — moderation will hold a shared video without a frame */
+        if (share) {
+          Alert.alert('Preview unavailable', 'We could not prepare this video preview. Please choose the video again before sharing it.');
+          return;
+        }
       }
     }
     const ext = asset.uri.split('.').pop()?.toLowerCase();
@@ -158,7 +173,7 @@ export default function NewMomentScreen() {
               {asset ? (
                 <>
                   <Image
-                    source={{ uri: asset.uri }}
+                    source={{ uri: isVideo && videoThumb ? videoThumb : asset.uri }}
                     style={{ width: '100%', height: '100%' }}
                     resizeMode="cover"
                   />
