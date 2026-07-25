@@ -44,7 +44,10 @@ export function HomeFeed() {
                 <View className="flex-row items-center gap-3">
                   <Avatar username={username} size="sm" />
                   <View className="flex-1">
-                    <Text className="text-text-primary text-sm font-semibold">{username}</Text>
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-text-primary text-sm font-semibold">{username}</Text>
+                      {(post as any).is_official ? <Text className="text-accent text-xs font-semibold">Official</Text> : null}
+                    </View>
                     <Text className="text-text-muted text-xs mt-0.5">{relativeTime(post.created_at)}</Text>
                   </View>
                 </View>

@@ -270,9 +270,12 @@ export function CommunityFeed({
               <View className="flex-row items-start gap-3 mb-3">
                 <Avatar username={item.is_anonymous ? 'A' : (item as any).username} size="sm" />
                 <View className="flex-1">
-                  <Text className="text-text-secondary text-sm font-medium">
-                    {item.is_anonymous ? 'Anonymous' : (item as any).username ?? 'Member'}
-                  </Text>
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-text-secondary text-sm font-medium">
+                      {item.is_anonymous ? 'Anonymous' : (item as any).username ?? 'Member'}
+                    </Text>
+                    {(item as any).is_official ? <Text className="text-accent text-xs font-semibold">Official</Text> : null}
+                  </View>
                   <Text className="text-text-muted text-sm mt-0.5">
                     {new Date(item.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric',
@@ -280,7 +283,7 @@ export function CommunityFeed({
                     })}
                   </Text>
                 </View>
-                {item.user_id !== myUserId && (
+                {item.user_id !== myUserId && !(item as any).is_official && (
                   <Pressable onPress={() => showPostActions(item)} hitSlop={12}>
                     <Text className="text-text-muted text-lg">⋯</Text>
                   </Pressable>
@@ -296,11 +299,12 @@ export function CommunityFeed({
                   return (
                     <Pressable
                       key={key}
+                      disabled={(item as any).is_seed_content}
                       onPress={async () => {
                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         react({ postId: item.id, reaction: key, currentReactions: reactions });
                       }}
-                      className="flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 active:bg-white/10"
+                      className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
                     >
                       <Text className="text-base">{emoji}</Text>
                       {count > 0 && (
