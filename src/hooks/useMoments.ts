@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
@@ -48,7 +50,7 @@ export async function uploadToStorage(
         'cache-control': '3600',
       },
     },
-    (p) => {
+    (p: FileSystem.UploadProgressData) => {
       if (onProgress && p.totalBytesExpectedToSend > 0) {
         onProgress(p.totalBytesSent / p.totalBytesExpectedToSend);
       }
@@ -120,7 +122,8 @@ function randomId(): string {
 
 /** The community feed — shared + approved moments, via the service-role fn. */
 export function useCommunityMoments(limit = 40) {
-  return useQuery({
+  const channelId = useRef(Math.random().toString(36).slice(2));
+  const query = useQuery({
     queryKey: ['community-moments', limit],
     queryFn: async (): Promise<FeedMoment[]> => {
       const { data, error } = await supabase.functions.invoke('good-feed', {
@@ -131,6 +134,17 @@ export function useCommunityMoments(limit = 40) {
     },
     staleTime: 60_000,
   });
+  useEffect(() => {
+    const channel = supabase.channel(`community-moments-${channelId.current}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'moments' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+      }).subscribe();
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+    });
+    return () => { appState.remove(); supabase.removeChannel(channel); };
+  }, []);
+  return query;
 }
 
 /** The user's own moments (private gallery), with signed URLs for own media. */

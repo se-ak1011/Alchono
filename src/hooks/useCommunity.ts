@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { AppState } from 'react-native';
 import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
@@ -30,23 +31,23 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
       const officialPosts = getOfficialTalkPosts();
       // Seed records decorate the first page; database pagination is completely
       // independent so local starter content can never hide real member posts.
-      const officialPage = pageParam === 0 ? officialPosts : [];
+      let officialPage = pageParam === 0 ? officialPosts : [];
       const databaseOffset = pageOffset;
       const databaseLimit = pageSize;
       // Nearby people first (server-side, coordinates never leave the DB);
       // falls back to plain recency if the function isn't deployed yet.
       const [nearby, { data: blocks }] = await Promise.all([
-        supabase.rpc('community_feed_nearby', {
+        (supabase as any).rpc('community_feed_nearby', {
           p_limit: databaseLimit,
           p_offset: databaseOffset,
         }),
-        supabase.from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
+        (supabase as any).from('user_blocks').select('blocked_id').eq('blocker_id', userId!),
       ]);
 
       let data = nearby.data;
       let error = nearby.error;
       if (error) {
-        const fallback = await supabase
+        const fallback = await (supabase as any)
           .from('community_posts')
           .select('*')
           .is('removed_at', null)
@@ -61,20 +62,28 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
       if (!data || data.length === 0) return officialPage;
 
       // Hide posts from people the user has blocked.
-      const blocked = new Set((blocks ?? []).map((b) => b.blocked_id));
+      const blocked = new Set((blocks ?? []).map((b: any) => b.blocked_id));
       const now = Date.now();
       const visible = data.filter(
-        (p) => !blocked.has(p.user_id) && new Date(p.created_at).getTime() <= now,
+        (p: any) => !blocked.has(p.user_id) && new Date(p.created_at).getTime() <= now,
       );
+      if (visible.some((post: any) => post.is_official)) officialPage = [];
+
+      const { data: myReactions } = visible.length
+        ? await (supabase as any).from('community_post_reactions').select('post_id, reaction')
+          .eq('user_id', userId!).in('post_id', visible.map((post: any) => post.id))
+        : { data: [] };
+      const selectedReactions = new Map((myReactions ?? []).map((row: any) => [row.post_id, row.reaction]));
 
       // Usernames only matter for non-anonymous posts; profiles is
       // owner-only under RLS so they come from the public_profiles view.
       const names = await fetchUsernames(
-        visible.filter((p) => !p.is_anonymous).map((p) => p.user_id),
+        visible.filter((p: any) => !p.is_anonymous).map((p: any) => p.user_id),
       );
-      const databasePosts = visible.map((p) => ({
+      const databasePosts = visible.map((p: any) => ({
         ...p,
         username: p.is_anonymous ? null : names[p.user_id] ?? 'Member',
+        my_reaction: selectedReactions.get(p.id) ?? null,
       }));
       return [...officialPage, ...databasePosts].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
@@ -94,7 +103,10 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'community_posts' }, () => {
         queryClient.invalidateQueries({ queryKey: ['community-feed'] });
       }).subscribe();
-    return () => { supabase.removeChannel(channel); };
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+    });
+    return () => { appState.remove(); supabase.removeChannel(channel); };
   }, [pageSize, userId]);
   return query;
 }
@@ -117,8 +129,8 @@ export function usePostComments(postId: string | null) {
       const { data, error } = await (supabase as any).from('community_comments').select('*')
         .eq('post_id', databasePostId).order('created_at', { ascending: true });
       if (error) throw error;
-      const names = await fetchUsernames((data ?? []).map((comment) => comment.user_id));
-      return (data ?? []).map((comment) => ({
+      const names = await fetchUsernames((data ?? []).map((comment: any) => comment.user_id));
+      return (data ?? []).map((comment: any) => ({
         ...comment, username: names[comment.user_id] ?? 'Member',
       }));
     },
@@ -191,7 +203,7 @@ export function useCreatePost() {
       content: string;
       isAnonymous?: boolean;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('community_posts')
         .insert({
           user_id: userId!,
@@ -233,19 +245,26 @@ export function useReactToPost() {
       postId: string;
       reaction: 'heart' | 'clap' | 'handshake';
       currentReactions: Record<string, number>;
+      currentReaction?: string | null;
     }) => {
       const { data, error } = await (supabase as any).rpc('react_to_community_post', { p_post_id: postId, p_reaction: reaction });
       if (error) throw error;
-      return data as Record<string, number>;
+      return data as { reactions: Record<string, number>; my_reaction: string };
     },
-    onMutate: ({ postId, reaction, currentReactions }) => {
-      updatePostInFeed(postId, (post) => ({ ...post, reactions: { ...currentReactions, [reaction]: (currentReactions[reaction] ?? 0) + 1 } }));
+    onMutate: ({ postId, reaction, currentReactions, currentReaction }) => {
+      updatePostInFeed(postId, (post) => {
+        const previous = currentReaction ?? (post.my_reaction as string | null);
+        const next = { ...currentReactions };
+        if (previous && previous !== reaction) next[previous] = Math.max((next[previous] ?? 1) - 1, 0);
+        if (previous !== reaction) next[reaction] = (next[reaction] ?? 0) + 1;
+        return { ...post, reactions: next, my_reaction: reaction };
+      });
     },
     onSuccess: (reactions, variables) => {
-      updatePostInFeed(variables.postId, (post) => ({ ...post, reactions }));
+      updatePostInFeed(variables.postId, (post) => ({ ...post, reactions: reactions.reactions, my_reaction: reactions.my_reaction }));
     },
     onError: (_error, variables) => {
-      updatePostInFeed(variables.postId, (post) => ({ ...post, reactions: variables.currentReactions }));
+      updatePostInFeed(variables.postId, (post) => ({ ...post, reactions: variables.currentReactions, my_reaction: variables.currentReaction ?? null }));
     },
   });
 }

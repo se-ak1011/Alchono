@@ -27,12 +27,14 @@ const REACTIONS = [
 export function CommunityFeed({
   onTalkToAi,
   onFindMentor,
+  initialPostId,
 }: {
   onTalkToAi?: () => void;
   onFindMentor?: () => void;
+  initialPostId?: string;
 }) {
   const router = useRouter();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, refetch } = useCommunityFeed();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isRefetching, isError, refetch } = useCommunityFeed();
   const { mutate: createPost, isPending } = useCreatePost();
   const { mutate: react } = useReactToPost();
   const { mutate: blockUser } = useBlockUser();
@@ -42,7 +44,7 @@ export function CommunityFeed({
   const [newPost, setNewPost] = useState('');
   const [isAnon, setIsAnon] = useState(true);
   const [justPosted, setJustPosted] = useState(false);
-  const [openComments, setOpenComments] = useState<string | null>(null);
+  const [openComments, setOpenComments] = useState<string | null>(initialPostId ?? null);
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
 
   const posts = data?.pages.flat() ?? [];
@@ -257,6 +259,8 @@ export function CommunityFeed({
         showsVerticalScrollIndicator={false}
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.3}
+        refreshing={isRefetching && !isFetchingNextPage}
+        onRefresh={() => refetch()}
         renderItem={({ item, index }) => (
           <Animated.View
             entering={FadeInDown.duration(300).delay(index * 30).springify()}
@@ -295,14 +299,14 @@ export function CommunityFeed({
                   return (
                     <Pressable
                       key={key}
-                      disabled={(item as any).is_seed_content}
+                      disabled={(item as any).is_seed_content || item.user_id === myUserId || (item as any).my_reaction === key}
                       onPress={async () => {
                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        react({ postId: item.id, reaction: key, currentReactions: reactions }, {
+                        react({ postId: item.id, reaction: key, currentReactions: reactions, currentReaction: (item as any).my_reaction }, {
                           onError: () => Alert.alert('Could not react', 'Please try again.'),
                         });
                       }}
-                      className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
+                      className={`flex-row items-center gap-1.5 rounded-lg px-3 py-2 ${(item as any).my_reaction === key ? 'bg-accent/25 border border-accent/50' : 'bg-surface-2'} ${(item as any).is_seed_content || item.user_id === myUserId ? 'opacity-60' : 'active:bg-white/10'}`}
                     >
                       <Text className="text-base">{emoji}</Text>
                       {count > 0 && (

@@ -205,6 +205,7 @@ export interface Database {
           removed_at: string | null;
           moderated_at: string | null;
           comment_count: number;
+          is_official: boolean;
         };
         Insert: {
           id?: string;
@@ -217,6 +218,7 @@ export interface Database {
           removed_at?: string | null;
           moderated_at?: string | null;
           comment_count?: number;
+          is_official?: boolean;
         };
         Update: {
           content?: string;
@@ -225,7 +227,13 @@ export interface Database {
           removed_at?: string | null;
           moderated_at?: string | null;
           comment_count?: number;
+          is_official?: boolean;
         };
+      };
+      community_post_reactions: {
+        Row: { post_id: string; user_id: string; reaction: string; created_at: string };
+        Insert: { post_id: string; user_id: string; reaction: string; created_at?: string };
+        Update: { reaction?: string };
       };
       mentor_profiles: {
         Row: {

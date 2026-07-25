@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Image, Pressable, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Video, ResizeMode } from 'expo-av';
+import { Video, ResizeMode, type AVPlaybackStatus } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
 import { getMomentPlaybackUrl } from '@/hooks/useMoments';
 
@@ -19,10 +19,34 @@ export default function PlayMomentScreen() {
   useEffect(() => {
     if (type !== 'video' || playbackUri || !momentId) return;
     setLoading(true);
+    let active = true;
+    const timeout = setTimeout(() => {
+      if (active) { setLoading(false); setError(true); }
+    }, 15_000);
     getMomentPlaybackUrl(momentId)
-      .then(setPlaybackUri)
+      .then((url) => { if (active) setPlaybackUri(url); })
       .catch(() => { setLoading(false); setError(true); });
+    return () => { active = false; clearTimeout(timeout); };
   }, [momentId, playbackUri, retryKey, type]);
+
+  useEffect(() => {
+    if (!playbackUri || !loading || error) return;
+    const timeout = setTimeout(() => {
+      setLoading(false);
+      setError(true);
+    }, 20_000);
+    return () => clearTimeout(timeout);
+  }, [error, loading, playbackUri]);
+
+  const handlePlaybackStatus = (status: AVPlaybackStatus) => {
+    if (status.isLoaded) {
+      setLoading(false);
+      setError(false);
+    } else if (status.error) {
+      setLoading(false);
+      setError(true);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
@@ -38,6 +62,8 @@ export default function PlayMomentScreen() {
             usePoster={!!poster}
             posterSource={poster ? { uri: poster } : undefined}
             onLoadStart={() => { setLoading(true); setError(false); }}
+            onLoad={() => setLoading(false)}
+            onPlaybackStatusUpdate={handlePlaybackStatus}
             onReadyForDisplay={() => setLoading(false)}
             onError={() => { setLoading(false); setError(true); }}
             resizeMode={ResizeMode.CONTAIN}
@@ -60,7 +86,7 @@ export default function PlayMomentScreen() {
       {error && (
         <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ color: '#ECE9F1', textAlign: 'center' }}>This video could not be played.</Text>
-          {momentId && <Pressable onPress={() => { setError(false); setRetryKey((value) => value + 1); }} style={{ marginTop: 16, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12, backgroundColor: '#302B3A' }}><Text style={{ color: '#ECE9F1' }}>Try again</Text></Pressable>}
+          {momentId && <Pressable onPress={() => { setPlaybackUri(''); setLoading(true); setError(false); setRetryKey((value) => value + 1); }} style={{ marginTop: 16, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12, backgroundColor: '#302B3A' }}><Text style={{ color: '#ECE9F1' }}>Try again</Text></Pressable>}
         </View>
       )}
 

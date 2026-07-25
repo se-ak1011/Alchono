@@ -65,7 +65,7 @@ function MomentCard({ item }: { item: FeedMoment }) {
 
 function LookFeed() {
   const router = useRouter();
-  const { data: moments, isLoading, isError, refetch } = useCommunityMoments();
+  const { data: moments, isLoading, isRefetching, isError, refetch } = useCommunityMoments();
 
   if (isLoading) return <LoadingSpinner message="Finding the good stuff…" />;
   if (isError) return (
@@ -93,6 +93,8 @@ function LookFeed() {
         keyExtractor={(m) => m.id}
         contentContainerStyle={{ paddingTop: 4, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        refreshing={isRefetching}
+        onRefresh={() => refetch()}
         renderItem={({ item }) => <MomentCard item={item} />}
         ListEmptyComponent={
           <View className="items-center px-10 mt-16">
@@ -132,7 +134,7 @@ function LookFeed() {
 
 export default function CommunityScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ tab?: string }>();
+  const params = useLocalSearchParams<{ tab?: string; post?: string }>();
   const [tab, setTab] = useState<'look' | 'talk'>(params.tab === 'talk' ? 'talk' : 'look');
 
   return (
@@ -186,6 +188,7 @@ export default function CommunityScreen() {
           <CommunityFeed
             onTalkToAi={() => router.push('/support/coach')}
             onFindMentor={() => router.push('/support/mentors')}
+            initialPostId={params.post}
           />
         </View>
       )}
