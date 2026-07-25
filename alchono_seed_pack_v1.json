@@ -1,0 +1,1347 @@
+{
+  "packId": "alchono-seed-v1",
+  "version": 1,
+  "generatedAt": "2026-07-25T01:15:14.806669+00:00",
+  "principles": {
+    "noFakeUsers": true,
+    "noFakeTestimonials": true,
+    "officialContentOnly": true,
+    "foodForTheSoulIncluded": false,
+    "note": "Media records contain landing-page URLs only. Download selected assets manually, retain source metadata, and replace with owned storage URLs before production seeding."
+  },
+  "accounts": [
+    {
+      "id": "official_alchono",
+      "displayName": "Alchono",
+      "handle": "@alchono",
+      "bio": "Official updates, prompts and useful things from Alchono.",
+      "official": true
+    },
+    {
+      "id": "good_things",
+      "displayName": "Good Things Department",
+      "handle": "@goodthings",
+      "bio": "Tiny wins, ordinary joys and evidence that the day was not entirely rubbish.",
+      "official": true
+    },
+    {
+      "id": "night_shift",
+      "displayName": "The Night Shift",
+      "handle": "@nightshift",
+      "bio": "For the strange, difficult and unexpectedly funny hours.",
+      "official": true
+    },
+    {
+      "id": "community_starter",
+      "displayName": "Community Starter",
+      "handle": "@starttalking",
+      "bio": "Questions worth answering. No polished life required.",
+      "official": true
+    }
+  ],
+  "posts": [
+    {
+      "id": "seed_talk_001",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is one completely ordinary thing that made today slightly better?",
+      "createdAt": "2026-07-01T09:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_002",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "Tonight’s achievement: I washed one plate instead of declaring the entire kitchen legally deceased.",
+      "createdAt": "2026-07-01T20:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_003",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "Tell us something good that happened today. Tiny counts. Finding your keys absolutely counts.",
+      "createdAt": "2026-07-02T07:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_004",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "You do not need to solve the whole week tonight. What would make the next ten minutes easier?",
+      "createdAt": "2026-07-02T18:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_005",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "Unpopular opinion: cancelling plans before you are already exhausted is a skill, not a failure.",
+      "createdAt": "2026-07-03T05:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_006",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "Current status: emotionally supported by a mug I have reheated three times.",
+      "createdAt": "2026-07-03T16:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_007",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "What did you do today that future-you will quietly appreciate?",
+      "createdAt": "2026-07-04T03:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_008",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is a harmless thing you are irrationally stubborn about?",
+      "createdAt": "2026-07-04T14:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_009",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "Check-in without the performance: good, bad, weird, numb, hopeful, annoyed — all valid answers.",
+      "createdAt": "2026-07-05T01:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_010",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "The washing machine has finished. Whether the clothes ever leave it is a separate administrative matter.",
+      "createdAt": "2026-07-05T12:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_011",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "Today’s tiny win thread. Mine is opening the curtains before midday.",
+      "createdAt": "2026-07-05T23:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_012",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What song can change your mood within the first ten seconds?",
+      "createdAt": "2026-07-06T10:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_013",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "A difficult day is not evidence that you are going backwards.",
+      "createdAt": "2026-07-06T21:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_014",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "I made tea and forgot it existed. A beloved household tradition.",
+      "createdAt": "2026-07-07T08:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_015",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is something people call lazy that is actually energy management?",
+      "createdAt": "2026-07-07T19:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_016",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "Show us the best thing you have seen outside this week — sky, dog, weird leaf, anything.",
+      "createdAt": "2026-07-08T06:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_017",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "No inspirational speech today. Drink something, eat something, and be a person gently.",
+      "createdAt": "2026-07-08T17:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_018",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is your most comforting boring meal?",
+      "createdAt": "2026-07-09T04:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_019",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "I have reached the stage of the evening where moving the charger closer feels like a major infrastructure project.",
+      "createdAt": "2026-07-09T15:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_020",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "What made you laugh when you really did not expect to?",
+      "createdAt": "2026-07-10T02:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_021",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What small boundary has made your life noticeably easier?",
+      "createdAt": "2026-07-10T13:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_022",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "You are allowed to be proud of progress nobody else can see.",
+      "createdAt": "2026-07-11T00:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_023",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "Reminder: staring into the fridge does not generate new food. Research remains ongoing.",
+      "createdAt": "2026-07-11T11:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_024",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is one thing you wish people understood about starting again?",
+      "createdAt": "2026-07-11T22:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_025",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "Drop a photo of something ordinary that looks oddly beautiful today.",
+      "createdAt": "2026-07-12T09:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_026",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "You do not have to earn rest by becoming completely unusable first.",
+      "createdAt": "2026-07-12T20:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_027",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is a very specific smell that instantly takes you somewhere else?",
+      "createdAt": "2026-07-13T07:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_028",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "I successfully avoided a problem all day and can confirm it remained extremely available this evening.",
+      "createdAt": "2026-07-13T18:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_029",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "What is the nicest thing someone has done for you recently without making a big deal of it?",
+      "createdAt": "2026-07-14T05:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_030",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is your current low-effort comfort watch?",
+      "createdAt": "2026-07-14T16:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_031",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "Some days the plan is growth. Some days the plan is simply not making things harder.",
+      "createdAt": "2026-07-15T03:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_032",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "Dinner tonight is ingredients standing near each other with confidence.",
+      "createdAt": "2026-07-15T14:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_033",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is one rule you have stopped forcing yourself to follow?",
+      "createdAt": "2026-07-16T01:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_034",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "Name one thing you are looking forward to, even if it is only going back to bed.",
+      "createdAt": "2026-07-16T12:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_035",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "A lapse, wobble or awful thought does not cancel every choice you made before it.",
+      "createdAt": "2026-07-16T23:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_036",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What advice sounded ridiculous until you actually needed it?",
+      "createdAt": "2026-07-17T10:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_037",
+      "authorId": "night_shift",
+      "kind": "text",
+      "body": "The house is quiet, the brain has opened seventeen tabs, and none of them can be closed.",
+      "createdAt": "2026-07-17T21:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_038",
+      "authorId": "good_things",
+      "kind": "text",
+      "body": "What is your pet’s most baffling daily ritual?",
+      "createdAt": "2026-07-18T08:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_039",
+      "authorId": "community_starter",
+      "kind": "text",
+      "body": "What is one thing you are learning to do badly instead of never doing at all?",
+      "createdAt": "2026-07-18T19:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_talk_040",
+      "authorId": "official_alchono",
+      "kind": "text",
+      "body": "You are still allowed in the community on the days you have nothing encouraging to say.",
+      "createdAt": "2026-07-19T06:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "life",
+        "conversation"
+      ]
+    },
+    {
+      "id": "seed_thought_001",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What are you carrying today that does not need to be solved today?",
+      "createdAt": "2026-07-22T05:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_002",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "Which version of you needs a little less criticism right now?",
+      "createdAt": "2026-07-23T00:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_003",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What would ‘enough’ look like for the next hour?",
+      "createdAt": "2026-07-23T19:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_004",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "Is this urgent, or is your nervous system simply loud?",
+      "createdAt": "2026-07-24T14:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_005",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What are you doing out of habit that no longer helps?",
+      "createdAt": "2026-07-25T09:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_006",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What is one kind thing you can make easier for tomorrow-you?",
+      "createdAt": "2026-07-26T04:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_007",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What feeling are you trying to argue yourself out of?",
+      "createdAt": "2026-07-26T23:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_008",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What would change if rest counted as part of the plan?",
+      "createdAt": "2026-07-27T18:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_009",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What do you need more than advice right now?",
+      "createdAt": "2026-07-28T13:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_010",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "Where are you expecting perfection when honesty would do?",
+      "createdAt": "2026-07-29T08:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_011",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What is one choice available to you in the next five minutes?",
+      "createdAt": "2026-07-30T03:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_012",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What are you proud of surviving that nobody saw?",
+      "createdAt": "2026-07-30T22:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_013",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "Which expectation can be made smaller without being abandoned?",
+      "createdAt": "2026-07-31T17:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_014",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What are you calling failure that may actually be information?",
+      "createdAt": "2026-08-01T12:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_thought_015",
+      "authorId": "official_alchono",
+      "kind": "thought",
+      "body": "What would you say to someone you loved in your exact situation?",
+      "createdAt": "2026-08-02T07:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "thought",
+        "reflection"
+      ]
+    },
+    {
+      "id": "seed_giggle_001",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I am not procrastinating. I am waiting for the task to become emotionally available.",
+      "createdAt": "2026-08-03T17:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_002",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "My coping mechanism is saying ‘right’ before doing absolutely nothing.",
+      "createdAt": "2026-08-04T10:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_003",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I cleaned one surface and now expect the household to nominate me for an award.",
+      "createdAt": "2026-08-05T03:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_004",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "The recipe said ‘serves four.’ It has wildly misunderstood the evening.",
+      "createdAt": "2026-08-05T20:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_005",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "My phone battery and I are both at 12% and refusing to discuss it.",
+      "createdAt": "2026-08-06T13:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_006",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I love a fresh start, particularly when it begins tomorrow.",
+      "createdAt": "2026-08-07T06:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_007",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "Today’s cardio was looking for the thing that was in my hand.",
+      "createdAt": "2026-08-07T23:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_008",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I opened the app to do one task and emerged with three screenshots and no memory of the task.",
+      "createdAt": "2026-08-08T16:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_009",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "The chair is not messy. It is a clothing-based filing system.",
+      "createdAt": "2026-08-09T09:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_010",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I have two moods: ‘we can sort this’ and ‘the village must be abandoned.’",
+      "createdAt": "2026-08-10T02:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_011",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I put something somewhere safe. It has entered witness protection.",
+      "createdAt": "2026-08-10T19:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_012",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "Resting is difficult because apparently I supervise myself badly.",
+      "createdAt": "2026-08-11T12:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_013",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "The good news is I made a list. The bad news is the list has become another responsibility.",
+      "createdAt": "2026-08-12T05:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_014",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I am one minor inconvenience away from becoming folklore.",
+      "createdAt": "2026-08-12T22:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    },
+    {
+      "id": "seed_giggle_015",
+      "authorId": "night_shift",
+      "kind": "giggle",
+      "body": "I did not lose the plot. I placed it somewhere safe with the keys.",
+      "createdAt": "2026-08-13T15:00:00+00:00",
+      "isOfficial": true,
+      "isSeedContent": true,
+      "reactionCount": 0,
+      "replyCount": 0,
+      "status": "published",
+      "tags": [
+        "giggles",
+        "humour"
+      ]
+    }
+  ],
+  "mediaCandidates": [
+    {
+      "id": "vid_ocean_01",
+      "type": "video",
+      "theme": "ocean waves",
+      "title": "A minute where nobody needs anything from you",
+      "source": "Pexels",
+      "creator": "Yaroslav Shuraev",
+      "pageUrl": "https://www.pexels.com/video/ocean-waves-4434210/",
+      "suggestedCaption": "No lesson. No challenge. Just waves for a minute.",
+      "faces": false
+    },
+    {
+      "id": "vid_ocean_02",
+      "type": "video",
+      "theme": "sunrise waves",
+      "title": "Morning without an agenda",
+      "source": "Pexels",
+      "creator": "Yaroslav Shuraev",
+      "pageUrl": "https://www.pexels.com/video/ocean-waves-4434139/",
+      "suggestedCaption": "You are allowed to begin slowly.",
+      "faces": false
+    },
+    {
+      "id": "vid_rain_01",
+      "type": "video",
+      "theme": "rain on window",
+      "title": "Rain break",
+      "source": "Pexels",
+      "creator": "Nino Souza",
+      "pageUrl": "https://www.pexels.com/video/rain-water-on-a-window-2094757/",
+      "suggestedCaption": "Stay here for thirty seconds. Nothing to fix.",
+      "faces": false
+    },
+    {
+      "id": "vid_rain_02",
+      "type": "video",
+      "theme": "raindrops",
+      "title": "Weather doing the thinking",
+      "source": "Pexels",
+      "creator": "Durim Zeqiri",
+      "pageUrl": "https://www.pexels.com/video/raindrops-dripping-on-a-window-glass-12309293/",
+      "suggestedCaption": "What is the weather like inside your head today?",
+      "faces": false
+    },
+    {
+      "id": "vid_dog_01",
+      "type": "video",
+      "theme": "dog on beach",
+      "title": "Highly qualified morale officer",
+      "source": "Pexels",
+      "creator": "Peggy Anke",
+      "pageUrl": "https://www.pexels.com/video/a-dog-walking-on-the-beach-4836873/",
+      "suggestedCaption": "Today’s emotional support professional has arrived.",
+      "faces": false
+    },
+    {
+      "id": "vid_dog_02",
+      "type": "video",
+      "theme": "dog beach walk",
+      "title": "Small walk, excellent company",
+      "source": "Pexels",
+      "creator": "Bruno Mattos",
+      "pageUrl": "https://www.pexels.com/video/dog-walking-by-the-ocean-on-a-sandy-beach-30353708/",
+      "suggestedCaption": "Fresh air counts, even when it fixes nothing.",
+      "faces": false
+    },
+    {
+      "id": "vid_forest_01",
+      "type": "video",
+      "theme": "forest POV",
+      "title": "Come for a very small walk",
+      "source": "Pexels",
+      "creator": "Michael Andrew",
+      "pageUrl": "https://www.pexels.com/video/walking-on-a-forest-path-point-of-view-11351927/",
+      "suggestedCaption": "No pace target. We are just going to the next tree.",
+      "faces": false
+    },
+    {
+      "id": "vid_forest_02",
+      "type": "video",
+      "theme": "sunlit forest",
+      "title": "Borrow this bit of quiet",
+      "source": "Pexels",
+      "creator": "Dmitry Marchenkov",
+      "pageUrl": "https://www.pexels.com/video/walking-in-forest-during-sunny-day-13261590/",
+      "suggestedCaption": "A little green for a loud day.",
+      "faces": false
+    },
+    {
+      "id": "vid_kettle_01",
+      "type": "video",
+      "theme": "boiling kettle",
+      "title": "Tea acquired",
+      "source": "Pexels",
+      "creator": "Engin Akyurt",
+      "pageUrl": "https://www.pexels.com/video/water-boiling-in-a-glass-electric-kettle-10974794/",
+      "suggestedCaption": "Tea acquired. Crisis downgraded.",
+      "faces": false
+    },
+    {
+      "id": "vid_kettle_02",
+      "type": "video",
+      "theme": "kettle and cup",
+      "title": "The sacred five-minute reset",
+      "source": "Pexels",
+      "creator": "Engin Akyurt",
+      "pageUrl": "https://www.pexels.com/video/boiling-water-in-a-glass-electric-kettle-10974750/",
+      "suggestedCaption": "Put the kettle on before making any dramatic decisions.",
+      "faces": false
+    },
+    {
+      "id": "photo_coffee_01",
+      "type": "photo",
+      "theme": "coffee rainy window",
+      "title": "Warm thing, grey day",
+      "source": "Pexels",
+      "creator": "Esra Afşar",
+      "pageUrl": "https://www.pexels.com/photo/cozy-coffee-cup-by-rainy-window-in-cafe-30719253/",
+      "suggestedCaption": "A warm drink does not solve it, but it is allowed to help.",
+      "faces": false
+    },
+    {
+      "id": "photo_coffee_02",
+      "type": "photo",
+      "theme": "yellow mug rain",
+      "title": "Tiny shelter",
+      "source": "Pexels",
+      "creator": "RENDAN CATIPAY",
+      "pageUrl": "https://www.pexels.com/photo/a-coffee-mug-near-the-glass-window-9996457/",
+      "suggestedCaption": "What is your smallest comfort today?",
+      "faces": false
+    },
+    {
+      "id": "photo_coffee_03",
+      "type": "photo",
+      "theme": "coffee candles rain",
+      "title": "Quiet corner",
+      "source": "Pexels",
+      "creator": "Fadime Demirtaş",
+      "pageUrl": "https://www.pexels.com/photo/photo-of-a-cup-of-coffee-near-a-window-14619074/",
+      "suggestedCaption": "You do not need to be productive in every peaceful moment.",
+      "faces": false
+    },
+    {
+      "id": "photo_coffee_04",
+      "type": "photo",
+      "theme": "autumn mug",
+      "title": "Seasonal survival equipment",
+      "source": "Pexels",
+      "creator": "Ioana Motoc",
+      "pageUrl": "https://www.pexels.com/photo/cup-of-coffee-on-a-rainy-day-14257884/",
+      "suggestedCaption": "Official uniform: jumper, mug, avoidance.",
+      "faces": false
+    },
+    {
+      "id": "photo_coffee_05",
+      "type": "photo",
+      "theme": "coffee windowsill",
+      "title": "Five minutes by the window",
+      "source": "Pexels",
+      "creator": "Buse Çolak",
+      "pageUrl": "https://www.pexels.com/photo/cozy-coffee-cup-on-windowsill-in-rainy-bursa-28677814/",
+      "suggestedCaption": "What can wait while you sit down?",
+      "faces": false
+    },
+    {
+      "id": "photo_coffee_06",
+      "type": "photo",
+      "theme": "cozy coffee rain",
+      "title": "No grand transformation required",
+      "source": "Pexels",
+      "creator": "dicle dağkıran",
+      "pageUrl": "https://www.pexels.com/photo/cozy-rainy-day-with-a-warm-coffee-mug-35450247/",
+      "suggestedCaption": "Just make the next moment a little kinder.",
+      "faces": false
+    }
+  ],
+  "license": {
+    "provider": "Pexels",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "apiDocsUrl": "https://www.pexels.com/api/documentation/"
+  }
+}
