@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { getOfficialGiggles } from '@/data/officialSeed';
 
 export interface CuratedStory {
   id: string;
@@ -30,12 +29,9 @@ export function useCuratedStories(kind: 'giggle') {
           .order('created_at', { ascending: false })
           .limit(60);
         if (error) return [];
-        const live = (data ?? []) as CuratedStory[];
-        return [...getOfficialGiggles(), ...live].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        );
+        return (data ?? []) as CuratedStory[];
       } catch {
-        return getOfficialGiggles();
+        return [];
       }
     },
     staleTime: 30 * 60 * 1000,

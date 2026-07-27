@@ -13,26 +13,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const GIGGLES_PROMPT = (n: number) => `Write ${n} ORIGINAL, light-hearted, wholesome short stories for a "Food for the Giggles" feed inside a calm alcohol-recovery app.
+const GIGGLES_PROMPT = (n: number) => `Write ${n} ORIGINAL, funny, wholesome short stories for a "Food for the Giggles" feed inside a calm alcohol-recovery app. The house style is satisfying "petty revenge" and "malicious compliance" tales — someone follows a silly rule EXACTLY, or gets a small, harmless bit of payback on someone who had it coming.
 
 Rules:
 - Completely original. Do NOT copy or quote any real post or article. Invent everything.
-- First person, natural and conversational, like someone telling a mate.
-- 1–3 short paragraphs each. Genuinely warm and funny, never mean.
-- Vary the flavour across: harmless malicious compliance, gentle petty revenge, funny misunderstandings, workplace humour, customer-service moments, wholesome animal antics, everyday mishaps.
+- Most stories should be petty revenge or malicious compliance. A few can be funny misunderstandings, workplace or customer-service moments, or wholesome animal antics — but keep the satisfying, cheeky flavour.
+- First person, natural and conversational, like someone telling a mate. 2–3 short paragraphs — actual little STORIES with a setup and a payoff, never one-line jokes.
+- Genuinely warm and funny. The "revenge" is always small, legal and harmless — a pointed compliance, a bit of cheek — never cruel, never punching down.
 - No real or identifiable people, brands, politics, cruelty, sexual content, or anything dark. Nothing about alcohol, drugs or recovery.
-- Give each a short, playful title.
+- Give each a short, playful title, and a category of either "Petty revenge" or "Malicious compliance" (or a short apt label).
 - Submit every completed item through the provided tool.`;
 
-const DILEMMAS_PROMPT = (n: number) => `Write ${n} ORIGINAL first-person moral dilemmas for a "Food for Thought" feed inside a calm alcohol-recovery app, where readers vote on who was in the wrong.
+const DILEMMAS_PROMPT = (n: number) => `Write ${n} ORIGINAL first-person moral dilemmas for a "Food for Thought" feed inside a calm alcohol-recovery app. Readers vote on who was in the wrong, so each one needs a clear disagreement between the narrator ("the teller") and ONE other person.
 
 Rules:
-- Completely original. You may be INSPIRED by the kind of everyday situations people discuss online, but invent all wording, names, places and details. Do NOT copy anything.
+- Completely original. You may be INSPIRED by the kind of everyday "am I the unreasonable one?" situations people discuss online, but invent all wording, names, places and details. Do NOT copy anything.
 - Everyday, relatable situations: family, friends, flatmates, weddings, money between friends, neighbours, work, etiquette, gifts, group trips.
-- Genuinely ambiguous — reasonable people should disagree. End without resolving it.
+- Structure: the teller does or refuses something; one other person is upset; both have a point. Genuinely ambiguous — reasonable people should split on whether the teller, the other person, both, or neither was in the wrong. End WITHOUT resolving it.
 - Keep it light-to-moderate and NON-triggering: no addiction, alcohol, drugs, self-harm, abuse, violence, infidelity or grief as the core. No politics.
-- First person, 2–3 short paragraphs. End with the narrator unsure if they were unreasonable.
-- Give each a short, plain title (no "AITA").
+- First person, 2–3 short paragraphs. End with the narrator genuinely unsure if they were unreasonable.
+- Give each a short, plain title (no "AITA" in the title).
 - Submit every completed item through the provided tool.`;
 
 const GIGGLE_ITEM_SCHEMA = {

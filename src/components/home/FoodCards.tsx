@@ -4,7 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useGoodNews } from '@/hooks/useGoodNews';
 import { useCuratedStories } from '@/hooks/useCuratedStories';
-import { useReflectionPrompts } from '@/hooks/useDilemmas';
+import { useDilemmas } from '@/hooks/useDilemmas';
 import { FOOD } from '@/lib/food';
 
 type Preview = { id: string; title: string; body: string };
@@ -44,12 +44,12 @@ function PreviewSection({ title, route, accent, items, empty, loading }: {
 export function FoodCards() {
   const { data: soul = [], isLoading: soulLoading } = useGoodNews();
   const { data: giggles = [], isLoading: gigglesLoading } = useCuratedStories('giggle');
-  const { data: thoughts = [], isLoading: thoughtLoading } = useReflectionPrompts();
+  const { data: thoughts = [], isLoading: thoughtLoading } = useDilemmas();
   return (
     <>
       <PreviewSection title="Food for the Soul" route="/soul" accent={FOOD.soul.accent} loading={soulLoading} empty="New inspiration coming soon." items={soul.slice(0, 3).map((x, i) => ({ id: `${i}-${x.title}`, title: x.title, body: x.summary }))} />
       <PreviewSection title="Food for Giggles" route="/giggles" accent={FOOD.giggles.accent} loading={gigglesLoading} empty="Fresh giggles are on the way." items={giggles.slice(0, 3).map((x) => ({ id: x.id, title: x.title, body: x.body }))} />
-      <PreviewSection title="Food for Thought" route="/thought" accent={FOOD.thought.accent} loading={thoughtLoading} empty="New reflections are coming soon." items={thoughts.slice(0, 3).map((x) => ({ id: x.id, title: x.title, body: x.body }))} />
+      <PreviewSection title="Food for Thought" route="/thought" accent={FOOD.thought.accent} loading={thoughtLoading} empty="New dilemmas are coming soon." items={thoughts.slice(0, 3).map((x) => ({ id: x.id, title: x.title, body: x.story }))} />
     </>
   );
 }

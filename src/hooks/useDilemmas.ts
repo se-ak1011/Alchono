@@ -1,10 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { getOfficialThoughts } from '@/data/officialSeed';
-
-export function useReflectionPrompts() {
-  return { data: getOfficialThoughts(), isLoading: false };
-}
 
 export interface Dilemma {
   id: string;
