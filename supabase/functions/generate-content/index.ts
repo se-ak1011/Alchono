@@ -4,7 +4,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
 // Content is generated infrequently and cached, so prefer Sonnet's stronger
 // writing quality here; the high-frequency AI coach intentionally uses Haiku.
-const MODEL = Deno.env.get('ANTHROPIC_CONTENT_MODEL') ?? 'claude-sonnet-4-5';
+// NOTE: claude-sonnet-4-5 was retired — an invalid model 404s and silently
+// produces "0 generated". Keep this pinned to a current model id.
+const MODEL = Deno.env.get('ANTHROPIC_CONTENT_MODEL') ?? 'claude-sonnet-5';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
