@@ -14,26 +14,34 @@ export default function PlayMomentScreen() {
   const [playbackUri, setPlaybackUri] = useState(uri ?? '');
   const [loading, setLoading] = useState(type === 'video');
   const [error, setError] = useState(false);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
+
+  const fail = (detail: string) => { setLoading(false); setError(true); setErrorDetail(detail); };
 
   useEffect(() => {
     if (type !== 'video' || playbackUri || !momentId) return;
     setLoading(true);
     let active = true;
     const timeout = setTimeout(() => {
-      if (active) { setLoading(false); setError(true); }
+      if (active) fail('Timed out fetching the video link (15s). Check your connection, or the video service may need redeploying.');
     }, 15_000);
     getMomentPlaybackUrl(momentId)
       .then((url) => { if (active) setPlaybackUri(url); })
-      .catch(() => { setLoading(false); setError(true); });
+      .catch((e) => {
+        if (!active) return;
+        // The most common cause is the good-feed function lacking the "play"
+        // action (needs redeploy), or the moment not being approved/shared.
+        const message = e instanceof Error ? e.message : String(e ?? '');
+        fail(message ? `Couldn't get the video link: ${message}` : "Couldn't get the video link (video unavailable).");
+      });
     return () => { active = false; clearTimeout(timeout); };
   }, [momentId, playbackUri, retryKey, type]);
 
   useEffect(() => {
     if (!playbackUri || !loading || error) return;
     const timeout = setTimeout(() => {
-      setLoading(false);
-      setError(true);
+      fail('The video link loaded but playback never started (20s). The file may be corrupt or an unsupported format.');
     }, 20_000);
     return () => clearTimeout(timeout);
   }, [error, loading, playbackUri]);
@@ -42,9 +50,9 @@ export default function PlayMomentScreen() {
     if (status.isLoaded) {
       setLoading(false);
       setError(false);
+      setErrorDetail(null);
     } else if (status.error) {
-      setLoading(false);
-      setError(true);
+      fail(`Playback error: ${status.error}`);
     }
   };
 
@@ -61,11 +69,11 @@ export default function PlayMomentScreen() {
             useNativeControls
             usePoster={!!poster}
             posterSource={poster ? { uri: poster } : undefined}
-            onLoadStart={() => { setLoading(true); setError(false); }}
+            onLoadStart={() => { setLoading(true); setError(false); setErrorDetail(null); }}
             onLoad={() => setLoading(false)}
             onPlaybackStatusUpdate={handlePlaybackStatus}
             onReadyForDisplay={() => setLoading(false)}
-            onError={() => { setLoading(false); setError(true); }}
+            onError={(e) => fail(typeof e === 'string' ? `Playback error: ${e}` : 'The video could not be decoded on this device.')}
             resizeMode={ResizeMode.CONTAIN}
             style={{ flex: 1 }}
           />
@@ -85,8 +93,11 @@ export default function PlayMomentScreen() {
       )}
       {error && (
         <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <Text style={{ color: '#ECE9F1', textAlign: 'center' }}>This video could not be played.</Text>
-          {momentId && <Pressable onPress={() => { setPlaybackUri(''); setLoading(true); setError(false); setRetryKey((value) => value + 1); }} style={{ marginTop: 16, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12, backgroundColor: '#302B3A' }}><Text style={{ color: '#ECE9F1' }}>Try again</Text></Pressable>}
+          <Text style={{ color: '#ECE9F1', textAlign: 'center', fontSize: 16 }}>This video could not be played.</Text>
+          {errorDetail ? (
+            <Text style={{ color: '#817B91', textAlign: 'center', fontSize: 13, marginTop: 8, lineHeight: 18 }}>{errorDetail}</Text>
+          ) : null}
+          {momentId && <Pressable onPress={() => { setPlaybackUri(''); setLoading(true); setError(false); setErrorDetail(null); setRetryKey((value) => value + 1); }} style={{ marginTop: 16, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12, backgroundColor: '#302B3A' }}><Text style={{ color: '#ECE9F1' }}>Try again</Text></Pressable>}
         </View>
       )}
 
