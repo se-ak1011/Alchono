@@ -2,25 +2,39 @@ import React, { useEffect, useState } from 'react';
 import { View, Image, Pressable, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Video, ResizeMode, type AVPlaybackStatus } from 'expo-av';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { Feather } from '@expo/vector-icons';
 import { getMomentPlaybackUrl } from '@/hooks/useMoments';
 
-/** Fullscreen viewer for a moment — plays videos, shows photos large. */
+/**
+ * Fullscreen viewer for a moment — plays videos, shows photos large.
+ *
+ * Uses expo-video (the supported player in SDK 52; expo-av's Video is
+ * deprecated). The signed video URL is minted lazily on open and handed to
+ * the player via replace(); the player's own statusChange is the source of
+ * truth for success/failure so playback problems are surfaced precisely.
+ */
 export default function PlayMomentScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { uri, momentId, type, poster } = useLocalSearchParams<{ uri?: string; momentId?: string; type?: string; poster?: string }>();
+  const isVideo = type === 'video';
   const [playbackUri, setPlaybackUri] = useState(uri ?? '');
-  const [loading, setLoading] = useState(type === 'video');
+  const [loading, setLoading] = useState(isVideo);
   const [error, setError] = useState(false);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
   const fail = (detail: string) => { setLoading(false); setError(true); setErrorDetail(detail); };
 
+  // The player is created once with no source; the remote URL arrives below.
+  const player = useVideoPlayer(null, (p) => {
+    p.loop = false;
+  });
+
+  // 1) Mint the short-lived signed video URL after the user taps (videos only).
   useEffect(() => {
-    if (type !== 'video' || playbackUri || !momentId) return;
+    if (!isVideo || playbackUri || !momentId) return;
     setLoading(true);
     let active = true;
     const timeout = setTimeout(() => {
@@ -30,14 +44,42 @@ export default function PlayMomentScreen() {
       .then((url) => { if (active) setPlaybackUri(url); })
       .catch((e) => {
         if (!active) return;
-        // The most common cause is the good-feed function lacking the "play"
+        // Most common cause is the good-feed function lacking the "play"
         // action (needs redeploy), or the moment not being approved/shared.
         const message = e instanceof Error ? e.message : String(e ?? '');
         fail(message ? `Couldn't get the video link: ${message}` : "Couldn't get the video link (video unavailable).");
       });
     return () => { active = false; clearTimeout(timeout); };
-  }, [momentId, playbackUri, retryKey, type]);
+  }, [isVideo, momentId, playbackUri, retryKey]);
 
+  // 2) Hand the URL to the player and start playback.
+  useEffect(() => {
+    if (!isVideo || !playbackUri) return;
+    setLoading(true);
+    setError(false);
+    setErrorDetail(null);
+    player.replace({ uri: playbackUri });
+    player.play();
+  }, [isVideo, playbackUri, player]);
+
+  // 3) The player's own status is the definitive success/failure signal.
+  useEffect(() => {
+    if (!isVideo) return;
+    const sub = player.addListener('statusChange', ({ status, error: playerError }) => {
+      if (status === 'readyToPlay') {
+        setLoading(false);
+        setError(false);
+        setErrorDetail(null);
+      } else if (status === 'loading') {
+        setLoading(true);
+      } else if (status === 'error') {
+        fail(playerError?.message ? `Playback error: ${playerError.message}` : 'The video could not be decoded on this device.');
+      }
+    });
+    return () => sub.remove();
+  }, [isVideo, player]);
+
+  // Safety net: the link arrived but playback never became ready.
   useEffect(() => {
     if (!playbackUri || !loading || error) return;
     const timeout = setTimeout(() => {
@@ -46,45 +88,29 @@ export default function PlayMomentScreen() {
     return () => clearTimeout(timeout);
   }, [error, loading, playbackUri]);
 
-  const handlePlaybackStatus = (status: AVPlaybackStatus) => {
-    if (status.isLoaded) {
-      setLoading(false);
-      setError(false);
-      setErrorDetail(null);
-    } else if (status.error) {
-      fail(`Playback error: ${status.error}`);
-    }
-  };
-
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
-      {type === 'video' && poster ? (
+      {isVideo && poster ? (
         <Image source={{ uri: poster }} style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} resizeMode="contain" />
       ) : null}
-      {playbackUri ? (
-        type === 'video' ? (
-          <Video
-            source={{ uri: playbackUri }}
-            shouldPlay
-            useNativeControls
-            usePoster={!!poster}
-            posterSource={poster ? { uri: poster } : undefined}
-            onLoadStart={() => { setLoading(true); setError(false); setErrorDetail(null); }}
-            onLoad={() => setLoading(false)}
-            onPlaybackStatusUpdate={handlePlaybackStatus}
-            onReadyForDisplay={() => setLoading(false)}
-            onError={(e) => fail(typeof e === 'string' ? `Playback error: ${e}` : 'The video could not be decoded on this device.')}
-            resizeMode={ResizeMode.CONTAIN}
+
+      {isVideo ? (
+        playbackUri ? (
+          <VideoView
+            player={player}
             style={{ flex: 1 }}
+            contentFit="contain"
+            nativeControls
+            allowsFullscreen
           />
-        ) : (
-          <Image source={{ uri: playbackUri }} style={{ flex: 1 }} resizeMode="contain" />
-        )
-      ) : type !== 'video' ? (
+        ) : null
+      ) : playbackUri ? (
+        <Image source={{ uri: playbackUri }} style={{ flex: 1 }} resizeMode="contain" />
+      ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: '#817B91' }}>Nothing to play.</Text>
         </View>
-      ) : null}
+      )}
 
       {loading && !error && (
         <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}>
