@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, FlatList } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,11 +6,16 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
-import { useDilemmas, type Dilemma } from '@/hooks/useDilemmas';
+import { useDilemmas, type Dilemma, type DilemmaKind } from '@/hooks/useDilemmas';
 import { FOOD } from '@/lib/food';
 import { headingShadow } from '@/styles';
 
 const S = FOOD.thought;
+
+const MODES: { key: DilemmaKind; label: string; blurb: string; cta: string }[] = [
+  { key: 'aita', label: 'Everyday', blurb: "Someone's in the wrong. Cast your vote, then see how everyone else saw it.", cta: 'What do you think?' },
+  { key: 'deep', label: 'Deep', blurb: 'Harder questions with no easy answer — the kind that hold a mirror up. Choose, then reflect.', cta: 'Where do you stand?' },
+];
 
 function Wash() {
   return (
@@ -24,7 +29,7 @@ function Wash() {
   );
 }
 
-function DilemmaCard({ item, i, onPress }: { item: Dilemma; i: number; onPress: () => void }) {
+function DilemmaCard({ item, i, cta, onPress }: { item: Dilemma; i: number; cta: string; onPress: () => void }) {
   return (
     <Animated.View entering={FadeInDown.duration(320).delay(Math.min(i * 45, 360))}>
       <Pressable
@@ -37,7 +42,7 @@ function DilemmaCard({ item, i, onPress }: { item: Dilemma; i: number; onPress: 
         </Text>
         <View className="flex-row items-center gap-1.5 mt-3">
           <Text style={{ color: S.accent, fontSize: 13, fontFamily: 'Inter_600SemiBold' }}>
-            What do you think?
+            {cta}
           </Text>
           <Feather name="chevron-right" size={15} color={S.accent} />
         </View>
@@ -48,7 +53,9 @@ function DilemmaCard({ item, i, onPress }: { item: Dilemma; i: number; onPress: 
 
 export default function ThoughtScreen() {
   const router = useRouter();
-  const { data: dilemmas = [], isLoading } = useDilemmas();
+  const [mode, setMode] = useState<DilemmaKind>('aita');
+  const active = MODES.find((m) => m.key === mode)!;
+  const { data: dilemmas = [], isLoading } = useDilemmas(mode);
 
   return (
     <SafeArea>
@@ -62,9 +69,27 @@ export default function ThoughtScreen() {
             {S.title}
           </Text>
           <Text className="text-text-muted text-sm mt-0.5">
-            Someone's in the wrong. Cast your vote, then see how everyone else saw it.
+            {active.blurb}
           </Text>
         </View>
+      </View>
+
+      {/* Everyday | Deep */}
+      <View className="mx-6 mt-2 mb-1 flex-row bg-surface rounded-full p-1 border border-white/8">
+        {MODES.map((m) => (
+          <Pressable
+            key={m.key}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setMode(m.key);
+            }}
+            className={`flex-1 rounded-full py-2.5 items-center ${mode === m.key ? 'bg-surface-2' : ''}`}
+          >
+            <Text className={`text-sm font-semibold ${mode === m.key ? 'text-text-primary' : 'text-text-muted'}`}>
+              {m.label}
+            </Text>
+          </Pressable>
+        ))}
       </View>
 
       <FlatList
@@ -76,6 +101,7 @@ export default function ThoughtScreen() {
           <DilemmaCard
             item={item}
             i={index}
+            cta={active.cta}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push({ pathname: '/thought/[id]', params: { id: item.id } });

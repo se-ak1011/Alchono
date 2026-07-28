@@ -40,6 +40,16 @@ export default function DilemmaScreen() {
   const { data: results } = useDilemmaResults(id, hasVoted);
   const { mutate: vote, isPending } = useVoteDilemma();
 
+  const isDeep = dilemma?.kind === 'deep';
+  // Deep dilemmas offer a binary choice from their own two options; everyday
+  // AITA dilemmas use the four fixed choices.
+  const choices: { key: Choice; label: string }[] = isDeep
+    ? [
+        { key: 'a', label: dilemma?.option_a ?? 'Option A' },
+        { key: 'b', label: dilemma?.option_b ?? 'Option B' },
+      ]
+    : CHOICES;
+
   const cast = (choice: Choice) => {
     if (hasVoted || isPending || !id) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -77,12 +87,12 @@ export default function DilemmaScreen() {
           <Text className="text-text-secondary text-base leading-relaxed">{dilemma.story}</Text>
 
           <Text className="text-text-primary text-lg font-semibold mt-8 mb-3">
-            What do you think?
+            {isDeep ? 'Where do you stand?' : 'What do you think?'}
           </Text>
 
           {!hasVoted ? (
             <View style={{ gap: 10 }}>
-              {CHOICES.map((c) => (
+              {choices.map((c) => (
                 <Pressable
                   key={c.key}
                   disabled={isPending}
@@ -98,7 +108,7 @@ export default function DilemmaScreen() {
             </View>
           ) : (
             <Animated.View entering={FadeIn.duration(400)} style={{ gap: 10 }}>
-              {CHOICES.map((c) => {
+              {choices.map((c) => {
                 const pct = results?.pct[c.key] ?? 0;
                 const mine = myVote === c.key;
                 return (
@@ -141,6 +151,20 @@ export default function DilemmaScreen() {
               <Text className="text-text-muted text-xs mt-1">
                 {results ? `${results.total} ${results.total === 1 ? 'person has' : 'people have'} weighed in.` : ' '}
               </Text>
+
+              {isDeep && dilemma.reflection ? (
+                <View
+                  className="mt-4 rounded-2xl px-5 py-4"
+                  style={{ backgroundColor: S.tint, borderWidth: 1, borderColor: S.edge }}
+                >
+                  <Text style={{ color: S.accent, fontSize: 12, fontFamily: 'Inter_600SemiBold', letterSpacing: 1, marginBottom: 8 }}>
+                    SOMETHING TO SIT WITH
+                  </Text>
+                  <Text className="text-text-secondary text-[15px] leading-relaxed">
+                    {dilemma.reflection}
+                  </Text>
+                </View>
+              ) : null}
             </Animated.View>
           )}
         </ScrollView>

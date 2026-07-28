@@ -45,6 +45,14 @@ export default function NewMomentScreen() {
       mediaTypes: ['images', 'videos'],
       quality: 0.7,
       videoMaxDuration: 15,
+      // Re-encode the picked video to a compressed, network-optimised H.264
+      // (iOS AVAssetExportSession). This both shrinks the file and moves the
+      // moov atom to the front, so playback can start streaming immediately
+      // instead of waiting for most of the file to download. Guarded so it's a
+      // harmless no-op if the enum ever changes in expo-image-picker.
+      ...(ImagePicker.VideoExportPreset
+        ? { videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality }
+        : {}),
     });
     if (result.canceled || !result.assets[0]) return;
     const picked = result.assets[0];
