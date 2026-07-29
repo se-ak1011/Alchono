@@ -35,8 +35,8 @@ export default function NewMomentScreen() {
 
   const isVideo = asset?.type === 'video';
 
-  const MAX_VIDEO_SECONDS = 60;
-  const MAX_VIDEO_MB = 190; // raised for Supabase Pro — the bucket must allow it too
+  const MAX_VIDEO_SECONDS = 120; // 2 min — enough to actually vent, not a vlog
+  const MAX_VIDEO_MB = 450; // safe margin under the 500MB Supabase Pro bucket limit
 
   // Longer, fewer, more intentional clips (a minute to actually say something)
   // instead of swipeable 10-second reels. Re-encode to a compressed,
