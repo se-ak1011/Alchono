@@ -185,6 +185,10 @@ export default function HomeScreen() {
               <Feather name="chevron-right" size={14} color="#817B91" />
             </Pressable>
           )}
+          <Pressable onPress={() => router.push("/today")} className="mt-3 flex-row items-center gap-1.5 rounded-full px-4 py-2 border active:opacity-70" style={{ backgroundColor: "rgba(164,137,222,0.12)", borderColor: "rgba(164,137,222,0.4)" }}>
+            <Feather name="sunrise" size={14} color="#B9A4EC" />
+            <Text className="text-sm font-semibold" style={{ color: "#B9A4EC" }}>Today</Text>
+          </Pressable>
         </View>
 
         <HomeStories />

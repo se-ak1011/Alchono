@@ -19,8 +19,8 @@
       "bundleIdentifier": "com.alchono.app",
       "buildNumber": "1",
       "infoPlist": {
-        "NSCameraUsageDescription": "Alchono uses camera for profile photos.",
-        "NSPhotoLibraryUsageDescription": "Alchono uses photo library for profile photos.",
+        "NSCameraUsageDescription": "Alchono uses the camera so you can record and photograph your own moments in the app.",
+        "NSPhotoLibraryUsageDescription": "Alchono uses your photo library so you can share photos and videos as moments.",
         "NSMicrophoneUsageDescription": "Alchono uses the microphone to record private voice journal notes.",
         "NSLocationWhenInUseUsageDescription": "Alchono uses your approximate location to show community posts from people near you. Your location is never shown to anyone.",
         "ITSAppUsesNonExemptEncryption": false
@@ -40,6 +40,7 @@
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
+        "CAMERA",
         "RECORD_AUDIO",
         "ACCESS_COARSE_LOCATION"
       ]

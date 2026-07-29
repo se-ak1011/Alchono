@@ -35,37 +35,29 @@ export default function NewMomentScreen() {
 
   const isVideo = asset?.type === 'video';
 
-  const pick = async () => {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) {
-      Alert.alert('Permission needed', 'Allow photo access to add a moment.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
-      quality: 0.7,
-      videoMaxDuration: 15,
-      // Re-encode the picked video to a compressed, network-optimised H.264
-      // (iOS AVAssetExportSession). This both shrinks the file and moves the
-      // moov atom to the front, so playback can start streaming immediately
-      // instead of waiting for most of the file to download. Guarded so it's a
-      // harmless no-op if the enum ever changes in expo-image-picker.
-      ...(ImagePicker.VideoExportPreset
-        ? { videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality }
-        : {}),
-    });
-    if (result.canceled || !result.assets[0]) return;
-    const picked = result.assets[0];
-    // Storage caps uploads at 50 MB. Reject oversized clips up front with a
-    // clear message rather than letting the upload fail at the end.
+  const MAX_VIDEO_SECONDS = 60;
+  const MAX_VIDEO_MB = 190; // raised for Supabase Pro — the bucket must allow it too
+
+  // Longer, fewer, more intentional clips (a minute to actually say something)
+  // instead of swipeable 10-second reels. Re-encode to a compressed,
+  // network-optimised H.264 so playback streams immediately. Guarded so it's a
+  // harmless no-op if the enum ever changes in expo-image-picker.
+  const videoOpts = {
+    videoMaxDuration: MAX_VIDEO_SECONDS,
+    ...(ImagePicker.VideoExportPreset
+      ? { videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality }
+      : {}),
+  };
+
+  const afterPicked = async (picked: ImagePicker.ImagePickerAsset) => {
     if (picked.type === 'video') {
       try {
         const info = await FileSystem.getInfoAsync(picked.uri, { size: true });
         const size = (info as any).size ?? 0;
-        if (size > 48 * 1024 * 1024) {
+        if (size > MAX_VIDEO_MB * 1024 * 1024) {
           Alert.alert(
             'Video too large',
-            'That clip is over 48 MB — the current upload limit. Try a shorter one; around 10–15 seconds usually fits.',
+            `That clip is over ${MAX_VIDEO_MB} MB — the current upload limit. Try a shorter one.`,
           );
           return;
         }
@@ -83,6 +75,38 @@ export default function NewMomentScreen() {
         // Sharing is blocked below until a safe poster exists for the feed and moderation.
       }
     }
+  };
+
+  const pick = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Permission needed', 'Allow photo access to add a moment.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      quality: 0.7,
+      ...videoOpts,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    await afterPicked(result.assets[0]);
+  };
+
+  // Capture straight from the camera — a moment or a video note recorded in-app,
+  // not only chosen from the gallery.
+  const capture = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Camera needed', 'Allow camera access to record or photograph a moment.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images', 'videos'],
+      quality: 0.7,
+      ...videoOpts,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    await afterPicked(result.assets[0]);
   };
 
   const submit = async () => {
@@ -173,40 +197,47 @@ export default function NewMomentScreen() {
 
           {/* Picker / preview */}
           <View className="px-6 mt-6">
-            <Pressable
-              onPress={pick}
-              className="rounded-2xl overflow-hidden border border-white/10 bg-surface items-center justify-center"
-              style={{ aspectRatio: 1 }}
-            >
-              {asset ? (
-                <>
-                  <Image
-                    source={{ uri: isVideo && videoThumb ? videoThumb : asset.uri }}
-                    style={{ width: '100%', height: '100%' }}
-                    resizeMode="cover"
-                  />
-                  {isVideo && (
-                    <View className="absolute inset-0 items-center justify-center">
-                      <View className="w-14 h-14 rounded-full bg-black/50 items-center justify-center">
-                        <Text className="text-white text-2xl">▶</Text>
-                      </View>
+            {asset ? (
+              <Pressable
+                onPress={pick}
+                className="rounded-2xl overflow-hidden border border-white/10 bg-surface items-center justify-center"
+                style={{ aspectRatio: 1 }}
+              >
+                <Image
+                  source={{ uri: isVideo && videoThumb ? videoThumb : asset.uri }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+                {isVideo && (
+                  <View className="absolute inset-0 items-center justify-center">
+                    <View className="w-14 h-14 rounded-full bg-black/50 items-center justify-center">
+                      <Text className="text-white text-2xl">▶</Text>
                     </View>
-                  )}
-                  <View className="absolute bottom-3 right-3 bg-black/60 rounded-full px-3 py-1.5">
-                    <Text className="text-white text-xs font-medium">Change</Text>
                   </View>
-                </>
-              ) : (
-                <View className="items-center px-6 py-16">
-                  <Text className="text-text-secondary text-base font-medium">
-                    + Choose a photo or video
-                  </Text>
-                  <Text className="text-text-muted text-sm mt-1 text-center">
-                    Videos up to 15 seconds.
-                  </Text>
+                )}
+                <View className="absolute bottom-3 right-3 bg-black/60 rounded-full px-3 py-1.5">
+                  <Text className="text-white text-xs font-medium">Change</Text>
                 </View>
-              )}
-            </Pressable>
+              </Pressable>
+            ) : (
+              <View
+                className="rounded-2xl border border-white/10 bg-surface items-center justify-center px-6"
+                style={{ aspectRatio: 1 }}
+              >
+                <Text className="text-text-secondary text-base font-medium">Add a moment</Text>
+                <Text className="text-text-muted text-sm mt-1.5 text-center leading-relaxed">
+                  Record up to a minute — a small good thing, or a moment to vent —{'\n'}or choose one from your gallery.
+                </Text>
+                <View className="flex-row gap-3 mt-6">
+                  <Pressable onPress={capture} className="bg-accent rounded-2xl px-6 py-3 active:bg-accent-dark">
+                    <Text className="text-bg text-sm font-semibold">Record</Text>
+                  </Pressable>
+                  <Pressable onPress={pick} className="bg-surface-2 border border-white/10 rounded-2xl px-6 py-3 active:border-white/25">
+                    <Text className="text-text-primary text-sm font-semibold">Upload</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
           </View>
 
           {asset && (
