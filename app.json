@@ -70,7 +70,6 @@
         }
       ],
       "expo-font",
-      "react-native-video-trim",
       [
         "@bacons/apple-targets",
         {
