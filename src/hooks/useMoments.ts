@@ -89,6 +89,7 @@ export interface FeedMoment {
   created_at: string;
   media_type: 'photo' | 'video';
   caption: string | null;
+  caption_position: string | null; // null/'below' = under the media; else overlay
   url: string | null;
   thumb_url: string | null;
   username: string | null; // null when the post is anonymous
@@ -189,6 +190,7 @@ export function useUploadMoment() {
       mediaType: 'photo' | 'video';
       thumbUri?: string;
       caption?: string;
+      captionPosition?: string | null;
       shared: boolean;
       anonymous: boolean;
       ext?: string;
@@ -234,6 +236,9 @@ export function useUploadMoment() {
           media_type: opts.mediaType,
           thumb_path,
           caption: opts.caption?.trim() || null,
+          // Only written when an overlay is chosen, so normal uploads don't
+          // touch the column and keep working even before migration 030 runs.
+          ...(opts.captionPosition ? { caption_position: opts.captionPosition } : {}),
           shared: opts.shared,
           anonymous: opts.anonymous,
           moderation_status: opts.shared ? 'pending' : 'private',

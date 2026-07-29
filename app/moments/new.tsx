@@ -31,6 +31,7 @@ export default function NewMomentScreen() {
   const { mutate: upload, isPending } = useUploadMoment();
   const [asset, setAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [caption, setCaption] = useState('');
+  const [captionPos, setCaptionPos] = useState<'below' | 'top' | 'center' | 'bottom'>('below');
   const [share, setShare] = useState(false);
   const [anonymous, setAnonymous] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -171,6 +172,7 @@ export default function NewMomentScreen() {
         mediaType: isVideo ? 'video' : 'photo',
         thumbUri,
         caption,
+        captionPosition: caption.trim() && captionPos !== 'below' ? captionPos : null,
         shared: share,
         anonymous: share ? anonymous : false,
         ext,
@@ -297,6 +299,34 @@ export default function NewMomentScreen() {
                   textAlignVertical="top"
                 />
               </View>
+
+              {/* Where the caption sits: under the media (default) or over it */}
+              {caption.trim() ? (
+                <View className="px-6 mt-3">
+                  <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2">
+                    Caption position
+                  </Text>
+                  <View className="flex-row gap-2">
+                    {(['below', 'top', 'center', 'bottom'] as const).map((p) => {
+                      const active = captionPos === p;
+                      return (
+                        <Pressable
+                          key={p}
+                          onPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            setCaptionPos(p);
+                          }}
+                          className={`px-3.5 py-2 rounded-full border ${active ? 'bg-surface-2 border-accent' : 'bg-surface border-white/10 active:border-white/25'}`}
+                        >
+                          <Text className={`text-sm font-medium ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
+                            {p[0].toUpperCase() + p.slice(1)}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+              ) : null}
 
               {/* Share toggle */}
               <Pressable

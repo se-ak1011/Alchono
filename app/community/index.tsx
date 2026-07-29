@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { CommunityFeed } from '@/components/support/CommunityFeed';
+import { CaptionOverlay } from '@/components/ui/CaptionOverlay';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 import { useCommunityMoments, ensureLegacyMomentThumbnail, type FeedMoment } from '@/hooks/useMoments';
@@ -14,12 +15,13 @@ import { useCommunityMoments, ensureLegacyMomentThumbnail, type FeedMoment } fro
 function MomentCard({ item }: { item: FeedMoment }) {
   const router = useRouter();
   const openPlayer = (type: 'photo' | 'video') =>
-    router.push({ pathname: '/moments/play', params: { uri: item.url ?? '', momentId: item.id, type, poster: item.thumb_url ?? '' } });
+    router.push({ pathname: '/moments/play', params: { uri: item.url ?? '', momentId: item.id, type, poster: item.thumb_url ?? '', caption: item.caption ?? '', captionPos: item.caption_position ?? '' } });
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
       className="mx-6 mb-5 bg-surface rounded-3xl overflow-hidden border border-white/8"
     >
+      <View style={{ position: 'relative' }}>
       {item.media_type === 'video' ? (
         <Pressable onPress={() => openPlayer('video')} accessibilityLabel="Play video">
           {item.thumb_url ? (
@@ -44,8 +46,10 @@ function MomentCard({ item }: { item: FeedMoment }) {
           />
         </Pressable>
       ) : null}
+      <CaptionOverlay caption={item.caption} position={item.caption_position} />
+      </View>
       <View className="px-5 py-4">
-        {item.caption ? (
+        {item.caption && (!item.caption_position || item.caption_position === 'below') ? (
           <Text className="text-text-primary text-base leading-relaxed mb-2">
             {item.caption}
           </Text>

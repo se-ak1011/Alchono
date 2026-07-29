@@ -45,7 +45,7 @@ export function HomeStories() {
           {videos.map((moment) => (
             <Pressable
               key={moment.id}
-              onPress={() => router.push({ pathname: '/moments/play', params: { momentId: moment.id, type: moment.media_type, poster: moment.thumb_url ?? '' } })}
+              onPress={() => router.push({ pathname: '/moments/play', params: { momentId: moment.id, type: moment.media_type, poster: moment.thumb_url ?? '', caption: moment.caption ?? '', captionPos: moment.caption_position ?? '' } })}
               className="items-center active:opacity-70"
               style={{ width: 70 }}
             >

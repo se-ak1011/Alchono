@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Feather } from '@expo/vector-icons';
 import { getMomentPlaybackUrl } from '@/hooks/useMoments';
+import { CaptionOverlay } from '@/components/ui/CaptionOverlay';
 
 /**
  * Fullscreen viewer for a moment — plays videos, shows photos large.
@@ -17,7 +18,7 @@ import { getMomentPlaybackUrl } from '@/hooks/useMoments';
 export default function PlayMomentScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { uri, momentId, type, poster } = useLocalSearchParams<{ uri?: string; momentId?: string; type?: string; poster?: string }>();
+  const { uri, momentId, type, poster, caption, captionPos } = useLocalSearchParams<{ uri?: string; momentId?: string; type?: string; poster?: string; caption?: string; captionPos?: string }>();
   const isVideo = type === 'video';
   const [playbackUri, setPlaybackUri] = useState(uri ?? '');
   const [loading, setLoading] = useState(isVideo);
@@ -112,6 +113,7 @@ export default function PlayMomentScreen() {
         </View>
       )}
 
+      <CaptionOverlay caption={caption} position={captionPos} />
       {loading && !error && (
         <View style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: '#ECE9F1' }}>Loading video…</Text>

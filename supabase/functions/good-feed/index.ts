@@ -44,7 +44,7 @@ serve(async (req) => {
 
     let query = supabase
       .from('moments')
-      .select('id, created_at, media_path, media_type, thumb_path, caption, anonymous, user_id')
+      .select('id, created_at, media_path, media_type, thumb_path, caption, caption_position, anonymous, user_id')
       .eq('shared', true)
       .eq('moderation_status', 'approved')
       .order('created_at', { ascending: false })
@@ -73,6 +73,7 @@ serve(async (req) => {
         created_at: m.created_at,
         media_type: m.media_type,
         caption: m.caption,
+        caption_position: m.caption_position ?? null,
         url: m.media_type === 'photo' ? (preview as any).data?.signedUrl ?? null : null,
         thumb_url: m.media_type === 'video' ? (preview as any).data?.signedUrl ?? null : null,
         username: m.anonymous ? null : usernames.get(m.user_id) ?? null,
