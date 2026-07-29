@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,15 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  NativeEventEmitter,
+  NativeModules,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
+import { showEditor } from 'react-native-video-trim';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
@@ -107,6 +110,40 @@ export default function NewMomentScreen() {
     });
     if (result.canceled || !result.assets[0]) return;
     await afterPicked(result.assets[0]);
+  };
+
+  // In-app trimming via the native react-native-video-trim editor. The trimmer
+  // emits events on the old bridge, so it stays reachable through NativeModules
+  // even under the new architecture. Guarded so a missing native module can
+  // never crash the screen (e.g. before the first native build with the module).
+  useEffect(() => {
+    const mod = (NativeModules as any).VideoTrim;
+    if (!mod) return;
+    const emitter = new NativeEventEmitter(mod);
+    const sub = emitter.addListener('VideoTrim', async (e: any) => {
+      if (e?.name === 'onFinishTrimming' && e?.outputPath) {
+        const uri = String(e.outputPath).startsWith('file://') ? e.outputPath : `file://${e.outputPath}`;
+        setAsset((prev) => (prev ? { ...prev, uri } : ({ uri, type: 'video' } as any)));
+        setVideoThumb(null);
+        try {
+          const t = await VideoThumbnails.getThumbnailAsync(uri, { time: 500, quality: 0.7 });
+          setVideoThumb(t.uri);
+        } catch {
+          /* poster regenerates on submit */
+        }
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
+  const trim = () => {
+    if (!asset) return;
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      showEditor(asset.uri, { maxDuration: MAX_VIDEO_SECONDS, saveToPhoto: false });
+    } catch {
+      Alert.alert('Trimming unavailable', 'The trimmer needs a fresh native build to work.');
+    }
   };
 
   const submit = async () => {
@@ -214,6 +251,11 @@ export default function NewMomentScreen() {
                       <Text className="text-white text-2xl">▶</Text>
                     </View>
                   </View>
+                )}
+                {isVideo && (
+                  <Pressable onPress={trim} className="absolute bottom-3 left-3 bg-black/60 rounded-full px-3 py-1.5 active:opacity-70">
+                    <Text className="text-white text-xs font-medium">✂ Trim</Text>
+                  </Pressable>
                 )}
                 <View className="absolute bottom-3 right-3 bg-black/60 rounded-full px-3 py-1.5">
                   <Text className="text-white text-xs font-medium">Change</Text>
