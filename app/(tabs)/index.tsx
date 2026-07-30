@@ -89,13 +89,10 @@ export default function HomeScreen() {
   return (
     <SafeArea bottom={false}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshHome} tintColor="#B9A4EC" />}>
-        <View className="flex-row items-center justify-between px-6 pt-3">
+        <View className="flex-row items-center px-6 pt-3">
           <Pressable onPress={() => setDrawerOpen(true)} hitSlop={12} className="p-1 -ml-1 active:opacity-60" accessibilityLabel="Open menu">
             <Feather name="menu" size={24} color="#B2ACC0" />
           </Pressable>
-          <View style={{ width: 36, height: 36, borderRadius: 11, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(164,137,222,0.16)", borderWidth: 1, borderColor: "rgba(164,137,222,0.5)" }}>
-            <Text style={{ fontFamily: "SkinnyCustard", fontSize: 24, lineHeight: 27, color: "#B9A4EC" }}>A</Text>
-          </View>
         </View>
 
         <View className="items-center mt-3">
