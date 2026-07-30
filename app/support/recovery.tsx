@@ -3,32 +3,44 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import * as Haptics from 'expo-haptics';
+import { ZoneChip } from '@/components/ui/ZoneChip';
 import { headingShadow } from '@/styles';
 
-type Row = { title: string; subtitle: string; route: string };
+type Row = { title: string; subtitle: string; route: string; icon: keyof typeof Feather.glyphMap; accent: string };
 
+// Steady, not-a-crisis support. Deliberately NOT the things that now live
+// elsewhere (progress in Me, milestones in the timeline, mentors in Community) —
+// this slot is the proactive, plan-ahead corner.
 const ROWS: Row[] = [
   {
-    title: 'Mentors',
-    subtitle: "People who've walked it, a message away.",
-    route: '/support/mentors',
+    title: 'My plan',
+    subtitle: 'Your reasons, people and go-to moves — written calmly, for a harder moment later.',
+    route: '/plan',
+    icon: 'clipboard',
+    accent: '#B9A4EC',
   },
   {
-    title: 'Your progress',
-    subtitle: 'Evidence of how far you\'ve actually come.',
-    route: '/evidence',
+    title: 'After a slip',
+    subtitle: 'Get back up, no shame. A gentle way through the day after.',
+    route: '/toolkit/c/after-a-slip',
+    icon: 'refresh-ccw',
+    accent: '#A9D19E',
   },
   {
-    title: 'Milestones',
-    subtitle: 'Your story so far, moment by moment.',
-    route: '/timeline',
+    title: 'Share with your GP',
+    subtitle: 'A clean summary and drinks diary to print or email to a professional.',
+    route: '/summary',
+    icon: 'file-text',
+    accent: '#C7B58A',
   },
   {
     title: 'Resources',
     subtitle: 'Helplines, meetings, and support services.',
     route: '/support/resources',
+    icon: 'life-buoy',
+    accent: '#A082BE',
   },
 ];
 
@@ -70,33 +82,20 @@ export default function RecoveryScreen() {
             Not a hard moment — just here. Take your time.
           </Text>
 
-          <View style={{ gap: 12 }}>
-            {ROWS.map((r, i) => (
-              <Animated.View
-                key={r.title}
-                entering={FadeInDown.duration(400).delay(100 + i * 60)}
-              >
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    router.push(r.route as any);
-                  }}
-                  className="bg-surface rounded-2xl px-5 py-5 border border-white/8 active:border-white/20"
-                  style={{ borderTopColor: 'rgba(243, 240, 244, 0.10)' }}
-                >
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-text-primary text-lg font-semibold flex-1 pr-3">
-                      {r.title}
-                    </Text>
-                    <Text className="text-text-muted text-lg">→</Text>
-                  </View>
-                  <Text className="text-text-muted text-sm mt-1 leading-relaxed">
-                    {r.subtitle}
-                  </Text>
-                </Pressable>
-              </Animated.View>
-            ))}
-          </View>
+          {ROWS.map((r, i) => (
+            <Animated.View
+              key={r.title}
+              entering={FadeInDown.duration(400).delay(100 + i * 60)}
+            >
+              <ZoneChip
+                icon={r.icon}
+                accent={r.accent}
+                title={r.title}
+                subtitle={r.subtitle}
+                onPress={() => router.push(r.route as any)}
+              />
+            </Animated.View>
+          ))}
         </Animated.View>
       </ScrollView>
     </View>
