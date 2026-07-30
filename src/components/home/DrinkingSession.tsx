@@ -11,8 +11,10 @@ import {
   useEndSession,
   useLogDrink,
 } from '@/hooks/useDrinkingSession';
+import { useLogDrinkEntry } from '@/hooks/useDrinkEntries';
 import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { useAppStore } from '@/store/appStore';
+import { DrinkPicker } from '@/components/session/DrinkPicker';
 
 function formatDuration(startedAt: string): string {
   const ms = Date.now() - new Date(startedAt).getTime();
@@ -47,12 +49,14 @@ export function DrinkingSession() {
   const { mutate: startSession, isPending: isStarting } = useStartSession();
   const { mutate: endSession, isPending: isEnding } = useEndSession();
   const { mutate: logDrink, isPending: isLogging } = useLogDrink();
+  const { mutate: logDrinkEntry } = useLogDrinkEntry();
   const { setPauseModalVisible } = useAppStore();
   const { data: alcoholFreeMarked = false } = useAfToday();
   const { mutate: toggleAlcoholFree } = useToggleAlcoholFree();
   const router = useRouter();
   const [duration, setDuration] = useState('');
   const [showQuestion, setShowQuestion] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
     if (!activeSession) return;
@@ -145,7 +149,7 @@ export function DrinkingSession() {
             </Animated.View>
           )}
 
-          {/* One tap to log a drink — no judgement, just awareness. */}
+          {/* Log a drink — pick what it was so units are counted (GP diary). */}
           <Button
             title="Add drink"
             variant="secondary"
@@ -155,7 +159,23 @@ export function DrinkingSession() {
             className="mb-2"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setPickerOpen(true);
+            }}
+          />
+
+          <DrinkPicker
+            visible={pickerOpen}
+            onClose={() => setPickerOpen(false)}
+            onSelect={(preset) => {
+              setPickerOpen(false);
+              // Keep the live counter, and record the units for the diary.
               logDrink({});
+              logDrinkEntry({
+                drinkType: preset.key,
+                drinkLabel: preset.label,
+                units: preset.units,
+                sessionId: activeSession.id,
+              });
             }}
           />
 

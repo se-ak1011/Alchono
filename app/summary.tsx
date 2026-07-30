@@ -8,8 +8,10 @@ import * as Haptics from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
 import { useInsights, useTotalPauses, useStreak } from '@/hooks/useInsights';
 import { useUrgeStats, useAfDaysCount, useTypicalUrgeMinutes } from '@/hooks/useVictories';
+import { useDrinksDiary } from '@/hooks/useDrinkEntries';
 import { useAuthStore } from '@/store/authStore';
 import { buildSummaryHtml, exportSummaryPdf } from '@/lib/summaryPdf';
+import { fmtUnits } from '@/lib/units';
 import { headingShadow } from '@/styles';
 
 /**
@@ -43,6 +45,7 @@ export default function SummaryScreen() {
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
   const { data: typicalMinutes } = useTypicalUrgeMinutes();
   const { data: streak } = useStreak();
+  const { data: diary } = useDrinksDiary(7);
 
   const checkinDays = insights?.filter((d) => d.mood).length ?? 0;
   const sessionDayCount = insights?.filter((d) => d.hadSession).length ?? 0;
@@ -83,6 +86,7 @@ export default function SummaryScreen() {
         periodLabel,
         generatedOn,
         rows,
+        diary,
       });
       await exportSummaryPdf(html);
     } catch (e) {
@@ -192,6 +196,52 @@ export default function SummaryScreen() {
             conversations stay private.
           </Text>
         </Animated.View>
+
+        {/* Drinks diary (units) — the GP's paper form, filled from the app. */}
+        {diary?.anyLogged && (
+          <Animated.View
+            entering={FadeInDown.duration(400)}
+            className="bg-surface rounded-3xl px-6 py-6 mt-4 border border-white/8"
+          >
+            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-1">
+              Drinks diary · last 7 days
+            </Text>
+            <View className="flex-row items-end justify-between mt-2 mb-3">
+              <View>
+                <Text className="text-text-primary text-3xl font-semibold">
+                  {fmtUnits(diary.dailyAverage)}
+                </Text>
+                <Text className="text-text-muted text-xs mt-0.5">units/day average</Text>
+              </View>
+              <View className="items-end">
+                <Text className="text-text-primary text-xl font-semibold">
+                  {fmtUnits(diary.weekTotal)}
+                </Text>
+                <Text className="text-text-muted text-xs mt-0.5">units this week</Text>
+              </View>
+            </View>
+            {diary.days
+              .filter((d) => d.lines.length > 0)
+              .map((d) => (
+                <View key={d.date} className="py-2.5 border-t border-white/5">
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-text-secondary text-sm font-medium">{d.label}</Text>
+                    <Text className="text-text-primary text-sm font-semibold">
+                      {fmtUnits(d.dayTotal)} units
+                    </Text>
+                  </View>
+                  {d.lines.map((l, i) => (
+                    <Text key={i} className="text-text-muted text-xs mt-1">
+                      {l.count}× {l.label} · {fmtUnits(l.total)}u
+                    </Text>
+                  ))}
+                </View>
+              ))}
+            <Text className="text-text-muted text-xs leading-relaxed mt-3">
+              Low-risk guideline: up to 14 units a week, spread over 3+ days.
+            </Text>
+          </Animated.View>
+        )}
 
         <Text className="text-text-muted text-sm text-center leading-relaxed mt-6 px-4">
           Showing this screen is enough — nothing has been sent to anyone. Export
