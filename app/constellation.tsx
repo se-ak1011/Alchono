@@ -39,21 +39,11 @@ export default function ConstellationScreen() {
   return (
     <View className="flex-1" style={{ backgroundColor: '#201D28' }}>
       <ZoneGlow zone="me" intensity={0.55} />
-      {dates.length === 0 ? (
-        <View className="flex-1 items-center justify-center px-10">
-          <Text className="text-text-secondary text-lg text-center leading-relaxed">
-            Your sky is dark for now.
-          </Text>
-          <Text className="text-text-muted text-base text-center leading-relaxed mt-3">
-            Mark your first alcohol-free day, and the first star appears. Every
-            sober day lights another — and they stay lit for good.
-          </Text>
-        </View>
-      ) : (
-        <View style={{ flex: 1, paddingTop: CONSTELLATION_TOP_SPACING }}>
-          <ConstellationSky sky={sky} onSelectStar={setSelected} />
-        </View>
-      )}
+      {/* The sky is never empty — a full field of stars is always there, waiting
+          to be lit. Each alcohol-free day brightens the next one. */}
+      <View style={{ flex: 1, paddingTop: CONSTELLATION_TOP_SPACING }}>
+        <ConstellationSky sky={sky} onSelectStar={setSelected} />
+      </View>
 
       {/* Ito anchors a compact constellation menu in a local sky zone. */}
       <View
@@ -122,8 +112,9 @@ export default function ConstellationScreen() {
           Your sky
         </Text>
         <Text className="text-text-secondary text-sm mt-2">
-          {dates.length} {dates.length === 1 ? "star" : "stars"} · one for every
-          alcohol-free day
+          {dates.length === 0
+            ? "Your whole sky is waiting — mark a day and the first star lights."
+            : `${dates.length} ${dates.length === 1 ? "star" : "stars"} shining · one for every alcohol-free day`}
         </Text>
         {milestone && (
           <Text className="text-text-muted text-sm mt-1 italic">

@@ -16,7 +16,8 @@ interface Props {
   onSelectStar: (date: string) => void;
 }
 
-const STAR_COLOR = '#ECE9F1';
+const STAR_COLOR = '#FBF4E9'; // warm white for lit, earned stars
+const LATENT_COLOR = '#9A93AD'; // cool dust for unlit stars, waiting to light
 const LINE_COLOR = '#A489DE';
 const HIT_RADIUS = 20; // canvas units — how close a tap must land to a star
 
@@ -55,6 +56,7 @@ export function ConstellationSky({ sky, onSelectStar }: Props) {
     let best: string | null = null;
     let bestD = HIT_RADIUS;
     for (const star of sky.stars) {
+      if (!star.date) continue; // only lit stars carry a day to open
       const d = Math.hypot(star.x - cx, star.y - cy);
       if (d < bestD) {
         bestD = d;
@@ -102,7 +104,10 @@ export function ConstellationSky({ sky, onSelectStar }: Props) {
     ],
   }));
 
-  const lastDate = sky.stars.length ? sky.stars[sky.stars.length - 1].date : null;
+  const litStars = sky.stars.filter((s) => s.lit);
+  const latentStars = sky.stars.filter((s) => !s.lit);
+  // Stars are index-ordered, so the last lit one is the most recent day.
+  const lastDate = litStars.length ? litStars[litStars.length - 1].date : null;
 
   return (
     <View onLayout={onLayout} style={{ flex: 1, overflow: 'hidden', backgroundColor: '#201D28' }}>
@@ -118,6 +123,20 @@ export function ConstellationSky({ sky, onSelectStar }: Props) {
               top: (layout.h - canvasSize) / 2,
             }}
           >
+            {/* Background field: the not-yet-lit stars — a full, quiet sky that's
+                beautiful from day one, so progress lights it rather than fills it. */}
+            {latentStars.map((s, i) => (
+              <Circle
+                key={`u${i}`}
+                cx={s.x}
+                cy={s.y}
+                r={s.r * (0.62 + s.twinkle * 0.4)}
+                fill={LATENT_COLOR}
+                fillOpacity={0.28 + s.twinkle * 0.34}
+              />
+            ))}
+
+            {/* The earned constellation, woven through the lit stars. */}
             {sky.lines.map((l, i) => (
               <SvgLine
                 key={`l${i}`}
@@ -130,19 +149,22 @@ export function ConstellationSky({ sky, onSelectStar }: Props) {
                 strokeWidth={0.6}
               />
             ))}
-            {sky.stars.map((s) => {
+
+            {/* Lit stars: bright, warm, one for every alcohol-free day. */}
+            {litStars.map((s) => {
               const isLatest = s.date === lastDate;
               return (
                 <React.Fragment key={s.date}>
                   {isLatest && (
                     <Circle cx={s.x} cy={s.y} r={s.r + 5} fill={LINE_COLOR} fillOpacity={0.16} />
                   )}
+                  <Circle cx={s.x} cy={s.y} r={s.r + 2.4} fill={STAR_COLOR} fillOpacity={0.14} />
                   <Circle
                     cx={s.x}
                     cy={s.y}
                     r={isLatest ? s.r + 0.8 : s.r}
                     fill={STAR_COLOR}
-                    fillOpacity={isLatest ? 1 : s.opacity}
+                    fillOpacity={isLatest ? 1 : 0.72 + s.twinkle * 0.28}
                   />
                 </React.Fragment>
               );

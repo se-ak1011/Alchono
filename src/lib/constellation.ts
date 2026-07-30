@@ -1,13 +1,23 @@
 // Deterministic procedural star layout for the Recovery Constellation.
 //
-// Every alcohol-free day becomes one permanent star. Positions grow outward in
-// a phyllotaxis (golden-angle) spiral, so the sky fills evenly and gets richer
-// the longer recovery continues. The layout is seeded by the user id — so every
-// person's sky is unique — and by the date — so a given day always lands in the
-// same place. Bad days never remove stars; they only pause new ones.
+// The sky is never empty. A full field of stars is placed from the very first
+// day — but they begin as faint, unlit points of light. Each alcohol-free day
+// lights the next star, bright and warm, so progress reads as the sky slowly
+// coming alive rather than as a number climbing. A hard day never dims a star
+// that's already lit; it only pauses the next one.
+//
+// Positions grow outward in a phyllotaxis (golden-angle) spiral seeded by index
+// and user id, so every person's sky is unique and — crucially — a given star's
+// position depends only on its index, never on the total. Lighting more stars
+// (or growing the field) therefore never moves the ones already there.
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // ~137.5°
 const SPACING = 26; // base distance between successive stars
+
+// The sky always shows a lush field with room ahead: at least BASE_STARS, and
+// always HEADROOM unlit stars beyond however many days are already lit.
+const BASE_STARS = 160;
+const HEADROOM = 44;
 
 // A tiny, fast string hash → 32-bit unsigned (FNV-1a).
 function hash(str: string): number {
@@ -25,11 +35,12 @@ function rand(seed: string): number {
 }
 
 export interface Star {
-  date: string;
+  date: string | null; // the alcohol-free day this star marks, or null if unlit
   x: number;
   y: number;
   r: number;
-  opacity: number;
+  lit: boolean;
+  twinkle: number; // 0..1 per-star seed for gentle size/brightness variation
 }
 
 export interface Line {
@@ -47,33 +58,44 @@ export interface Sky {
 }
 
 export function buildSky(dates: string[], userSeed: string): Sky {
+  const count = dates.length;
+  // Enough stars for a full sky today, plus headroom so there's always more to
+  // light. Field grows only by appending outer stars — never reflows inner ones.
+  const capacity = Math.max(BASE_STARS, count + HEADROOM);
+
   // A per-user rotation so no two skies align.
   const baseRotation = rand(userSeed + ':rot') * Math.PI * 2;
 
-  const stars: Star[] = dates.map((date, i) => {
-    const rr = rand(userSeed + date);
-    const rr2 = rand(date + userSeed);
+  const stars: Star[] = [];
+  for (let i = 0; i < capacity; i++) {
+    const rr = rand(`${userSeed}:${i}`);
+    const rr2 = rand(`${i}:${userSeed}`);
     // Phyllotaxis, with a whisper of jitter so it reads organic not mechanical.
+    // Position is a pure function of index — lighting/growth never moves it.
     const radius = SPACING * Math.sqrt(i + 0.5) * (0.92 + rr * 0.16);
     const theta = i * GOLDEN_ANGLE + baseRotation + (rr2 - 0.5) * 0.25;
-    return {
-      date,
+    const lit = i < count;
+    stars.push({
+      date: lit ? dates[i] : null,
       x: Math.cos(theta) * radius,
       y: Math.sin(theta) * radius,
-      r: 1.1 + rr2 * 1.7, // tiny warm-white stars, gently varied
-      opacity: 0.55 + rr * 0.45,
-    };
-  });
+      r: 1.0 + rr2 * 1.6,
+      lit,
+      twinkle: rr,
+    });
+  }
 
-  // Faint constellation lines: join each star to its nearest earlier neighbour
-  // when they're close enough. Over time this weaves quiet constellations.
+  // Constellation lines weave only the *lit* stars — the earned constellation
+  // emerging out of the quiet background field. Each lit star joins its nearest
+  // earlier lit neighbour when close enough.
+  const lit = stars.filter((s) => s.lit);
   const lines: Line[] = [];
   const THRESHOLD = SPACING * 1.7;
-  for (let i = 1; i < stars.length; i++) {
+  for (let i = 1; i < lit.length; i++) {
     let best = -1;
     let bestD = Infinity;
     for (let j = Math.max(0, i - 40); j < i; j++) {
-      const d = Math.hypot(stars[i].x - stars[j].x, stars[i].y - stars[j].y);
+      const d = Math.hypot(lit[i].x - lit[j].x, lit[i].y - lit[j].y);
       if (d < bestD) {
         bestD = d;
         best = j;
@@ -81,11 +103,11 @@ export function buildSky(dates: string[], userSeed: string): Sky {
     }
     if (best >= 0 && bestD <= THRESHOLD) {
       lines.push({
-        x1: stars[i].x,
-        y1: stars[i].y,
-        x2: stars[best].x,
-        y2: stars[best].y,
-        opacity: 0.08 + (1 - bestD / THRESHOLD) * 0.1,
+        x1: lit[i].x,
+        y1: lit[i].y,
+        x2: lit[best].x,
+        y2: lit[best].y,
+        opacity: 0.1 + (1 - bestD / THRESHOLD) * 0.12,
       });
     }
   }

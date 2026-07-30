@@ -1,21 +1,29 @@
 import React from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import { ScrollView, View, Text, Pressable, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { HubCard } from '@/components/ui/HubCard';
+import { MiniSky } from '@/components/constellation/MiniSky';
 import { useAfDays } from '@/hooks/useVictories';
-import { headingShadow, celebrationGlow } from '@/styles';
+import { useAuthStore } from '@/store/authStore';
+import { headingShadow } from '@/styles';
 
 /**
- * Me — the inward heart: your progress, your journey, your tracking. Account
- * details live on the separate Profile page; app settings live in Settings.
+ * Me — the inward heart: your progress, your journey, your tracking. It opens
+ * with your sky, not a number: progress you feel rather than a score you're
+ * measured by. The count lives on the Progress page for whoever wants it.
+ * Account details live on the separate Profile page; settings live in Settings.
  */
 export default function MeScreen() {
   const router = useRouter();
   const { data: dates = [] } = useAfDays();
-  const days = dates.length;
+  const userId = useAuthStore((s) => s.user?.id) ?? 'anon';
+  const { width } = useWindowDimensions();
+  const skyW = width - 48; // mx-6 either side
+  const skyH = 190;
 
   return (
     <SafeArea>
@@ -40,21 +48,36 @@ export default function MeScreen() {
           </View>
         </View>
 
-        {/* Your sky, front and centre — the progress that was hidden before */}
+        {/* Your sky, front and centre — progress felt as light, not counted.
+            No number here: this is the room you *are* in, not a scoreboard. */}
         <Pressable
           onPress={() => router.push('/constellation' as any)}
-          className="mx-6 mt-2 mb-8 rounded-3xl bg-surface-2 border border-white/10 px-6 py-6 active:opacity-80"
+          className="mx-6 mt-2 mb-8 rounded-3xl overflow-hidden border border-white/10 active:opacity-90"
+          style={{ height: skyH, backgroundColor: '#201D28' }}
         >
-          <Text className="text-text-primary" style={{ ...celebrationGlow, fontSize: 44, lineHeight: 48 }}>
-            {days}
-          </Text>
-          <View className="flex-row items-center justify-between mt-1">
-            <Text className="text-text-secondary text-base">
-              {days === 1 ? 'alcohol-free day' : 'alcohol-free days'}
-            </Text>
-            <View className="flex-row items-center gap-1.5">
-              <Text className="text-text-muted text-sm">Your sky</Text>
-              <Feather name="chevron-right" size={15} color="#817B91" />
+          <View style={{ position: 'absolute', left: 0, top: 0 }}>
+            <MiniSky dates={dates} userSeed={userId} width={skyW} height={skyH} />
+          </View>
+          <LinearGradient
+            colors={['transparent', 'rgba(24,21,32,0.55)', 'rgba(24,21,32,0.94)']}
+            style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 120 }}
+          />
+          <View style={{ position: 'absolute', left: 20, right: 20, bottom: 18 }}>
+            <View className="flex-row items-end justify-between">
+              <View className="flex-1 pr-3">
+                <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+                  Your sky
+                </Text>
+                <Text className="text-text-secondary text-sm mt-1 leading-snug">
+                  {dates.length === 0
+                    ? 'A whole sky, waiting to light up'
+                    : 'Every alcohol-free night, a star that stays lit'}
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-1 mb-0.5">
+                <Text className="text-text-muted text-sm">Open</Text>
+                <Feather name="chevron-right" size={15} color="#817B91" />
+              </View>
             </View>
           </View>
         </Pressable>
