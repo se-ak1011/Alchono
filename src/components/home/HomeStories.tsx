@@ -3,6 +3,7 @@ import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'rea
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCommunityMoments } from '@/hooks/useMoments';
+import { isOfficialUsername } from '@/lib/official';
 
 export function HomeStories() {
   const router = useRouter();
@@ -11,6 +12,8 @@ export function HomeStories() {
   const { data: moments = [], isLoading } = useCommunityMoments();
   const videos = moments
     .filter((moment) => moment.media_type === 'video')
+    // Official/curated stories lead the row.
+    .sort((a, b) => (isOfficialUsername(b.username) ? 1 : 0) - (isOfficialUsername(a.username) ? 1 : 0))
     .slice(0, 8);
 
   const openCommunity = () => router.push({ pathname: '/community', params: { tab: 'look' } });
@@ -42,24 +45,32 @@ export function HomeStories() {
             <Text className="text-text-secondary text-xs mt-1.5" numberOfLines={1}>Your story</Text>
           </Pressable>
 
-          {videos.map((moment) => (
+          {videos.map((moment) => {
+            const official = isOfficialUsername(moment.username);
+            return (
             <Pressable
               key={moment.id}
               onPress={() => router.push({ pathname: '/moments/play', params: { momentId: moment.id, type: moment.media_type, poster: moment.thumb_url ?? '', caption: moment.caption ?? '', captionPos: moment.caption_position ?? '' } })}
               className="items-center active:opacity-70"
               style={{ width: 70 }}
             >
-              <View style={{ width: 66, height: 66, borderRadius: 33, padding: 2, borderWidth: 2, borderColor: '#A489DE' }}>
+              <View style={{ width: 66, height: 66, borderRadius: 33, padding: 2, borderWidth: 2, borderColor: official ? '#E6C56A' : '#A489DE' }}>
                 {moment.thumb_url ? <Image source={{ uri: moment.thumb_url }} style={{ flex: 1, borderRadius: 30, backgroundColor: '#302B3A' }} /> : <View style={{ flex: 1, borderRadius: 30, backgroundColor: '#302B3A' }} />}
                 {moment.media_type === 'video' ? (
                   <View className="absolute inset-0 items-center justify-center"><Feather name="play" size={18} color="#fff" /></View>
                 ) : null}
+                {official ? (
+                  <View className="absolute -right-0.5 -bottom-0.5 items-center justify-center" style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#E6C56A', borderWidth: 2, borderColor: '#201D28' }}>
+                    <Feather name="check" size={11} color="#201D28" />
+                  </View>
+                ) : null}
               </View>
               <Text className="text-text-muted text-xs mt-1.5" numberOfLines={1}>
-                {moment.username ? `@${moment.username}` : 'Anonymous'}
+                {official ? moment.username : moment.username ? `@${moment.username}` : 'Anonymous'}
               </Text>
             </Pressable>
-          ))}
+            );
+          })}
           {videos.length === 0 ? (
             <View className="justify-center pl-1 pr-5" style={{ height: 66 }}>
               <Text className="text-text-muted text-sm">No shared videos yet.</Text>
