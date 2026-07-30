@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
-import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -70,32 +70,10 @@ export default function SupportScreen() {
         </Text>
       </View>
 
-      <View className="flex-1 justify-center px-6" style={{ gap: 18 }}>
-
-        {/* Mode 1 — a hard moment right now. A craving is the commonest reason
-            you need help now, so this opens the urge flow directly (which has
-            the AI coach and a crisis link inside), not a menu. */}
-        <Animated.View entering={FadeInDown.duration(450).delay(80)}>
-          <Pressable
-            onPress={() => go("/session/urge", true)}
-            className="bg-urge-surface rounded-3xl px-6 py-8 border border-white/15 active:border-white/35"
-            style={{
-              shadowColor: "#120D17",
-              shadowOpacity: 0.85,
-              shadowRadius: 16,
-              shadowOffset: { width: 0, height: 8 },
-              borderTopColor: "rgba(255,255,255,0.16)",
-            }}
-          >
-            <Text className="text-text-primary text-2xl font-semibold">
-              I need help now
-            </Text>
-            <Text className="text-text-muted text-base mt-2 leading-relaxed">
-              A craving, a hard moment. Calm and immediate.
-            </Text>
-          </Pressable>
-        </Animated.View>
-
+      {/* Companion + chips only — the two big cards ("I need help now",
+          "Recovery") were duplicated by the companion's chips, so they're gone.
+          Chips not cards. */}
+      <View className="flex-1 justify-center px-6">
         <Animated.View entering={FadeIn.duration(500).delay(120)}>
           <CompanionActionZone
             context="support"
@@ -122,22 +100,6 @@ export default function SupportScreen() {
             }}
             quietSignal={quietCompanionSignal}
           />
-        </Animated.View>
-
-        {/* Mode 2 — everything else */}
-        <Animated.View entering={FadeInDown.duration(450).delay(160)}>
-          <Pressable
-            onPress={() => go("/support/recovery")}
-            className="bg-surface rounded-3xl px-6 py-8 border border-white/8 active:border-white/20"
-            style={{ borderTopColor: "rgba(255,255,255,0.12)" }}
-          >
-            <Text className="text-text-primary text-2xl font-semibold">
-              Recovery
-            </Text>
-            <Text className="text-text-muted text-base mt-2 leading-relaxed">
-              Ongoing support: progress, reading, and people when you want them.
-            </Text>
-          </Pressable>
         </Animated.View>
       </View>
 

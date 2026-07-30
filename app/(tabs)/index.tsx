@@ -60,13 +60,17 @@ export default function HomeScreen() {
   useDrinkIntentSync();
 
   const companionTop = 104;
+  // Community lives on Home already (the feed below), so it's dropped from the
+  // orbit — leaving five destinations around the companion.
+  const orbitZones = HOME_ORBIT_ZONES.filter(
+    (z) => z.key !== "urge" && z.key !== "community",
+  );
   const orbitPositions = [
-    { left: 12, right: undefined, top: companionTop - 38 },
-    { left: undefined, right: 12, top: companionTop - 38 },
-    { left: 8, right: undefined, top: companionTop + 36 },
-    { left: undefined, right: 6, top: companionTop + 44 },
-    { left: 20, right: undefined, top: companionTop + 126 },
-    { left: undefined, right: 30, top: companionTop + 126 },
+    { left: 12, right: undefined, top: companionTop - 38 }, // reading
+    { left: undefined, right: 12, top: companionTop - 38 }, // writing
+    { left: 8, right: undefined, top: companionTop + 36 }, // games
+    { left: undefined, right: 6, top: companionTop + 44 }, // support
+    { left: 20, right: undefined, top: companionTop + 126 }, // me
   ];
 
   const urge = ZONES.urge;
@@ -115,7 +119,7 @@ export default function HomeScreen() {
             <CompanionArt source={pose("bust")} width={232} height={276} cropHeight={216} />
           </View>
 
-          {HOME_ORBIT_ZONES.slice(0, 6).map((zone, index) => (
+          {orbitZones.map((zone, index) => (
             <HomeOrbitChip key={zone.key} zone={zone} style={{ left: orbitPositions[index].left, right: orbitPositions[index].right, top: orbitPositions[index].top }} />
           ))}
 
