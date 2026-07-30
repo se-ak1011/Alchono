@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   Pressable,
   ScrollView,
   RefreshControl,
-  Animated as RNAnimated,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
@@ -29,46 +27,13 @@ import { HOME_ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 import { queryClient } from "@/lib/queryClient";
 
-const HINT_KEY = "alchono:orbit-hint-seen";
-
-function HomeOrbitChip({
-  zone,
-  style,
-  anim,
-  open,
-  fromX,
-  fromY,
-}: {
-  zone: Zone;
-  style: any;
-  anim: RNAnimated.Value;
-  open: boolean;
-  fromX: number;
-  fromY: number;
-}) {
+// The destinations always orbit the companion. Visibility and discoverability
+// are the whole point, so nothing hides them — the companion never toggles.
+function HomeOrbitChip({ zone, style }: { zone: Zone; style: any }) {
   const router = useRouter();
   const multiline = zone.key === "community" || zone.key === "games";
   return (
-    <RNAnimated.View
-      pointerEvents={open ? "auto" : "none"}
-      style={[
-        {
-          position: "absolute",
-          zIndex: 10,
-          opacity: anim,
-          transform: [
-            {
-              translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [fromX, 0] }),
-            },
-            {
-              translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [fromY, 0] }),
-            },
-            { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.86, 1] }) },
-          ],
-        },
-        style,
-      ]}
-    >
+    <View style={[{ position: "absolute", zIndex: 10 }, style]}>
       <OrbitChip
         label={multiline ? zone.label.replace(" ", "\n") : zone.label}
         accent={zone.accent}
@@ -78,7 +43,7 @@ function HomeOrbitChip({
           router.push(zone.route as any);
         }}
       />
-    </RNAnimated.View>
+    </View>
   );
 }
 
@@ -89,69 +54,21 @@ export default function HomeScreen() {
   const { data: todayCheckin } = useTodayCheckin();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  // Home's destinations stay visible by default; other companion menus and
-  // screens retain their existing behaviour.
-  const [orbitOpen, setOrbitOpen] = useState(true);
-  const orbitAnims = useRef(
-    HOME_ORBIT_ZONES.slice(0, 6).map(() => new RNAnimated.Value(1)),
-  ).current;
-  const [showHint, setShowHint] = useState(false);
-  const haloOpacity = useRef(new RNAnimated.Value(0)).current;
-  const haloScale = useRef(new RNAnimated.Value(0.85)).current;
 
   useSmartReminder();
   useWidgetSync();
   useDrinkIntentSync();
 
-  useEffect(() => {
-    AsyncStorage.getItem(HINT_KEY).then((v) => {
-      if (!v && !orbitOpen) setShowHint(true);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!showHint) return;
-    const pulse = RNAnimated.sequence([
-      RNAnimated.parallel([
-        RNAnimated.timing(haloOpacity, { toValue: 0.45, duration: 750, useNativeDriver: true }),
-        RNAnimated.timing(haloScale, { toValue: 1.12, duration: 750, useNativeDriver: true }),
-      ]),
-      RNAnimated.parallel([
-        RNAnimated.timing(haloOpacity, { toValue: 0, duration: 750, useNativeDriver: true }),
-        RNAnimated.timing(haloScale, { toValue: 0.85, duration: 1, useNativeDriver: true }),
-      ]),
-    ]);
-    RNAnimated.loop(pulse, { iterations: 3 }).start();
-  }, [showHint, haloOpacity, haloScale]);
-
   const companionTop = 104;
   const orbitPositions = [
-    { left: 12, right: undefined, top: companionTop - 38, fromX: 88, fromY: 88 },
-    { left: undefined, right: 12, top: companionTop - 38, fromX: -88, fromY: 88 },
-    { left: 8, right: undefined, top: companionTop + 36, fromX: 92, fromY: 14 },
-    { left: undefined, right: 6, top: companionTop + 44, fromX: -92, fromY: 8 },
-    { left: 20, right: undefined, top: companionTop + 126, fromX: 82, fromY: -64 },
-    { left: undefined, right: 30, top: companionTop + 126, fromX: -82, fromY: -64 },
+    { left: 12, right: undefined, top: companionTop - 38 },
+    { left: undefined, right: 12, top: companionTop - 38 },
+    { left: 8, right: undefined, top: companionTop + 36 },
+    { left: undefined, right: 6, top: companionTop + 44 },
+    { left: 20, right: undefined, top: companionTop + 126 },
+    { left: undefined, right: 30, top: companionTop + 126 },
   ];
 
-  const setOrbit = (next: boolean) => {
-    setOrbitOpen(next);
-    const animations = orbitAnims.map((anim) => RNAnimated.timing(anim, {
-      toValue: next ? 1 : 0,
-      duration: next ? 230 : 170,
-      useNativeDriver: true,
-    }));
-    (next ? RNAnimated.stagger(45, animations) : RNAnimated.stagger(25, [...animations].reverse())).start();
-  };
-
-  const toggleOrbit = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (showHint) {
-      setShowHint(false);
-      AsyncStorage.setItem(HINT_KEY, "1").catch(() => {});
-    }
-    setOrbit(!orbitOpen);
-  };
   const urge = ZONES.urge;
   const refreshHome = async () => {
     setRefreshing(true);
@@ -194,16 +111,12 @@ export default function HomeScreen() {
         <HomeStories />
 
         <View style={{ height: activeSession ? 438 : 394, position: "relative", marginTop: 12 }}>
-          {orbitOpen && <Pressable onPress={() => setOrbit(false)} style={{ position: "absolute", inset: 0, zIndex: 8 }} />}
           <View style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center", zIndex: 5 }} pointerEvents="box-none">
-            {showHint && (
-              <RNAnimated.View pointerEvents="none" style={{ position: "absolute", top: 10, width: 190, height: 190, borderRadius: 95, backgroundColor: "rgba(164,137,222,0.22)", opacity: haloOpacity, transform: [{ scale: haloScale }] }} />
-            )}
-            <CompanionArt source={pose("bust")} width={232} height={276} cropHeight={216} onPress={toggleOrbit} />
+            <CompanionArt source={pose("bust")} width={232} height={276} cropHeight={216} />
           </View>
 
           {HOME_ORBIT_ZONES.slice(0, 6).map((zone, index) => (
-            <HomeOrbitChip key={zone.key} zone={zone} anim={orbitAnims[index]} open={orbitOpen} fromX={orbitPositions[index].fromX} fromY={orbitPositions[index].fromY} style={{ left: orbitPositions[index].left, right: orbitPositions[index].right, top: orbitPositions[index].top }} />
+            <HomeOrbitChip key={zone.key} zone={zone} style={{ left: orbitPositions[index].left, right: orbitPositions[index].right, top: orbitPositions[index].top }} />
           ))}
 
           <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 211, zIndex: 10, alignItems: "center" }}>
