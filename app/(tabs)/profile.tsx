@@ -183,6 +183,11 @@ export default function ProfileScreen() {
             subtitle="Other things that can travel alongside drinking."
             onPress={() => router.push('/ecosystem' as any)}
           />
+          <HubCard
+            title="The Zine"
+            subtitle="A small something in your inbox every couple of months — stories, a puzzle, a recipe. Opt in or out anytime."
+            onPress={() => router.push('/newsletter' as any)}
+          />
         </View>
       </ScrollView>
     </SafeArea>
