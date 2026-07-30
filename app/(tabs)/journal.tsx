@@ -108,7 +108,7 @@ export default function JournalScreen() {
     }
   };
 
-  const companionTop = 92;
+  const companionTop = 40;
   const positions = [
     { left: 14, right: undefined, top: companionTop - 30 }, // Write
     { left: undefined, right: 14, top: companionTop - 30 }, // Voice note
@@ -138,8 +138,10 @@ export default function JournalScreen() {
         </View>
       </View>
 
-      {/* Companion front and centre, ways to write orbiting it. */}
-      <View style={{ flex: 1, position: "relative" }}>
+      {/* Companion front and centre, ways to write orbiting it. Vertically
+          centred so the room feels intentional rather than top-heavy. */}
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <View style={{ height: 340, position: "relative" }}>
         <View
           style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center" }}
           pointerEvents="none"
@@ -169,6 +171,7 @@ export default function JournalScreen() {
               router.push(ZONES.urge.route as any);
             }}
           />
+        </View>
         </View>
       </View>
 
