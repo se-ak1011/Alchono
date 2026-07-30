@@ -80,9 +80,14 @@ export const JOURNAL_WENT_WELL = [
 
 export const MENTOR_LEVELS = [
   { label: '30 Days', value: '30_days', days: 30 },
+  { label: '90 Days', value: '90_days', days: 90 },
   { label: '6 Months', value: '6_months', days: 180 },
+  { label: '9 Months', value: '9_months', days: 270 },
   { label: '1 Year', value: '1_year', days: 365 },
+  { label: '2 Years', value: '2_years', days: 730 },
+  { label: '3 Years', value: '3_years', days: 1095 },
   { label: '5 Years', value: '5_years', days: 1825 },
+  { label: '10 Years', value: '10_years', days: 3650 },
 ] as const;
 
 export const PAUSE_ACTIONS = [
