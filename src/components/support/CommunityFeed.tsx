@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
+import { RoleBadge } from '@/components/ui/RoleBadge';
 import { useCommunityFeed, useCreatePost, useReactToPost, usePostComments, useAddComment, useReportPost, TALK_REPORT_REASONS } from '@/hooks/useCommunity';
 import { useBlockUser } from '@/hooks/useMessages';
 import { useSendMessageRequest } from '@/hooks/useDirectMessages';
@@ -274,7 +275,7 @@ export function CommunityFeed({
                     <Text className="text-text-secondary text-sm font-medium">
                       {item.is_anonymous ? 'Anonymous' : (item as any).username ?? 'Member'}
                     </Text>
-                    {(item as any).is_official ? <Text className="text-accent text-xs font-semibold">Official</Text> : null}
+                    {(item as any).is_official ? <RoleBadge role="official" /> : null}
                   </View>
                   <Text className="text-text-muted text-sm mt-0.5">
                     {new Date(item.created_at).toLocaleDateString('en-GB', {

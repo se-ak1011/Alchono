@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import QRCode from 'react-native-qrcode-svg';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
+import { RoleBadge } from '@/components/ui/RoleBadge';
 import { useAuthStore } from '@/store/authStore';
 import { useMyCareTeam, useRespondToCareRequest } from '@/hooks/usePro';
 
@@ -95,9 +96,12 @@ export default function CareTeamScreen() {
                 className="flex-row items-center gap-3 bg-surface rounded-xl px-4 py-3 mb-2 border border-white/5"
               >
                 <Avatar username={l.otherUsername} size="sm" />
-                <Text className="text-text-primary text-sm font-medium flex-1">
-                  {l.otherUsername}
-                </Text>
+                <View className="flex-1 flex-row items-center gap-2 flex-wrap">
+                  <Text className="text-text-primary text-sm font-medium">
+                    {l.otherUsername}
+                  </Text>
+                  <RoleBadge role="counsellor" />
+                </View>
                 <Pressable
                   onPress={() =>
                     Alert.alert(

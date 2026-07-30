@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
+import { RoleBadge } from '@/components/ui/RoleBadge';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAvailableMentors, useRequestMentor } from '@/hooks/useMentors';
@@ -50,10 +51,11 @@ export function MentorList() {
                 size="md"
               />
               <View className="flex-1">
-                <View className="flex-row items-center gap-2 mb-1">
+                <View className="flex-row items-center gap-2 mb-1 flex-wrap">
                   <Text className="text-text-primary font-semibold text-base">
                     {(item as any).username ?? 'Mentor'}
                   </Text>
+                  <RoleBadge role="mentor" />
                   <Badge
                     label={levelLabel(item.recovery_level)}
                     variant="accent"
