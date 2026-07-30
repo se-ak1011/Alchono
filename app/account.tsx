@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { Avatar } from '@/components/ui/Avatar';
-import { HubCard } from '@/components/ui/HubCard';
+import { ZoneChip } from '@/components/ui/ZoneChip';
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
 
@@ -54,13 +54,16 @@ export default function ProfileScreen() {
           Your circle
         </Text>
         <View className="mx-6">
-          <HubCard
-            elevated
+          <ZoneChip
+            icon="heart"
+            accent="#8AB2AE"
             title="Care team"
-            subtitle="Let a counsellor see your trends — check-ins, alcohol-free days, tough moments you got through. Never your journals, messages, or AI chats."
+            subtitle="Let a counsellor see your trends — check-ins, alcohol-free days, tough moments. Never your journals, messages, or AI chats."
             onPress={() => router.push('/profile/care-team')}
           />
-          <HubCard
+          <ZoneChip
+            icon="users"
+            accent="#A9D19E"
             title={profile?.is_mentor ? 'Your mentoring' : 'Support someone else'}
             subtitle={
               profile?.is_mentor
@@ -69,12 +72,16 @@ export default function ProfileScreen() {
             }
             onPress={() => router.push('/profile/become-mentor')}
           />
-          <HubCard
+          <ZoneChip
+            icon="shield"
+            accent="#B9A4EC"
             title="Trusted person"
             subtitle="Someone who gets a quiet heads-up on a hard day."
             onPress={() => router.push('/profile/trusted')}
           />
-          <HubCard
+          <ZoneChip
+            icon="message-circle"
+            accent="#A082BE"
             title="Messages"
             subtitle="Your conversations and connection requests."
             onPress={() => router.push('/messages')}
@@ -86,22 +93,30 @@ export default function ProfileScreen() {
           About you
         </Text>
         <View className="mx-6">
-          <HubCard
+          <ZoneChip
+            icon="home"
+            accent="#D6A184"
             title="Your circumstances"
             subtitle="Family, work, location — helps your coach meet you where you are."
             onPress={() => router.push('/profile/preferences')}
           />
-          <HubCard
+          <ZoneChip
+            icon="smile"
+            accent="#E6C56A"
             title="Things I enjoy"
             subtitle="Hobbies and interests — helps personalise your experience over time."
             onPress={() => router.push('/profile/hobbies')}
           />
-          <HubCard
+          <ZoneChip
+            icon="compass"
+            accent="#CE969E"
             title="Struggling with something else too?"
             subtitle="Other things that can travel alongside drinking."
             onPress={() => router.push('/ecosystem' as any)}
           />
-          <HubCard
+          <ZoneChip
+            icon="mail"
+            accent="#C7B58A"
             title="The Zine"
             subtitle="A small something in your inbox every couple of months — stories, a puzzle, a recipe. Opt in or out anytime."
             onPress={() => router.push('/newsletter' as any)}

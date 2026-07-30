@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import { HubCard } from '@/components/ui/HubCard';
+import { ZoneChip } from '@/components/ui/ZoneChip';
 import { MiniSky } from '@/components/constellation/MiniSky';
 import { useAfDays } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
@@ -86,23 +86,30 @@ export default function MeScreen() {
           Your journey
         </Text>
         <View className="mx-6">
-          <HubCard
-            elevated
+          <ZoneChip
+            icon="moon"
+            accent="#8AB2AE"
             title="Tonight"
-            subtitle="Mark an alcohol-free day, or track a session with gentle nudges. Awareness, not judgement."
+            subtitle="Mark an alcohol-free day, or track a session with gentle nudges."
             onPress={() => router.push('/session/track' as any)}
           />
-          <HubCard
+          <ZoneChip
+            icon="trending-up"
+            accent="#B9A4EC"
             title="Progress"
             subtitle="Your patterns, moods and the tough moments you got through."
             onPress={() => router.push('/(tabs)/insights' as any)}
           />
-          <HubCard
+          <ZoneChip
+            icon="sunrise"
+            accent="#E6C56A"
             title="Looking forward to"
             subtitle="The things you're staying the course for."
             onPress={() => router.push('/goals' as any)}
           />
-          <HubCard
+          <ZoneChip
+            icon="image"
+            accent="#CE969E"
             title="Your moments"
             subtitle="Your photos and videos — a private scrapbook, plus anything you've shared."
             onPress={() => router.push('/moments' as any)}
@@ -113,7 +120,9 @@ export default function MeScreen() {
           You
         </Text>
         <View className="mx-6">
-          <HubCard
+          <ZoneChip
+            icon="user"
+            accent="#C6BFB0"
             title="Profile"
             subtitle="Your details, the people around you, and what makes you you."
             onPress={() => router.push('/account' as any)}
