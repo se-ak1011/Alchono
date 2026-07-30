@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Share } from 'react-native';
+import { View, Text, ScrollView, Pressable, Share, Alert } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { useInsights, useTotalPauses, useStreak } from '@/hooks/useInsights';
 import { useUrgeStats, useAfDaysCount, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
+import { buildSummaryHtml, exportSummaryPdf } from '@/lib/summaryPdf';
 import { headingShadow } from '@/styles';
 
 /**
@@ -69,7 +70,29 @@ export default function SummaryScreen() {
     ...(typicalMinutes ? [{ label: 'Urges typically pass in', value: `~${typicalMinutes} min` }] : []),
   ];
 
-  const handleShare = async () => {
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportPdf = async () => {
+    if (exporting) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setExporting(true);
+    try {
+      const html = buildSummaryHtml({
+        name: username ?? 'Member',
+        rangeLabel,
+        periodLabel,
+        generatedOn,
+        rows,
+      });
+      await exportSummaryPdf(html);
+    } catch (e) {
+      Alert.alert('Could not create PDF', e instanceof Error ? e.message : 'Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleShareText = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const lines = [
       `Alcohol recovery summary — ${username ?? 'Member'}`,
@@ -171,19 +194,22 @@ export default function SummaryScreen() {
         </Animated.View>
 
         <Text className="text-text-muted text-sm text-center leading-relaxed mt-6 px-4">
-          Showing this screen is enough — nothing has been sent to anyone.
-          Sharing sends it as text you can print, save, or hand to your GP.
+          Showing this screen is enough — nothing has been sent to anyone. Export
+          a PDF to print, save to Files, or email to your GP.
         </Text>
       </ScrollView>
 
       <View className="px-6">
         <Button
-          title="Share or save →"
+          title={exporting ? 'Preparing PDF…' : 'Save or print PDF →'}
           variant="primary"
           size="md"
           fullWidth
-          onPress={handleShare}
+          onPress={handleExportPdf}
         />
+        <Pressable onPress={handleShareText} hitSlop={8} className="items-center py-3 active:opacity-60">
+          <Text className="text-text-muted text-sm">Share as text instead</Text>
+        </Pressable>
       </View>
     </View>
   );
