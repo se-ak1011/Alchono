@@ -12,7 +12,6 @@ import { Feather } from "@expo/vector-icons";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { CompanionArt } from "@/components/ui/CompanionArt";
 import { OrbitChip } from "@/components/ui/OrbitChip";
-import { AppDrawer } from "@/components/ui/AppDrawer";
 import { PauseModal } from "@/components/home/PauseModal";
 import { FoodCards } from "@/components/home/FoodCards";
 import { HomeStories } from "@/components/home/HomeStories";
@@ -52,7 +51,6 @@ export default function HomeScreen() {
   const { pose } = useCompanion();
   const { data: activeSession } = useActiveSession();
   const { data: todayCheckin } = useTodayCheckin();
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useSmartReminder();
@@ -61,16 +59,28 @@ export default function HomeScreen() {
 
   const companionTop = 104;
   // Community lives on Home already (the feed below), so it's dropped from the
-  // orbit — leaving five destinations around the companion.
-  const orbitZones = HOME_ORBIT_ZONES.filter(
-    (z) => z.key !== "urge" && z.key !== "community",
-  );
+  // orbit. Barista is brought up here from the old hamburger menu — it's too
+  // useful to bury — so six destinations orbit the companion.
+  const baristaZone: Zone = {
+    key: "barista",
+    label: "Barista",
+    monogram: "B",
+    route: "/barista",
+    accent: "#E0B080",
+    tint: "rgba(224,176,128,0.20)",
+    edge: "rgba(224,176,128,0.42)",
+  };
+  const orbitZones = [
+    ...HOME_ORBIT_ZONES.filter((z) => z.key !== "urge" && z.key !== "community"),
+    baristaZone,
+  ];
   const orbitPositions = [
     { left: 12, right: undefined, top: companionTop - 38 }, // reading
     { left: undefined, right: 12, top: companionTop - 38 }, // writing
     { left: 8, right: undefined, top: companionTop + 36 }, // games
     { left: undefined, right: 6, top: companionTop + 44 }, // support
     { left: 20, right: undefined, top: companionTop + 126 }, // me
+    { left: undefined, right: 30, top: companionTop + 126 }, // barista
   ];
 
   const urge = ZONES.urge;
@@ -89,13 +99,7 @@ export default function HomeScreen() {
   return (
     <SafeArea bottom={false}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshHome} tintColor="#B9A4EC" />}>
-        <View className="flex-row items-center px-6 pt-3">
-          <Pressable onPress={() => setDrawerOpen(true)} hitSlop={12} className="p-1 -ml-1 active:opacity-60" accessibilityLabel="Open menu">
-            <Feather name="menu" size={24} color="#B2ACC0" />
-          </Pressable>
-        </View>
-
-        <View className="items-center mt-3">
+        <View className="items-center mt-4 pt-2">
           <Text className="text-text-primary" style={{ ...headingShadow, fontSize: 34 }}>Hey</Text>
           {!todayCheckin && (
             <Pressable onPress={() => router.push("/checkin")} className="mt-3 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70" style={{ backgroundColor: "rgba(236,233,241,0.05)" }}>
@@ -144,7 +148,6 @@ export default function HomeScreen() {
         <HomeFeed />
       </ScrollView>
       <PauseModal />
-      <AppDrawer visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </SafeArea>
   );
 }
