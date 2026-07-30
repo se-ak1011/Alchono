@@ -124,6 +124,11 @@ export default function ProfileScreen() {
             subtitle="Your milestones, one star at a time."
             onPress={() => router.push('/constellation' as any)}
           />
+          <HubCard
+            title="Your moments"
+            subtitle="Your photos and videos — a private scrapbook, plus anything you've shared."
+            onPress={() => router.push('/moments' as any)}
+          />
         </View>
 
         {/* Your circle — the people and support around your recovery */}

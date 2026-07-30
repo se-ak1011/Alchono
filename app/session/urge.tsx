@@ -24,6 +24,7 @@ function buildActions(prefs: UserPreferences | null): Action[] {
   const list: Action[] = [
     { id: 'breathing', label: 'Breathing', subtitle: 'A slow rhythm if your body wants one.', mode: 'breathing' },
     { id: 'game', label: 'Play a game', subtitle: 'Give your mind something else to do.', navigate: '/session/games?from=urge' },
+    { id: 'barista', label: 'Make a drink', subtitle: 'Something to pour, hold and sip. Hands and time, no alcohol.', navigate: '/barista' },
     { id: 'reasons', label: 'Reasons', subtitle: 'Remember who and what you are protecting.', navigate: '/(tabs)/insights' },
     { id: 'journal', label: 'Journal', subtitle: 'Put the urge somewhere outside your body.', navigate: '/(tabs)/journal' },
     { id: 'grounding', label: 'Grounding', subtitle: 'Name what is real in the room right now.', navigate: '/toolkit/c/urge' },

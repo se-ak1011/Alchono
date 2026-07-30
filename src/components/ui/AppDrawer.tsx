@@ -148,6 +148,40 @@ export function AppDrawer({
             <Feather name="chevron-right" size={18} color="#817B91" />
           </Pressable>
         ))}
+
+        {/* Barista — a coping tool, not a nav zone, so it lives here as its own row. */}
+        <Pressable
+          onPress={() => go('/barista')}
+          className="flex-row items-center gap-4 rounded-2xl px-3 py-3.5 mb-1.5 active:opacity-70"
+        >
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(224,176,128,0.16)',
+              borderWidth: 1,
+              borderColor: 'rgba(224,176,128,0.42)',
+            }}
+          >
+            <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 23, lineHeight: 26, color: '#E0B080' }}>B</Text>
+          </View>
+          <Text
+            style={{
+              flex: 1,
+              color: '#ECE9F1',
+              fontFamily: 'SkinnyCustard',
+              fontSize: 23,
+              letterSpacing: 1.5,
+              textTransform: 'uppercase',
+            }}
+          >
+            Barista
+          </Text>
+          <Feather name="chevron-right" size={18} color="#817B91" />
+        </Pressable>
       </Animated.View>
     </View>
   );
