@@ -4,101 +4,61 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import { Avatar } from '@/components/ui/Avatar';
-import { useAuthStore } from '@/store/authStore';
-import { headingShadow } from '@/styles';
+import { HubCard } from '@/components/ui/HubCard';
+import { useAfDays } from '@/hooks/useVictories';
+import { headingShadow, celebrationGlow } from '@/styles';
 
 /**
- * A described navigation card. Unlike a bare settings row, it says what the
- * feature is *for* — so care team / mentoring / trusted person are discoverable
- * rather than lost in a list nobody reads.
+ * Me — the inward heart: your progress, your journey, your tracking. Account
+ * details live on the separate Profile page; app settings live in Settings.
  */
-function HubCard({
-  title,
-  subtitle,
-  onPress,
-  elevated = false,
-}: {
-  title: string;
-  subtitle?: string;
-  onPress: () => void;
-  elevated?: boolean;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className={`flex-row items-center gap-4 rounded-2xl px-5 py-4 mb-3 border ${
-        elevated ? 'bg-surface-2 border-white/10' : 'bg-surface border-white/5'
-      } active:opacity-80`}
-    >
-      <View className="flex-1">
-        <Text className="text-text-primary text-base font-semibold">{title}</Text>
-        {subtitle ? (
-          <Text className="text-text-secondary text-sm mt-1 leading-relaxed">
-            {subtitle}
-          </Text>
-        ) : null}
-      </View>
-      <Feather name="chevron-right" size={18} color="#817B91" />
-    </Pressable>
-  );
-}
-
-export default function ProfileScreen() {
-  const profile = useAuthStore((s) => s.profile);
-  const user = useAuthStore((s) => s.user);
+export default function MeScreen() {
   const router = useRouter();
+  const { data: dates = [] } = useAfDays();
+  const days = dates.length;
 
   return (
     <SafeArea>
       <ZoneGlow zone="me" intensity={1.4} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
-        <View className="px-6 pt-5 pb-4 flex-row items-start justify-between">
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        <View className="px-6 pt-5 pb-2 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
-            <Pressable
-              onPress={() => router.back()}
-              hitSlop={12}
-              className="p-1 -ml-1 active:opacity-60"
-            >
+            <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
               <Feather name="chevron-left" size={26} color="#B2ACC0" />
             </Pressable>
-            <Text
-              className="text-text-primary text-4xl tracking-tight"
-              style={headingShadow}
-            >
+            <Text className="text-text-primary text-4xl tracking-tight" style={headingShadow}>
               Me
             </Text>
           </View>
-          <Pressable
-            onPress={() => router.push('/settings')}
-            hitSlop={12}
-            className="mt-1 p-2 -mr-2 active:opacity-60"
-          >
-            <Feather name="settings" size={22} color="#B2ACC0" />
-          </Pressable>
+          <View className="flex-row items-center gap-1">
+            <Pressable onPress={() => router.push('/account' as any)} hitSlop={12} className="p-2 active:opacity-60">
+              <Feather name="user" size={21} color="#B2ACC0" />
+            </Pressable>
+            <Pressable onPress={() => router.push('/settings')} hitSlop={12} className="p-2 -mr-2 active:opacity-60">
+              <Feather name="settings" size={21} color="#B2ACC0" />
+            </Pressable>
+          </View>
         </View>
 
-        {/* Identity */}
+        {/* Your sky, front and centre — the progress that was hidden before */}
         <Pressable
-          onPress={() => router.push('/profile/identity')}
-          className="mx-6 flex-row items-center gap-4 mb-8 active:opacity-70"
+          onPress={() => router.push('/constellation' as any)}
+          className="mx-6 mt-2 mb-8 rounded-3xl bg-surface-2 border border-white/10 px-6 py-6 active:opacity-80"
         >
-          <Avatar username={profile?.username} imageUrl={profile?.avatar_url} size="lg" />
-          <View className="flex-1">
-            <View className="flex-row items-center gap-2">
-              <Text className="text-text-primary text-xl font-semibold">
-                {profile?.username ?? 'Anonymous'}
-              </Text>
-              <Text className="text-text-muted text-sm">✎</Text>
+          <Text className="text-text-primary" style={{ ...celebrationGlow, fontSize: 44, lineHeight: 48 }}>
+            {days}
+          </Text>
+          <View className="flex-row items-center justify-between mt-1">
+            <Text className="text-text-secondary text-base">
+              {days === 1 ? 'alcohol-free day' : 'alcohol-free days'}
+            </Text>
+            <View className="flex-row items-center gap-1.5">
+              <Text className="text-text-muted text-sm">Your sky</Text>
+              <Feather name="chevron-right" size={15} color="#817B91" />
             </View>
-            <Text className="text-text-muted text-base mt-0.5">{user?.email}</Text>
           </View>
         </Pressable>
 
-        {/* Your journey — the tracking + progress that used to live on Home */}
         <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2.5 ml-7">
           Your journey
         </Text>
@@ -120,73 +80,20 @@ export default function ProfileScreen() {
             onPress={() => router.push('/goals' as any)}
           />
           <HubCard
-            title="Achievements"
-            subtitle="Your milestones, one star at a time."
-            onPress={() => router.push('/constellation' as any)}
-          />
-          <HubCard
             title="Your moments"
             subtitle="Your photos and videos — a private scrapbook, plus anything you've shared."
             onPress={() => router.push('/moments' as any)}
           />
         </View>
 
-        {/* Your circle — the people and support around your recovery */}
         <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2.5 mt-6 ml-7">
-          Your circle
+          You
         </Text>
         <View className="mx-6">
           <HubCard
-            elevated
-            title="Care team"
-            subtitle="Let a counsellor see your trends — check-ins, alcohol-free days, tough moments you got through. Never your journals, messages, or AI chats."
-            onPress={() => router.push('/profile/care-team')}
-          />
-          <HubCard
-            title={profile?.is_mentor ? 'Your mentoring' : 'Support someone else'}
-            subtitle={
-              profile?.is_mentor
-                ? "People you're walking alongside."
-                : 'Been through it? Become a mentor for someone earlier on the road.'
-            }
-            onPress={() => router.push('/profile/become-mentor')}
-          />
-          <HubCard
-            title="Trusted person"
-            subtitle="Someone who gets a quiet heads-up on a hard day."
-            onPress={() => router.push('/profile/trusted')}
-          />
-          <HubCard
-            title="Messages"
-            subtitle="Your conversations and connection requests."
-            onPress={() => router.push('/messages')}
-          />
-        </View>
-
-        {/* About you */}
-        <Text className="text-text-muted text-xs font-medium tracking-widest uppercase mb-2.5 mt-6 ml-7">
-          About you
-        </Text>
-        <View className="mx-6">
-          <HubCard
-            title="Your circumstances"
-            subtitle="Family, work, location — helps your coach meet you where you are."
-            onPress={() => router.push('/profile/preferences')}
-          />
-          <HubCard
-            title="Things I enjoy"
-            subtitle="Hobbies and interests — helps personalise your experience over time."
-            onPress={() => router.push('/profile/hobbies')}
-          />
-          <HubCard
-            title="Struggling with something else too?"
-            subtitle="Other things that can travel alongside drinking."
-            onPress={() => router.push('/ecosystem' as any)}
-          />
-          <HubCard
-            title="The Zine"
-            subtitle="A small something in your inbox every couple of months — stories, a puzzle, a recipe. Opt in or out anytime."
-            onPress={() => router.push('/newsletter' as any)}
+            title="Profile"
+            subtitle="Your details, the people around you, and what makes you you."
+            onPress={() => router.push('/account' as any)}
           />
         </View>
       </ScrollView>
