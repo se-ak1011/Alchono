@@ -276,77 +276,86 @@ export default function GamesScreen() {
       </Animated.View>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 28, gap: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 28 }}
         showsVerticalScrollIndicator={false}
       >
-        {GAMES.map((game, index) => (
-          <Animated.View key={game.id} entering={FadeInDown.duration(360).delay(index * 70)}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`${game.name}. ${game.desc} ${game.duration}`}
-              onPress={async () => {
-                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push((game.route + suffix) as any);
-              }}
-              style={{
-                height: 248,
-                backgroundColor: card,
-                borderRadius: 28,
-                padding: 20,
-                borderWidth: 1,
-                borderColor: hairline,
-                overflow: 'hidden',
-              }}
+        {/* Two-column grid of compact previews — lighter and less scroll-heavy. */}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          {GAMES.map((game, index) => (
+            <Animated.View
+              key={game.id}
+              entering={FadeInDown.duration(360).delay(index * 60)}
+              style={{ width: '48.5%', marginBottom: 14 }}
             >
-              <View
-                style={{
-                  minHeight: 118,
-                  borderRadius: 22,
-                  backgroundColor: '#111214',
-                  borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.06)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 18,
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${game.name}. ${game.desc} ${game.duration}`}
+                onPress={async () => {
+                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push((game.route + suffix) as any);
                 }}
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
+                style={{
+                  backgroundColor: card,
+                  borderRadius: 22,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: hairline,
+                  overflow: 'hidden',
+                }}
               >
                 <View
                   style={{
-                    position: 'absolute',
-                    top: -36,
-                    right: -20,
-                    width: 120,
-                    height: 120,
-                    borderRadius: 60,
-                    backgroundColor: 'rgba(141,122,174,0.10)',
+                    height: 92,
+                    borderRadius: 16,
+                    backgroundColor: '#111214',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.06)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 12,
+                    overflow: 'hidden',
                   }}
-                />
-                <Preview id={game.id} tick={tick + index} reduceMotion={reduceMotion} />
-              </View>
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: -28,
+                      right: -18,
+                      width: 90,
+                      height: 90,
+                      borderRadius: 45,
+                      backgroundColor: 'rgba(141,122,174,0.10)',
+                    }}
+                  />
+                  {/* Previews are authored at full size; scale to fit the compact tile. */}
+                  <View style={{ transform: [{ scale: 0.66 }] }}>
+                    <Preview id={game.id} tick={tick + index} reduceMotion={reduceMotion} />
+                  </View>
+                </View>
 
-              <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     color: ivory,
-                    fontSize: 27,
-                    lineHeight: 31,
+                    fontSize: 21,
+                    lineHeight: 24,
                     fontFamily: 'SkinnyCustard',
-                    marginBottom: 6,
+                    marginBottom: 3,
                   }}
                 >
                   {game.name}
                 </Text>
-                <Text style={{ color: muted, fontSize: 15, lineHeight: 21, paddingRight: 54 }}>{game.desc}</Text>
-              </View>
-
-              <Text style={{ position: 'absolute', right: 20, bottom: 20, color: '#A489DE', fontSize: 13, fontFamily: 'Inter_600SemiBold' }}>
-                {game.duration}
-              </Text>
-            </Pressable>
-          </Animated.View>
-        ))}
+                <Text style={{ color: muted, fontSize: 12.5, lineHeight: 17 }} numberOfLines={2}>
+                  {game.desc}
+                </Text>
+                <Text style={{ marginTop: 8, color: '#A489DE', fontSize: 12, fontFamily: 'Inter_600SemiBold' }}>
+                  {game.duration}
+                </Text>
+              </Pressable>
+            </Animated.View>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );

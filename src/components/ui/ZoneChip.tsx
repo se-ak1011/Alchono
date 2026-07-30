@@ -18,12 +18,16 @@ export function ZoneChip({
   subtitle,
   icon,
   accent,
+  meta,
   onPress,
 }: {
   title: string;
   subtitle?: string;
-  icon: keyof typeof Feather.glyphMap;
+  /** Optional leading icon disc. Omit for a text-only chip (title + subtitle). */
+  icon?: keyof typeof Feather.glyphMap;
   accent: string;
+  /** Optional short trailing label, e.g. a count ("2 reads"). */
+  meta?: string;
   onPress: () => void;
 }) {
   return (
@@ -36,26 +40,33 @@ export function ZoneChip({
         borderColor: rgba(accent, 0.22),
       }}
     >
-      <View
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 14,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: rgba(accent, 0.16),
-          borderWidth: 1,
-          borderColor: rgba(accent, 0.42),
-        }}
-      >
-        <Feather name={icon} size={20} color={accent} />
-      </View>
+      {icon ? (
+        <View
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 14,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: rgba(accent, 0.16),
+            borderWidth: 1,
+            borderColor: rgba(accent, 0.42),
+          }}
+        >
+          <Feather name={icon} size={20} color={accent} />
+        </View>
+      ) : null}
       <View className="flex-1">
         <Text className="text-text-primary text-base font-semibold">{title}</Text>
         {subtitle ? (
           <Text className="text-text-secondary text-sm mt-0.5 leading-snug">{subtitle}</Text>
         ) : null}
       </View>
+      {meta ? (
+        <Text style={{ color: rgba(accent, 0.95), fontSize: 12, fontFamily: 'Inter_600SemiBold' }}>
+          {meta}
+        </Text>
+      ) : null}
       <Feather name="chevron-right" size={18} color={rgba(accent, 0.75)} />
     </Pressable>
   );

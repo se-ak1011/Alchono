@@ -4,18 +4,36 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Feather } from '@expo/vector-icons';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { ZoneChip } from '@/components/ui/ZoneChip';
+import { OrbitChip } from '@/components/ui/OrbitChip';
 import {
   CATEGORY_META,
   CATEGORY_ORDER,
   toolsByCategory,
+  type ToolkitCategory,
 } from '@/lib/toolkit';
 import { useCompanion } from '@/hooks/useCompanion';
 import { ZONES } from '@/lib/zones';
 import { headingShadow } from '@/styles';
 
 const READING = ZONES.reading;
+
+// One quiet icon per category, so the chips read like the rest of the app.
+const CATEGORY_ICON: Record<ToolkitCategory, keyof typeof Feather.glyphMap> = {
+  'in-the-moment': 'zap',
+  understand: 'book-open',
+  triggers: 'alert-triangle',
+  'planning-ahead': 'calendar',
+  stress: 'wind',
+  sleep: 'moon',
+  relationships: 'users',
+  identity: 'compass',
+  'after-a-slip': 'refresh-ccw',
+  motivation: 'star',
+};
 
 export default function ToolkitScreen() {
   const router = useRouter();
@@ -47,15 +65,16 @@ export default function ToolkitScreen() {
         </View>
       </Animated.View>
 
-      <View className="pt-1 pb-3 items-center">
-        <CompanionArt source={pose('bust')} width={140} height={166} cropHeight={140} />
+      {/* Companion front and centre, like Home. */}
+      <View className="pt-1 pb-4 items-center">
+        <CompanionArt source={pose('bust')} width={186} height={220} cropHeight={182} />
       </View>
 
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Full-width cards, one per category — matching Games / Writing Room. */}
+        {/* One chip per category — title + subtitle, the reading heather accent. */}
         {CATEGORY_ORDER.map((cat, i) => {
           const meta = CATEGORY_META[cat];
           const count = toolsByCategory(cat).length;
@@ -63,48 +82,34 @@ export default function ToolkitScreen() {
           return (
             <Animated.View
               key={cat}
-              entering={FadeInDown.duration(300).delay(Math.min(i * 45, 360))}
+              entering={FadeInDown.duration(300).delay(Math.min(i * 40, 320))}
             >
-              <Pressable
+              <ZoneChip
+                icon={CATEGORY_ICON[cat]}
+                accent={READING.accent}
+                title={meta.label}
+                subtitle={meta.blurb}
+                meta={`${count} ${count === 1 ? 'read' : 'reads'}`}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push({ pathname: '/toolkit/c/[cat]', params: { cat } });
                 }}
-                className="bg-surface rounded-3xl px-5 py-5 mb-3 border border-white/8 active:border-white/20"
-              >
-                <Text className="text-text-primary text-xl font-semibold">
-                  {meta.label}
-                </Text>
-                <Text className="text-text-secondary text-sm leading-relaxed mt-1.5">
-                  {meta.blurb}
-                </Text>
-                {/* The zone colour, washed onto the count. */}
-                <View
-                  style={{
-                    alignSelf: 'flex-start',
-                    marginTop: 16,
-                    borderRadius: 20,
-                    paddingHorizontal: 12,
-                    paddingVertical: 5,
-                    backgroundColor: READING.tint,
-                    borderWidth: 1,
-                    borderColor: READING.edge,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: READING.accent,
-                      fontSize: 12,
-                      fontFamily: 'Inter_600SemiBold',
-                    }}
-                  >
-                    {count} {count === 1 ? 'read' : 'reads'}
-                  </Text>
-                </View>
-              </Pressable>
+              />
             </Animated.View>
           );
         })}
+
+        {/* The one chip we want everywhere. */}
+        <View className="items-center mt-3 mb-1">
+          <OrbitChip
+            label={ZONES.urge.label}
+            emergency
+            onPress={() => {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              router.push(ZONES.urge.route as any);
+            }}
+          />
+        </View>
 
         {/* Gentle safety note */}
         <View className="bg-surface rounded-2xl px-5 py-4 mt-3 border border-white/8">
