@@ -159,6 +159,13 @@ export default function CommunityScreen() {
             Real moments from people like you. Look, or talk.
           </Text>
         </View>
+        <Pressable
+          onPress={() => router.push('/support/mentors')}
+          hitSlop={8}
+          className="bg-surface-2 rounded-full px-3.5 py-1.5 border border-white/10 active:opacity-70"
+        >
+          <Text className="text-text-secondary text-xs font-semibold">Mentors</Text>
+        </Pressable>
       </View>
 
       {/* Look | Talk */}

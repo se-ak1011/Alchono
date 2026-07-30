@@ -130,6 +130,18 @@ export default function ConstellationScreen() {
             {milestone}
           </Text>
         )}
+        {/* Recruit mentors at the emotional high of real progress. */}
+        {dates.length >= 90 && (
+          <Pressable
+            onPress={() => router.push('/profile/become-mentor')}
+            hitSlop={8}
+            className="mt-4 self-start bg-surface-2 rounded-full px-4 py-2 border border-white/10 active:opacity-70"
+          >
+            <Text className="text-text-secondary text-xs font-semibold">
+              You've come far — ready to help someone earlier on the road? →
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {/* Selected day */}

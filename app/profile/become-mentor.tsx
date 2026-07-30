@@ -30,26 +30,31 @@ export default function BecomeMentorScreen() {
 
   const isMentor = !!mentorProfile;
   const [level, setLevel] = useState<string | null>(null);
+  const [customMode, setCustomMode] = useState(false);
   const [bio, setBio] = useState('');
   const [available, setAvailable] = useState(true);
 
-  // Populate the form once the existing mentor profile loads.
+  // Populate the form once the existing mentor profile loads. A stored value
+  // that isn't one of the presets was entered as custom text.
   useEffect(() => {
     if (mentorProfile) {
-      setLevel(mentorProfile.recovery_level);
+      const val = mentorProfile.recovery_level;
+      setCustomMode(!!val && !MENTOR_LEVELS.some((l) => l.value === val));
+      setLevel(val);
       setBio(mentorProfile.bio ?? '');
       setAvailable(mentorProfile.is_available);
     }
   }, [mentorProfile]);
 
   const handleSave = () => {
-    if (!level) {
-      Alert.alert('One more thing', 'Select how long you have been alcohol-free.');
+    const finalLevel = customMode ? level?.trim() : level;
+    if (!finalLevel) {
+      Alert.alert('One more thing', 'Add how long you have been alcohol-free.');
       return;
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     saveMentor(
-      { recoveryLevel: level, bio, isAvailable: available },
+      { recoveryLevel: finalLevel, bio, isAvailable: available },
       {
         onSuccess: () => {
           Alert.alert(
@@ -120,14 +125,15 @@ export default function BecomeMentorScreen() {
           <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">
             Alcohol-free for
           </Text>
-          <View className="flex-row flex-wrap gap-2 mb-8">
+          <View className="flex-row flex-wrap gap-2 mb-4">
             {MENTOR_LEVELS.map(({ label, value }) => {
-              const selected = level === value;
+              const selected = !customMode && level === value;
               return (
                 <Pressable
                   key={value}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setCustomMode(false);
                     setLevel(value);
                   }}
                   className={`px-4 py-3 rounded-xl border ${
@@ -144,7 +150,34 @@ export default function BecomeMentorScreen() {
                 </Pressable>
               );
             })}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setCustomMode(true);
+                setLevel((prev) => (MENTOR_LEVELS.some((l) => l.value === prev) ? '' : prev));
+              }}
+              className={`px-4 py-3 rounded-xl border ${
+                customMode ? 'bg-surface border-white/25' : 'bg-surface border-white/8'
+              }`}
+            >
+              <Text className={`text-base font-medium ${customMode ? 'text-text-primary' : 'text-text-muted'}`}>
+                Custom
+              </Text>
+            </Pressable>
           </View>
+
+          {customMode && (
+            <View className="mb-8">
+              <Input
+                label="How long, in your words"
+                placeholder="e.g. 13 months, 18 months, 4 years"
+                value={level ?? ''}
+                onChangeText={setLevel}
+                maxLength={40}
+              />
+            </View>
+          )}
+          {!customMode && <View className="mb-4" />}
 
           <View className="mb-8">
             <Input
