@@ -16,7 +16,7 @@ import { useCompanion } from '@/hooks/useCompanion';
 import type { ChatMessage, UserPreferences } from '@/types';
 
 const BREATH_MS = 4000;
-const TOTAL_HALF_CYCLES = 6;
+const TOTAL_HALF_CYCLES = 4; // two full breaths — short on purpose; skippable anytime
 
 type Action = { id: string; label: string; subtitle: string; navigate?: string; mode?: 'breathing' | 'decision' };
 
@@ -184,7 +184,9 @@ export default function UrgeScreen() {
               <View style={{ width: 280, height: 280, alignItems: 'center', justifyContent: 'center', marginBottom: 48 }}><Animated.View style={[{ width: 200, height: 200, borderRadius: 100, backgroundColor: '#9CA3AF', position: 'absolute' }, circleStyle]} /></View>
               <Text className="text-text-primary text-3xl font-semibold mb-2" style={headingShadow}>{isIn ? 'Breathe in…' : 'Breathe out…'}</Text>
               <Text className="text-text-muted text-base mb-10">{breathsLeft} {breathsLeft === 1 ? 'breath' : 'breaths'} left</Text>
-              <Pressable onPress={() => setPhase('choice')} hitSlop={12}><Text className="text-text-muted text-base">Back to choices</Text></Pressable>
+              <Pressable onPress={() => setPhase('choice')} hitSlop={12} className="px-5 py-2.5 rounded-full bg-surface-2 border border-white/10 active:opacity-70">
+                <Text className="text-text-secondary text-base font-medium">That’s enough — other options</Text>
+              </Pressable>
             </Animated.View>
           )}
 

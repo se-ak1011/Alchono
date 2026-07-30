@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, Pressable, Image, FlatList, Alert, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Pressable, Image, FlatList, ScrollView, Alert, Dimensions } from 'react-native';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
-import { useMyMoments, useDeleteMoment, type MyMoment } from '@/hooks/useMoments';
+import { useMyMoments, useDeleteMoment, useSetMomentCollection, type MyMoment } from '@/hooks/useMoments';
 
 const GAP = 4;
 const COLS = 3;
@@ -24,9 +24,14 @@ export default function MyMomentsScreen() {
   const router = useRouter();
   const { data: moments = [], isLoading } = useMyMoments();
   const { mutate: remove } = useDeleteMoment();
+  const { mutate: setCollection } = useSetMomentCollection();
+  const [activeBook, setActiveBook] = useState<string | null>(null);
+
+  // Distinct scrapbook names the person has created, for the filter chips.
+  const books = Array.from(new Set(moments.map((m) => m.collection).filter(Boolean))) as string[];
+  const visible = activeBook ? moments.filter((m) => m.collection === activeBook) : moments;
 
   const confirmDelete = (m: MyMoment) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert('Delete this moment?', 'This removes it everywhere, for good.', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -34,6 +39,33 @@ export default function MyMomentsScreen() {
         style: 'destructive',
         onPress: () => remove({ id: m.id, media_path: m.media_path, thumb_path: m.thumb_path }),
       },
+    ]);
+  };
+
+  const promptBook = (m: MyMoment) => {
+    if (!Alert.prompt) {
+      Alert.alert('Not available', 'Naming a scrapbook needs iOS for now.');
+      return;
+    }
+    Alert.prompt(
+      'Add to a scrapbook',
+      'Name a scrapbook — a new one, or one you already have.',
+      (name?: string) => {
+        const clean = name?.trim();
+        if (clean) setCollection({ id: m.id, collection: clean });
+      },
+      'plain-text',
+      m.collection ?? '',
+    );
+  };
+
+  const momentActions = (m: MyMoment) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Alert.alert('This moment', undefined, [
+      { text: m.collection ? 'Move to another scrapbook…' : 'Add to a scrapbook…', onPress: () => promptBook(m) },
+      ...(m.collection ? [{ text: 'Remove from scrapbook', onPress: () => setCollection({ id: m.id, collection: null }) }] : []),
+      { text: 'Delete', style: 'destructive' as const, onPress: () => confirmDelete(m) },
+      { text: 'Cancel', style: 'cancel' as const },
     ]);
   };
 
@@ -58,8 +90,38 @@ export default function MyMomentsScreen() {
         </Pressable>
       </View>
 
+      {moments.length > 0 && (
+        <Text className="text-text-muted text-xs px-6 mb-2">
+          Long-press a moment to file it in a scrapbook.
+        </Text>
+      )}
+
+      {books.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ flexGrow: 0 }}
+          contentContainerStyle={{ paddingHorizontal: 24, gap: 8, paddingBottom: 12 }}
+        >
+          {([null, ...books] as (string | null)[]).map((b) => {
+            const active = activeBook === b;
+            return (
+              <Pressable
+                key={b ?? '__all'}
+                onPress={() => setActiveBook(b)}
+                className={`px-3.5 py-1.5 rounded-full border ${active ? 'bg-surface-2 border-accent' : 'bg-surface border-white/10'}`}
+              >
+                <Text className={`text-sm font-medium ${active ? 'text-text-primary' : 'text-text-muted'}`}>
+                  {b ?? 'All'}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      )}
+
       <FlatList
-        data={moments}
+        data={visible}
         keyExtractor={(m) => m.id}
         numColumns={COLS}
         columnWrapperStyle={{ gap: GAP }}
@@ -77,7 +139,7 @@ export default function MyMomentsScreen() {
                     params: { uri, type: item.media_type },
                   });
               }}
-              onLongPress={() => confirmDelete(item)}
+              onLongPress={() => momentActions(item)}
               style={{ width: SIZE, height: SIZE }}
               className="bg-surface overflow-hidden"
             >

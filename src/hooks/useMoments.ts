@@ -111,6 +111,7 @@ export interface MyMoment {
   media_type: 'photo' | 'video';
   thumb_path: string | null;
   caption: string | null;
+  collection: string | null; // the scrapbook this moment is filed under, if any
   shared: boolean;
   moderation_status: string; // 'private' | 'pending' | 'approved' | 'rejected'
   url: string | null; // signed preview (thumb for video, the photo otherwise)
@@ -259,6 +260,19 @@ export function useUploadMoment() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-moments'] });
       queryClient.invalidateQueries({ queryKey: ['community-moments'] });
+    },
+  });
+}
+
+/** File (or unfile) one of your own moments into a named scrapbook. */
+export function useSetMomentCollection() {
+  return useMutation({
+    mutationFn: async ({ id, collection }: { id: string; collection: string | null }) => {
+      const { error } = await (supabase as any).from('moments').update({ collection }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-moments'] });
     },
   });
 }
