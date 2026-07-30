@@ -152,7 +152,16 @@ export default function UrgeScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {phase === 'choice' && (
             <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1, paddingTop: 12 }}>
-              <View className="items-center mb-4"><CompanionArt source={pose('bust')} width={104} height={156} cropHeight={104} /></View>
+              <View className="items-center mb-3"><CompanionArt source={pose('bust')} width={104} height={156} cropHeight={104} /></View>
+              {/* Crisis escape hatch — always reachable in a hard moment. */}
+              <Pressable
+                onPress={() => router.navigate('/support/resources')}
+                hitSlop={8}
+                className="self-center mb-5 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70"
+                style={{ backgroundColor: 'rgba(236,233,241,0.05)' }}
+              >
+                <Text className="text-text-secondary text-xs font-semibold">In crisis or need a person? Emergency help & crisis lines →</Text>
+              </Pressable>
               <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">Take action</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingRight: 24 }} className="-mx-1 px-1 mb-5">
                 {actions.map((action) => (

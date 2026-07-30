@@ -72,10 +72,12 @@ export default function SupportScreen() {
 
       <View className="flex-1 justify-center px-6" style={{ gap: 18 }}>
 
-        {/* Mode 1 — a hard moment right now */}
+        {/* Mode 1 — a hard moment right now. A craving is the commonest reason
+            you need help now, so this opens the urge flow directly (which has
+            the AI coach and a crisis link inside), not a menu. */}
         <Animated.View entering={FadeInDown.duration(450).delay(80)}>
           <Pressable
-            onPress={() => go("/support/help-now", true)}
+            onPress={() => go("/session/urge", true)}
             className="bg-urge-surface rounded-3xl px-6 py-8 border border-white/15 active:border-white/35"
             style={{
               shadowColor: "#120D17",
