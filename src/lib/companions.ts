@@ -74,6 +74,7 @@ export const COMPANIONS: Companion[] = [
       token: require('../../assets/companions/amara_token.png'),
       call: require('../../assets/companions/amara_call.png'),
       text: require('../../assets/companions/amara_text.png'),
+      door: require('../../assets/companions/amara_door.png'),
     },
   },
   {
@@ -92,6 +93,7 @@ export const COMPANIONS: Companion[] = [
       token: require('../../assets/companions/marco_token.png'),
       call: require('../../assets/companions/marco_call.png'),
       text: require('../../assets/companions/marco_text.png'),
+      door: require('../../assets/companions/marco_door.png'),
     },
   },
   {
@@ -110,6 +112,7 @@ export const COMPANIONS: Companion[] = [
       token: require('../../assets/companions/yara_token.png'),
       call: require('../../assets/companions/yara_call.png'),
       text: require('../../assets/companions/yara_text.png'),
+      door: require('../../assets/companions/yara_door.png'),
     },
   },
   {
@@ -128,6 +131,7 @@ export const COMPANIONS: Companion[] = [
       token: require('../../assets/companions/amos_token.png'),
       call: require('../../assets/companions/amos_call.png'),
       text: require('../../assets/companions/amos_text.png'),
+      door: require('../../assets/companions/amos_door.png'),
     },
   },
   {
@@ -146,6 +150,7 @@ export const COMPANIONS: Companion[] = [
       token: require('../../assets/companions/rose_token.png'),
       call: require('../../assets/companions/rose_call.png'),
       text: require('../../assets/companions/rose_text.png'),
+      door: require('../../assets/companions/rose_door.png'),
     },
   },
   // New mates slot in here — a single `standing` pose is enough to start.
