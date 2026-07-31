@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, Dimensions } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +7,6 @@ import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import { ZoneChip } from '@/components/ui/ZoneChip';
 import { OrbitChip } from '@/components/ui/OrbitChip';
 import {
   CATEGORY_META,
@@ -19,9 +18,13 @@ import { useCompanion } from '@/hooks/useCompanion';
 import { ZONES } from '@/lib/zones';
 import { headingShadow } from '@/styles';
 
-const READING = ZONES.reading;
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const H_PAD = 22;
+const GAP = 12;
+const BOOK_W = (SCREEN_WIDTH - H_PAD * 2 - GAP * 2) / 3;
+const BOOK_H = BOOK_W * 1.42;
 
-// One quiet icon per category, so the chips read like the rest of the app.
+// One quiet emblem per category, stamped on the book cover.
 const CATEGORY_ICON: Record<ToolkitCategory, keyof typeof Feather.glyphMap> = {
   'in-the-moment': 'zap',
   understand: 'book-open',
@@ -35,10 +38,97 @@ const CATEGORY_ICON: Record<ToolkitCategory, keyof typeof Feather.glyphMap> = {
   motivation: 'star',
 };
 
+// Muted jewel-tone covers — a shelf, not a carnival. Stable per category so a
+// book always has the same spine. Tuned deliberately dim to sit in Alchono's
+// night-time palette (final tones to be checked on-device).
+const CATEGORY_COVER: Record<ToolkitCategory, [string, string]> = {
+  'in-the-moment': ['#3f5a63', '#2b3f47'],
+  understand: ['#574468', '#3d2f4c'],
+  triggers: ['#664046', '#472c30'],
+  'planning-ahead': ['#3d5147', '#28372f'],
+  stress: ['#454a6a', '#2f3350'],
+  sleep: ['#3b3654', '#28243b'],
+  relationships: ['#5a4658', '#3d2f3c'],
+  identity: ['#4a533f', '#333a2c'],
+  'after-a-slip': ['#5a4a34', '#3d3122'],
+  motivation: ['#5a5038', '#3d3626'],
+};
+
+function Book({
+  cat,
+  count,
+  onPress,
+}: {
+  cat: ToolkitCategory;
+  count: number;
+  onPress: () => void;
+}) {
+  const [top] = CATEGORY_COVER[cat];
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${CATEGORY_META[cat].label}, ${count} ${count === 1 ? 'read' : 'reads'}`}
+      style={{ width: BOOK_W }}
+      className="active:opacity-80"
+    >
+      <View
+        style={{
+          height: BOOK_H,
+          borderRadius: 6,
+          backgroundColor: top,
+          borderWidth: 1,
+          borderColor: 'rgba(0,0,0,0.35)',
+          paddingTop: 12,
+          paddingRight: 10,
+          paddingBottom: 12,
+          paddingLeft: 16,
+          justifyContent: 'space-between',
+          overflow: 'hidden',
+          shadowColor: '#000',
+          shadowOpacity: 0.5,
+          shadowRadius: 8,
+          shadowOffset: { width: -2, height: 6 },
+          elevation: 5,
+        }}
+      >
+        {/* Spine: a darker gutter with a thin highlight, so it reads as a book. */}
+        <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 6, backgroundColor: 'rgba(0,0,0,0.30)' }} />
+        <View style={{ position: 'absolute', left: 6, top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(255,255,255,0.06)' }} />
+
+        {/* Bookmark ribbon with the read count. */}
+        <View style={{ position: 'absolute', top: -1, right: 12, width: 16, alignItems: 'center' }}>
+          <View style={{ width: 16, height: 26, backgroundColor: '#C9A24A', borderBottomLeftRadius: 2, borderBottomRightRadius: 2, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3 }}>
+            <Text style={{ color: '#2b2416', fontSize: 10, fontWeight: '800' }}>{count}</Text>
+          </View>
+          <View style={{ width: 0, height: 0, borderLeftWidth: 8, borderRightWidth: 8, borderTopWidth: 6, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#C9A24A' }} />
+        </View>
+
+        <Feather name={CATEGORY_ICON[cat]} size={15} color="rgba(243,236,223,0.8)" />
+        <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 19, lineHeight: 20, color: '#f3ecdf' }} numberOfLines={3}>
+          {CATEGORY_META[cat].label}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
+function Ledge() {
+  return (
+    <View style={{ height: 12, marginTop: -2, marginHorizontal: 6, borderRadius: 2, backgroundColor: '#2b2018' }}>
+      <View style={{ height: 2, borderTopLeftRadius: 2, borderTopRightRadius: 2, backgroundColor: 'rgba(214,170,120,0.22)' }} />
+    </View>
+  );
+}
+
 export default function ToolkitScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { pose } = useCompanion();
+
+  const cats = CATEGORY_ORDER.filter((c) => toolsByCategory(c).length > 0);
+  const rows: ToolkitCategory[][] = [];
+  for (let i = 0; i < cats.length; i += 3) rows.push(cats.slice(i, i + 3));
 
   return (
     <View
@@ -60,47 +150,41 @@ export default function ToolkitScreen() {
         <View style={{ flex: 1 }}>
           <Text style={{ ...headingShadow, fontSize: 34 }}>Reading Corner</Text>
           <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2 }}>
-            Small, practical things that actually help.
+            Pick one off the shelf.
           </Text>
         </View>
       </Animated.View>
 
-      {/* Companion front and centre, like Home. */}
-      <View className="pt-1 pb-4 items-center">
-        <CompanionArt source={pose('reading')} width={186} height={220} />
-      </View>
-
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
+        contentContainerStyle={{ paddingHorizontal: H_PAD, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* One chip per category — title + subtitle, the reading heather accent. */}
-        {CATEGORY_ORDER.map((cat, i) => {
-          const meta = CATEGORY_META[cat];
-          const count = toolsByCategory(cat).length;
-          if (count === 0) return null;
-          return (
-            <Animated.View
-              key={cat}
-              entering={FadeInDown.duration(300).delay(Math.min(i * 40, 320))}
-            >
-              <ZoneChip
-                icon={CATEGORY_ICON[cat]}
-                accent={READING.accent}
-                title={meta.label}
-                subtitle={meta.blurb}
-                meta={`${count} ${count === 1 ? 'read' : 'reads'}`}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push({ pathname: '/toolkit/c/[cat]', params: { cat } });
-                }}
-              />
-            </Animated.View>
-          );
-        })}
+        {/* Companion reading in the corner, above her shelf. */}
+        <View style={{ alignItems: 'flex-end', marginTop: -4, marginBottom: 6, marginRight: 6 }} pointerEvents="none">
+          <CompanionArt source={pose('reading')} width={140} height={168} />
+        </View>
+
+        {rows.map((row, ri) => (
+          <Animated.View key={ri} entering={FadeInDown.duration(320).delay(Math.min(ri * 80, 320))} style={{ marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', gap: GAP, alignItems: 'flex-end' }}>
+              {row.map((cat) => (
+                <Book
+                  key={cat}
+                  cat={cat}
+                  count={toolsByCategory(cat).length}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    router.push({ pathname: '/toolkit/c/[cat]', params: { cat } });
+                  }}
+                />
+              ))}
+            </View>
+            <Ledge />
+          </Animated.View>
+        ))}
 
         {/* The one chip we want everywhere. */}
-        <View className="items-center mt-3 mb-1">
+        <View className="items-center mt-2 mb-1">
           <OrbitChip
             label={ZONES.urge.label}
             emergency

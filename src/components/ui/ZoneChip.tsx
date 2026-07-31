@@ -33,7 +33,7 @@ export function ZoneChip({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-4 rounded-2xl px-4 py-3.5 mb-3 active:opacity-80"
+      className="flex-row items-center gap-3 rounded-2xl px-3.5 py-2.5 mb-2 active:opacity-80"
       style={{
         backgroundColor: rgba(accent, 0.07),
         borderWidth: 1,
@@ -43,9 +43,9 @@ export function ZoneChip({
       {icon ? (
         <View
           style={{
-            width: 44,
-            height: 44,
-            borderRadius: 14,
+            width: 36,
+            height: 36,
+            borderRadius: 11,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: rgba(accent, 0.16),
@@ -53,13 +53,13 @@ export function ZoneChip({
             borderColor: rgba(accent, 0.42),
           }}
         >
-          <Feather name={icon} size={20} color={accent} />
+          <Feather name={icon} size={17} color={accent} />
         </View>
       ) : null}
       <View className="flex-1">
         <Text className="text-text-primary text-base font-semibold">{title}</Text>
         {subtitle ? (
-          <Text className="text-text-secondary text-sm mt-0.5 leading-snug">{subtitle}</Text>
+          <Text className="text-text-secondary text-xs mt-0.5 leading-snug">{subtitle}</Text>
         ) : null}
       </View>
       {meta ? (

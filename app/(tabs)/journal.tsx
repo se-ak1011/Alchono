@@ -138,15 +138,15 @@ export default function JournalScreen() {
         </View>
       </View>
 
-      {/* Companion front and centre, ways to write orbiting it. Vertically
-          centred so the room feels intentional rather than top-heavy. */}
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <View style={{ height: 340, position: "relative" }}>
+      {/* Companion front and centre, ways to write orbiting it. Anchored near
+          the top so the full-body art fills the frame instead of pooling low. */}
+      <View style={{ flex: 1, justifyContent: "flex-start", paddingTop: 6 }}>
+        <View style={{ height: 380, position: "relative" }}>
         <View
           style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center" }}
           pointerEvents="none"
         >
-          <CompanionArt source={pose("journal")} width={236} height={280} />
+          <CompanionArt source={pose("journal")} width={250} height={298} />
         </View>
 
         <View style={{ position: "absolute", left: positions[0].left, top: positions[0].top, zIndex: 10 }}>

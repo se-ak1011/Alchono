@@ -34,16 +34,16 @@ function ResourceRow({ r, accent }: { r: Resource; accent: string }) {
   return (
     <Pressable
       onPress={open}
-      className="flex-row items-center gap-3.5 rounded-2xl px-4 py-3.5 mb-2.5 active:opacity-80"
+      className="flex-row items-center gap-3 rounded-2xl px-3.5 py-2.5 mb-2 active:opacity-80"
       style={{ backgroundColor: rgba(accent, 0.07), borderWidth: 1, borderColor: rgba(accent, 0.22) }}
     >
       <View
         style={{
-          width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center',
+          width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center',
           backgroundColor: rgba(accent, 0.16), borderWidth: 1, borderColor: rgba(accent, 0.42),
         }}
       >
-        <Feather name={icon} size={19} color={accent} />
+        <Feather name={icon} size={17} color={accent} />
       </View>
       <View className="flex-1">
         <Text className="text-text-primary text-[15px] font-semibold">{r.title}</Text>

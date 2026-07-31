@@ -111,8 +111,8 @@ export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
             <View className="pt-2 pb-1 items-center">
               <CompanionArt
                 source={pose("armchair")}
-                width={152}
-                height={179}
+                width={200}
+                height={244}
                 onPress={() => setCompanionMenuOpen(true)}
                 onLongPress={() => {
                   if (!companionMenuOpen)

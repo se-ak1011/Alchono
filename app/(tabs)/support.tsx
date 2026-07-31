@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { CompanionActionZone } from "@/components/ui/CompanionActionZone";
+import { CompanionArt } from "@/components/ui/CompanionArt";
+import { OrbitChip } from "@/components/ui/OrbitChip";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { ZoneGlow } from "@/components/ui/ZoneGlow";
 import { headingShadow } from "@/styles";
@@ -12,15 +13,14 @@ import { useUnreadTotal } from "@/hooks/useMessages";
 import { useCompanion } from "@/hooks/useCompanion";
 
 /**
- * Support is a calm hub, not a wall of options. Two modes, nothing else:
- * one for a hard moment right now, one for everything else. The first screen
- * should feel almost empty — "you're overwhelmed; that's okay, pick one thing."
+ * Support mirrors Home: the companion sits front and centre with her
+ * destinations always orbiting her — nothing hidden behind a tap. You land on
+ * a full, warm frame, not a small figure marooned in empty space. "I want a
+ * drink" anchors bottom-centre, under her, exactly like Home's emergency chip.
  */
 export default function SupportScreen() {
   const router = useRouter();
   const { pose } = useCompanion();
-  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
-  const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
   const { data: unread } = useUnreadTotal();
 
   const go = (route: string, warn = false) => {
@@ -29,6 +29,8 @@ export default function SupportScreen() {
     else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push(route as any);
   };
+
+  const companionTop = 96;
 
   return (
     <SafeArea>
@@ -70,38 +72,28 @@ export default function SupportScreen() {
         </Text>
       </View>
 
-      {/* Companion + chips only — the two big cards ("I need help now",
-          "Recovery") were duplicated by the companion's chips, so they're gone.
-          Chips not cards. */}
-      <View className="flex-1 justify-center px-6">
-        <Animated.View entering={FadeIn.duration(500).delay(120)}>
-          <CompanionActionZone
-            context="support"
-            visible={companionMenuOpen}
-            onClose={() => setCompanionMenuOpen(false)}
-            source={pose("tea")}
-            width={174}
-            height={206}
-            zoneHeight={250}
-            companionLeft={76}
-            companionTop={32}
-            points={[
-              { x: -92, y: -56 },
-              { x: 92, y: -56 },
-              { x: -100, y: 52 },
-              { x: 100, y: 52 },
-            ]}
-            caption={{ x: 0, y: -96 }}
-            onPress={() => setCompanionMenuOpen(true)}
-            onLongPress={() => {
-              if (!companionMenuOpen)
-                setQuietCompanionSignal((signal) => signal + 1);
-            }}
-            quietSignal={quietCompanionSignal}
-          />
-        </Animated.View>
-      </View>
+      {/* Always-visible orbit, like Home. Companion centred; AI Coach above,
+          Community left, Recovery right, "I want a drink" tucked underneath. */}
+      <Animated.View entering={FadeIn.duration(500).delay(120)} className="flex-1">
+        <View style={{ height: 470, position: "relative", marginTop: 8 }}>
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center", zIndex: 5 }} pointerEvents="none">
+            <CompanionArt source={pose("tea")} width={212} height={262} />
+          </View>
 
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop - 44, alignItems: "center", zIndex: 10 }}>
+            <OrbitChip label="AI Coach" onPress={() => go("/support/coach")} />
+          </View>
+          <View style={{ position: "absolute", left: 20, top: companionTop + 104, zIndex: 10 }}>
+            <OrbitChip label="Community" onPress={() => go("/community")} />
+          </View>
+          <View style={{ position: "absolute", right: 20, top: companionTop + 104, zIndex: 10 }}>
+            <OrbitChip label="Recovery" onPress={() => go("/support/recovery")} />
+          </View>
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 250, alignItems: "center", zIndex: 10 }}>
+            <OrbitChip label="I want a drink" emergency onPress={() => go("/session/urge", true)} />
+          </View>
+        </View>
+      </Animated.View>
     </SafeArea>
   );
 }
