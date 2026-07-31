@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Image, type ImageSourcePropType } from 'react-native';
+import { View, Text, Pressable, ScrollView, Image, Dimensions, type ImageSourcePropType } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +20,11 @@ const BAR_SCENES: Record<string, ImageSourcePropType> = {
   yara: require('../assets/scenes/yara_bar.png'),
   marco: require('../assets/scenes/marco_bar.png'),
 };
+
+// Size the scene explicitly from screen width (aspectRatio wasn't holding on
+// device — the image rendered zoomed). At ~phone aspect this ≈ screen height.
+const SCREEN_W = Dimensions.get('window').width;
+const IMG_H = SCREEN_W * (1844 / 853);
 
 function rgba(hex: string, a: number): string {
   const h = hex.replace('#', '');
@@ -200,11 +205,11 @@ export default function BaristaScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-        <View style={{ width: '100%', position: 'relative' }}>
-          <Image source={scene} style={{ width: '100%', aspectRatio: 853 / 1844 }} resizeMode="cover" />
+        <View style={{ width: SCREEN_W, height: IMG_H, position: 'relative' }}>
+          <Image source={scene} style={{ width: SCREEN_W, height: IMG_H }} resizeMode="cover" />
 
           {/* Drink names hand-lettered onto the counter — each a link to its recipe. */}
-          <View style={{ position: 'absolute', top: '66%', left: 0, right: 0, paddingHorizontal: 26 }}>
+          <View style={{ position: 'absolute', top: IMG_H * 0.66, left: 0, right: 0, paddingHorizontal: 26 }}>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 20 }}>
               {RECIPES.map((r) => (
                 <DrinkLink key={r.id} recipe={r} onPress={() => open(r)} />

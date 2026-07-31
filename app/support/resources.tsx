@@ -8,8 +8,7 @@ import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { useCompanion } from '@/hooks/useCompanion';
 import * as Haptics from 'expo-haptics';
-import { RESOURCE_SECTIONS, SWAPS_SECTION, type Resource } from '@/lib/resources';
-import { useAuthStore } from '@/store/authStore';
+import { RESOURCE_SECTIONS, type Resource } from '@/lib/resources';
 import { headingShadow } from '@/styles';
 import type { CompanionPose } from '@/lib/companions';
 
@@ -24,12 +23,9 @@ const LABEL: Record<string, string> = {
   'Alcoholics Anonymous': 'AA helpline',
   'Shout': 'Shout',
   '7 Cups': '7 Cups',
+  'NHS alcohol advice': 'NHS advice',
   'AA meeting finder': 'AA meetings',
   'SMART Recovery UK': 'SMART Recovery',
-  'Find a counsellor': 'Counsellor',
-  'NHS alcohol advice': 'NHS advice',
-  'Recovery ecosystem': 'Ecosystem',
-  'Alcohol-free alternatives': 'Swaps',
 };
 
 // Family/affected-people services are deliberately NOT shown here — that support
@@ -42,20 +38,15 @@ function rgba(hex: string, a: number): string {
   return `rgba(${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}, ${a})`;
 }
 
-function actionIcon(url: string): keyof typeof Feather.glyphMap {
-  if (url.startsWith('tel:')) return 'phone';
-  if (url.startsWith('sms:')) return 'message-circle';
-  return 'external-link';
-}
-
 function openResource(r: Resource, router: ReturnType<typeof useRouter>) {
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   if (r.url.startsWith('internal:')) router.push(r.url.replace('internal:', '') as any);
   else Linking.openURL(r.url).catch(() => {});
 }
 
-/** A chip that IS the link. Bare label + mode icon; a trailing arrow only when
- *  it opens something (meetings), which then explain themselves in a popup. */
+/** An orbit-style chip that IS the link. SkinnyCustard pill + plum dot; a
+ *  trailing arrow only when it opens a page (meetings), which then explain
+ *  themselves in a popup first. */
 function Chip({ r, arrow, onPress }: { r: Resource; arrow?: boolean; onPress: () => void }) {
   return (
     <Pressable
@@ -63,21 +54,35 @@ function Chip({ r, arrow, onPress }: { r: Resource; arrow?: boolean; onPress: ()
       hitSlop={6}
       accessibilityRole="button"
       accessibilityLabel={r.title}
-      className="flex-row items-center gap-2.5 rounded-2xl px-3.5 py-2.5 active:opacity-80"
-      style={{ backgroundColor: rgba(PLUM, 0.1), borderWidth: 1, borderColor: rgba(PLUM, 0.28) }}
+      className="active:opacity-70"
+      style={{
+        minHeight: 38,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingHorizontal: 14,
+        paddingVertical: 6,
+        borderRadius: 19,
+        backgroundColor: 'rgba(20,18,24,0.9)',
+        borderWidth: 1,
+        borderColor: 'rgba(236,233,241,0.14)',
+        shadowColor: '#000',
+        shadowOpacity: 0.28,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 },
+      }}
     >
-      <Feather name={actionIcon(r.url)} size={15} color={PLUM} />
-      <Text className="text-text-primary text-[15px] font-semibold flex-1" numberOfLines={1}>
+      <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: PLUM }} />
+      <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 20, lineHeight: 24, color: '#ECE9F1' }} numberOfLines={1}>
         {LABEL[r.title] ?? r.title}
       </Text>
-      {arrow ? <Feather name="chevron-right" size={16} color={rgba(PLUM, 0.8)} /> : null}
+      {arrow ? <Feather name="chevron-right" size={16} color={rgba(PLUM, 0.85)} /> : null}
     </Pressable>
   );
 }
 
 /** Meetings open a small "what is this" card first, then out to the site. */
 function MeetingSheet({ r, onClose }: { r: Resource; onClose: () => void }) {
-  const router = useRouter();
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 60, alignItems: 'center', justifyContent: 'center', padding: 28 }}>
       <Animated.View entering={FadeIn.duration(140)} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
@@ -110,13 +115,13 @@ function Scene({
   return (
     <Animated.View
       entering={FadeInDown.duration(400).delay(delay)}
-      style={{ flexDirection: flip ? 'row-reverse' : 'row', alignItems: 'center', gap: 6, marginBottom: 22 }}
+      style={{ flexDirection: flip ? 'row-reverse' : 'row', alignItems: 'center', gap: 6, marginBottom: 24 }}
     >
       <View style={{ width: 150, alignItems: 'center' }} pointerEvents="none">
         <CompanionArt source={poseSrc(pose)} width={148} height={172} />
       </View>
-      <View style={{ flex: 1, gap: 8 }}>
-        <Text className="text-xs font-semibold tracking-widest uppercase" style={{ color: PLUM, textAlign: flip ? 'right' : 'left', marginBottom: 2 }}>
+      <View style={{ flex: 1, gap: 9, alignItems: flip ? 'flex-end' : 'flex-start' }}>
+        <Text className="text-xs font-semibold tracking-widest uppercase" style={{ color: PLUM, marginBottom: 2 }}>
           {eyebrow}
         </Text>
         {items.map((r) => (
@@ -130,25 +135,17 @@ function Scene({
 export default function ResourcesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const profile = useAuthStore((s) => s.profile);
-  const interested = (profile?.preferences as any)?.interestedInAlternatives === true;
   const [meeting, setMeeting] = useState<Resource | null>(null);
 
-  const all: Resource[] = [
-    ...RESOURCE_SECTIONS.filter((s) => !EXCLUDE_HEADINGS.has(s.heading)).flatMap((s) => s.items),
-    ...(interested ? SWAPS_SECTION.items : []),
-  ];
+  const all: Resource[] = RESOURCE_SECTIONS.filter((s) => !EXCLUDE_HEADINGS.has(s.heading)).flatMap((s) => s.items);
   const byTitle = Object.fromEntries(all.map((r) => [r.title, r] as const));
   const pick = (titles: string[]) => titles.map((t) => byTitle[t]).filter(Boolean) as Resource[];
 
   const scenes = [
     { pose: 'call' as CompanionPose, eyebrow: 'Call', titles: ['Emergency — 999', 'Samaritans', 'NHS 111', 'Drinkline', 'Alcoholics Anonymous'] },
-    { pose: 'text' as CompanionPose, eyebrow: 'Text', titles: ['Shout'] },
+    { pose: 'text' as CompanionPose, eyebrow: 'Text', titles: ['Shout', 'NHS alcohol advice', '7 Cups'] },
   ];
-  const meetingTitles = ['AA meeting finder', 'SMART Recovery UK'];
-  const meetings = pick(meetingTitles);
-  const used = new Set([...scenes.flatMap((s) => s.titles), ...meetingTitles]);
-  const more = all.filter((r) => !used.has(r.title));
+  const meetings = pick(['AA meeting finder', 'SMART Recovery UK']);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#201D28', paddingTop: insets.top, paddingBottom: insets.bottom }}>
@@ -173,19 +170,6 @@ export default function ResourcesScreen() {
 
         {meetings.length > 0 ? (
           <Scene pose="door" eyebrow="Meetings" items={meetings} flip={false} delay={280} onMeeting={setMeeting} />
-        ) : null}
-
-        {more.length > 0 ? (
-          <View style={{ marginTop: 4 }}>
-            <Text className="text-xs font-semibold tracking-widest uppercase mb-2.5 px-1" style={{ color: '#817B91' }}>
-              More
-            </Text>
-            <View style={{ gap: 8 }}>
-              {more.map((r) => (
-                <Chip key={r.title} r={r} onPress={() => openResource(r, router)} />
-              ))}
-            </View>
-          </View>
         ) : null}
       </ScrollView>
 

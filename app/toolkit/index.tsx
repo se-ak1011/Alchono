@@ -166,9 +166,20 @@ export default function ToolkitScreen() {
         contentContainerStyle={{ paddingHorizontal: H_PAD, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Companion reading in the corner, above her shelf. */}
-        <View style={{ alignItems: 'flex-end', marginTop: -4, marginBottom: 6, marginRight: 6 }} pointerEvents="none">
-          <CompanionArt source={pose('reading')} width={140} height={168} />
+        {/* Companion reading in the corner, with the one emergency chip beside
+            her at the top — never below the fold, since it's the panic button. */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 4, marginTop: -2, marginBottom: 8 }}>
+          <OrbitChip
+            label={ZONES.urge.label}
+            emergency
+            onPress={() => {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              router.push(ZONES.urge.route as any);
+            }}
+          />
+          <View pointerEvents="none">
+            <CompanionArt source={pose('reading')} width={140} height={168} />
+          </View>
         </View>
 
         {rows.map((row, ri) => (
@@ -189,18 +200,6 @@ export default function ToolkitScreen() {
             <Ledge />
           </Animated.View>
         ))}
-
-        {/* The one chip we want everywhere. */}
-        <View className="items-center mt-2 mb-1">
-          <OrbitChip
-            label={ZONES.urge.label}
-            emergency
-            onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-              router.push(ZONES.urge.route as any);
-            }}
-          />
-        </View>
 
         {/* Gentle safety note */}
         <View className="bg-surface rounded-2xl px-5 py-4 mt-3 border border-white/8">
