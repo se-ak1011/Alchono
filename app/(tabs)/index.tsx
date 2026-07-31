@@ -61,26 +61,30 @@ export default function HomeScreen() {
   // Community lives on Home already (the feed below), so it's dropped from the
   // orbit. Barista is brought up here from the old hamburger menu — it's too
   // useful to bury — so six destinations orbit the companion.
-  const baristaZone: Zone = {
+  const barZone: Zone = {
     key: "barista",
-    label: "Barista",
+    label: "The Bar",
     monogram: "B",
     route: "/barista",
     accent: "#E0B080",
     tint: "rgba(224,176,128,0.20)",
     edge: "rgba(224,176,128,0.42)",
   };
+  // Me sits bottom-right — where the thumb expects it — so The Bar takes the
+  // bottom-left slot and Me is pulled out to the end of the ring.
+  const meZone = HOME_ORBIT_ZONES.find((z) => z.key === "me")!;
   const orbitZones = [
-    ...HOME_ORBIT_ZONES.filter((z) => z.key !== "urge" && z.key !== "community"),
-    baristaZone,
+    ...HOME_ORBIT_ZONES.filter((z) => z.key !== "urge" && z.key !== "community" && z.key !== "me"),
+    barZone,
+    meZone,
   ];
   const orbitPositions = [
     { left: 12, right: undefined, top: companionTop - 38 }, // reading
     { left: undefined, right: 12, top: companionTop - 38 }, // writing
     { left: 8, right: undefined, top: companionTop + 36 }, // games
     { left: undefined, right: 6, top: companionTop + 44 }, // support
-    { left: 20, right: undefined, top: companionTop + 126 }, // me
-    { left: undefined, right: 30, top: companionTop + 126 }, // barista
+    { left: 20, right: undefined, top: companionTop + 126 }, // The Bar
+    { left: undefined, right: 30, top: companionTop + 126 }, // me
   ];
 
   const urge = ZONES.urge;
