@@ -152,7 +152,7 @@ export default function UrgeScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {phase === 'choice' && (
             <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1, paddingTop: 12 }}>
-              <View className="items-center mb-3"><CompanionArt source={pose('bust')} width={104} height={156} cropHeight={104} /></View>
+              <View className="items-center mb-3"><CompanionArt source={pose('elbows')} width={104} height={156} /></View>
               {/* Crisis escape hatch — always reachable in a hard moment. */}
               <Pressable
                 onPress={() => router.navigate('/support/resources')}
@@ -215,7 +215,7 @@ export default function UrgeScreen() {
             <Animated.View entering={FadeIn.duration(500)} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 480 }}>
               <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">Logged</Text>
               <Text className="text-text-primary text-4xl font-semibold tracking-tight mb-3" style={celebrationGlow}>It passed.</Text>
-              <CompanionArt source={pose('bust')} width={96} height={144} cropHeight={96} />
+              <CompanionArt source={pose('elbows')} width={96} height={144} />
               <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">{survivedCount <= 1 ? 'You got through your first one.' : `That's ${survivedCount} times you've got through it.`}{'\n'}Proof this works.</Text>
               <Button title="Done" variant="primary" size="lg" fullWidth onPress={() => router.back()} />
             </Animated.View>

@@ -13,11 +13,13 @@ import type { ImageSourcePropType } from 'react-native';
 export type CompanionPose =
   | 'standing'
   | 'bust'   // zoomed head-and-torso "first shot" for in-app presence
-  | 'tea'
-  | 'armchair'
-  | 'journal'
-  | 'reading'
-  | 'elbows'
+  | 'tea'      // seated with a warm drink — Support
+  | 'armchair' // settled in an armchair — AI Coach
+  | 'journal'  // writing — Writing Room
+  | 'reading'  // reading — Reading Corner
+  | 'elbows'   // leaning in, elbows on knees — urge flow
+  | 'playing'  // playful, at ease — Games Arcade
+  | 'token'    // holding a token, looking up — constellation sky
   | 'smile';
 
 export interface Companion {
@@ -37,10 +39,15 @@ export const COMPANIONS: Companion[] = [
     name: 'Kai',
     blurb: 'Quiet and steady. Been there. Not going anywhere.',
     poses: {
-      // New Kai — standing only for now; other poses fall back to this until
-      // matching new-Kai poses arrive (the old character's poses were retired).
       standing: require('../../assets/companions/kai_standing.png'),
       bust: require('../../assets/companions/kai_bust.png'),
+      armchair: require('../../assets/companions/kai_armchair.png'),
+      tea: require('../../assets/companions/kai_tea.png'),
+      reading: require('../../assets/companions/kai_reading.png'),
+      journal: require('../../assets/companions/kai_journal.png'),
+      elbows: require('../../assets/companions/kai_elbows.png'),
+      playing: require('../../assets/companions/kai_playing.png'),
+      token: require('../../assets/companions/kai_token.png'),
     },
   },
   {
@@ -50,6 +57,13 @@ export const COMPANIONS: Companion[] = [
     poses: {
       standing: require('../../assets/companions/amara_standing.png'),
       bust: require('../../assets/companions/amara_bust.png'),
+      armchair: require('../../assets/companions/amara_armchair.png'),
+      tea: require('../../assets/companions/amara_tea.png'),
+      reading: require('../../assets/companions/amara_reading.png'),
+      journal: require('../../assets/companions/amara_journal.png'),
+      elbows: require('../../assets/companions/amara_elbows.png'),
+      playing: require('../../assets/companions/amara_playing.png'),
+      token: require('../../assets/companions/amara_token.png'),
     },
   },
   {
@@ -59,6 +73,13 @@ export const COMPANIONS: Companion[] = [
     poses: {
       standing: require('../../assets/companions/marco_standing.png'),
       bust: require('../../assets/companions/marco_bust.png'),
+      armchair: require('../../assets/companions/marco_armchair.png'),
+      tea: require('../../assets/companions/marco_tea.png'),
+      reading: require('../../assets/companions/marco_reading.png'),
+      journal: require('../../assets/companions/marco_journal.png'),
+      elbows: require('../../assets/companions/marco_elbows.png'),
+      playing: require('../../assets/companions/marco_playing.png'),
+      token: require('../../assets/companions/marco_token.png'),
     },
   },
   {
@@ -68,6 +89,13 @@ export const COMPANIONS: Companion[] = [
     poses: {
       standing: require('../../assets/companions/yara_standing.png'),
       bust: require('../../assets/companions/yara_bust.png'),
+      armchair: require('../../assets/companions/yara_armchair.png'),
+      tea: require('../../assets/companions/yara_tea.png'),
+      reading: require('../../assets/companions/yara_reading.png'),
+      journal: require('../../assets/companions/yara_journal.png'),
+      elbows: require('../../assets/companions/yara_elbows.png'),
+      playing: require('../../assets/companions/yara_playing.png'),
+      token: require('../../assets/companions/yara_token.png'),
     },
   },
   {
@@ -77,6 +105,13 @@ export const COMPANIONS: Companion[] = [
     poses: {
       standing: require('../../assets/companions/amos_standing.png'),
       bust: require('../../assets/companions/amos_bust.png'),
+      armchair: require('../../assets/companions/amos_armchair.png'),
+      tea: require('../../assets/companions/amos_tea.png'),
+      reading: require('../../assets/companions/amos_reading.png'),
+      journal: require('../../assets/companions/amos_journal.png'),
+      elbows: require('../../assets/companions/amos_elbows.png'),
+      playing: require('../../assets/companions/amos_playing.png'),
+      token: require('../../assets/companions/amos_token.png'),
     },
   },
   {
@@ -86,6 +121,13 @@ export const COMPANIONS: Companion[] = [
     poses: {
       standing: require('../../assets/companions/rose_standing.png'),
       bust: require('../../assets/companions/rose_bust.png'),
+      armchair: require('../../assets/companions/rose_armchair.png'),
+      tea: require('../../assets/companions/rose_tea.png'),
+      reading: require('../../assets/companions/rose_reading.png'),
+      journal: require('../../assets/companions/rose_journal.png'),
+      elbows: require('../../assets/companions/rose_elbows.png'),
+      playing: require('../../assets/companions/rose_playing.png'),
+      token: require('../../assets/companions/rose_token.png'),
     },
   },
   // New mates slot in here — a single `standing` pose is enough to start.

@@ -68,7 +68,7 @@ export default function ConstellationScreen() {
           }}
         >
           <Image
-            source={pose("bust")}
+            source={pose("token")}
             style={{
               width: 150,
               height: 200,

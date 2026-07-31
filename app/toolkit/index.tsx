@@ -67,7 +67,7 @@ export default function ToolkitScreen() {
 
       {/* Companion front and centre, like Home. */}
       <View className="pt-1 pb-4 items-center">
-        <CompanionArt source={pose('bust')} width={186} height={220} cropHeight={182} />
+        <CompanionArt source={pose('reading')} width={186} height={220} />
       </View>
 
       <ScrollView

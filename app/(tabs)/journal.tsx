@@ -146,7 +146,7 @@ export default function JournalScreen() {
           style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center" }}
           pointerEvents="none"
         >
-          <CompanionArt source={pose("bust")} width={236} height={280} cropHeight={220} />
+          <CompanionArt source={pose("journal")} width={236} height={280} />
         </View>
 
         <View style={{ position: "absolute", left: positions[0].left, top: positions[0].top, zIndex: 10 }}>

@@ -14,7 +14,7 @@ export function HomeStories() {
     .filter((moment) => moment.media_type === 'video')
     // Official/curated stories lead the row.
     .sort((a, b) => (isOfficialUsername(b.username) ? 1 : 0) - (isOfficialUsername(a.username) ? 1 : 0))
-    .slice(0, 8);
+    .slice(0, 5);
 
   const openCommunity = () => router.push({ pathname: '/community', params: { tab: 'look' } });
 

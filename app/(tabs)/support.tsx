@@ -79,10 +79,9 @@ export default function SupportScreen() {
             context="support"
             visible={companionMenuOpen}
             onClose={() => setCompanionMenuOpen(false)}
-            source={pose("bust")}
+            source={pose("tea")}
             width={174}
             height={206}
-            cropHeight={178}
             zoneHeight={250}
             companionLeft={76}
             companionTop={32}
