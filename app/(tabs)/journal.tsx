@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, Pressable, Alert } from "react-native";
+import { View, Text, Pressable, Alert, ScrollView } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
@@ -10,16 +10,29 @@ import { ZoneGlow } from "@/components/ui/ZoneGlow";
 import { CompanionArt } from "@/components/ui/CompanionArt";
 import { OrbitChip } from "@/components/ui/OrbitChip";
 import { useCompanion } from "@/hooks/useCompanion";
-import { useAddVoiceNote } from "@/hooks/useJournalNotes";
+import { useAddVoiceNote, useJournalNotes } from "@/hooks/useJournalNotes";
 import { ZONES } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 
 const WRITING = ZONES.writing;
 
+function rgbaWriting(a: number): string {
+  const h = WRITING.accent.replace("#", "");
+  return `rgba(${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}, ${a})`;
+}
+
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function relativeDay(iso: string): string {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days}d`;
+  return `${Math.floor(days / 7)}w`;
 }
 
 /**
@@ -108,13 +121,9 @@ export default function JournalScreen() {
     }
   };
 
-  const companionTop = 40;
-  const positions = [
-    { left: 14, right: undefined, top: companionTop - 30 }, // Write
-    { left: undefined, right: 14, top: companionTop - 30 }, // Voice note
-    { left: 10, right: undefined, top: companionTop + 120 }, // Your notes
-    { left: undefined, right: 8, top: companionTop + 120 }, // Letters
-  ];
+  const { data: notes = [] } = useJournalNotes();
+  const recentNotes = notes.slice(0, 3);
+  const companionTop = 58;
 
   return (
     <SafeArea bottom={false}>
@@ -138,42 +147,77 @@ export default function JournalScreen() {
         </View>
       </View>
 
-      {/* Companion front and centre, ways to write orbiting it. Anchored near
-          the top so the full-body art fills the frame instead of pooling low. */}
-      <View style={{ flex: 1, justifyContent: "flex-start", paddingTop: 6 }}>
-        <View style={{ height: 380, position: "relative" }}>
-        <View
-          style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center" }}
-          pointerEvents="none"
-        >
-          <CompanionArt source={pose("journal")} width={250} height={298} />
+      {/* Companion front and centre. Three ways to write orbit her — Voice note
+          above, A note left, Letters right — with "I want a drink" tucked below,
+          sitting clear of the journal in her hands. Your saved notes live in the
+          page underneath, an archive rather than an orbit action. */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
+        <View style={{ height: 408, position: "relative", marginTop: 6 }}>
+          <View
+            style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center" }}
+            pointerEvents="none"
+          >
+            <CompanionArt source={pose("journal")} width={250} height={298} />
+          </View>
+
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop - 46, alignItems: "center", zIndex: 10 }}>
+            <OrbitChip label="Voice note" accent={WRITING.accent} onPress={startRecording} />
+          </View>
+          <View style={{ position: "absolute", left: 18, top: companionTop + 116, zIndex: 10 }}>
+            <OrbitChip label="A note" accent={WRITING.accent} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/journal/write" as any); }} />
+          </View>
+          <View style={{ position: "absolute", right: 18, top: companionTop + 116, zIndex: 10 }}>
+            <OrbitChip label="Letters" accent={WRITING.accent} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/letters/write" as any); }} />
+          </View>
+
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 302, alignItems: "center", zIndex: 10 }}>
+            <OrbitChip
+              label={ZONES.urge.label}
+              emergency
+              onPress={() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                router.push(ZONES.urge.route as any);
+              }}
+            />
+          </View>
         </View>
 
-        <View style={{ position: "absolute", left: positions[0].left, top: positions[0].top, zIndex: 10 }}>
-          <OrbitChip label="A note" accent={WRITING.accent} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/journal/write" as any); }} />
+        {/* Your notes — the archive, in the page rather than in the orbit. */}
+        <View style={{ paddingHorizontal: 24, marginTop: 2 }}>
+          <View className="flex-row items-center justify-between mb-2.5">
+            <Text className="text-text-primary text-xl font-semibold">Your notes</Text>
+            {notes.length > 0 ? (
+              <Pressable onPress={() => router.push("/journal/notes" as any)} hitSlop={8} className="active:opacity-60">
+                <Text className="text-sm font-semibold" style={{ color: WRITING.accent }}>See all</Text>
+              </Pressable>
+            ) : null}
+          </View>
+          {recentNotes.length === 0 ? (
+            <Text className="text-text-muted text-sm leading-relaxed">
+              Notes and voice notes you keep will gather here.
+            </Text>
+          ) : (
+            <View style={{ gap: 8 }}>
+              {recentNotes.map((note) => (
+                <Pressable
+                  key={note.id}
+                  onPress={() => router.push("/journal/notes" as any)}
+                  className="flex-row items-center gap-3 rounded-2xl px-3.5 py-2.5 active:opacity-80"
+                  style={{ backgroundColor: rgbaWriting(0.07), borderWidth: 1, borderColor: rgbaWriting(0.2) }}
+                >
+                  <Feather name={note.audio_path ? "mic" : "edit-3"} size={16} color={WRITING.accent} />
+                  <Text className="flex-1 text-text-secondary text-sm" numberOfLines={1}>
+                    {note.audio_path
+                      ? `Voice note · ${formatDuration(note.duration_seconds ?? 0)}`
+                      : (note.text?.trim() || "Untitled note")}
+                  </Text>
+                  <Text className="text-text-muted text-xs">{relativeDay(note.created_at)}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
         </View>
-        <View style={{ position: "absolute", right: positions[1].right, top: positions[1].top, zIndex: 10 }}>
-          <OrbitChip label="Voice note" accent={WRITING.accent} onPress={startRecording} />
-        </View>
-        <View style={{ position: "absolute", left: positions[2].left, top: positions[2].top, zIndex: 10 }}>
-          <OrbitChip label={"Your\nnotes"} accent={WRITING.accent} numberOfLines={2} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/journal/notes" as any); }} />
-        </View>
-        <View style={{ position: "absolute", right: positions[3].right, top: positions[3].top, zIndex: 10 }}>
-          <OrbitChip label="Letters" accent={WRITING.accent} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/letters/write" as any); }} />
-        </View>
-
-        <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 208, alignItems: "center", zIndex: 10 }}>
-          <OrbitChip
-            label={ZONES.urge.label}
-            emergency
-            onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-              router.push(ZONES.urge.route as any);
-            }}
-          />
-        </View>
-        </View>
-      </View>
+      </ScrollView>
 
       {/* Recording overlay — voice capture without leaving the room. */}
       {recording && (

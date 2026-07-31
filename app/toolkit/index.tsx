@@ -22,7 +22,12 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const H_PAD = 22;
 const GAP = 12;
 const BOOK_W = (SCREEN_WIDTH - H_PAD * 2 - GAP * 2) / 3;
-const BOOK_H = BOOK_W * 1.42;
+const BOOK_H = BOOK_W * 1.36;
+
+function rgba(hex: string, a: number): string {
+  const h = hex.replace('#', '');
+  return `rgba(${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}, ${a})`;
+}
 
 // One quiet emblem per category, stamped on the book cover.
 const CATEGORY_ICON: Record<ToolkitCategory, keyof typeof Feather.glyphMap> = {
@@ -38,20 +43,20 @@ const CATEGORY_ICON: Record<ToolkitCategory, keyof typeof Feather.glyphMap> = {
   motivation: 'star',
 };
 
-// Muted jewel-tone covers — a shelf, not a carnival. Stable per category so a
-// book always has the same spine. Tuned deliberately dim to sit in Alchono's
-// night-time palette (final tones to be checked on-device).
-const CATEGORY_COVER: Record<ToolkitCategory, [string, string]> = {
-  'in-the-moment': ['#3f5a63', '#2b3f47'],
-  understand: ['#574468', '#3d2f4c'],
-  triggers: ['#664046', '#472c30'],
-  'planning-ahead': ['#3d5147', '#28372f'],
-  stress: ['#454a6a', '#2f3350'],
-  sleep: ['#3b3654', '#28243b'],
-  relationships: ['#5a4658', '#3d2f3c'],
-  identity: ['#4a533f', '#333a2c'],
-  'after-a-slip': ['#5a4a34', '#3d3122'],
-  motivation: ['#5a5038', '#3d3626'],
+// Each book is a WASH, not a colour — a dark cover carrying only a faint breath
+// of its accent, the same low-opacity tint the pages use. The shelf reads as a
+// feeling: dim, cohesive, cosy — not a row of bright spines.
+const CATEGORY_ACCENT: Record<ToolkitCategory, string> = {
+  'in-the-moment': '#6FA3B0',
+  understand: '#B296D0',
+  triggers: '#C98A90',
+  'planning-ahead': '#94C4A6',
+  stress: '#8E93C8',
+  sleep: '#8A85C0',
+  relationships: '#C59BB8',
+  identity: '#A6B58A',
+  'after-a-slip': '#C6A87A',
+  motivation: '#CDBE86',
 };
 
 function Book({
@@ -63,7 +68,7 @@ function Book({
   count: number;
   onPress: () => void;
 }) {
-  const [top] = CATEGORY_COVER[cat];
+  const accent = CATEGORY_ACCENT[cat];
   return (
     <Pressable
       onPress={onPress}
@@ -76,9 +81,9 @@ function Book({
         style={{
           height: BOOK_H,
           borderRadius: 6,
-          backgroundColor: top,
+          backgroundColor: rgba(accent, 0.15),
           borderWidth: 1,
-          borderColor: 'rgba(0,0,0,0.35)',
+          borderColor: rgba(accent, 0.26),
           paddingTop: 12,
           paddingRight: 10,
           paddingBottom: 12,
@@ -104,7 +109,7 @@ function Book({
           <View style={{ width: 0, height: 0, borderLeftWidth: 8, borderRightWidth: 8, borderTopWidth: 6, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#C9A24A' }} />
         </View>
 
-        <Feather name={CATEGORY_ICON[cat]} size={15} color="rgba(243,236,223,0.8)" />
+        <Feather name={CATEGORY_ICON[cat]} size={15} color={rgba(accent, 0.9)} />
         <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 19, lineHeight: 20, color: '#f3ecdf' }} numberOfLines={3}>
           {CATEGORY_META[cat].label}
         </Text>
