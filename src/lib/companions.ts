@@ -20,6 +20,10 @@ export type CompanionPose =
   | 'elbows'   // leaning in, elbows on knees — urge flow
   | 'playing'  // playful, at ease — Games Arcade
   | 'token'    // holding a token, looking up — constellation sky
+  | 'barista'  // apron on, pouring a drink — The Bar
+  | 'call'     // seated, phone to ear — Resources (call)
+  | 'text'     // seated, texting — Resources (text)
+  | 'door'     // knocking at a door — Resources (meetings)
   | 'smile';
 
 export interface Companion {
@@ -48,6 +52,10 @@ export const COMPANIONS: Companion[] = [
       elbows: require('../../assets/companions/kai_elbows.png'),
       playing: require('../../assets/companions/kai_playing.png'),
       token: require('../../assets/companions/kai_token.png'),
+      barista: require('../../assets/companions/kai_barista.png'),
+      call: require('../../assets/companions/kai_call.png'),
+      text: require('../../assets/companions/kai_text.png'),
+      door: require('../../assets/companions/kai_door.png'),
     },
   },
   {
