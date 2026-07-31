@@ -110,7 +110,9 @@ function Book({
         </View>
 
         <Feather name={CATEGORY_ICON[cat]} size={15} color={rgba(accent, 0.9)} />
-        <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 19, lineHeight: 20, color: '#f3ecdf' }} numberOfLines={3}>
+        {/* SkinnyCustard has very tall uppercase ascenders (esp. T) — give the
+            line generous headroom or they clip against the line box / cover. */}
+        <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 19, lineHeight: 26, color: '#f3ecdf' }} numberOfLines={2}>
           {CATEGORY_META[cat].label}
         </Text>
       </View>
