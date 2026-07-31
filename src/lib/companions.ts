@@ -72,6 +72,8 @@ export const COMPANIONS: Companion[] = [
       elbows: require('../../assets/companions/amara_elbows.png'),
       playing: require('../../assets/companions/amara_playing.png'),
       token: require('../../assets/companions/amara_token.png'),
+      call: require('../../assets/companions/amara_call.png'),
+      text: require('../../assets/companions/amara_text.png'),
     },
   },
   {
@@ -104,6 +106,8 @@ export const COMPANIONS: Companion[] = [
       elbows: require('../../assets/companions/yara_elbows.png'),
       playing: require('../../assets/companions/yara_playing.png'),
       token: require('../../assets/companions/yara_token.png'),
+      call: require('../../assets/companions/yara_call.png'),
+      text: require('../../assets/companions/yara_text.png'),
     },
   },
   {
