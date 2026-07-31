@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { AccessibilityInfo, Pressable, ScrollView, Text, View } from 'react-native';
+import { AccessibilityInfo, Pressable, ScrollView, Text, View, type ViewStyle } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { CompanionArt } from '@/components/ui/CompanionArt';
+import { useCompanion } from '@/hooks/useCompanion';
 import { headingShadow } from '@/styles';
 
 type GameId = 'memory' | 'pattern' | 'odd' | 'colour' | 'word';
@@ -13,64 +15,30 @@ const GAMES: ReadonlyArray<{
   id: GameId;
   route: string;
   name: string;
-  desc: string;
   duration: string;
+  // Where this game sits around the player. Edge-anchored so it holds across
+  // phone widths; the companion is centred between them.
+  place: ViewStyle;
 }> = [
-  {
-    id: 'memory',
-    route: '/session/memory-match',
-    name: 'Memory Match',
-    desc: 'Flip cards. Find the pairs.',
-    duration: '≈3 min',
-  },
-  {
-    id: 'pattern',
-    route: '/session/simon',
-    name: 'Pattern',
-    desc: 'Watch. Remember. Repeat.',
-    duration: '≈2 min',
-  },
-  {
-    id: 'odd',
-    route: '/session/odd-one-out',
-    name: 'Odd One Out',
-    desc: 'One shade is different. Find it.',
-    duration: '≈2 min',
-  },
-  {
-    id: 'colour',
-    route: '/session/stroop',
-    name: 'Colour Match',
-    desc: 'Tap the ink colour, not the word.',
-    duration: '≈3 min',
-  },
-  {
-    id: 'word',
-    route: '/session/word-search',
-    name: 'Word Search',
-    desc: 'No list, no clock. Happy words are hiding — just look.',
-    duration: '≈4 min',
-  },
+  { id: 'memory', route: '/session/memory-match', name: 'Memory\nMatch', duration: '≈3 min', place: { left: 6, top: 8 } },
+  { id: 'pattern', route: '/session/simon', name: 'Pattern', duration: '≈2 min', place: { right: 6, top: 22 } },
+  { id: 'odd', route: '/session/odd-one-out', name: 'Odd One\nOut', duration: '≈2 min', place: { left: 2, top: 322 } },
+  { id: 'colour', route: '/session/stroop', name: 'Colour\nMatch', duration: '≈3 min', place: { right: 4, top: 334 } },
+  { id: 'word', route: '/session/word-search', name: 'Word Search', duration: '≈4 min', place: { left: 0, right: 0, top: 452, alignItems: 'center' } },
 ];
 
 const ivory = '#ECE9F1';
-const muted = '#B2ACC0';
 const violet = '#A489DE';
-const card = '#383243';
-const hairline = 'rgba(255,255,255,0.08)';
 
 function useReduceMotion() {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-
     AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
       if (mounted) setReduceMotion(enabled);
     });
-
     const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
-
     return () => {
       mounted = false;
       subscription.remove();
@@ -80,281 +48,156 @@ function useReduceMotion() {
   return reduceMotion;
 }
 
-function Preview({ id, tick, reduceMotion }: { id: GameId; tick: number; reduceMotion: boolean }) {
+// Compact, static "which game is this" thumbnails — the arcade's real previews
+// shrunk to a glance. The animated star of the page is the companion, so these
+// stay quiet and legible.
+function MiniPreview({ id }: { id: GameId }) {
   switch (id) {
     case 'memory':
-      return <MemoryPreview tick={tick} reduceMotion={reduceMotion} />;
+      return (
+        <View style={{ flexDirection: 'row', gap: 3 }}>
+          {[true, false, true].map((up, i) => (
+            <View key={i} style={{ width: 9, height: 13, borderRadius: 3, backgroundColor: up ? 'rgba(141,122,174,0.32)' : '#26232b', borderWidth: 1, borderColor: up ? 'rgba(190,177,214,0.42)' : 'rgba(255,255,255,0.08)' }} />
+          ))}
+        </View>
+      );
     case 'pattern':
-      return <PatternPreview tick={tick} reduceMotion={reduceMotion} />;
+      return (
+        <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+          {[false, true, false].map((on, i) => (
+            <View key={i} style={{ width: on ? 12 : 9, height: on ? 12 : 9, borderRadius: 6, backgroundColor: on ? 'rgba(141,122,174,0.5)' : 'rgba(244,241,237,0.10)', borderWidth: 1, borderColor: on ? 'rgba(190,177,214,0.5)' : 'rgba(255,255,255,0.1)' }} />
+          ))}
+        </View>
+      );
     case 'odd':
-      return <OddPreview />;
+      return (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: 30, gap: 3, justifyContent: 'center' }}>
+          {Array.from({ length: 9 }).map((_, i) => (
+            <View key={i} style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: i === 4 ? 'rgba(190,177,214,0.55)' : 'rgba(244,241,237,0.12)' }} />
+          ))}
+        </View>
+      );
     case 'colour':
-      return <ColourPreview tick={tick} reduceMotion={reduceMotion} />;
+      return (
+        <View style={{ alignItems: 'center' }}>
+          {([['GRN', violet], ['BLU', ivory], ['RED', '#7D97B8']] as const).map(([w, c]) => (
+            <Text key={w} style={{ color: c, fontSize: 8, fontWeight: '800', letterSpacing: 0.5, lineHeight: 10 }}>{w}</Text>
+          ))}
+        </View>
+      );
     case 'word':
-      return <WordPreview tick={tick} reduceMotion={reduceMotion} />;
+      return (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: 30, justifyContent: 'center' }}>
+          {['C', 'A', 'L', 'E', 'R', 'A', 'H', 'O', 'P'].map((ch, i) => (
+            <Text key={i} style={{ width: 10, textAlign: 'center', fontSize: 8, lineHeight: 11, fontWeight: '800', color: i < 3 ? ivory : '#6a6478' }}>{ch}</Text>
+          ))}
+        </View>
+      );
   }
-}
-
-function MemoryPreview({ tick, reduceMotion }: { tick: number; reduceMotion: boolean }) {
-  const active = reduceMotion ? 1 : tick % 6;
-
-  return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, width: 132 }}>
-      {Array.from({ length: 6 }).map((_, index) => {
-        const faceUp = index === 1 || index === 4 || index === active;
-        return (
-          <View
-            key={index}
-            style={{
-              width: 36,
-              height: 48,
-              borderRadius: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: faceUp ? 'rgba(141,122,174,0.20)' : '#202225',
-              borderWidth: 1,
-              borderColor: faceUp ? 'rgba(190,177,214,0.34)' : 'rgba(255,255,255,0.07)',
-              transform: [{ scaleX: faceUp ? 1 : 0.92 }],
-            }}
-          >
-            {faceUp ? <Text style={{ color: '#BEB1D6', fontSize: 18 }}>✦</Text> : null}
-          </View>
-        );
-      })}
-    </View>
-  );
-}
-
-function PatternPreview({ tick, reduceMotion }: { tick: number; reduceMotion: boolean }) {
-  const sequence = [0, 2, 3, 1];
-  const active = reduceMotion ? -1 : sequence[tick % sequence.length];
-
-  return (
-    <View style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}>
-      {[0, 1, 2, 3].map((index) => (
-        <View
-          key={index}
-          style={{
-            width: active === index ? 45 : 38,
-            height: active === index ? 45 : 38,
-            borderRadius: 23,
-            backgroundColor: active === index ? 'rgba(141,122,174,0.32)' : 'rgba(244,241,237,0.08)',
-            borderWidth: 1,
-            borderColor: active === index ? 'rgba(190,177,214,0.46)' : 'rgba(255,255,255,0.08)',
-          }}
-        />
-      ))}
-    </View>
-  );
-}
-
-function OddPreview() {
-  return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, width: 134 }}>
-      {Array.from({ length: 12 }).map((_, index) => (
-        <View
-          key={index}
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: 12,
-            backgroundColor: index === 7 ? 'rgba(244,241,237,0.16)' : 'rgba(244,241,237,0.11)',
-            borderWidth: 1,
-            borderColor: index === 7 ? 'rgba(141,122,174,0.30)' : 'rgba(255,255,255,0.07)',
-          }}
-        />
-      ))}
-    </View>
-  );
-}
-
-function ColourPreview({ tick, reduceMotion }: { tick: number; reduceMotion: boolean }) {
-  const shifted = !reduceMotion && tick % 2 === 1;
-  const rows = shifted
-    ? [
-        ['RED', '#7D97B8'],
-        ['GREEN', violet],
-        ['BLUE', ivory],
-      ]
-    : [
-        ['GREEN', violet],
-        ['BLUE', ivory],
-        ['RED', '#7D97B8'],
-      ];
-
-  return (
-    <View style={{ gap: 8 }}>
-      {rows.map(([word, color]) => (
-        <Text key={word} style={{ color, fontSize: 22, letterSpacing: 2, fontFamily: 'Inter_700Bold' }}>
-          {word}
-        </Text>
-      ))}
-    </View>
-  );
-}
-
-function WordPreview({ tick, reduceMotion }: { tick: number; reduceMotion: boolean }) {
-  const letters = ['C', 'A', 'L', 'M', 'E', 'B', 'R', 'A', 'V', 'E', 'H', 'O', 'P', 'E', 'S', 'T'];
-  const wordOne = [0, 1, 2, 3];
-  const wordTwo = [10, 11, 12, 13];
-  const highlighted = reduceMotion || tick % 2 === 0 ? wordOne : wordTwo;
-
-  return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: 128 }}>
-      {letters.map((letter, index) => {
-        const isHighlighted = highlighted.includes(index);
-        return (
-          <View
-            key={`${letter}-${index}`}
-            style={{
-              width: 32,
-              height: 32,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 8,
-              backgroundColor: isHighlighted ? 'rgba(141,122,174,0.20)' : 'transparent',
-            }}
-          >
-            <Text style={{ color: isHighlighted ? ivory : '#817B91', fontSize: 14, fontFamily: 'Inter_600SemiBold' }}>
-              {letter}
-            </Text>
-          </View>
-        );
-      })}
-    </View>
-  );
 }
 
 export default function GamesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
-  const [tick, setTick] = useState(0);
+  const { pose } = useCompanion();
   const { from } = useLocalSearchParams<{ from?: string }>();
   // Games opened during an urge carry the context through, so finishing
   // asks "did it pass?". Opened casually, they're just games.
   const suffix = from === 'urge' ? '?from=urge' : '';
 
-  useEffect(() => {
-    if (reduceMotion) return;
-
-    const interval = setInterval(() => setTick((current) => current + 1), 3200);
-    return () => clearInterval(interval);
-  }, [reduceMotion]);
+  const openGame = async (route: string) => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push((route + suffix) as any);
+  };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#201D28',
-        paddingTop: insets.top,
-      }}
-    >
+    <View style={{ flex: 1, backgroundColor: '#201D28', paddingTop: insets.top }}>
       <ZoneGlow zone="games" intensity={1.5} />
-      <Animated.View
-        entering={FadeIn.duration(300)}
-        style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 20 }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 4 }}>
+      <Animated.View entering={FadeIn.duration(300)} style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
           <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Go back">
             <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                fontSize: 34,
-                ...headingShadow,
-              }}
-            >
-              Games Arcade
-            </Text>
-            <Text style={{ color: '#817B91', fontSize: 15, marginTop: 4, lineHeight: 21 }}>
-              Give your mind something else to hold.
+            <Text style={{ fontSize: 34, ...headingShadow }}>Games Arcade</Text>
+            <Text style={{ color: '#817B91', fontSize: 15, marginTop: 2, lineHeight: 21 }}>
+              Something else to hold onto.
             </Text>
           </View>
         </View>
       </Animated.View>
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: insets.bottom + 28 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Two-column grid of compact previews — lighter and less scroll-heavy. */}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        {/* The play stage. Your companion is already here, deep in a game, and
+            the others are strewn around them like pieces on the floor. You've
+            walked into the arcade looking for your friend — tap one to join. */}
+        <View style={{ height: 588, position: 'relative' }}>
+          {/* Soft light pooled where the companion sits. */}
+          <View
+            pointerEvents="none"
+            style={{ position: 'absolute', left: 0, right: 0, top: 268, alignItems: 'center' }}
+          >
+            <View style={{ width: 226, height: 62, borderRadius: 31, backgroundColor: 'rgba(164,137,222,0.10)' }} />
+          </View>
+
+          <Animated.View
+            entering={reduceMotion ? undefined : FadeIn.duration(500).delay(120)}
+            style={{ position: 'absolute', left: 0, right: 0, top: 108, alignItems: 'center' }}
+            pointerEvents="none"
+          >
+            <CompanionArt source={pose('playing')} width={190} height={234} />
+          </Animated.View>
+
           {GAMES.map((game, index) => (
             <Animated.View
               key={game.id}
-              entering={FadeInDown.duration(360).delay(index * 60)}
-              style={{ width: '48.5%', marginBottom: 14 }}
+              entering={reduceMotion ? undefined : FadeInDown.duration(360).delay(180 + index * 70)}
+              style={{ position: 'absolute', ...game.place }}
             >
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`${game.name}. ${game.desc} ${game.duration}`}
-                onPress={async () => {
-                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push((game.route + suffix) as any);
-                }}
+                accessibilityLabel={`${game.name.replace('\n', ' ')}. ${game.duration}`}
+                onPress={() => openGame(game.route)}
                 style={{
-                  backgroundColor: card,
-                  borderRadius: 22,
-                  padding: 12,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 9,
+                  paddingVertical: 8,
+                  paddingLeft: 8,
+                  paddingRight: 13,
+                  borderRadius: 18,
+                  backgroundColor: 'rgba(24,21,30,0.92)',
                   borderWidth: 1,
-                  borderColor: hairline,
-                  overflow: 'hidden',
+                  borderColor: 'rgba(236,233,241,0.13)',
+                  shadowColor: '#000',
+                  shadowOpacity: 0.34,
+                  shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 6 },
+                  elevation: 6,
                 }}
               >
                 <View
-                  style={{
-                    height: 92,
-                    borderRadius: 16,
-                    backgroundColor: '#111214',
-                    borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.06)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 12,
-                    overflow: 'hidden',
-                  }}
+                  style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#111214', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
                   accessibilityElementsHidden
                   importantForAccessibility="no-hide-descendants"
                 >
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: -28,
-                      right: -18,
-                      width: 90,
-                      height: 90,
-                      borderRadius: 45,
-                      backgroundColor: 'rgba(141,122,174,0.10)',
-                    }}
-                  />
-                  {/* Previews are authored at full size; scale to fit the compact tile. */}
-                  <View style={{ transform: [{ scale: 0.66 }] }}>
-                    <Preview id={game.id} tick={tick + index} reduceMotion={reduceMotion} />
-                  </View>
+                  <MiniPreview id={game.id} />
                 </View>
-
-                <Text
-                  style={{
-                    color: ivory,
-                    fontSize: 21,
-                    lineHeight: 24,
-                    fontFamily: 'SkinnyCustard',
-                    marginBottom: 3,
-                  }}
-                >
-                  {game.name}
-                </Text>
-                <Text style={{ color: muted, fontSize: 12.5, lineHeight: 17 }} numberOfLines={2}>
-                  {game.desc}
-                </Text>
-                <Text style={{ marginTop: 8, color: '#A489DE', fontSize: 12, fontFamily: 'Inter_600SemiBold' }}>
-                  {game.duration}
-                </Text>
+                <View>
+                  <Text style={{ color: ivory, fontFamily: 'SkinnyCustard', fontSize: 20, lineHeight: 21 }}>{game.name}</Text>
+                  <Text style={{ color: violet, fontSize: 11.5, fontFamily: 'Inter_600SemiBold', marginTop: 2 }}>{game.duration}</Text>
+                </View>
               </Pressable>
             </Animated.View>
           ))}
+
+          <View style={{ position: 'absolute', left: 0, right: 0, top: 548, alignItems: 'center' }} pointerEvents="none">
+            <Text style={{ color: '#6a6478', fontSize: 13, fontFamily: 'SkinnyCustard', letterSpacing: 0.5 }}>tap a game to join</Text>
+          </View>
         </View>
       </ScrollView>
     </View>
