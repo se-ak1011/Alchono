@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Image } from 'react-native';
+import { View, Text, Pressable, ScrollView, Image, type ImageSourcePropType } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
+import { useCompanion } from '@/hooks/useCompanion';
 
 const ACCENT = '#E0B080';
-const BAR_SCENE = require('../assets/scenes/bar.png'); // 853 x 1844, ~phone aspect
+
+// One bar illustration per companion — same room, their face behind the counter
+// (853 x 1844, ~phone aspect). The composition is identical, so the drink-name
+// positions below work for all of them.
+const BAR_SCENES: Record<string, ImageSourcePropType> = {
+  kai: require('../assets/scenes/kai_bar.png'),
+  amara: require('../assets/scenes/amara_bar.png'),
+  amos: require('../assets/scenes/amos_bar.png'),
+  rose: require('../assets/scenes/rose_bar.png'),
+  yara: require('../assets/scenes/yara_bar.png'),
+  marco: require('../assets/scenes/marco_bar.png'),
+};
 
 function rgba(hex: string, a: number): string {
   const h = hex.replace('#', '');
@@ -176,6 +188,8 @@ function DrinkLink({ recipe, onPress }: { recipe: Recipe; onPress: () => void })
 export default function BaristaScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { companion } = useCompanion();
+  const scene = BAR_SCENES[companion.id] ?? BAR_SCENES.kai;
   const [selected, setSelected] = useState<Recipe | null>(null);
 
   const open = (r: Recipe) => {
@@ -187,7 +201,7 @@ export default function BaristaScreen() {
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
         <View style={{ width: '100%', position: 'relative' }}>
-          <Image source={BAR_SCENE} style={{ width: '100%', aspectRatio: 853 / 1844 }} resizeMode="cover" />
+          <Image source={scene} style={{ width: '100%', aspectRatio: 853 / 1844 }} resizeMode="cover" />
 
           {/* Drink names hand-lettered onto the counter — each a link to its recipe. */}
           <View style={{ position: 'absolute', top: '66%', left: 0, right: 0, paddingHorizontal: 26 }}>
