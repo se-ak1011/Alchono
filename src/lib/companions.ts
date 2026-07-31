@@ -90,6 +90,8 @@ export const COMPANIONS: Companion[] = [
       elbows: require('../../assets/companions/marco_elbows.png'),
       playing: require('../../assets/companions/marco_playing.png'),
       token: require('../../assets/companions/marco_token.png'),
+      call: require('../../assets/companions/marco_call.png'),
+      text: require('../../assets/companions/marco_text.png'),
     },
   },
   {
@@ -124,6 +126,8 @@ export const COMPANIONS: Companion[] = [
       elbows: require('../../assets/companions/amos_elbows.png'),
       playing: require('../../assets/companions/amos_playing.png'),
       token: require('../../assets/companions/amos_token.png'),
+      call: require('../../assets/companions/amos_call.png'),
+      text: require('../../assets/companions/amos_text.png'),
     },
   },
   {
@@ -140,6 +144,8 @@ export const COMPANIONS: Companion[] = [
       elbows: require('../../assets/companions/rose_elbows.png'),
       playing: require('../../assets/companions/rose_playing.png'),
       token: require('../../assets/companions/rose_token.png'),
+      call: require('../../assets/companions/rose_call.png'),
+      text: require('../../assets/companions/rose_text.png'),
     },
   },
   // New mates slot in here — a single `standing` pose is enough to start.
