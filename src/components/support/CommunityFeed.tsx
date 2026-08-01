@@ -7,11 +7,11 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  Platform,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { RoleBadge } from '@/components/ui/RoleBadge';
 import { useCommunityFeed, useCreatePost, useReactToPost, usePostComments, useAddComment, useReportPost, TALK_REPORT_REASONS } from '@/hooks/useCommunity';
@@ -19,11 +19,35 @@ import { useBlockUser } from '@/hooks/useMessages';
 import { useSendMessageRequest } from '@/hooks/useDirectMessages';
 import { useAuthStore } from '@/store/authStore';
 
+/**
+ * Talk — reskinned as a cosy late-90s message board / chat-room: monospace
+ * handles, a little presence dot, speech bubbles rising off each avatar, a
+ * "> new message" composer. It's the exact same board underneath (posts,
+ * anonymous toggle, reactions, the 3-comment limit, report/block, DM
+ * requests, pagination) — just dressed as a place you hang out, not a feed.
+ */
+const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
+const ONLINE = '#7FB08A'; // decorative presence bullet — a warm retro green
+const PLUM = '#A489DE';
+
 const REACTIONS = [
   { key: 'heart' as const, emoji: '❤️' },
   { key: 'clap' as const, emoji: '👏' },
   { key: 'handshake' as const, emoji: '🤝' },
 ];
+
+/** Short, chat-style relative time: "just now", "9m", "3h", "2d", then a date. */
+function ago(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d`;
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
 
 export function CommunityFeed({
   onTalkToAi,
@@ -138,58 +162,71 @@ export function CommunityFeed({
 
   return (
     <View className="flex-1">
-      {/* Compose box */}
-      <View className="mx-4 mb-4 bg-surface rounded-2xl p-5 border border-white/5">
-        <Text className="text-text-muted text-sm mb-2 leading-relaxed">
-          The rough nights and the small wins both belong here.
-        </Text>
-        <TextInput
-          value={newPost}
-          onChangeText={(t) => {
-            setNewPost(t);
-            if (justPosted) setJustPosted(false);
-          }}
-          placeholder="Struggling? Celebrating 10 days? Say it here…"
-          placeholderTextColor="#817B91"
-          multiline
-          maxLength={280}
-          className="text-text-primary text-base leading-relaxed min-h-[64px]"
-          selectionColor="#B2ACC0"
-        />
-        {!!newPost.trim() && (
-          <Text className="text-text-muted text-sm mt-2 leading-relaxed">
-            People can send ❤️ 👏 🤝 or leave up to three comments.
-          </Text>
-        )}
-        <View className="flex-row items-center justify-between mt-3">
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setIsAnon((v) => !v);
+      {/* Composer — the retro "new message" box. */}
+      <View
+        style={{
+          marginHorizontal: 16,
+          marginBottom: 14,
+          borderRadius: 14,
+          backgroundColor: '#2b2635',
+          borderWidth: 1,
+          borderColor: 'rgba(164,137,222,0.28)',
+          overflow: 'hidden',
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 7, backgroundColor: 'rgba(164,137,222,0.12)', borderBottomWidth: 1, borderBottomColor: 'rgba(164,137,222,0.18)' }}>
+          <Text style={{ fontFamily: MONO, fontSize: 12, color: PLUM }}>&gt;_</Text>
+          <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#B2ACC0', letterSpacing: 0.5 }}>new message</Text>
+        </View>
+        <View style={{ padding: 14 }}>
+          <TextInput
+            value={newPost}
+            onChangeText={(t) => {
+              setNewPost(t);
+              if (justPosted) setJustPosted(false);
             }}
-            hitSlop={8}
-            className="flex-1 pr-3"
-          >
-            {/* Truncate long usernames so this label can never push Post off-screen. */}
-            <Text className="text-text-muted text-sm" numberOfLines={1} ellipsizeMode="middle">
-              {isAnon
-                ? '◆ Anonymous · tap for your name'
-                : `◇ As ${myUsername ?? 'you'} · tap for anonymous`}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={handlePost}
-            disabled={!newPost.trim() || isPending}
-            className={`px-5 py-2.5 rounded-xl ${
-              newPost.trim() && !isPending ? 'bg-accent' : 'bg-surface-2'
-            }`}
-          >
-            {isPending ? (
-              <ActivityIndicator size="small" color="#ECE9F1" />
-            ) : (
-              <Text className="text-white text-sm font-semibold">Post</Text>
-            )}
-          </Pressable>
+            placeholder="Rough night? 10 days down? Type it to the room…"
+            placeholderTextColor="#817B91"
+            multiline
+            maxLength={280}
+            className="text-text-primary text-base leading-relaxed min-h-[56px]"
+            selectionColor="#B2ACC0"
+          />
+          <View className="flex-row items-center justify-between mt-2">
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setIsAnon((v) => !v);
+              }}
+              hitSlop={8}
+              className="flex-1 pr-3 active:opacity-70"
+            >
+              {/* Truncate long usernames so this label can never push Post off-screen. */}
+              <Text style={{ fontFamily: MONO, fontSize: 12, color: '#817B91' }} numberOfLines={1} ellipsizeMode="middle">
+                {isAnon
+                  ? '[◆ anon] · tap for your name'
+                  : `[◇ ${myUsername ?? 'you'}] · tap to hide`}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={handlePost}
+              disabled={!newPost.trim() || isPending}
+              style={{
+                paddingHorizontal: 18,
+                paddingVertical: 9,
+                borderRadius: 9,
+                backgroundColor: newPost.trim() && !isPending ? PLUM : '#474151',
+                borderWidth: 1,
+                borderColor: newPost.trim() && !isPending ? '#C6B2F0' : 'rgba(236,233,241,0.12)',
+              }}
+            >
+              {isPending ? (
+                <ActivityIndicator size="small" color="#ECE9F1" />
+              ) : (
+                <Text style={{ fontFamily: MONO, fontSize: 13, fontWeight: '700', color: newPost.trim() ? '#201D28' : '#817B91', letterSpacing: 1 }}>POST</Text>
+              )}
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -199,7 +236,8 @@ export function CommunityFeed({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push('/counsellors');
         }}
-        className="mx-4 mb-4 flex-row items-center justify-between bg-surface rounded-xl px-4 py-3 border border-white/5 active:border-white/15"
+        className="mx-4 mb-4 flex-row items-center justify-between rounded-xl px-4 py-3 active:opacity-80"
+        style={{ backgroundColor: '#2b2635', borderWidth: 1, borderColor: 'rgba(236,233,241,0.08)' }}
       >
         <Text className="text-text-muted text-sm flex-1 pr-3">
           Rather talk to a professional?{' '}
@@ -212,19 +250,20 @@ export function CommunityFeed({
       {justPosted && (
         <Animated.View
           entering={FadeInDown.duration(300)}
-          className="mx-4 mb-4 bg-surface rounded-2xl p-5 border border-white/10"
+          className="mx-4 mb-4 rounded-2xl p-5"
+          style={{ backgroundColor: '#2b2635', borderWidth: 1, borderColor: 'rgba(164,137,222,0.3)' }}
         >
           <View className="flex-row items-start justify-between mb-1">
             <Text className="text-text-primary text-base font-semibold flex-1 pr-3">
-              Shared. That took something.
+              Sent to the room. That took something.
             </Text>
             <Pressable onPress={() => setJustPosted(false)} hitSlop={12}>
               <Text className="text-text-muted text-base">✕</Text>
             </Pressable>
           </View>
           <Text className="text-text-secondary text-sm leading-relaxed mb-4">
-            Reactions will come. And if you'd rather have an actual
-            conversation right now, that's here too:
+            Replies will come. And if you'd rather have an actual conversation
+            right now, that's here too:
           </Text>
           <View className="flex-row gap-2">
             <Pressable
@@ -262,129 +301,176 @@ export function CommunityFeed({
         onEndReachedThreshold={0.3}
         refreshing={isRefetching && !isFetchingNextPage}
         onRefresh={() => refetch()}
-        renderItem={({ item, index }) => (
-          <Animated.View
-            entering={FadeInDown.duration(300).delay(index * 30).springify()}
-            className="mb-3"
-          >
-            <Card elevated>
-              <View className="flex-row items-start gap-3 mb-3">
+        ListHeaderComponent={
+          posts.length > 0 ? (
+            <View className="flex-row items-center gap-2 mb-3 mt-1 px-1">
+              <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(236,233,241,0.1)' }} />
+              <Text style={{ fontFamily: MONO, fontSize: 11, color: '#817B91', letterSpacing: 1 }}>the room</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(236,233,241,0.1)' }} />
+            </View>
+          ) : null
+        }
+        renderItem={({ item, index }) => {
+          const named = !item.is_anonymous;
+          const handle = named ? `@${(item as any).username ?? 'member'}` : 'anon';
+          const reactions = (item.reactions as Record<string, number>) ?? {};
+          const mineActions = item.user_id !== myUserId && !(item as any).is_official;
+          return (
+            <Animated.View
+              entering={FadeInDown.duration(300).delay(index * 30).springify()}
+              className="mb-4 flex-row gap-2.5"
+            >
+              <View className="pt-1">
                 <Avatar username={item.is_anonymous ? 'A' : (item as any).username} size="sm" />
-                <View className="flex-1">
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-text-secondary text-sm font-medium">
-                      {item.is_anonymous ? 'Anonymous' : (item as any).username ?? 'Member'}
-                    </Text>
-                    {(item as any).is_official ? <RoleBadge role="official" /> : null}
-                  </View>
-                  <Text className="text-text-muted text-sm mt-0.5">
-                    {new Date(item.created_at).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                    })}
+              </View>
+              <View className="flex-1">
+                {/* Handle line — monospace, with a little presence bullet. */}
+                <View className="flex-row items-center gap-1.5 mb-1">
+                  <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: named ? ONLINE : '#5c5668' }} />
+                  <Text style={{ fontFamily: MONO, fontSize: 12.5, color: named ? PLUM : '#9089a0' }} numberOfLines={1}>
+                    {handle}
                   </Text>
-                </View>
-                {item.user_id !== myUserId && !(item as any).is_official && (
-                  <Pressable onPress={() => showPostActions(item)} hitSlop={12}>
-                    <Text className="text-text-muted text-lg">⋯</Text>
-                  </Pressable>
-                )}
-              </View>
-              <Text className="text-text-primary text-base leading-relaxed mb-4">
-                {item.content}
-              </Text>
-              <View className="flex-row flex-wrap gap-3">
-                {REACTIONS.map(({ key, emoji }) => {
-                  const reactions = (item.reactions as Record<string, number>) ?? {};
-                  const count = reactions[key] ?? 0;
-                  return (
-                    <Pressable
-                      key={key}
-                      disabled={(item as any).is_seed_content || item.user_id === myUserId || (item as any).my_reaction === key}
-                      onPress={async () => {
-                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        react({ postId: item.id, reaction: key, currentReactions: reactions, currentReaction: (item as any).my_reaction }, {
-                          onError: () => Alert.alert('Could not react', 'Please try again.'),
-                        });
-                      }}
-                      className={`flex-row items-center gap-1.5 rounded-lg px-3 py-2 ${(item as any).my_reaction === key ? 'bg-accent/25 border border-accent/50' : 'bg-surface-2'} ${(item as any).is_seed_content || item.user_id === myUserId ? 'opacity-60' : 'active:bg-white/10'}`}
-                    >
-                      <Text className="text-base">{emoji}</Text>
-                      {count > 0 && (
-                        <Text className="text-text-muted text-sm">{count}</Text>
-                      )}
+                  {(item as any).is_official ? <RoleBadge role="official" /> : null}
+                  <Text style={{ fontFamily: MONO, fontSize: 11, color: '#6f6980' }}>· {ago(item.created_at)}</Text>
+                  {mineActions && (
+                    <Pressable onPress={() => showPostActions(item)} hitSlop={12} className="ml-auto">
+                      <Text className="text-text-muted text-lg">⋯</Text>
                     </Pressable>
-                  );
-                })}
-                <Pressable
-                  disabled={(item as any).is_seed_content}
-                  onPress={() => setOpenComments(openComments === item.id ? null : item.id)}
-                  className={`flex-row items-center gap-1.5 bg-surface-2 rounded-lg px-3 py-2 ${(item as any).is_seed_content ? 'opacity-60' : 'active:bg-white/10'}`}
-                >
-                  <Text className="text-text-secondary text-sm">Comment</Text>
-                  {((item as any).comment_count ?? 0) > 0 && (
-                    <Text className="text-text-muted text-sm">{(item as any).comment_count}</Text>
                   )}
-                </Pressable>
-              </View>
-              {item.user_id !== myUserId && !(item as any).is_official && (
-                <Pressable onPress={() => showReportReasons(item.id)} hitSlop={8} className="self-end mt-2">
-                  <Text className="text-text-muted text-xs">Report</Text>
-                </Pressable>
-              )}
-              {openComments === item.id && (() => {
-                const postComments = comments.filter((comment) => comment.post_id === item.id);
-                const mine = postComments.filter((comment) => comment.user_id === myUserId).length;
-                const atLimit = mine >= 3;
-                const draft = commentDrafts[item.id] ?? '';
-                return (
-                  <View className="mt-4 border-t border-white/5 pt-3">
-                    {commentsError && (
-                      <Pressable onPress={() => refetchComments()} className="mb-3">
-                        <Text className="text-danger text-sm">Comments couldn't load. Tap to retry.</Text>
+                </View>
+
+                {/* Speech bubble — squared top-left corner points back to the avatar. */}
+                <View
+                  style={{
+                    backgroundColor: '#403a4d',
+                    borderRadius: 14,
+                    borderTopLeftRadius: 4,
+                    borderWidth: 1,
+                    borderColor: 'rgba(236,233,241,0.07)',
+                    paddingHorizontal: 14,
+                    paddingVertical: 11,
+                  }}
+                >
+                  <Text className="text-text-primary text-base leading-relaxed">{item.content}</Text>
+                </View>
+
+                {/* Reactions + comment toggle, chat-style under the bubble. */}
+                <View className="flex-row flex-wrap items-center gap-2 mt-2">
+                  {REACTIONS.map(({ key, emoji }) => {
+                    const count = reactions[key] ?? 0;
+                    const active = (item as any).my_reaction === key;
+                    const locked = (item as any).is_seed_content || item.user_id === myUserId;
+                    return (
+                      <Pressable
+                        key={key}
+                        disabled={locked || active}
+                        onPress={async () => {
+                          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          react({ postId: item.id, reaction: key, currentReactions: reactions, currentReaction: (item as any).my_reaction }, {
+                            onError: () => Alert.alert('Could not react', 'Please try again.'),
+                          });
+                        }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 5,
+                          paddingHorizontal: 9,
+                          paddingVertical: 5,
+                          borderRadius: 20,
+                          backgroundColor: active ? 'rgba(164,137,222,0.22)' : 'rgba(255,255,255,0.05)',
+                          borderWidth: 1,
+                          borderColor: active ? 'rgba(164,137,222,0.5)' : 'transparent',
+                          opacity: locked ? 0.6 : 1,
+                        }}
+                      >
+                        <Text style={{ fontSize: 14 }}>{emoji}</Text>
+                        {count > 0 && <Text style={{ fontFamily: MONO, fontSize: 11, color: '#B2ACC0' }}>{count}</Text>}
                       </Pressable>
+                    );
+                  })}
+                  <Pressable
+                    disabled={(item as any).is_seed_content}
+                    onPress={() => setOpenComments(openComments === item.id ? null : item.id)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 5,
+                      paddingHorizontal: 9,
+                      paddingVertical: 5,
+                      borderRadius: 20,
+                      backgroundColor: 'rgba(255,255,255,0.05)',
+                      opacity: (item as any).is_seed_content ? 0.6 : 1,
+                    }}
+                  >
+                    <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#B2ACC0' }}>↳ replies</Text>
+                    {((item as any).comment_count ?? 0) > 0 && (
+                      <Text style={{ fontFamily: MONO, fontSize: 11, color: '#817B91' }}>{(item as any).comment_count}</Text>
                     )}
-                    {postComments.map((comment) => (
-                      <View key={comment.id} className="flex-row gap-2 mb-3">
-                        <Avatar username={comment.username} size="sm" />
-                        <View className="flex-1">
-                          <Text className="text-text-secondary text-sm font-medium">{comment.username}</Text>
-                          <Text className="text-text-muted text-xs mb-1">{new Date(comment.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</Text>
-                          <Text className="text-text-primary text-sm leading-relaxed">{comment.content}</Text>
-                        </View>
-                      </View>
-                    ))}
-                    {atLimit ? (
-                      <Text className="text-text-muted text-sm">You've reached the 3 comment limit for this post.</Text>
-                    ) : (
-                      <View className="flex-row items-end gap-2">
-                        <TextInput value={draft} onChangeText={(text) => setCommentDrafts((current) => ({ ...current, [item.id]: text }))}
-                          editable={!isSavingComment} placeholder="Add a comment…" placeholderTextColor="#817B91" multiline maxLength={500}
-                          className="flex-1 bg-surface-2 rounded-xl px-3 py-2 text-text-primary text-sm" />
-                        <Pressable disabled={!draft.trim() || isSavingComment} onPress={() => addComment({ postId: item.id, content: draft }, {
-                          onSuccess: () => setCommentDrafts((current) => ({ ...current, [item.id]: '' })),
-                          onError: (error) => Alert.alert('Could not comment', error instanceof Error ? error.message : 'Please try again.'),
-                        })} className={`rounded-xl px-3 py-2 ${draft.trim() && !isSavingComment ? 'bg-accent' : 'bg-surface-2'}`}>
-                          {isSavingComment ? <ActivityIndicator size="small" color="#ECE9F1" /> : <Text className="text-bg text-sm font-semibold">Send</Text>}
+                  </Pressable>
+                  {mineActions && (
+                    <Pressable onPress={() => showReportReasons(item.id)} hitSlop={8} className="ml-auto">
+                      <Text style={{ fontFamily: MONO, fontSize: 10.5, color: '#6f6980' }}>report</Text>
+                    </Pressable>
+                  )}
+                </View>
+
+                {openComments === item.id && (() => {
+                  const postComments = comments.filter((comment) => comment.post_id === item.id);
+                  const mine = postComments.filter((comment) => comment.user_id === myUserId).length;
+                  const atLimit = mine >= 3;
+                  const draft = commentDrafts[item.id] ?? '';
+                  return (
+                    <View style={{ marginTop: 10, marginLeft: 4, paddingLeft: 12, borderLeftWidth: 2, borderLeftColor: 'rgba(164,137,222,0.25)' }}>
+                      {commentsError && (
+                        <Pressable onPress={() => refetchComments()} className="mb-3">
+                          <Text className="text-danger text-sm">Replies couldn't load. Tap to retry.</Text>
                         </Pressable>
-                      </View>
-                    )}
-                  </View>
-                );
-              })()}
-            </Card>
-          </Animated.View>
-        )}
+                      )}
+                      {postComments.map((comment) => (
+                        <View key={comment.id} className="flex-row gap-2 mb-3">
+                          <Avatar username={comment.username} size="sm" />
+                          <View className="flex-1">
+                            <View className="flex-row items-center gap-1.5">
+                              <Text style={{ fontFamily: MONO, fontSize: 11.5, color: PLUM }}>@{comment.username}</Text>
+                              <Text style={{ fontFamily: MONO, fontSize: 10.5, color: '#6f6980' }}>· {ago(comment.created_at)}</Text>
+                            </View>
+                            <Text className="text-text-primary text-sm leading-relaxed mt-0.5">{comment.content}</Text>
+                          </View>
+                        </View>
+                      ))}
+                      {atLimit ? (
+                        <Text className="text-text-muted text-sm mb-1">You've reached the 3-reply limit for this post.</Text>
+                      ) : (
+                        <View className="flex-row items-end gap-2 mt-1">
+                          <TextInput value={draft} onChangeText={(text) => setCommentDrafts((current) => ({ ...current, [item.id]: text }))}
+                            editable={!isSavingComment} placeholder="reply…" placeholderTextColor="#817B91" multiline maxLength={500}
+                            className="flex-1 rounded-xl px-3 py-2 text-text-primary text-sm" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
+                          <Pressable disabled={!draft.trim() || isSavingComment} onPress={() => addComment({ postId: item.id, content: draft }, {
+                            onSuccess: () => setCommentDrafts((current) => ({ ...current, [item.id]: '' })),
+                            onError: (error) => Alert.alert('Could not reply', error instanceof Error ? error.message : 'Please try again.'),
+                          })} style={{ borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: draft.trim() && !isSavingComment ? PLUM : '#474151' }}>
+                            {isSavingComment ? <ActivityIndicator size="small" color="#ECE9F1" /> : <Text style={{ fontFamily: MONO, fontSize: 12, fontWeight: '700', color: draft.trim() ? '#201D28' : '#817B91' }}>SEND</Text>}
+                          </Pressable>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })()}
+              </View>
+            </Animated.View>
+          );
+        }}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator size="small" color="#B2ACC0" className="mt-4" />
           ) : null
         }
         ListEmptyComponent={
-          <View className="py-12 items-center">
-            <Text className="text-text-muted text-base text-center leading-relaxed">
-              {isError ? "Community couldn't load." : 'Be the first to share something.'}{'\n'}
-              {!isError && <>Bad day, good day, day one, day ninety —{'\n'}it all belongs here.</>}
+          <View className="py-12 items-center px-6">
+            <Text style={{ fontFamily: MONO, fontSize: 13, color: '#817B91', textAlign: 'center', lineHeight: 22 }}>
+              {isError ? '// the room could not load' : '// the room is quiet…'}{'\n'}
+              {!isError && 'bad day, good day, day one, day ninety —'}{'\n'}
+              {!isError && 'be the first to break the silence.'}
             </Text>
             {isError && <Pressable onPress={() => refetch()} className="mt-4 bg-surface-2 rounded-xl px-4 py-2"><Text className="text-text-secondary text-sm">Try again</Text></Pressable>}
           </View>
