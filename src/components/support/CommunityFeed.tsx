@@ -118,13 +118,10 @@ export function CommunityFeed({
     username?: string | null;
   }) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Messaging now lives on a visible "✉ message" chip; this menu is just the
+    // safety actions (report / block).
     Alert.alert('This post', undefined, [
       { text: 'Cancel', style: 'cancel' },
-      // DMs only exist for people posting under their username — messaging
-      // an anonymous poster would unmask them.
-      ...(!post.is_anonymous
-        ? [{ text: 'Send message request', onPress: () => handleMessageRequest(post) }]
-        : []),
       {
         text: 'Report post',
         onPress: () => showReportReasons(post.id),
@@ -321,7 +318,10 @@ export function CommunityFeed({
           const named = !item.is_anonymous;
           const handle = named ? `@${(item as any).username ?? 'member'}` : 'anon';
           const reactions = (item.reactions as Record<string, number>) ?? {};
+          const reactionTotal = REACTIONS.reduce((n, { key }) => n + (reactions[key] ?? 0), 0);
           const mineActions = item.user_id !== myUserId && !(item as any).is_official;
+          // A named, non-seed poster who isn't me → reachable by a message request.
+          const canMessage = !item.is_anonymous && mineActions && !(item as any).is_seed_content;
           // Chosen status of the poster (named only; null until they set one
           // or before the presence migration is applied).
           const posterStatus = named ? ((item as any).poster_status as PresenceStatus | null) : null;
@@ -368,10 +368,17 @@ export function CommunityFeed({
                   <Text className="text-text-primary text-base leading-relaxed">{item.content}</Text>
                 </View>
 
-                {/* Reactions + comment toggle, chat-style under the bubble. */}
+                {/* "Here with you" — a soft aggregate of warmth, never a
+                    per-emoji scoreboard. Support, not a like-count. */}
+                {reactionTotal > 0 ? (
+                  <Text style={{ fontFamily: MONO, fontSize: 11, color: 'rgba(164,137,222,0.9)', marginTop: 8, marginLeft: 2 }}>
+                    ♥ {reactionTotal} {reactionTotal === 1 ? 'person is' : 'people are'} with you
+                  </Text>
+                ) : null}
+
+                {/* Send warmth + replies + message, chat-style under the bubble. */}
                 <View className="flex-row flex-wrap items-center gap-2 mt-2">
                   {REACTIONS.map(({ key, emoji }) => {
-                    const count = reactions[key] ?? 0;
                     const active = (item as any).my_reaction === key;
                     const locked = (item as any).is_seed_content || item.user_id === myUserId;
                     return (
@@ -398,7 +405,6 @@ export function CommunityFeed({
                         }}
                       >
                         <Text style={{ fontSize: 14 }}>{emoji}</Text>
-                        {count > 0 && <Text style={{ fontFamily: MONO, fontSize: 11, color: '#B2ACC0' }}>{count}</Text>}
                       </Pressable>
                     );
                   })}
@@ -421,6 +427,27 @@ export function CommunityFeed({
                       <Text style={{ fontFamily: MONO, fontSize: 11, color: '#817B91' }}>{(item as any).comment_count}</Text>
                     )}
                   </Pressable>
+                  {canMessage && (
+                    <Pressable
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        handleMessageRequest(item as any);
+                      }}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 5,
+                        paddingHorizontal: 9,
+                        paddingVertical: 5,
+                        borderRadius: 20,
+                        backgroundColor: 'rgba(164,137,222,0.14)',
+                        borderWidth: 1,
+                        borderColor: 'rgba(164,137,222,0.4)',
+                      }}
+                    >
+                      <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#C6B2F0' }}>✉ message</Text>
+                    </Pressable>
+                  )}
                   {mineActions && (
                     <Pressable onPress={() => showReportReasons(item.id)} hitSlop={8} className="ml-auto">
                       <Text style={{ fontFamily: MONO, fontSize: 10.5, color: '#6f6980' }}>report</Text>
