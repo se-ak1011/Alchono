@@ -13,6 +13,33 @@ export function useMyStatus(): { status: PresenceStatus; statusMessage: string |
   };
 }
 
+/** Whether I currently accept 1:1 message requests (default off). */
+export function useAcceptsMessages(): boolean {
+  const profile = useAuthStore((s) => s.profile) as any;
+  return !!profile?.accepts_messages;
+}
+
+/** Turn my message-request door on or off. */
+export function useSetAcceptsMessages() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const profile = useAuthStore((s) => s.profile);
+  const setProfile = useAuthStore((s) => s.setProfile);
+  return useMutation({
+    mutationFn: async (accepts: boolean) => {
+      const { error } = await (supabase as any)
+        .from('profiles')
+        .update({ accepts_messages: accepts })
+        .eq('id', userId!);
+      if (error) throw error;
+      return accepts;
+    },
+    onSuccess: (accepts) => {
+      if (profile) setProfile({ ...(profile as any), accepts_messages: accepts });
+      queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+    },
+  });
+}
+
 /** Persist a new status (and optional status message) to my profile. */
 export function useSetStatus() {
   const userId = useAuthStore((s) => s.user?.id);

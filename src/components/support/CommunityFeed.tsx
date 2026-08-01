@@ -320,8 +320,13 @@ export function CommunityFeed({
           const reactions = (item.reactions as Record<string, number>) ?? {};
           const reactionTotal = REACTIONS.reduce((n, { key }) => n + (reactions[key] ?? 0), 0);
           const mineActions = item.user_id !== myUserId && !(item as any).is_official;
-          // A named, non-seed poster who isn't me → reachable by a message request.
-          const canMessage = !item.is_anonymous && mineActions && !(item as any).is_seed_content;
+          // A named, non-seed poster who isn't me AND has opted in to messages
+          // → reachable by a request. Showing a name never implies availability.
+          const canMessage =
+            !item.is_anonymous &&
+            mineActions &&
+            !(item as any).is_seed_content &&
+            !!(item as any).poster_accepts_messages;
           // Chosen status of the poster (named only; null until they set one
           // or before the presence migration is applied).
           const posterStatus = named ? ((item as any).poster_status as PresenceStatus | null) : null;

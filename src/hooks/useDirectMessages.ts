@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
-import { fetchUsernames } from '@/lib/publicProfiles';
+import { fetchUsernames, fetchAcceptsMessages } from '@/lib/publicProfiles';
 
 export type DmMessage = {
   id: string;
@@ -41,7 +41,15 @@ export function useSendMessageRequest() {
           `and(requester_id.eq.${userId},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${userId})`,
         )
         .maybeSingle();
+      // An existing conversation is never severed by the toggle — only *new*
+      // threads must respect the recipient's door. `undefined` means
+      // pre-migration/unknown, so we allow it (the UI already hides it there).
       if (existing) return existing as DmThread;
+
+      const accepts = (await fetchAcceptsMessages([recipientId]))[recipientId];
+      if (accepts === false) {
+        throw new Error("This person isn't accepting messages right now.");
+      }
 
       const { data, error } = await supabase
         .from('dm_threads')

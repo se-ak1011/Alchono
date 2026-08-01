@@ -47,3 +47,30 @@ export async function fetchPresence(
     return {};
   }
 }
+
+/**
+ * Who has opted in to receiving message requests. Independent + resilient:
+ * kept as its own select so that if migration 037 isn't applied yet, presence
+ * (036) still works and this simply returns {} — meaning nobody shows the
+ * message door, which is the safe default anyway.
+ */
+export async function fetchAcceptsMessages(
+  ids: string[],
+): Promise<Record<string, boolean>> {
+  const unique = [...new Set(ids)].filter(Boolean);
+  if (unique.length === 0) return {};
+  try {
+    const { data, error } = await supabase
+      .from('public_profiles')
+      .select('id, accepts_messages')
+      .in('id', unique);
+    if (error) return {};
+    const map: Record<string, boolean> = {};
+    for (const row of (data as any[]) ?? []) {
+      if (row?.id) map[row.id] = !!row.accepts_messages;
+    }
+    return map;
+  } catch {
+    return {};
+  }
+}

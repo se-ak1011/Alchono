@@ -4,7 +4,7 @@ import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
-import { fetchUsernames, fetchPresence } from '@/lib/publicProfiles';
+import { fetchUsernames, fetchPresence, fetchAcceptsMessages } from '@/lib/publicProfiles';
 import { getOfficialTalkPosts } from '@/data/officialSeed';
 
 export type CommunityComment = {
@@ -78,14 +78,16 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
       // Usernames only matter for non-anonymous posts; profiles is
       // owner-only under RLS so they come from the public_profiles view.
       const namedIds = visible.filter((p: any) => !p.is_anonymous).map((p: any) => p.user_id);
-      const [names, statuses] = await Promise.all([
+      const [names, statuses, accepts] = await Promise.all([
         fetchUsernames(namedIds),
         fetchPresence(namedIds),
+        fetchAcceptsMessages(namedIds),
       ]);
       const databasePosts = visible.map((p: any) => ({
         ...p,
         username: p.is_anonymous ? null : names[p.user_id] ?? 'Member',
         poster_status: p.is_anonymous ? null : statuses[p.user_id] ?? null,
+        poster_accepts_messages: p.is_anonymous ? false : accepts[p.user_id] ?? false,
         my_reaction: selectedReactions.get(p.id) ?? null,
       }));
       return [...officialPage, ...databasePosts].sort(

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Modal, TextInput, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Text, Pressable, Modal, TextInput, Platform, KeyboardAvoidingView, Switch } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { PRESENCE, PRESENCE_ORDER, type PresenceStatus } from '@/lib/presence';
-import { useMyStatus, useSetStatus } from '@/hooks/usePresence';
+import { useMyStatus, useSetStatus, useAcceptsMessages, useSetAcceptsMessages } from '@/hooks/usePresence';
 
 const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
 
@@ -20,6 +20,8 @@ export function StatusDot({ status, size = 8 }: { status: PresenceStatus; size?:
 export function MyStatusPill() {
   const { status, statusMessage } = useMyStatus();
   const { mutate: setStatus, isPending } = useSetStatus();
+  const acceptsMessages = useAcceptsMessages();
+  const { mutate: setAccepts, isPending: savingAccepts } = useSetAcceptsMessages();
   const [open, setOpen] = useState(false);
   const [draftMsg, setDraftMsg] = useState(statusMessage ?? '');
 
@@ -140,6 +142,29 @@ export function MyStatusPill() {
               <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#817B91' }}>clear message</Text>
             </Pressable>
           ) : null}
+
+          {/* Reachability — separate from showing your name. Brave out loud
+              (username visible) can still mean "don't message me". */}
+          <View style={{ height: 1, backgroundColor: 'rgba(236,233,241,0.1)', marginTop: 18, marginBottom: 14 }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: '#ECE9F1', fontSize: 15 }}>Accept message requests</Text>
+              <Text style={{ color: '#817B91', fontSize: 12.5, lineHeight: 17, marginTop: 3 }}>
+                Off: your posts can still show your name, but no one can message you. Even on, you accept or deny each request.
+              </Text>
+            </View>
+            <Switch
+              value={acceptsMessages}
+              onValueChange={(v) => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setAccepts(v);
+              }}
+              disabled={savingAccepts}
+              trackColor={{ true: '#A489DE', false: '#474151' }}
+              thumbColor="#ECE9F1"
+              ios_backgroundColor="#474151"
+            />
+          </View>
           </Animated.View>
         </KeyboardAvoidingView>
       </Modal>
