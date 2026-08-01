@@ -6,8 +6,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { ZoneChip } from '@/components/ui/ZoneChip';
+import { CompanionArt } from '@/components/ui/CompanionArt';
 import { MiniSky } from '@/components/constellation/MiniSky';
 import { useAfDays } from '@/hooks/useVictories';
+import { useCompanion } from '@/hooks/useCompanion';
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
 
@@ -19,6 +21,7 @@ import { headingShadow } from '@/styles';
  */
 export default function MeScreen() {
   const router = useRouter();
+  const { pose } = useCompanion();
   const { data: dates = [] } = useAfDays();
   const userId = useAuthStore((s) => s.user?.id) ?? 'anon';
   const { width } = useWindowDimensions();
@@ -46,6 +49,12 @@ export default function MeScreen() {
               <Feather name="settings" size={21} color="#B2ACC0" />
             </Pressable>
           </View>
+        </View>
+
+        {/* Your companion, here on your own page too — a mate beside your
+            journey, not just on the way to somewhere. */}
+        <View className="items-center mt-1 mb-3" pointerEvents="none">
+          <CompanionArt source={pose('bust')} width={128} height={152} cropHeight={128} />
         </View>
 
         {/* Your sky, front and centre — progress felt as light, not counted.

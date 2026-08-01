@@ -89,7 +89,8 @@ export default function SupportScreen() {
           <View style={{ position: "absolute", right: 20, top: companionTop + 104, zIndex: 10 }}>
             <OrbitChip label="Recovery" onPress={() => go("/support/recovery")} />
           </View>
-          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 250, alignItems: "center", zIndex: 10 }}>
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 250, flexDirection: "row", justifyContent: "center", gap: 12, zIndex: 10 }}>
+            <OrbitChip label="Resources" onPress={() => go("/support/resources")} />
             <OrbitChip label="I want a drink" emergency onPress={() => go("/session/urge", true)} />
           </View>
         </View>
