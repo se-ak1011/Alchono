@@ -1,8 +1,20 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { asPresence, type PresenceStatus } from '@/lib/presence';
+import { fetchPresenceDetailed } from '@/lib/publicProfiles';
+
+/** Batched status + status message for a set of users (the buddy list). */
+export function usePresences(ids: string[]) {
+  const key = [...new Set(ids.filter(Boolean))].sort();
+  return useQuery({
+    queryKey: ['presences', key],
+    queryFn: () => fetchPresenceDetailed(key),
+    enabled: key.length > 0,
+    staleTime: 30_000,
+  });
+}
 
 /** My own chosen status + message, read straight off the profile in the store. */
 export function useMyStatus(): { status: PresenceStatus; statusMessage: string | null } {

@@ -10,6 +10,7 @@ import { CommunityFeed } from '@/components/support/CommunityFeed';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { headingShadow } from '@/styles';
 import { useCommunityMoments, type FeedMoment } from '@/hooks/useMoments';
+import { useUnreadTotal } from '@/hooks/useMessages';
 
 const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
 const PLUM = '#A489DE';
@@ -159,6 +160,7 @@ export default function CommunityScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ tab?: string; post?: string }>();
   const [tab, setTab] = useState<'look' | 'talk'>(params.tab === 'talk' ? 'talk' : 'look');
+  const { data: unread } = useUnreadTotal();
 
   return (
     <SafeArea bottom={false}>
@@ -178,14 +180,29 @@ export default function CommunityScreen() {
             drop in · say hi · real people, no feed
           </Text>
         </View>
-        <Pressable
-          onPress={() => router.push('/support/mentors')}
-          hitSlop={8}
-          className="rounded-full px-3.5 py-1.5 active:opacity-70"
-          style={{ backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.14)' }}
-        >
-          <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#B2ACC0' }}>mentors</Text>
-        </Pressable>
+        <View style={{ gap: 6, alignItems: 'flex-end' }}>
+          <Pressable
+            onPress={() => router.push('/messages')}
+            hitSlop={8}
+            className="flex-row items-center rounded-full px-3.5 py-1.5 active:opacity-70"
+            style={{ backgroundColor: 'rgba(164,137,222,0.12)', borderWidth: 1, borderColor: 'rgba(164,137,222,0.35)' }}
+          >
+            <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#C6B2F0' }}>messages</Text>
+            {!!unread && (
+              <View style={{ marginLeft: 6, minWidth: 16, height: 16, paddingHorizontal: 4, borderRadius: 8, backgroundColor: '#A489DE', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: '#201D28', fontSize: 9.5, fontWeight: '800' }}>{unread > 9 ? '9+' : unread}</Text>
+              </View>
+            )}
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/support/mentors')}
+            hitSlop={8}
+            className="rounded-full px-3.5 py-1.5 active:opacity-70"
+            style={{ backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.14)' }}
+          >
+            <Text style={{ fontFamily: MONO, fontSize: 11.5, color: '#B2ACC0' }}>mentors</Text>
+          </Pressable>
+        </View>
       </View>
 
       {/* Look | Talk — retro tabs. */}

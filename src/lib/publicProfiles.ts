@@ -49,6 +49,31 @@ export async function fetchPresence(
 }
 
 /**
+ * Status + status message per user, for the MSN buddy list (which shows both
+ * the dot and the little status line). Resilient: returns {} pre-migration.
+ */
+export async function fetchPresenceDetailed(
+  ids: string[],
+): Promise<Record<string, { status: PresenceStatus; statusMessage: string | null }>> {
+  const unique = [...new Set(ids)].filter(Boolean);
+  if (unique.length === 0) return {};
+  try {
+    const { data, error } = await supabase
+      .from('public_profiles')
+      .select('id, presence_status, status_message')
+      .in('id', unique);
+    if (error) return {};
+    const map: Record<string, { status: PresenceStatus; statusMessage: string | null }> = {};
+    for (const row of (data as any[]) ?? []) {
+      if (row?.id) map[row.id] = { status: asPresence(row.presence_status), statusMessage: row.status_message ?? null };
+    }
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+/**
  * Who has opted in to receiving message requests. Independent + resilient:
  * kept as its own select so that if migration 037 isn't applied yet, presence
  * (036) still works and this simply returns {} — meaning nobody shows the

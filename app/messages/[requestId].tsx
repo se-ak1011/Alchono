@@ -31,8 +31,14 @@ import {
   useRespondToDmRequest,
   DM_REQUEST_LIMIT,
 } from '@/hooks/useDirectMessages';
+import { usePresences } from '@/hooks/usePresence';
+import { PRESENCE } from '@/lib/presence';
 import { REPORT_REASONS } from '@/types';
 import type { Message } from '@/types';
+
+const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
+const MINE_COLOR = '#8EC5E6'; // classic messenger blue for your own lines
+const THEM_COLOR = '#E6A6C0'; // a warm rose for theirs
 
 export default function ThreadScreen() {
   const router = useRouter();
@@ -44,6 +50,7 @@ export default function ThreadScreen() {
     type?: string;
   }>();
   const userId = useAuthStore((s) => s.user?.id);
+  const myUsername = useAuthStore((s) => s.profile?.username) ?? 'You';
   const isDm = type === 'dm';
 
   // Both hook families no-op when their id is undefined.
@@ -65,6 +72,8 @@ export default function ThreadScreen() {
   const { mutate: respondDm, isPending: respondingDm } = useRespondToDmRequest();
   const { mutate: blockUser } = useBlockUser();
   const { mutate: reportUser } = useReportUser();
+  const { data: presences } = usePresences(otherUserId ? [otherUserId] : []);
+  const peer = otherUserId ? presences?.[otherUserId] : undefined;
 
   const messages = (isDm ? dmMessages.data : mentorMessages.data) as
     | Message[]
@@ -102,10 +111,7 @@ export default function ThreadScreen() {
     send(content, {
       onError: (e) => {
         setDraft(content);
-        Alert.alert(
-          'Not sent',
-          e instanceof Error ? e.message : 'Please try again.',
-        );
+        Alert.alert('Not sent', e instanceof Error ? e.message : 'Please try again.');
       },
     });
   };
@@ -121,16 +127,13 @@ export default function ThreadScreen() {
           onPress: () => {
             if (!otherUserId) return;
             reportUser(
-              // reports.request_id has a FK to mentor_requests, so DM thread
-              // context travels in the reason text instead.
               {
                 reportedUserId: otherUserId,
                 requestId: isDm ? undefined : requestId,
                 reason: isDm ? `[dm thread ${requestId}] ${reason}` : reason,
               },
               {
-                onSuccess: () =>
-                  Alert.alert('Reported', 'Thank you. We will look into it.'),
+                onSuccess: () => Alert.alert('Reported', 'Thank you. We will look into it.'),
                 onError: () => Alert.alert('Error', 'Could not send the report.'),
               },
             );
@@ -170,83 +173,65 @@ export default function ThreadScreen() {
     ]);
   };
 
+  // MSN transcript line: "Name says: (10:32)" then the message underneath.
   const renderMessage = ({ item }: { item: Message }) => {
     const mine = item.sender_id === userId;
+    const name = mine ? myUsername : username ?? 'Them';
+    const time = new Date(item.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     return (
-      <View
-        className={`px-6 mb-2 ${mine ? 'items-end' : 'items-start'}`}
-      >
-        <View
-          className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-            mine ? 'bg-accent' : 'bg-surface border border-white/8'
-          }`}
-        >
-          <Text className={`text-base leading-snug ${mine ? 'text-bg' : 'text-text-primary'}`}>
-            {item.content}
-          </Text>
-        </View>
-        <Text className="text-text-muted text-xs mt-1">
-          {new Date(item.created_at).toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+      <View style={{ paddingHorizontal: 18, marginBottom: 11 }}>
+        <Text style={{ fontFamily: MONO, fontSize: 12 }}>
+          <Text style={{ color: mine ? MINE_COLOR : THEM_COLOR, fontWeight: '700' }}>{name} </Text>
+          <Text style={{ color: '#6f6980' }}>says: ({time})</Text>
         </Text>
+        <Text style={{ color: '#ECE9F1', fontSize: 15, lineHeight: 21, marginTop: 2 }}>{item.content}</Text>
       </View>
     );
   };
 
+  const statusLabel = peer ? PRESENCE[peer.status].label : null;
+  const statusDot = peer ? PRESENCE[peer.status].dot : '#5c5668';
+  const subParts = [statusLabel, peerCity ? `near ${peerCity}` : null, peer?.statusMessage ? `“${peer.statusMessage}”` : null].filter(Boolean);
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-bg"
-    >
-      <View className="flex-1" style={{ paddingTop: insets.top + 12 }}>
-        {/* Header */}
-        <View className="flex-row items-center px-6 pb-4 border-b border-white/5">
-          <Pressable onPress={() => router.back()} className="mr-4" hitSlop={12}>
-            <Text className="text-text-secondary text-lg">←</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-bg">
+      <View className="flex-1" style={{ paddingTop: insets.top }}>
+        {/* MSN window title bar */}
+        <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: '#2b2635', borderBottomWidth: 1, borderBottomColor: 'rgba(164,137,222,0.25)' }}>
+          <Pressable onPress={() => router.back()} className="mr-3" hitSlop={12}>
+            <Text style={{ color: '#B2ACC0', fontSize: 18 }}>‹</Text>
           </Pressable>
-          <Avatar username={username} size="sm" />
+          <View>
+            <Avatar username={username} size="sm" />
+            <View style={{ position: 'absolute', right: -2, bottom: -2, width: 11, height: 11, borderRadius: 6, backgroundColor: statusDot, borderWidth: 2, borderColor: '#2b2635' }} />
+          </View>
           <View className="ml-3 flex-1">
-            <Text className="text-text-primary text-base font-semibold">
+            <Text style={{ color: '#ECE9F1', fontSize: 15, fontWeight: '700' }} numberOfLines={1}>
               {username ?? 'Conversation'}
             </Text>
-            {!!peerCity && (
-              <Text className="text-text-muted text-xs mt-0.5">near {peerCity}</Text>
+            {subParts.length > 0 && (
+              <Text style={{ fontFamily: MONO, fontSize: 11, color: '#817B91' }} numberOfLines={1}>
+                {subParts.join(' · ')}
+              </Text>
             )}
           </View>
           <Pressable onPress={showActions} hitSlop={12}>
-            <Text className="text-text-muted text-xl">⋯</Text>
+            <Text style={{ color: '#817B91', fontSize: 20 }}>⋯</Text>
           </Pressable>
         </View>
 
         {/* DM request banner — recipient decides right here too */}
         {dmPending && !iAmDmRequester && (
-          <View className="mx-4 mt-3 bg-surface rounded-2xl px-5 py-4 border border-white/10">
-            <Text className="text-text-primary text-base font-semibold mb-1">
-              Message request
-            </Text>
+          <View className="mx-4 mt-3 rounded-2xl px-5 py-4" style={{ backgroundColor: '#2b2635', borderWidth: 1, borderColor: 'rgba(164,137,222,0.3)' }}>
+            <Text className="text-text-primary text-base font-semibold mb-1">Message request</Text>
             <Text className="text-text-muted text-sm leading-relaxed mb-3">
-              {username ?? 'This member'} can't send more messages unless you
-              accept. Block and report are in the ⋯ menu.
+              {username ?? 'This member'} can't send more messages unless you accept. Block and report are in the ⋯ menu.
             </Text>
             <View className="flex-row gap-2">
-              <Button
-                title="Decline"
-                variant="secondary"
-                size="sm"
-                className="flex-1"
-                disabled={respondingDm}
-                onPress={() => respondDm({ threadId: requestId!, accept: false })}
-              />
-              <Button
-                title="Accept"
-                variant="primary"
-                size="sm"
-                className="flex-1"
-                disabled={respondingDm}
-                onPress={() => respondDm({ threadId: requestId!, accept: true })}
-              />
+              <Button title="Decline" variant="secondary" size="sm" className="flex-1" disabled={respondingDm}
+                onPress={() => respondDm({ threadId: requestId!, accept: false })} />
+              <Button title="Accept" variant="primary" size="sm" className="flex-1" disabled={respondingDm}
+                onPress={() => respondDm({ threadId: requestId!, accept: true })} />
             </View>
           </View>
         )}
@@ -263,10 +248,10 @@ export default function ThreadScreen() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center px-10">
-              <Text className="text-text-muted text-base text-center leading-relaxed">
+              <Text style={{ fontFamily: MONO, fontSize: 13, color: '#817B91', textAlign: 'center', lineHeight: 21 }}>
                 {dmPending && iAmDmRequester
-                  ? `This is a message request.\nYou can send up to ${DM_REQUEST_LIMIT} messages until they accept.`
-                  : 'This space is private — just the two of you.\nSay hi.'}
+                  ? `// message request\nyou can send up to ${DM_REQUEST_LIMIT} messages\nuntil they accept.`
+                  : '// private window — just the two of you\nsay hi.'}
               </Text>
             </View>
           }
@@ -274,62 +259,61 @@ export default function ThreadScreen() {
 
         {/* Request-model composer states */}
         {dmPending && iAmDmRequester && (
-          <Text className="text-text-muted text-xs text-center pb-1">
+          <Text style={{ fontFamily: MONO, fontSize: 11, color: '#817B91', textAlign: 'center', paddingBottom: 4 }}>
             {requestExhausted
-              ? `Request sent — ${DM_REQUEST_LIMIT} of ${DM_REQUEST_LIMIT} messages used. Waiting for them to accept.`
-              : `Message request · ${myPendingSent} of ${DM_REQUEST_LIMIT} sent`}
+              ? `request sent — ${DM_REQUEST_LIMIT}/${DM_REQUEST_LIMIT} used · waiting for them to accept`
+              : `message request · ${myPendingSent}/${DM_REQUEST_LIMIT} sent`}
           </Text>
         )}
         {dmDeclined && (
-          <Text className="text-text-muted text-xs text-center pb-1">
-            This request was declined. No more messages can be sent.
+          <Text style={{ fontFamily: MONO, fontSize: 11, color: '#817B91', textAlign: 'center', paddingBottom: 4 }}>
+            this request was declined. no more messages can be sent.
           </Text>
         )}
 
-        {/* Composer */}
+        {/* MSN composer */}
         <View
-          className="flex-row items-end gap-2 px-4 pt-3 border-t border-white/5"
-          style={{
-            paddingBottom: insets.bottom + 8,
-            opacity: composerLocked ? 0.4 : 1,
-          }}
+          className="flex-row items-end gap-2 px-4 pt-3"
+          style={{ paddingBottom: insets.bottom + 8, borderTopWidth: 1, borderTopColor: 'rgba(164,137,222,0.2)', backgroundColor: '#2b2635', opacity: composerLocked ? 0.5 : 1 }}
         >
+          {/* Ghosted nudge — the buzz is coming later 😏 */}
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); Alert.alert('Nudge', 'The window-shaking buzz is coming soon 😏'); }}
+            disabled={composerLocked}
+            className="w-10 h-10 rounded-lg items-center justify-center active:opacity-60"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.12)' }}
+          >
+            <Text style={{ fontSize: 15 }}>👋</Text>
+          </Pressable>
           <TextInput
             value={draft}
             onChangeText={setDraft}
-            placeholder={
-              composerLocked ? 'Messaging is closed on this thread' : 'Write a message…'
-            }
+            placeholder={composerLocked ? 'Messaging is closed on this thread' : 'Write a message…'}
             placeholderTextColor="#817B91"
             multiline
             editable={!composerLocked}
             maxLength={2000}
             style={{
               flex: 1,
-              backgroundColor: '#383243',
-              borderRadius: 20,
-              paddingHorizontal: 16,
-              paddingTop: 12,
-              paddingBottom: 12,
+              backgroundColor: 'rgba(255,255,255,0.06)',
+              borderRadius: 10,
+              paddingHorizontal: 14,
+              paddingTop: 11,
+              paddingBottom: 11,
               color: '#ECE9F1',
-              fontSize: 16,
+              fontSize: 15,
               maxHeight: 120,
               borderWidth: 1,
-              borderColor: 'rgba(243, 240, 244, 0.10)',
+              borderColor: 'rgba(243, 240, 244, 0.12)',
             }}
           />
           <Pressable
             onPress={handleSend}
             disabled={!draft.trim() || isSending || composerLocked}
-            className={`w-11 h-11 rounded-full items-center justify-center ${
-              draft.trim() && !composerLocked ? 'bg-accent' : 'bg-surface-2'
-            }`}
+            className="h-10 px-4 rounded-lg items-center justify-center"
+            style={{ backgroundColor: draft.trim() && !composerLocked ? '#A489DE' : '#474151' }}
           >
-            <Text
-              className={`text-lg font-bold ${draft.trim() ? 'text-bg' : 'text-text-muted'}`}
-            >
-              ↑
-            </Text>
+            <Text style={{ fontFamily: MONO, fontSize: 13, fontWeight: '700', letterSpacing: 1, color: draft.trim() && !composerLocked ? '#201D28' : '#817B91' }}>SEND</Text>
           </Pressable>
         </View>
       </View>

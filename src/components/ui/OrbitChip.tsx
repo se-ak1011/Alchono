@@ -14,6 +14,8 @@ type OrbitChipProps = {
   accent?: string;
   emergency?: boolean;
   numberOfLines?: 1 | 2;
+  /** Optional unread count — shows a small dot/badge on the corner when > 0. */
+  badge?: number;
   onLayout?: (event: LayoutChangeEvent) => void;
   style?: StyleProp<ViewStyle>;
 };
@@ -24,6 +26,7 @@ export function OrbitChip({
   accent,
   emergency = false,
   numberOfLines = 1,
+  badge = 0,
   onLayout,
   style,
 }: OrbitChipProps) {
@@ -80,6 +83,28 @@ export function OrbitChip({
       >
         {label}
       </Text>
+      {badge > 0 ? (
+        <View
+          style={{
+            position: "absolute",
+            top: -5,
+            right: -5,
+            minWidth: 18,
+            height: 18,
+            paddingHorizontal: 4,
+            borderRadius: 9,
+            backgroundColor: "#A489DE",
+            borderWidth: 1.5,
+            borderColor: "#201D28",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: "#201D28", fontSize: 10, fontWeight: "800" }}>
+            {badge > 9 ? "9+" : badge}
+          </Text>
+        </View>
+      ) : null}
     </Pressable>
   );
 }

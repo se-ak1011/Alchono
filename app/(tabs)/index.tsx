@@ -22,6 +22,7 @@ import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useActiveSession } from "@/hooks/useDrinkingSession";
 import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
+import { useUnreadTotal } from "@/hooks/useMessages";
 import { HOME_ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
 import { headingShadow } from "@/styles";
 import { queryClient } from "@/lib/queryClient";
@@ -31,12 +32,17 @@ import { queryClient } from "@/lib/queryClient";
 function HomeOrbitChip({ zone, style }: { zone: Zone; style: any }) {
   const router = useRouter();
   const multiline = zone.key === "community" || zone.key === "games";
+  // Support carries the unread-messages count as a small badge, so a reply is
+  // never missed from Home — without adding a whole new chip to the orbit.
+  const { data: unread } = useUnreadTotal();
+  const badge = zone.key === "support" ? unread ?? 0 : 0;
   return (
     <View style={[{ position: "absolute", zIndex: 10 }, style]}>
       <OrbitChip
         label={multiline ? zone.label.replace(" ", "\n") : zone.label}
         accent={zone.accent}
         numberOfLines={multiline ? 2 : 1}
+        badge={badge}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push(zone.route as any);
