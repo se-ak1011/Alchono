@@ -327,9 +327,12 @@ export function CommunityFeed({
             mineActions &&
             !(item as any).is_seed_content &&
             !!(item as any).poster_accepts_messages;
-          // Chosen status of the poster (named only; null until they set one
-          // or before the presence migration is applied).
-          const posterStatus = named ? ((item as any).poster_status as PresenceStatus | null) : null;
+          // Presence is for humans, not brand voices: Official accounts get
+          // only their badge — no dot, no status label.
+          const isOfficial = !!(item as any).is_official;
+          // Chosen status of the poster (named humans only; null until they set
+          // one or before the presence migration is applied).
+          const posterStatus = named && !isOfficial ? ((item as any).poster_status as PresenceStatus | null) : null;
           const dotColor = posterStatus ? PRESENCE[posterStatus].dot : named ? ONLINE : '#5c5668';
           return (
             <Animated.View
@@ -342,14 +345,16 @@ export function CommunityFeed({
               <View className="flex-1">
                 {/* Handle line — monospace, with a little presence bullet. */}
                 <View className="flex-row items-center gap-1.5 mb-1">
-                  <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: dotColor }} />
+                  {!isOfficial && (
+                    <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: dotColor }} />
+                  )}
                   <Text style={{ fontFamily: MONO, fontSize: 12.5, color: named ? PLUM : '#9089a0' }} numberOfLines={1}>
                     {handle}
                   </Text>
                   {posterStatus ? (
                     <Text style={{ fontFamily: MONO, fontSize: 10.5, color: '#6f6980' }}>{PRESENCE[posterStatus].short}</Text>
                   ) : null}
-                  {(item as any).is_official ? <RoleBadge role="official" /> : null}
+                  {isOfficial ? <RoleBadge role="official" /> : null}
                   <Text style={{ fontFamily: MONO, fontSize: 11, color: '#6f6980' }}>· {ago(item.created_at)}</Text>
                   {mineActions && (
                     <Pressable onPress={() => showPostActions(item)} hitSlop={12} className="ml-auto">
