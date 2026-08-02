@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +7,8 @@ import { Feather } from '@expo/vector-icons';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { ZoneChip } from '@/components/ui/ZoneChip';
 import { headingShadow } from '@/styles';
+
+const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
 
 type Row = { title: string; subtitle: string; route: string; icon: keyof typeof Feather.glyphMap; accent: string };
 
@@ -78,24 +80,42 @@ export default function RecoveryScreen() {
           >
             Recovery
           </Text>
-          <Text className="text-text-secondary text-lg leading-relaxed mb-8">
+          <Text className="text-text-secondary text-lg leading-relaxed mb-6">
             Not a hard moment — just here. Take your time.
           </Text>
 
-          {ROWS.map((r, i) => (
-            <Animated.View
-              key={r.title}
-              entering={FadeInDown.duration(400).delay(100 + i * 60)}
-            >
-              <ZoneChip
-                icon={r.icon}
-                accent={r.accent}
-                title={r.title}
-                subtitle={r.subtitle}
-                onPress={() => router.push(r.route as any)}
-              />
-            </Animated.View>
-          ))}
+          {/* A keepsake tin: the calm, important things kept where you can find
+              them. Deliberately understated — this page gets opened in the hard
+              hours, so it stays legible, not themed to death. */}
+          <View
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: 'rgba(236,233,241,0.12)',
+              backgroundColor: 'rgba(255,255,255,0.03)',
+              paddingHorizontal: 12,
+              paddingTop: 16,
+              paddingBottom: 12,
+            }}
+          >
+            <View style={{ position: 'absolute', top: -9, left: 18, backgroundColor: '#201D28', paddingHorizontal: 8 }}>
+              <Text style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: 2, color: '#817B91' }}>YOUR KIT</Text>
+            </View>
+            {ROWS.map((r, i) => (
+              <Animated.View
+                key={r.title}
+                entering={FadeInDown.duration(400).delay(100 + i * 60)}
+              >
+                <ZoneChip
+                  icon={r.icon}
+                  accent={r.accent}
+                  title={r.title}
+                  subtitle={r.subtitle}
+                  onPress={() => router.push(r.route as any)}
+                />
+              </Animated.View>
+            ))}
+          </View>
         </Animated.View>
       </ScrollView>
     </View>

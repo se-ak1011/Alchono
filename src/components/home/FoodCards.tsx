@@ -1,55 +1,57 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useGoodNews } from '@/hooks/useGoodNews';
-import { useCuratedStories } from '@/hooks/useCuratedStories';
-import { useDilemmas } from '@/hooks/useDilemmas';
-import { FOOD } from '@/lib/food';
 
-type Preview = { id: string; title: string; body: string };
+const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
 
-function PreviewSection({ title, route, accent, items, empty, loading }: {
-  title: string; route: string; accent: string; items: Preview[]; empty: string; loading: boolean;
-}) {
-  const router = useRouter();
-  return (
-    <View className="mt-8">
-      <View className="flex-row items-center justify-between px-6 mb-3">
-        <Text className="text-text-primary text-xl font-semibold">{title}</Text>
-        <Pressable onPress={() => router.push(route as any)} hitSlop={8} className="active:opacity-60">
-          <Text style={{ color: accent, fontFamily: 'Inter_600SemiBold', fontSize: 14 }}>See More</Text>
-        </Pressable>
-      </View>
-      {loading && items.length === 0 ? (
-        <View className="h-32 items-center justify-center"><ActivityIndicator color="#817B91" /></View>
-      ) : items.length === 0 ? (
-        <View className="mx-6 rounded-2xl bg-surface border border-white/8 px-4 py-4"><Text className="text-text-muted text-sm">{empty}</Text></View>
-      ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToInterval={300} decelerationRate="fast" contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}>
-          {items.slice(0, 3).map((item) => (
-            <Pressable key={item.id} onPress={() => router.push(route as any)} className="bg-surface rounded-3xl border border-white/8 p-5 active:opacity-75" style={{ width: 288, minHeight: 156 }}>
-              <View style={{ width: 34, height: 4, borderRadius: 2, backgroundColor: accent, marginBottom: 14 }} />
-              <Text className="text-text-primary text-lg font-semibold leading-snug" numberOfLines={2}>{item.title}</Text>
-              <Text className="text-text-secondary text-sm leading-relaxed mt-2" numberOfLines={3}>{item.body}</Text>
-              <Feather name="arrow-right" size={16} color={accent} style={{ marginTop: 12 }} />
-            </Pressable>
-          ))}
-        </ScrollView>
-      )}
-    </View>
-  );
-}
+/**
+ * The three "Food for…" reads now live together in The Caff — so Home carries
+ * one warm doorway into that room instead of three stacked feeds. Keeps Home
+ * calm and makes the reads feel like a place you visit, not a feed you scroll.
+ */
+const PAPERS = [
+  { label: 'The Gazette', hint: 'good news' },
+  { label: 'The Funnies', hint: 'a laugh' },
+  { label: 'The Letters', hint: 'a dilemma' },
+];
 
 export function FoodCards() {
-  const { data: soul = [], isLoading: soulLoading } = useGoodNews();
-  const { data: giggles = [], isLoading: gigglesLoading } = useCuratedStories('giggle');
-  const { data: thoughts = [], isLoading: thoughtLoading } = useDilemmas();
+  const router = useRouter();
   return (
-    <>
-      <PreviewSection title="Food for the Soul" route="/soul" accent={FOOD.soul.accent} loading={soulLoading} empty="New inspiration coming soon." items={soul.slice(0, 3).map((x, i) => ({ id: `${i}-${x.title}`, title: x.title, body: x.summary }))} />
-      <PreviewSection title="Food for Giggles" route="/giggles" accent={FOOD.giggles.accent} loading={gigglesLoading} empty="Fresh giggles are on the way." items={giggles.slice(0, 3).map((x) => ({ id: x.id, title: x.title, body: x.body }))} />
-      <PreviewSection title="Food for Thought" route="/thought" accent={FOOD.thought.accent} loading={thoughtLoading} empty="New dilemmas are coming soon." items={thoughts.slice(0, 3).map((x) => ({ id: x.id, title: x.title, body: x.story }))} />
-    </>
+    <View className="mt-8 px-6">
+      <Pressable
+        onPress={() => router.push('/caff' as any)}
+        className="active:opacity-90"
+        style={{
+          borderRadius: 20,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: 'rgba(224,176,128,0.32)',
+          backgroundColor: 'rgba(224,176,128,0.08)',
+          padding: 18,
+        }}
+      >
+        <View className="flex-row items-center justify-between">
+          <View className="flex-1 pr-3">
+            <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 26, lineHeight: 30, color: '#ECE9F1' }}>The Caff</Text>
+            <Text style={{ color: '#B2ACC0', fontSize: 13.5, marginTop: 2 }}>Pull up a chair — a few minutes off.</Text>
+          </View>
+          <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(224,176,128,0.16)', borderWidth: 1, borderColor: 'rgba(224,176,128,0.4)' }}>
+            <Feather name="coffee" size={19} color="#E0B080" />
+          </View>
+        </View>
+
+        {/* The three papers on the table. */}
+        <View className="flex-row" style={{ gap: 8, marginTop: 14 }}>
+          {PAPERS.map((p) => (
+            <View key={p.label} style={{ flex: 1, borderRadius: 10, backgroundColor: 'rgba(20,18,24,0.5)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.1)', paddingVertical: 9, paddingHorizontal: 8 }}>
+              <Text style={{ color: '#ECE9F1', fontSize: 12.5, fontWeight: '600' }} numberOfLines={1}>{p.label}</Text>
+              <Text style={{ fontFamily: MONO, fontSize: 9.5, color: '#817B91', marginTop: 1 }} numberOfLines={1}>{p.hint}</Text>
+            </View>
+          ))}
+        </View>
+      </Pressable>
+    </View>
   );
 }
