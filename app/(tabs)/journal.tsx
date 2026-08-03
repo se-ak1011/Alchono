@@ -9,6 +9,7 @@ import { SafeArea } from "@/components/ui/SafeArea";
 import { ZoneGlow } from "@/components/ui/ZoneGlow";
 import { CompanionArt } from "@/components/ui/CompanionArt";
 import { OrbitChip } from "@/components/ui/OrbitChip";
+import { RoomBackdrop, ContactShadow } from "@/components/ui/RoomBackdrop";
 import { useCompanion } from "@/hooks/useCompanion";
 import { useAddVoiceNote, useJournalNotes } from "@/hooks/useJournalNotes";
 import { ZONES } from "@/lib/zones";
@@ -128,6 +129,8 @@ export default function JournalScreen() {
   return (
     <SafeArea bottom={false}>
       <ZoneGlow zone="writing" />
+      {/* Her writing room — a quiet desk in a pool of lamplight, walls close. */}
+      <RoomBackdrop warmth={WRITING.accent} floor="#282232" lampTop={150} horizon={0.6} intensity={0.95} />
 
       <View className="px-6 pt-5 pb-1 flex-row items-start gap-3">
         <Pressable
@@ -153,6 +156,10 @@ export default function JournalScreen() {
           page underneath, an archive rather than an orbit action. */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
         <View style={{ height: 408, position: "relative", marginTop: 6 }}>
+          {/* Grounds the desk in the room. */}
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 268, alignItems: "center" }} pointerEvents="none">
+            <ContactShadow width={224} height={28} opacity={0.3} />
+          </View>
           <View
             style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center" }}
             pointerEvents="none"

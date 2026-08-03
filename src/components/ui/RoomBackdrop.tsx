@@ -1,17 +1,18 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
+import Svg, { Defs, RadialGradient, LinearGradient, Stop, Rect } from 'react-native-svg';
 
 /**
  * The difference between "an app with a nice theme" and a *place*.
  *
- * ZoneGlow gives a screen its colour temperature; RoomBackdrop gives it a
- * ROOM — a floor to stand on, a back wall catching lamp-light, and a soft pool
- * of warmth where a lamp would be. Drop it in just after ZoneGlow, and a
- * companion who used to float on a flat void suddenly *inhabits* somewhere.
+ * Three layers of real light (via SVG gradients, so nothing has a hard edge):
+ *  1. a soft lamp glow blooming from one spot,
+ *  2. a vignette that darkens the edges so the screen feels *enclosed* — walls
+ *     around you, not a cut-out floating on an infinite plane,
+ *  3. a floor rising to meet the wall at the horizon.
  *
- * Purely decorative and non-interactive. One knob (`warmth`) tunes the whole
- * mood, so a cosy tea-room and a cool night-room are the same component.
+ * Drop it in just after ZoneGlow. One knob (`warmth`) tunes the mood, so a cosy
+ * tea-room and a cool night-room are the same component.
  */
 
 function rgba(hex: string, alpha: number): string {
@@ -29,83 +30,53 @@ export function RoomBackdrop({
   floor = '#2C2432',
   /** Fraction of height where the back wall meets the floor (0–1). */
   horizon = 0.6,
-  /** Overall strength of the whole effect. */
+  /** Overall strength of the lamp + floor. */
   intensity = 1,
-  /** Where the lamp pool sits, top-down, in points. */
-  lampTop = 150,
+  /** How dark the enclosing edges get (0 = none, ~0.6 = cosy and close). */
+  vignette = 0.5,
+  /** Where the lamp sits, top-down, in points (kept for call-site compatibility). */
+  lampTop,
 }: {
   warmth?: string;
   floor?: string;
   horizon?: number;
   intensity?: number;
+  vignette?: number;
   lampTop?: number;
 }) {
-  const rings = [
-    { size: 460, alpha: 0.05 },
-    { size: 320, alpha: 0.07 },
-    { size: 200, alpha: 0.1 },
-  ];
+  const { width, height } = useWindowDimensions();
+  const lampCy = lampTop != null ? Math.min(0.85, lampTop / height) : 0.34;
+  const floorY = height * horizon;
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      {/* Lamp pool — layered soft rings fake a radial glow the way the room
-          would actually be lit: brightest at the middle, feathering out. */}
-      <View
-        style={{
-          position: 'absolute',
-          top: lampTop,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-        }}
-      >
-        {rings.map((r) => (
-          <View
-            key={r.size}
-            style={{
-              position: 'absolute',
-              width: r.size,
-              height: r.size,
-              borderRadius: r.size / 2,
-              marginTop: -r.size / 2,
-              backgroundColor: rgba(warmth, r.alpha * intensity),
-            }}
-          />
-        ))}
-      </View>
+      <Svg width={width} height={height}>
+        <Defs>
+          {/* The lamp: a soft warm bloom, brightest where it's placed. */}
+          <RadialGradient id="rb-lamp" cx="50%" cy={`${lampCy * 100}%`} rx="70%" ry="55%">
+            <Stop offset="0" stopColor={warmth} stopOpacity={0.24 * intensity} />
+            <Stop offset="0.45" stopColor={warmth} stopOpacity={0.09 * intensity} />
+            <Stop offset="1" stopColor={warmth} stopOpacity={0} />
+          </RadialGradient>
+          {/* The walls: darkness gathering at the edges, holding you in. */}
+          <RadialGradient id="rb-vign" cx="50%" cy="40%" rx="75%" ry="70%">
+            <Stop offset="0.5" stopColor="#100D16" stopOpacity={0} />
+            <Stop offset="1" stopColor="#100D16" stopOpacity={vignette} />
+          </RadialGradient>
+          {/* The floor: rising to meet the wall. */}
+          <LinearGradient id="rb-floor" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor={floor} stopOpacity={0} />
+            <Stop offset="0.5" stopColor={floor} stopOpacity={0.5 * intensity} />
+            <Stop offset="1" stopColor={floor} stopOpacity={0.85 * intensity} />
+          </LinearGradient>
+        </Defs>
 
-      {/* The floor: a grounded plane rising to meet the wall at the horizon. */}
-      <View
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          top: `${horizon * 100}%`,
-        }}
-      >
-        <LinearGradient
-          colors={[
-            rgba(floor, 0),
-            rgba(floor, 0.45 * intensity),
-            rgba(floor, 0.82 * intensity),
-          ]}
-          locations={[0, 0.5, 1]}
-          style={{ flex: 1 }}
-        />
-      </View>
-
-      {/* A whisper of lamp-light catching the horizon where wall meets floor. */}
-      <View
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: `${horizon * 100}%`,
-          height: 1,
-          backgroundColor: rgba(warmth, 0.12 * intensity),
-        }}
-      />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#rb-lamp)" />
+        <Rect x="0" y={floorY} width={width} height={height - floorY} fill="url(#rb-floor)" />
+        {/* A whisper of lamp-light catching the horizon line. */}
+        <Rect x="0" y={floorY} width={width} height={1} fill={rgba(warmth, 0.14 * intensity)} />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#rb-vign)" />
+      </Svg>
     </View>
   );
 }
