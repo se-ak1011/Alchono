@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { Avatar } from '@/components/ui/Avatar';
 import { ZoneChip } from '@/components/ui/ZoneChip';
 import { useAuthStore } from '@/store/authStore';
@@ -22,6 +23,9 @@ export default function ProfileScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="me" intensity={1.1} />
+      {/* A warm entryway — your people and the things that make you you, in a
+          hallway rather than a settings list. */}
+      <RoomBackdrop warmth="#C6BFB0" floor="#2A2530" lampTop={150} horizon={0.64} intensity={0.7} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="px-6 pt-5 pb-4 flex-row items-center gap-3">
           <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
