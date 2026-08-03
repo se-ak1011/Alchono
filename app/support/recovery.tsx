@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { ZoneChip } from '@/components/ui/ZoneChip';
 import { headingShadow } from '@/styles';
 
@@ -60,6 +61,9 @@ export default function RecoveryScreen() {
       }}
     >
       <ZoneGlow zone="support" intensity={0.55} />
+      {/* A calm bedside room — enough warmth to feel like somewhere, kept low
+          and legible because this page gets opened in the hard hours. */}
+      <RoomBackdrop warmth="#B9A4EC" floor="#26222E" lampTop={170} horizon={0.68} intensity={0.5} />
       <Animated.View
         entering={FadeIn.duration(300)}
         className="flex-row items-center gap-4 px-6 pt-4 pb-2"
