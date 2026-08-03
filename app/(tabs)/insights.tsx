@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, Pressable, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { Card } from '@/components/ui/Card';
 import { InsightCard } from '@/components/insights/InsightCard';
 import { MoodChart } from '@/components/insights/MoodChart';
 import { PatternChart } from '@/components/insights/PatternChart';
+import { MiniSky } from '@/components/constellation/MiniSky';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useInsights, useTotalPauses, type InsightData } from '@/hooks/useInsights';
-import { useUrgeStats, useAfDaysCount } from '@/hooks/useVictories';
+import { useUrgeStats, useAfDaysCount, useAfDays } from '@/hooks/useVictories';
 import { useChoiceStats } from '@/hooks/useChoices';
 import { useLifeReturned } from '@/hooks/useLifeReturned';
+import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
 
 type Period = 7 | 30 | 90;
@@ -86,7 +90,11 @@ export default function InsightsScreen() {
   const { data: alcoholFreeDays = 0 } = useAfDaysCount(period);
   const { data: choiceStats } = useChoiceStats(); // all-time — this only grows
   const lifeReturned = useLifeReturned(period);
+  const { data: skyDates = [] } = useAfDays();
+  const userId = useAuthStore((s) => s.user?.id) ?? 'anon';
   const { width } = useWindowDimensions();
+  const skyW = width - 48;
+  const skyH = 190;
   const router = useRouter();
 
   const checkinDays = insights?.filter((d) => d.mood).length ?? 0;
@@ -120,6 +128,8 @@ export default function InsightsScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="me" intensity={0.7} />
+      {/* Progress lives under the same night sky as your constellation. */}
+      <RoomBackdrop warmth="#9B86C4" floor="#241F2E" lampTop={160} horizon={0.66} intensity={0.7} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 32 }}
@@ -149,6 +159,40 @@ export default function InsightsScreen() {
             <Text className="text-text-secondary text-sm font-medium">Your story →</Text>
           </Pressable>
         </View>
+
+        {/* Open on the sky, not the tiles — your record is a place, and this is
+            the first thing you see. The numbers still live below. */}
+        <Pressable
+          onPress={() => router.push('/constellation')}
+          className="mx-6 mb-5 rounded-3xl overflow-hidden border border-white/10 active:opacity-90"
+          style={{ height: skyH, backgroundColor: '#201D28' }}
+        >
+          <View style={{ position: 'absolute', left: 0, top: 0 }}>
+            <MiniSky dates={skyDates} userSeed={userId} width={skyW} height={skyH} />
+          </View>
+          <LinearGradient
+            colors={['transparent', 'rgba(24,21,32,0.55)', 'rgba(24,21,32,0.94)']}
+            style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 120 }}
+          />
+          <View style={{ position: 'absolute', left: 20, right: 20, bottom: 18 }}>
+            <View className="flex-row items-end justify-between">
+              <View className="flex-1 pr-3">
+                <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
+                  Your sky
+                </Text>
+                <Text className="text-text-secondary text-sm mt-1 leading-snug">
+                  {skyDates.length === 0
+                    ? 'A whole sky, waiting to light up'
+                    : `${skyDates.length} alcohol-free ${skyDates.length === 1 ? 'night' : 'nights'}, each a star that stays`}
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-1 mb-0.5">
+                <Text className="text-text-muted text-sm">Open</Text>
+                <Feather name="chevron-right" size={15} color="#817B91" />
+              </View>
+            </View>
+          </View>
+        </Pressable>
 
         {/* Period selector */}
         <View className="flex-row mx-6 mb-4 bg-surface rounded-xl p-1">
