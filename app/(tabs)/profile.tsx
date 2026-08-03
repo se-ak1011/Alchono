@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop, ContactShadow } from '@/components/ui/RoomBackdrop';
 import { ZoneChip } from '@/components/ui/ZoneChip';
 import { CompanionArt } from '@/components/ui/CompanionArt';
 import { MiniSky } from '@/components/constellation/MiniSky';
@@ -31,6 +32,9 @@ export default function MeScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="me" intensity={1.4} />
+      {/* Your room, at night — a cool moonlit lamp and a floor to stand on, so
+          this feels like where you *are*, not a menu about you. */}
+      <RoomBackdrop warmth="#9B86C4" floor="#241F2E" lampTop={150} horizon={0.62} intensity={0.85} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="px-6 pt-5 pb-2 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
@@ -55,6 +59,7 @@ export default function MeScreen() {
             journey, not just on the way to somewhere. */}
         <View className="items-center mt-1 mb-3" pointerEvents="none">
           <CompanionArt source={pose('bust')} width={128} height={152} cropHeight={128} />
+          <ContactShadow width={116} height={20} opacity={0.28} style={{ marginTop: -6 }} />
         </View>
 
         {/* Your sky, front and centre — progress felt as light, not counted.
