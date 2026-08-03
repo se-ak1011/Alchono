@@ -12,6 +12,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { headingShadow } from '@/styles';
 import {
   useGoals,
@@ -279,6 +280,9 @@ export default function GoalsScreen() {
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       <ZoneGlow zone="me" intensity={0.55} />
+      {/* A mantelpiece at dawn — warm first light on the things you're staying
+          the course for, propped up like postcards rather than a to-do list. */}
+      <RoomBackdrop warmth="#E6C56A" floor="#2A2530" lampTop={130} horizon={0.64} intensity={0.7} />
       {/* Header */}
       <View className="flex-row items-center gap-4 px-6 pt-4 pb-3">
         <Pressable onPress={() => router.back()} hitSlop={12}>
