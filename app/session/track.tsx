@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeArea } from '@/components/ui/SafeArea';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { headingShadow } from '@/styles';
 
@@ -19,6 +20,9 @@ export default function TrackScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="urge" intensity={0.8} />
+      {/* A room at dusk — a windowsill where you check in with the evening,
+          calm and low-lit rather than a form on a black void. */}
+      <RoomBackdrop warmth="#8AB2AE" floor="#26222E" lampTop={140} horizon={0.6} intensity={0.8} />
       <View className="px-6 pt-4 pb-2 flex-row items-center gap-3">
         <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
           <Feather name="chevron-left" size={26} color="#B2ACC0" />
