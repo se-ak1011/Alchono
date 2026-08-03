@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, FlatList, ScrollView, Alert, Dimensions } from 'react-native';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -8,9 +9,13 @@ import { SafeArea } from '@/components/ui/SafeArea';
 import { headingShadow } from '@/styles';
 import { useMyMoments, useDeleteMoment, useSetMomentCollection, type MyMoment } from '@/hooks/useMoments';
 
-const GAP = 4;
-const COLS = 3;
-const SIZE = (Dimensions.get('window').width - GAP * (COLS - 1)) / COLS;
+// Photo prints laid out on a table, not a cold gallery grid: two to a row,
+// each in a cream border with a soft shadow and a gentle tilt.
+const H_PAD = 18;
+const COL_GAP = 16;
+const COLS = 2;
+const SIZE = (Dimensions.get('window').width - H_PAD * 2 - COL_GAP) / COLS;
+const PRINT = '#EDE7DA';
 
 function statusLabel(m: MyMoment): string | null {
   if (!m.shared) return null;
@@ -72,6 +77,8 @@ export default function MyMomentsScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="community" intensity={0.55} />
+      {/* A warm tabletop the prints are scattered on. */}
+      <RoomBackdrop warmth="#D6A184" floor="#2A2530" lampTop={150} horizon={0.64} intensity={0.6} />
       <View className="px-6 pt-4 pb-3 flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
           <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
@@ -124,11 +131,13 @@ export default function MyMomentsScreen() {
         data={visible}
         keyExtractor={(m) => m.id}
         numColumns={COLS}
-        columnWrapperStyle={{ gap: GAP }}
-        contentContainerStyle={{ gap: GAP, paddingBottom: 40 }}
+        columnWrapperStyle={{ gap: COL_GAP }}
+        contentContainerStyle={{ gap: 18, paddingHorizontal: H_PAD, paddingTop: 4, paddingBottom: 44 }}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           const label = statusLabel(item);
+          const inner = SIZE - 12;
+          const tilt = index % 2 === 0 ? '-1.4deg' : '1.5deg';
           return (
             <Pressable
               onPress={() => {
@@ -140,30 +149,45 @@ export default function MyMomentsScreen() {
                   });
               }}
               onLongPress={() => momentActions(item)}
-              style={{ width: SIZE, height: SIZE }}
-              className="bg-surface overflow-hidden"
+              style={{ width: SIZE, transform: [{ rotate: tilt }] }}
             >
-              {item.url ? (
-                <Image source={{ uri: item.url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-              ) : (
-                <View className="flex-1 items-center justify-center">
-                  <Feather name="image" size={20} color="#3A3A42" />
+              {/* The print: a cream border with a bottom lip and a soft shadow. */}
+              <View
+                style={{
+                  backgroundColor: PRINT,
+                  borderRadius: 5,
+                  padding: 6,
+                  paddingBottom: 12,
+                  shadowColor: '#000',
+                  shadowOpacity: 0.38,
+                  shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 5 },
+                }}
+              >
+                <View style={{ width: inner, height: inner, borderRadius: 2, overflow: 'hidden', backgroundColor: '#2A2530' }}>
+                  {item.url ? (
+                    <Image source={{ uri: item.url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                  ) : (
+                    <View className="flex-1 items-center justify-center">
+                      <Feather name="image" size={20} color="#6f6980" />
+                    </View>
+                  )}
+                  {item.media_type === 'video' && (
+                    <View className="absolute inset-0 items-center justify-center">
+                      <View className="w-9 h-9 rounded-full bg-black/50 items-center justify-center">
+                        <Feather name="play" size={16} color="#fff" />
+                      </View>
+                    </View>
+                  )}
+                  {label && (
+                    <View className="absolute bottom-0 left-0 right-0 bg-black/55 px-1.5 py-1">
+                      <Text className="text-white text-[10px] font-medium" numberOfLines={1}>
+                        {label}
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              )}
-              {item.media_type === 'video' && (
-                <View className="absolute inset-0 items-center justify-center">
-                  <View className="w-9 h-9 rounded-full bg-black/50 items-center justify-center">
-                    <Feather name="play" size={16} color="#fff" />
-                  </View>
-                </View>
-              )}
-              {label && (
-                <View className="absolute bottom-0 left-0 right-0 bg-black/55 px-1.5 py-1">
-                  <Text className="text-white text-[10px] font-medium" numberOfLines={1}>
-                    {label}
-                  </Text>
-                </View>
-              )}
+              </View>
             </Pressable>
           );
         }}
