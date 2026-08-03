@@ -13,6 +13,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CompanionArt } from "@/components/ui/CompanionArt";
+import { ContactShadow } from "@/components/ui/RoomBackdrop";
 import { CompanionMenu } from "@/components/ui/CompanionMenu";
 import { useAiCoach } from "@/hooks/useAiCoach";
 import { useCompanion } from "@/hooks/useCompanion";
@@ -119,6 +120,8 @@ export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
                     setQuietCompanionSignal((signal) => signal + 1);
                 }}
               />
+              {/* Sits the armchair on the room's floor, not floating in chat. */}
+              <ContactShadow width={196} height={26} opacity={0.3} style={{ marginTop: -14 }} />
             </View>
           ) : null
         }

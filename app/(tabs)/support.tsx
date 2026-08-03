@@ -8,6 +8,7 @@ import { CompanionArt } from "@/components/ui/CompanionArt";
 import { OrbitChip } from "@/components/ui/OrbitChip";
 import { SafeArea } from "@/components/ui/SafeArea";
 import { ZoneGlow } from "@/components/ui/ZoneGlow";
+import { RoomBackdrop, ContactShadow } from "@/components/ui/RoomBackdrop";
 import { headingShadow } from "@/styles";
 import { useUnreadTotal } from "@/hooks/useMessages";
 import { useCompanion } from "@/hooks/useCompanion";
@@ -35,6 +36,9 @@ export default function SupportScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="support" />
+      {/* The tea-room: a warm floor under her, a lamp's pool of light. Turns
+          the orbit from "buttons in a void" into "her space you've walked into". */}
+      <RoomBackdrop warmth="#E0B080" lampTop={150} horizon={0.62} />
       <View className="px-6 pt-6 pb-2">
         <View className="flex-row items-start justify-between">
           <View className="flex-row items-center gap-3">
@@ -76,6 +80,10 @@ export default function SupportScreen() {
           Community left, Recovery right, "I want a drink" tucked underneath. */}
       <Animated.View entering={FadeIn.duration(500).delay(120)} className="flex-1">
         <View style={{ height: 470, position: "relative", marginTop: 8 }}>
+          {/* Grounds her on the floor rather than floating on the void. */}
+          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 236, alignItems: "center", zIndex: 4 }} pointerEvents="none">
+            <ContactShadow width={190} height={30} opacity={0.34} />
+          </View>
           <View style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center", zIndex: 5 }} pointerEvents="none">
             <CompanionArt source={pose("tea")} width={212} height={262} />
           </View>
