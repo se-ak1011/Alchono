@@ -7,6 +7,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
@@ -21,6 +22,9 @@ import type { ChatMessage } from "@/types";
 
 interface AiCoachChatProps {
   sessionType?: string;
+  /** When the screen already shows the companion in a room, hide the in-chat
+   *  one and reserve top space so the conversation sits below her chair. */
+  hideCompanion?: boolean;
 }
 
 // "What do you need right now?" — one tap to open the conversation, so the user
@@ -47,7 +51,7 @@ const QUICK_ACTIONS: { label: string; message: string; urge?: boolean }[] = [
   { label: "Just talk to me", message: "Can we just talk for a bit?" },
 ];
 
-export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
+export function AiCoachChat({ sessionType = "general", hideCompanion = false }: AiCoachChatProps) {
   const router = useRouter();
   const { pose } = useCompanion();
   const { messages, isTyping, sendMessage } = useAiCoach(sessionType);
@@ -56,6 +60,7 @@ export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
   const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
+  const { height: winH } = useWindowDimensions();
 
   // Show the openers only before the conversation has really started
   // (just the assistant's greeting present).
@@ -108,7 +113,11 @@ export function AiCoachChat({ sessionType = "general" }: AiCoachChatProps) {
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => <ChatBubble message={item} />}
         ListHeaderComponent={
-          showQuickActions ? (
+          hideCompanion ? (
+            // The room already shows her in her chair — just reserve the top
+            // space so the conversation begins below her.
+            <View style={{ height: winH * 0.4 }} />
+          ) : showQuickActions ? (
             <View className="pt-2 pb-1 items-center">
               <CompanionArt
                 source={pose("armchair")}
