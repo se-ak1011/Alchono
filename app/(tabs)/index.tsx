@@ -42,16 +42,16 @@ const SPOTS: Spot[] = [
   { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.090, y: 0.356 }, // purple wall panel
   { key: "resources", text: "Resources", route: "/support/resources", x: 0.576, y: 0.385 }, // telephone
   { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.424 },    // notebook / ledger
-  { key: "urge", text: "I need a drink", route: "/session/urge", x: 0.707, y: 0.532, warn: true }, // counter front
   { key: "gazette", text: "The Gazette", route: "/soul", x: 0.147, y: 0.613 },         // top basket (PREVIEW)
   { key: "funnies", text: "The Funnies", route: "/giggles", x: 0.165, y: 0.700 },      // middle basket (PREVIEW)
   { key: "community", text: "Community", route: "/community", x: 0.393, y: 0.704 },    // A-frame (PREVIEW)
   { key: "letters", text: "The Letters", route: "/thought", x: 0.175, y: 0.783 },      // bottom basket (PREVIEW)
 ];
 
-// The companion, bust pose, standing behind the counter by the phone. Cropped
-// so only head-and-shoulders rise above the counter — reads as *behind* it.
-const COMP = { xCenter: 0.51, topY: 0.26, width: 0.34, cropFrac: 0.42, wh: 630 / 420 };
+// The companion, bust pose, behind the counter by the phone. Dropped so the
+// waist meets the counter line — reads as standing *behind* it. Tune: raise
+// topY to lift her, raise cropFrac to bring the cut-off (waist) lower.
+const COMP = { xCenter: 0.52, topY: 0.29, width: 0.36, cropFrac: 0.44, wh: 630 / 420 };
 
 function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
   // Anchor to the cross, but tuck edge labels in so they never clip off-screen.
@@ -147,6 +147,38 @@ export default function HomeScreen() {
           {SPOTS.map((s) => (
             <RoomLabel key={s.key} spot={s} onPress={() => go(s.route, s.warn)} />
           ))}
+
+          {/* "I need a drink" — one line, stretched across the counter front. */}
+          <Pressable
+            onPress={() => go("/session/urge", true)}
+            hitSlop={8}
+            style={{
+              position: "absolute",
+              left: 0.45 * SCREEN_W,
+              right: 0.035 * SCREEN_W,
+              top: 0.585 * IMG_H,
+              backgroundColor: "rgba(59,51,82,0.82)",
+              borderWidth: 1,
+              borderColor: "rgba(190,160,210,0.6)",
+              borderRadius: 12,
+              paddingVertical: 8,
+              alignItems: "center",
+            }}
+            className="active:opacity-80"
+          >
+            <Text
+              style={{
+                fontFamily: "SkinnyCustard",
+                fontSize: 25,
+                color: "#F0EBF5",
+                textShadowColor: "rgba(0,0,0,0.9)",
+                textShadowOffset: { width: 0, height: 1 },
+                textShadowRadius: 6,
+              }}
+            >
+              I need a drink
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
 
