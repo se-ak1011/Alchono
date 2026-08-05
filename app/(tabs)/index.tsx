@@ -48,10 +48,10 @@ const SPOTS: Spot[] = [
   { key: "letters", text: "The Letters", route: "/thought", x: 0.175, y: 0.783 },      // bottom basket (PREVIEW)
 ];
 
-// The companion, bust pose, behind the counter by the phone. Dropped so the
-// waist meets the counter line — reads as standing *behind* it. Tune: raise
-// topY to lift her, raise cropFrac to bring the cut-off (waist) lower.
-const COMP = { xCenter: 0.52, topY: 0.31, width: 0.35, cropFrac: 0.36, wh: 630 / 420 };
+// The companion, standing pose (full body), greeting you in the room — feet on
+// the floor. Tune: xCenter moves her left/right, feetY sets where her feet land,
+// width scales her.
+const COMP = { xCenter: 0.40, feetY: 0.80, width: 0.44, wh: 630 / 420 };
 
 function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
   // Anchor to the cross, but tuck edge labels in so they never clip off-screen.
@@ -121,8 +121,8 @@ export default function HomeScreen() {
   };
 
   const compW = COMP.width * SCREEN_W;
-  const compFullH = compW * COMP.wh;
-  const compCropH = COMP.cropFrac * SCREEN_W;
+  const compH = compW * COMP.wh;
+  const compTop = COMP.feetY * IMG_H - compH;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
@@ -137,12 +137,12 @@ export default function HomeScreen() {
             style={{
               position: "absolute",
               left: COMP.xCenter * SCREEN_W - compW / 2,
-              top: COMP.topY * IMG_H,
+              top: compTop,
               width: compW,
-              height: compCropH,
+              height: compH,
             }}
           >
-            <CompanionArt source={pose("bust")} width={compW} height={compFullH} cropHeight={compCropH} />
+            <CompanionArt source={pose("standing")} width={compW} height={compH} />
           </Pressable>
 
           {SPOTS.map((s) => (
