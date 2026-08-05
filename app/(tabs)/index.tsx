@@ -44,14 +44,14 @@ const SPOTS: Spot[] = [
   { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.424 },    // notebook / ledger
   { key: "gazette", text: "The Gazette", route: "/soul", x: 0.147, y: 0.613 },         // top basket (PREVIEW)
   { key: "funnies", text: "The Funnies", route: "/giggles", x: 0.165, y: 0.700 },      // middle basket (PREVIEW)
-  { key: "community", text: "Community", route: "/community", x: 0.393, y: 0.704 },    // A-frame (PREVIEW)
+  { key: "community", text: "Community", route: "/community", x: 0.36, y: 0.655 },      // A-frame (PREVIEW) — lifted clear of The Funnies
   { key: "letters", text: "The Letters", route: "/thought", x: 0.175, y: 0.783 },      // bottom basket (PREVIEW)
 ];
 
 // The companion, bust pose, behind the counter by the phone. Dropped so the
 // waist meets the counter line — reads as standing *behind* it. Tune: raise
 // topY to lift her, raise cropFrac to bring the cut-off (waist) lower.
-const COMP = { xCenter: 0.52, topY: 0.29, width: 0.36, cropFrac: 0.44, wh: 630 / 420 };
+const COMP = { xCenter: 0.52, topY: 0.31, width: 0.35, cropFrac: 0.36, wh: 630 / 420 };
 
 function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
   // Anchor to the cross, but tuck edge labels in so they never clip off-screen.
@@ -92,6 +92,7 @@ function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
           fontSize: 22,
           lineHeight: 25,
           color: "#F0EBF5",
+          textTransform: "uppercase",
           textAlign: align === "left" ? "left" : align === "right" ? "right" : "center",
           textShadowColor: "rgba(0,0,0,0.95)",
           textShadowOffset: { width: 0, height: 1 },
@@ -171,6 +172,7 @@ export default function HomeScreen() {
                 fontFamily: "SkinnyCustard",
                 fontSize: 25,
                 color: "#F0EBF5",
+                textTransform: "uppercase",
                 textShadowColor: "rgba(0,0,0,0.9)",
                 textShadowOffset: { width: 0, height: 1 },
                 textShadowRadius: 6,
