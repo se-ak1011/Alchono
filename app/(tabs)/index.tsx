@@ -30,19 +30,23 @@ const IMG_H = SCREEN_W * (ROOM_H / ROOM_W);
 
 type Spot = { key: string; text: string; route: string; x: number; y: number; warn?: boolean };
 
+// Positions are Marta's exact crosses (x%, y% of the image → fractions).
+// PREVIEW spots (gazette/funnies/letters/community) sit here as labels for now;
+// the live content previews are the follow-up build.
 const SPOTS: Spot[] = [
-  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.27, y: 0.265 },        // the door
-  { key: "support", text: "Support", route: "/(tabs)/support", x: 0.45, y: 0.25 }, // the curtain
-  { key: "bar", text: "The Bar", route: "/barista", x: 0.63, y: 0.205 },          // the counter/fridge
-  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.85, y: 0.31 }, // the cabinet
-  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.16, y: 0.40 }, // shelf/armchair
-  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.10, y: 0.52 }, // the desk
-  { key: "today", text: "Today", route: "/today", x: 0.71, y: 0.44 },             // the ledger on the counter
-  { key: "urge", text: "I need a drink", route: "/session/urge", x: 0.61, y: 0.555, warn: true }, // counter front
-  { key: "community", text: "Community", route: "/community", x: 0.33, y: 0.755 }, // the A-frame
-  { key: "gazette", text: "The Gazette", route: "/soul", x: 0.155, y: 0.685 },     // rack, top tier
-  { key: "funnies", text: "The Funnies", route: "/giggles", x: 0.155, y: 0.78 },   // rack, middle
-  { key: "letters", text: "The Letters", route: "/thought", x: 0.155, y: 0.875 },  // rack, bottom
+  { key: "support", text: "Support", route: "/(tabs)/support", x: 0.506, y: 0.145 },   // plaque above curtain
+  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.388, y: 0.221 },             // small hanging frame
+  { key: "bar", text: "The Bar", route: "/barista", x: 0.668, y: 0.223 },              // top of fridge
+  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.225, y: 0.260 },  // corkboard, left wall
+  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.868, y: 0.327 }, // arcade screen
+  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.090, y: 0.356 }, // purple wall panel
+  { key: "resources", text: "Resources", route: "/support/resources", x: 0.576, y: 0.385 }, // telephone
+  { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.424 },    // notebook / ledger
+  { key: "urge", text: "I need a drink", route: "/session/urge", x: 0.707, y: 0.532, warn: true }, // counter front
+  { key: "gazette", text: "The Gazette", route: "/soul", x: 0.147, y: 0.613 },         // top basket (PREVIEW)
+  { key: "funnies", text: "The Funnies", route: "/giggles", x: 0.165, y: 0.700 },      // middle basket (PREVIEW)
+  { key: "community", text: "Community", route: "/community", x: 0.393, y: 0.704 },    // A-frame (PREVIEW)
+  { key: "letters", text: "The Letters", route: "/thought", x: 0.175, y: 0.783 },      // bottom basket (PREVIEW)
 ];
 
 // The companion, bust pose, standing behind the counter by the phone. Cropped
@@ -50,29 +54,36 @@ const SPOTS: Spot[] = [
 const COMP = { xCenter: 0.51, topY: 0.26, width: 0.34, cropFrac: 0.42, wh: 630 / 420 };
 
 function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
+  // Anchor to the cross, but tuck edge labels in so they never clip off-screen.
+  const align = spot.x <= 0.2 ? "left" : spot.x >= 0.8 ? "right" : "center";
+  const base: any = { position: "absolute", top: spot.y * IMG_H };
+  if (align === "center") {
+    base.left = spot.x * SCREEN_W;
+    base.transform = [{ translateX: -62 }];
+    base.width = 124;
+    base.alignItems = "center";
+  } else if (align === "left") {
+    base.left = spot.x * SCREEN_W - 6;
+    base.alignItems = "flex-start";
+  } else {
+    base.right = (1 - spot.x) * SCREEN_W - 6;
+    base.alignItems = "flex-end";
+  }
+  if (spot.warn) {
+    base.backgroundColor = "rgba(59,51,82,0.85)";
+    base.borderWidth = 1;
+    base.borderColor = "rgba(190,160,210,0.55)";
+    base.borderRadius = 20;
+    base.paddingVertical = 5;
+    base.paddingHorizontal = 14;
+  }
   return (
     <Pressable
       onPress={onPress}
       hitSlop={16}
       accessibilityRole="button"
       accessibilityLabel={spot.text.replace("\n", " ")}
-      style={{
-        position: "absolute",
-        left: spot.x * SCREEN_W,
-        top: spot.y * IMG_H,
-        transform: [{ translateX: -62 }],
-        width: 124,
-        alignItems: "center",
-        ...(spot.warn
-          ? {
-              backgroundColor: "rgba(59,51,82,0.85)",
-              borderWidth: 1,
-              borderColor: "rgba(190,160,210,0.55)",
-              borderRadius: 20,
-              paddingVertical: 5,
-            }
-          : {}),
-      }}
+      style={base}
       className="active:opacity-70"
     >
       <Text
@@ -81,7 +92,7 @@ function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
           fontSize: 22,
           lineHeight: 25,
           color: "#F0EBF5",
-          textAlign: "center",
+          textAlign: align === "left" ? "left" : align === "right" ? "right" : "center",
           textShadowColor: "rgba(0,0,0,0.95)",
           textShadowOffset: { width: 0, height: 1 },
           textShadowRadius: 7,
