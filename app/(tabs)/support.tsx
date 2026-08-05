@@ -29,12 +29,13 @@ const IMG_H = SCREEN_W * (ROOM_H / ROOM_W);
 type Label = { key: string; text: string; route: string; x: number; y: number; warn?: boolean };
 
 // Object centres from the grid (fractions of the image).
+// Support is now just the private back-room: AI Coach, Recovery, Mentors — with
+// Messages in the header. Community and Resources moved out to the café.
 const LABELS: Label[] = [
-  { key: "coach", text: "AI Coach", route: "/support/coach", x: 0.34, y: 0.47 },       // sofa  B7–E10
-  { key: "community", text: "Community", route: "/community", x: 0.85, y: 0.42 },       // right shelf/stereo F4–G9
-  { key: "recovery", text: "Recovery", route: "/support/recovery", x: 0.12, y: 0.44 }, // side table+lamp A6–B8
-  { key: "resources", text: "Resources", route: "/support/resources", x: 0.18, y: 0.62 }, // coffee table A9–C10
-  { key: "urge", text: "I want a drink", route: "/session/urge", x: 0.44, y: 0.84, warn: true }, // stool C11–D14
+  { key: "coach", text: "AI Coach", route: "/support/coach", x: 0.24, y: 0.52 },       // sofa
+  { key: "recovery", text: "Recovery", route: "/support/recovery", x: 0.12, y: 0.44 }, // side lamp
+  { key: "mentors", text: "Mentors", route: "/support/mentors", x: 0.85, y: 0.42 },    // right shelf
+  { key: "urge", text: "I want a drink", route: "/session/urge", x: 0.44, y: 0.84, warn: true }, // stool — safety net
 ];
 
 // The tea companion, pouring at the island (counter top ≈ row 8, y≈0.47).

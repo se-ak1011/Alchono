@@ -99,6 +99,13 @@ export default function MeScreen() {
     router.push(route as any);
   };
 
+  // Every room needs a way back to the café.
+  const goHome = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (router.canGoBack()) router.back();
+    else router.navigate('/(tabs)' as any);
+  };
+
   const winW = room.window.w * SCREEN_W;
   const winH = room.window.h * imgH;
 
@@ -137,7 +144,12 @@ export default function MeScreen() {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: insets.top + 70 }}
       />
       <View style={{ position: 'absolute', top: insets.top + 6, left: 14, right: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 30, color: '#ECE9F1' }}>Me</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Pressable onPress={goHome} hitSlop={12} className="p-1 active:opacity-60">
+            <Feather name="chevron-left" size={26} color="#ECE9F1" />
+          </Pressable>
+          <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 30, color: '#ECE9F1' }}>Me</Text>
+        </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
           <Pressable onPress={() => go('/account')} hitSlop={12} className="p-2 active:opacity-60">
             <Feather name="user" size={21} color="#ECE9F1" />
