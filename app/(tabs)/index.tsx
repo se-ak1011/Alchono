@@ -1,54 +1,95 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  RefreshControl,
-} from "react-native";
+import React from "react";
+import { View, Text, Pressable, ScrollView, Image, Dimensions } from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
-import { SafeArea } from "@/components/ui/SafeArea";
 import { CompanionArt } from "@/components/ui/CompanionArt";
-import { OrbitChip } from "@/components/ui/OrbitChip";
 import { PauseModal } from "@/components/home/PauseModal";
-import { FoodCards } from "@/components/home/FoodCards";
-import { HomeStories } from "@/components/home/HomeStories";
-import { HomeFeed } from "@/components/home/HomeFeed";
 import { useSmartReminder } from "@/hooks/useSmartReminder";
 import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useActiveSession } from "@/hooks/useDrinkingSession";
-import { useTodayCheckin } from "@/hooks/useCheckin";
 import { useCompanion } from "@/hooks/useCompanion";
-import { useUnreadTotal } from "@/hooks/useMessages";
-import { HOME_ORBIT_ZONES, ZONES, type Zone } from "@/lib/zones";
-import { headingShadow } from "@/styles";
-import { queryClient } from "@/lib/queryClient";
 
-// The destinations always orbit the companion. Visibility and discoverability
-// are the whole point, so nothing hides them — the companion never toggles.
-function HomeOrbitChip({ zone, style }: { zone: Zone; style: any }) {
-  const router = useRouter();
-  const multiline = zone.key === "community" || zone.key === "games";
-  // Support carries the unread-messages count as a small badge, so a reply is
-  // never missed from Home — without adding a whole new chip to the orbit.
-  const { data: unread } = useUnreadTotal();
-  const badge = zone.key === "support" ? unread ?? 0 : 0;
+/**
+ * Home — you don't open a menu, you walk into the café. One 90s room, and every
+ * destination is a thing you move toward: the door to your room, the curtain to
+ * Support, the counter for a drink, the arcade, the papers on the rack, the
+ * A-frame for Community. The companion stands behind the counter (bust pose) by
+ * the phone. Same engine as The Bar/Me: baked room, sized to the screen,
+ * hand-lettered doorways on top; the companion is superposed so one café serves
+ * every character. Positions come from Marta's labelled layout — each is a
+ * fraction, so nudging one is a one-number change.
+ */
+
+const SCREEN_W = Dimensions.get("window").width;
+const ROOM = require("../../assets/scenes/cafe_home.png");
+const ROOM_W = 853;
+const ROOM_H = 1844;
+const IMG_H = SCREEN_W * (ROOM_H / ROOM_W);
+
+type Spot = { key: string; text: string; route: string; x: number; y: number; warn?: boolean };
+
+const SPOTS: Spot[] = [
+  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.27, y: 0.265 },        // the door
+  { key: "support", text: "Support", route: "/(tabs)/support", x: 0.45, y: 0.25 }, // the curtain
+  { key: "bar", text: "The Bar", route: "/barista", x: 0.63, y: 0.205 },          // the counter/fridge
+  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.85, y: 0.31 }, // the cabinet
+  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.16, y: 0.40 }, // shelf/armchair
+  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.10, y: 0.52 }, // the desk
+  { key: "today", text: "Today", route: "/today", x: 0.71, y: 0.44 },             // the ledger on the counter
+  { key: "urge", text: "I need a drink", route: "/session/urge", x: 0.61, y: 0.555, warn: true }, // counter front
+  { key: "community", text: "Community", route: "/community", x: 0.33, y: 0.755 }, // the A-frame
+  { key: "gazette", text: "The Gazette", route: "/soul", x: 0.155, y: 0.685 },     // rack, top tier
+  { key: "funnies", text: "The Funnies", route: "/giggles", x: 0.155, y: 0.78 },   // rack, middle
+  { key: "letters", text: "The Letters", route: "/thought", x: 0.155, y: 0.875 },  // rack, bottom
+];
+
+// The companion, bust pose, standing behind the counter by the phone. Cropped
+// so only head-and-shoulders rise above the counter — reads as *behind* it.
+const COMP = { xCenter: 0.51, topY: 0.26, width: 0.34, cropFrac: 0.42, wh: 630 / 420 };
+
+function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
   return (
-    <View style={[{ position: "absolute", zIndex: 10 }, style]}>
-      <OrbitChip
-        label={multiline ? zone.label.replace(" ", "\n") : zone.label}
-        accent={zone.accent}
-        numberOfLines={multiline ? 2 : 1}
-        badge={badge}
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          router.push(zone.route as any);
+    <Pressable
+      onPress={onPress}
+      hitSlop={16}
+      accessibilityRole="button"
+      accessibilityLabel={spot.text.replace("\n", " ")}
+      style={{
+        position: "absolute",
+        left: spot.x * SCREEN_W,
+        top: spot.y * IMG_H,
+        transform: [{ translateX: -62 }],
+        width: 124,
+        alignItems: "center",
+        ...(spot.warn
+          ? {
+              backgroundColor: "rgba(59,51,82,0.85)",
+              borderWidth: 1,
+              borderColor: "rgba(190,160,210,0.55)",
+              borderRadius: 20,
+              paddingVertical: 5,
+            }
+          : {}),
+      }}
+      className="active:opacity-70"
+    >
+      <Text
+        style={{
+          fontFamily: "SkinnyCustard",
+          fontSize: 22,
+          lineHeight: 25,
+          color: "#F0EBF5",
+          textAlign: "center",
+          textShadowColor: "rgba(0,0,0,0.95)",
+          textShadowOffset: { width: 0, height: 1 },
+          textShadowRadius: 7,
         }}
-      />
-    </View>
+      >
+        {spot.text}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -56,108 +97,62 @@ export default function HomeScreen() {
   const router = useRouter();
   const { pose } = useCompanion();
   const { data: activeSession } = useActiveSession();
-  const { data: todayCheckin } = useTodayCheckin();
-  const [refreshing, setRefreshing] = useState(false);
 
   useSmartReminder();
   useWidgetSync();
   useDrinkIntentSync();
 
-  const companionTop = 104;
-  // Community lives on Home already (the feed below), so it's dropped from the
-  // orbit. Barista is brought up here from the old hamburger menu — it's too
-  // useful to bury — so six destinations orbit the companion.
-  const barZone: Zone = {
-    key: "barista",
-    label: "The Bar",
-    monogram: "B",
-    route: "/barista",
-    accent: "#E0B080",
-    tint: "rgba(224,176,128,0.20)",
-    edge: "rgba(224,176,128,0.42)",
+  const go = (route: string, warn = false) => {
+    if (warn) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push(route as any);
   };
-  // Me sits bottom-right — where the thumb expects it — so The Bar takes the
-  // bottom-left slot and Me is pulled out to the end of the ring.
-  const meZone = HOME_ORBIT_ZONES.find((z) => z.key === "me")!;
-  const orbitZones = [
-    ...HOME_ORBIT_ZONES.filter((z) => z.key !== "urge" && z.key !== "community" && z.key !== "me"),
-    barZone,
-    meZone,
-  ];
-  const orbitPositions = [
-    { left: 12, right: undefined, top: companionTop - 38 }, // reading
-    { left: undefined, right: 12, top: companionTop - 38 }, // writing
-    { left: 8, right: undefined, top: companionTop + 36 }, // games
-    { left: undefined, right: 6, top: companionTop + 44 }, // support
-    { left: 20, right: undefined, top: companionTop + 126 }, // The Bar
-    { left: undefined, right: 30, top: companionTop + 126 }, // me
-  ];
 
-  const urge = ZONES.urge;
-  const refreshHome = async () => {
-    setRefreshing(true);
-    try {
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: ['community-feed'] }),
-        queryClient.refetchQueries({ queryKey: ['community-moments'] }),
-      ]);
-    } finally {
-      setRefreshing(false);
-    }
-  };
+  const compW = COMP.width * SCREEN_W;
+  const compFullH = compW * COMP.wh;
+  const compCropH = COMP.cropFrac * SCREEN_W;
 
   return (
-    <SafeArea bottom={false}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshHome} tintColor="#B9A4EC" />}>
-        <View className="items-center mt-4 pt-2">
-          <Text className="text-text-primary" style={{ ...headingShadow, fontSize: 34 }}>Hey</Text>
-          {!todayCheckin && (
-            <Pressable onPress={() => router.push("/checkin")} className="mt-3 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70" style={{ backgroundColor: "rgba(236,233,241,0.05)" }}>
-              <Text className="text-text-secondary text-sm">How are you today?</Text>
-              <Feather name="chevron-right" size={14} color="#817B91" />
-            </Pressable>
-          )}
-          <Pressable onPress={() => router.push("/today")} className="mt-3 flex-row items-center gap-1.5 rounded-full px-4 py-2 border active:opacity-70" style={{ backgroundColor: "rgba(164,137,222,0.12)", borderColor: "rgba(164,137,222,0.4)" }}>
-            <Feather name="sunrise" size={14} color="#B9A4EC" />
-            <Text className="text-sm font-semibold" style={{ color: "#B9A4EC" }}>Today</Text>
+    <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
+      <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+        <View style={{ width: SCREEN_W, height: IMG_H, position: "relative" }}>
+          <Image source={ROOM} style={{ width: SCREEN_W, height: IMG_H }} resizeMode="cover" />
+
+          {/* The companion behind the counter — tap them (or the phone) for Resources. */}
+          <Pressable
+            onPress={() => go("/support/resources")}
+            hitSlop={8}
+            style={{
+              position: "absolute",
+              left: COMP.xCenter * SCREEN_W - compW / 2,
+              top: COMP.topY * IMG_H,
+              width: compW,
+              height: compCropH,
+            }}
+          >
+            <CompanionArt source={pose("bust")} width={compW} height={compFullH} cropHeight={compCropH} />
           </Pressable>
-        </View>
 
-        <HomeStories />
-
-        <View style={{ height: activeSession ? 438 : 394, position: "relative", marginTop: 12 }}>
-          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop, alignItems: "center", zIndex: 5 }} pointerEvents="box-none">
-            <CompanionArt source={pose("bust")} width={232} height={276} cropHeight={216} />
-          </View>
-
-          {orbitZones.map((zone, index) => (
-            <HomeOrbitChip key={zone.key} zone={zone} style={{ left: orbitPositions[index].left, right: orbitPositions[index].right, top: orbitPositions[index].top }} />
+          {SPOTS.map((s) => (
+            <RoomLabel key={s.key} spot={s} onPress={() => go(s.route, s.warn)} />
           ))}
-
-          <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 211, zIndex: 10, alignItems: "center" }}>
-            <OrbitChip label={urge.label} emergency onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-              router.push(urge.route as any);
-            }} />
-          </View>
-
-          {activeSession ? (
-            <View style={{ position: "absolute", left: 0, right: 0, top: companionTop + 258, alignItems: "center" }}>
-              <Pressable onPress={() => router.push("/session/track")} className="flex-row items-center gap-2 mb-3 active:opacity-80" style={{ paddingHorizontal: 16, paddingVertical: 9, borderRadius: 20, backgroundColor: "#060708", borderWidth: 1, borderColor: "rgba(236,233,241,0.14)" }}>
-                <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#C98282" }} />
-                <Text className="text-text-secondary text-sm font-medium">
-                  Session on{typeof (activeSession as any).drinks_count === "number" ? ` · ${(activeSession as any).drinks_count} ${(activeSession as any).drinks_count === 1 ? "drink" : "drinks"}` : ""}
-                </Text>
-                <Feather name="chevron-right" size={15} color="#817B91" />
-              </Pressable>
-            </View>
-          ) : null}
         </View>
-
-        <FoodCards />
-        <HomeFeed />
       </ScrollView>
+
+      {/* If a session's live, keep it one tap away without cluttering the room. */}
+      {activeSession ? (
+        <Pressable
+          onPress={() => router.push("/session/track")}
+          className="active:opacity-80"
+          style={{ position: "absolute", top: 54, left: 14, flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: "rgba(6,7,8,0.85)", borderWidth: 1, borderColor: "rgba(236,233,241,0.16)" }}
+        >
+          <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#C98282" }} />
+          <Text style={{ color: "#D9D4E4", fontSize: 13, fontWeight: "500" }}>Session on</Text>
+          <Feather name="chevron-right" size={14} color="#817B91" />
+        </Pressable>
+      ) : null}
+
       <PauseModal />
-    </SafeArea>
+    </View>
   );
 }
