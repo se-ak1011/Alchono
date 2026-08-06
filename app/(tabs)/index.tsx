@@ -28,7 +28,7 @@ const ROOM_W = 853;
 const ROOM_H = 1844;
 const IMG_H = SCREEN_W * (ROOM_H / ROOM_W);
 
-type Spot = { key: string; text: string; route: string; x: number; y: number; warn?: boolean };
+type Spot = { key: string; text: string; route: string; x: number; y: number; warn?: boolean; preview?: boolean };
 
 // Positions are Marta's exact crosses (x%, y% of the image → fractions).
 // PREVIEW spots (gazette/funnies/letters/community) sit here as labels for now;
