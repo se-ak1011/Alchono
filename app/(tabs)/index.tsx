@@ -64,7 +64,7 @@ const CORK = { x: 0.275, y: 0.625, w: 0.235, gap: 6 };
 // The companion, standing pose (full body), greeting you in the room — feet on
 // the floor. Tune: xCenter moves her left/right, feetY sets where her feet land,
 // width scales her.
-const COMP = { xCenter: 0.40, feetY: 0.80, width: 0.44, wh: 630 / 420 };
+const COMP = { xCenter: 0.40, feetY: 0.735, width: 0.44, wh: 630 / 420 };
 
 function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
   // Anchor to the cross, but tuck edge labels in so they never clip off-screen.
@@ -285,15 +285,14 @@ export default function HomeScreen() {
             hitSlop={8}
             style={{
               position: "absolute",
-              left: 0.45 * SCREEN_W,
-              right: 0.035 * SCREEN_W,
-              top: 0.549 * IMG_H,               // 3 nudges up
-              transform: [{ rotate: "2deg" }],  // 1 rotation right
-              backgroundColor: "rgba(59,51,82,0.82)",
+              left: 0.44 * SCREEN_W,
+              right: 0.05 * SCREEN_W,
+              top: 0.558 * IMG_H,               // seated down onto the counter front
+              backgroundColor: "rgba(59,51,82,0.9)",
               borderWidth: 1,
               borderColor: "rgba(190,160,210,0.6)",
-              borderRadius: 12,
-              paddingVertical: 8,
+              borderRadius: 8,                  // squarer — a mounted sign, not a pill
+              paddingVertical: 10,
               alignItems: "center",
             }}
             className="active:opacity-80"
