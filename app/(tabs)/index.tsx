@@ -163,7 +163,7 @@ function MiniPrint({ m, i, onPress }: { m: FeedMoment; i: number; onPress: () =>
   const src = isVideo ? m.thumb_url : m.url;
   const tilt = i % 2 === 0 ? -3 : 3;
   return (
-    <Pressable onPress={onPress} hitSlop={6} className="active:opacity-90" style={{ flex: 1, transform: [{ rotate: `${tilt}deg` }] }}>
+    <Pressable onPress={onPress} hitSlop={6} className="active:opacity-90" style={{ width: "56%", transform: [{ rotate: `${tilt}deg` }] }}>
       <View
         style={{
           backgroundColor: "#e7e1d5",
@@ -217,7 +217,7 @@ function LookPreview({ onOpen }: { onOpen: () => void }) {
         </Text>
       </Pressable>
       {shots.length ? (
-        <View style={{ flexDirection: "row", gap: CORK.gap, marginTop: 5, width: "100%" }}>
+        <View style={{ flexDirection: "column", gap: CORK.gap, marginTop: 5, width: "100%", alignItems: "center" }}>
           {shots.map((m, i) => (
             <MiniPrint key={m.id} m={m} i={i} onPress={onOpen} />
           ))}
