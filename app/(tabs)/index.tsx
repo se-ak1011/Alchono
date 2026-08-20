@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, ScrollView, Image, Dimensions } from "react-native";
+import { View, Text, Pressable, ScrollView, Image, Dimensions, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Feather } from "@expo/vector-icons";
@@ -10,6 +10,7 @@ import { useWidgetSync } from "@/hooks/useWidgetSync";
 import { useDrinkIntentSync } from "@/hooks/useDrinkIntentSync";
 import { useActiveSession } from "@/hooks/useDrinkingSession";
 import { useCompanion } from "@/hooks/useCompanion";
+import { useCommunityMoments, type FeedMoment } from "@/hooks/useMoments";
 
 /**
  * Home — you don't open a menu, you walk into the café. One 90s room, and every
@@ -27,26 +28,38 @@ const ROOM = require("../../assets/scenes/cafe_home.png");
 const ROOM_W = 853;
 const ROOM_H = 1844;
 const IMG_H = SCREEN_W * (ROOM_H / ROOM_W);
+const MONO = Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }) as string;
 
 type Spot = { key: string; text: string; route: string; x: number; y: number; warn?: boolean; preview?: boolean };
 
 // Positions are Marta's exact crosses (x%, y% of the image → fractions).
-// PREVIEW spots (gazette/funnies/letters/community) sit here as labels for now;
-// the live content previews are the follow-up build.
+// The papers (gazette/funnies/letters) and Community have LEFT this list — they
+// now render as live previews below (see RACK + LookPreview).
 const SPOTS: Spot[] = [
   { key: "support", text: "Support", route: "/(tabs)/support", x: 0.506, y: 0.145 },   // plaque above curtain
-  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.388, y: 0.221 },             // small hanging frame
-  { key: "bar", text: "The Bar", route: "/barista", x: 0.668, y: 0.223 },              // top of fridge
-  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.225, y: 0.260 },  // corkboard, left wall
-  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.868, y: 0.327 }, // arcade screen
-  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.090, y: 0.356 }, // purple wall panel
-  { key: "resources", text: "Resources", route: "/support/resources", x: 0.576, y: 0.385 }, // telephone
+  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.345, y: 0.255 },             // #5 — in the doorway, like a door label
+  { key: "bar", text: "The Bar", route: "/barista", x: 0.745, y: 0.225 },              // #4 — over the smaller (coffee) unit so it doesn't cover the drinks
+  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.215, y: 0.195 },  // #6 — on the wall board
+  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.905, y: 0.250 }, // #3 — on the board above the arcade
+  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.085, y: 0.270 }, // #7 — on the far-left board
+  { key: "resources", text: "Resources", route: "/support/resources", x: 0.556, y: 0.430 }, // #2 — dropped a touch so the phone shows
   { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.424 },    // notebook / ledger
-  { key: "gazette", text: "The Gazette", route: "/soul", x: 0.147, y: 0.613 },         // top basket (PREVIEW)
-  { key: "funnies", text: "The Funnies", route: "/giggles", x: 0.165, y: 0.700 },      // middle basket (PREVIEW)
-  { key: "community", text: "Community", route: "/community", x: 0.36, y: 0.655 },      // A-frame (PREVIEW) — lifted clear of The Funnies
-  { key: "letters", text: "The Letters", route: "/thought", x: 0.175, y: 0.783 },      // bottom basket (PREVIEW)
 ];
+
+// #9/#10/#11 — the three papers, now little cards tucked in the rack baskets
+// instead of text labels. Each number is a fraction: x/y = top-left in the
+// basket, w = width, rotate = lean to match the rack. Nudge any one number.
+type RackPaper = { route: string; masthead: string; kicker: string; paper: string; ink: string; x: number; y: number; w: number; rotate: number };
+const RACK: RackPaper[] = [
+  { route: "/soul",    masthead: "The Good News Gazette", kicker: "GOOD NEWS", paper: "#e7e1d2", ink: "#2b2620", x: 0.040, y: 0.595, w: 0.27, rotate: -7 }, // #9  top basket
+  { route: "/giggles", masthead: "The Funny Pages",       kicker: "A LAUGH",   paper: "#e9dfe4", ink: "#33262e", x: 0.050, y: 0.675, w: 0.27, rotate: -7 }, // #10 middle basket
+  { route: "/thought", masthead: "The Letters Page",      kicker: "A DILEMMA", paper: "#d8e0dd", ink: "#24302c", x: 0.060, y: 0.755, w: 0.27, rotate: -7 }, // #11 bottom basket
+];
+
+// #12 — Community: the label sits at the top of the A-frame corkboard, with a
+// couple of the latest Look prints pinned beneath it. Tune this box to the
+// corkboard; the companion (#8) may sit in front until they're placed.
+const CORK = { x: 0.255, y: 0.625, w: 0.235, gap: 6 };
 
 // The companion, standing pose (full body), greeting you in the room — feet on
 // the floor. Tune: xCenter moves her left/right, feetY sets where her feet land,
@@ -89,19 +102,128 @@ function RoomLabel({ spot, onPress }: { spot: Spot; onPress: () => void }) {
       <Text
         style={{
           fontFamily: "SkinnyCustard",
-          fontSize: 22,
-          lineHeight: 25,
-          color: "#F0EBF5",
+          fontSize: 12,
+          lineHeight: 14,
+          color: "#FFFFFF",
           textTransform: "uppercase",
           textAlign: align === "left" ? "left" : align === "right" ? "right" : "center",
-          textShadowColor: "rgba(0,0,0,0.95)",
+          // Kept a soft shadow so the smaller white lettering stays legible
+          // against the lighter patches of the scene without shouting.
+          textShadowColor: "rgba(0,0,0,0.9)",
           textShadowOffset: { width: 0, height: 1 },
-          textShadowRadius: 7,
+          textShadowRadius: 5,
         }}
       >
         {spot.text}
       </Text>
     </Pressable>
+  );
+}
+
+// #9/#10/#11 — a compact paper card that sits in a rack basket (mini masthead +
+// kicker), tapping through to its read. Same paper tints/ink as The Caff.
+function RackCard({ p, onPress }: { p: RackPaper; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={p.masthead}
+      className="active:opacity-90"
+      style={{ position: "absolute", left: p.x * SCREEN_W, top: p.y * IMG_H, width: p.w * SCREEN_W, transform: [{ rotate: `${p.rotate}deg` }] }}
+    >
+      <View
+        style={{
+          backgroundColor: p.paper,
+          borderRadius: 3,
+          paddingHorizontal: 8,
+          paddingTop: 5,
+          paddingBottom: 6,
+          shadowColor: "#000",
+          shadowOpacity: 0.5,
+          shadowRadius: 6,
+          shadowOffset: { width: 0, height: 3 },
+          elevation: 4,
+        }}
+      >
+        <Text numberOfLines={1} style={{ fontFamily: MONO, fontSize: 6.5, letterSpacing: 1, color: "rgba(0,0,0,0.5)" }}>{p.kicker}</Text>
+        <View style={{ height: 1, backgroundColor: "rgba(0,0,0,0.25)", marginVertical: 2 }} />
+        <Text numberOfLines={1} style={{ fontSize: 11, lineHeight: 13, color: p.ink, fontFamily: Platform.select({ ios: "Georgia", default: "serif" }), fontWeight: "700" }}>
+          {p.masthead}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
+// A tiny Look print, pinned to the corkboard — same cream-frame look as the
+// Community wall, shrunk to a thumbnail.
+function MiniPrint({ m, i, onPress }: { m: FeedMoment; i: number; onPress: () => void }) {
+  const isVideo = m.media_type === "video";
+  const src = isVideo ? m.thumb_url : m.url;
+  const tilt = i % 2 === 0 ? -3 : 3;
+  return (
+    <Pressable onPress={onPress} hitSlop={6} className="active:opacity-90" style={{ flex: 1, transform: [{ rotate: `${tilt}deg` }] }}>
+      <View
+        style={{
+          backgroundColor: "#e7e1d5",
+          borderRadius: 2,
+          padding: 2.5,
+          paddingBottom: 4,
+          shadowColor: "#000",
+          shadowOpacity: 0.4,
+          shadowRadius: 4,
+          shadowOffset: { width: 0, height: 2 },
+        }}
+      >
+        {src ? (
+          <Image source={{ uri: src }} style={{ width: "100%", aspectRatio: 1, borderRadius: 1, backgroundColor: "#201D28" }} resizeMode="cover" />
+        ) : (
+          <View style={{ width: "100%", aspectRatio: 1, borderRadius: 1, backgroundColor: "#201D28" }} />
+        )}
+        {isVideo ? (
+          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center" }}>
+              <Feather name="play" size={9} color="#fff" style={{ marginLeft: 1 }} />
+            </View>
+          </View>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}
+
+// #12 — Community on the corkboard: hand-lettered label up top (taps through to
+// Community), a peek at the latest Look prints beneath.
+function LookPreview({ onOpen }: { onOpen: () => void }) {
+  const { data: moments } = useCommunityMoments();
+  const shots = (moments ?? []).slice(0, 2);
+  return (
+    <View style={{ position: "absolute", left: CORK.x * SCREEN_W, top: CORK.y * IMG_H, width: CORK.w * SCREEN_W, alignItems: "center" }}>
+      <Pressable onPress={onOpen} hitSlop={12} accessibilityRole="button" accessibilityLabel="Community">
+        <Text
+          style={{
+            fontFamily: "SkinnyCustard",
+            fontSize: 12,
+            lineHeight: 14,
+            color: "#FFFFFF",
+            textTransform: "uppercase",
+            textShadowColor: "rgba(0,0,0,0.9)",
+            textShadowOffset: { width: 0, height: 1 },
+            textShadowRadius: 5,
+          }}
+        >
+          Community
+        </Text>
+      </Pressable>
+      {shots.length ? (
+        <View style={{ flexDirection: "row", gap: CORK.gap, marginTop: 5, width: "100%" }}>
+          {shots.map((m, i) => (
+            <MiniPrint key={m.id} m={m} i={i} onPress={onOpen} />
+          ))}
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -148,6 +270,14 @@ export default function HomeScreen() {
           {SPOTS.map((s) => (
             <RoomLabel key={s.key} spot={s} onPress={() => go(s.route, s.warn)} />
           ))}
+
+          {/* #9/#10/#11 — the three papers as little cards in the rack baskets. */}
+          {RACK.map((p) => (
+            <RackCard key={p.route} p={p} onPress={() => go(p.route)} />
+          ))}
+
+          {/* #12 — Community label + a peek at the Look wall, on the corkboard. */}
+          <LookPreview onOpen={() => go("/community")} />
 
           {/* "I need a drink" — one line, stretched across the counter front. */}
           <Pressable
