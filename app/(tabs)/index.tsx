@@ -37,12 +37,12 @@ type Spot = { key: string; text: string; route: string; x: number; y: number; wa
 // now render as live previews below (see RACK + LookPreview).
 const SPOTS: Spot[] = [
   { key: "support", text: "Support", route: "/(tabs)/support", x: 0.506, y: 0.145 },   // plaque above curtain
-  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.345, y: 0.255 },             // #5 — in the doorway, like a door label
+  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.215, y: 0.160 },             // #5 — up onto the upper-left board, clear of the companion's space
   { key: "bar", text: "The Bar", route: "/barista", x: 0.745, y: 0.225 },              // #4 — over the smaller (coffee) unit so it doesn't cover the drinks
-  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.215, y: 0.195 },  // #6 — on the wall board
+  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.215, y: 0.310 },  // #6 — onto the corkboard just beneath Me
   { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.905, y: 0.250 }, // #3 — on the board above the arcade
-  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.085, y: 0.270 }, // #7 — on the far-left board
-  { key: "resources", text: "Resources", route: "/support/resources", x: 0.556, y: 0.430 }, // #2 — dropped a touch so the phone shows
+  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.085, y: 0.245 }, // #7 — up to centre on the far-left board
+  { key: "resources", text: "Resources", route: "/support/resources", x: 0.540, y: 0.400 }, // #2 — up nearer the phone so they read as related
   { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.424 },    // notebook / ledger
 ];
 
@@ -51,9 +51,9 @@ const SPOTS: Spot[] = [
 // basket, w = width, rotate = lean to match the rack. Nudge any one number.
 type RackPaper = { route: string; masthead: string; kicker: string; paper: string; ink: string; x: number; y: number; w: number; rotate: number };
 const RACK: RackPaper[] = [
-  { route: "/soul",    masthead: "The Good News Gazette", kicker: "GOOD NEWS", paper: "#e7e1d2", ink: "#2b2620", x: 0.040, y: 0.595, w: 0.27, rotate: -7 }, // #9  top basket
-  { route: "/giggles", masthead: "The Funny Pages",       kicker: "A LAUGH",   paper: "#e9dfe4", ink: "#33262e", x: 0.050, y: 0.675, w: 0.27, rotate: -7 }, // #10 middle basket
-  { route: "/thought", masthead: "The Letters Page",      kicker: "A DILEMMA", paper: "#d8e0dd", ink: "#24302c", x: 0.060, y: 0.755, w: 0.27, rotate: -7 }, // #11 bottom basket
+  { route: "/soul",    masthead: "The Good News Gazette", kicker: "GOOD NEWS", paper: "#e7e1d2", ink: "#2b2620", x: 0.035, y: 0.600, w: 0.25, rotate: -8 }, // #9  top basket
+  { route: "/giggles", masthead: "The Funny Pages",       kicker: "A LAUGH",   paper: "#e9dfe4", ink: "#33262e", x: 0.045, y: 0.685, w: 0.25, rotate: -8 }, // #10 middle basket
+  { route: "/thought", masthead: "The Letters Page",      kicker: "A DILEMMA", paper: "#d8e0dd", ink: "#24302c", x: 0.055, y: 0.770, w: 0.25, rotate: -8 }, // #11 bottom basket
 ];
 
 // #12 — Community: the label sits at the top of the A-frame corkboard, with a
