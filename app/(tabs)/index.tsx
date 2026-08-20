@@ -36,14 +36,14 @@ type Spot = { key: string; text: string; route: string; x: number; y: number; wa
 // The papers (gazette/funnies/letters) and Community have LEFT this list — they
 // now render as live previews below (see RACK + LookPreview).
 const SPOTS: Spot[] = [
-  { key: "support", text: "Support", route: "/(tabs)/support", x: 0.506, y: 0.145 },   // plaque above curtain
-  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.215, y: 0.160 },             // #5 — up onto the upper-left board, clear of the companion's space
-  { key: "bar", text: "The Bar", route: "/barista", x: 0.745, y: 0.225 },              // #4 — over the smaller (coffee) unit so it doesn't cover the drinks
-  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.215, y: 0.310 },  // #6 — onto the corkboard just beneath Me
-  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.905, y: 0.250 }, // #3 — on the board above the arcade
-  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.085, y: 0.245 }, // #7 — up to centre on the far-left board
+  { key: "support", text: "Support", route: "/(tabs)/support", x: 0.506, y: 0.157 },   // plaque above curtain — 1 nudge down
+  { key: "me", text: "Me", route: "/(tabs)/profile", x: 0.215, y: 0.184 },             // #5 — 2 nudges down off the very top of the board
+  { key: "bar", text: "The Bar", route: "/barista", x: 0.745, y: 0.213 },              // #4 — 1 nudge up, clear of the drinks
+  { key: "reading", text: "Reading\nCorner", route: "/toolkit", x: 0.215, y: 0.274 },  // #6 — 3 nudges up, up under Me
+  { key: "games", text: "Games\nArcade", route: "/session/games", x: 0.905, y: 0.226 }, // #3 — 2 nudges up onto the board over the arcade
+  { key: "writing", text: "Writing\nSpace", route: "/(tabs)/journal", x: 0.065, y: 0.245 }, // #7 — 1 nudge left; already breaks Writing / Space
   { key: "resources", text: "Resources", route: "/support/resources", x: 0.540, y: 0.400 }, // #2 — up nearer the phone so they read as related
-  { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.424 },    // notebook / ledger
+  { key: "tonight", text: "Tonight", route: "/session/track", x: 0.702, y: 0.436 },    // notebook / ledger — 1 nudge down
 ];
 
 // #9/#10/#11 — the three papers, now little cards tucked in the rack baskets
@@ -51,15 +51,15 @@ const SPOTS: Spot[] = [
 // basket, w = width, rotate = lean to match the rack. Nudge any one number.
 type RackPaper = { route: string; masthead: string; kicker: string; paper: string; ink: string; x: number; y: number; w: number; rotate: number };
 const RACK: RackPaper[] = [
-  { route: "/soul",    masthead: "The Good News Gazette", kicker: "GOOD NEWS", paper: "#e7e1d2", ink: "#2b2620", x: 0.035, y: 0.600, w: 0.25, rotate: -8 }, // #9  top basket
-  { route: "/giggles", masthead: "The Funny Pages",       kicker: "A LAUGH",   paper: "#e9dfe4", ink: "#33262e", x: 0.045, y: 0.685, w: 0.25, rotate: -8 }, // #10 middle basket
-  { route: "/thought", masthead: "The Letters Page",      kicker: "A DILEMMA", paper: "#d8e0dd", ink: "#24302c", x: 0.055, y: 0.770, w: 0.25, rotate: -8 }, // #11 bottom basket
+  { route: "/soul",    masthead: "The Good News Gazette", kicker: "GOOD NEWS", paper: "#e7e1d2", ink: "#2b2620", x: 0.035, y: 0.600, w: 0.21, rotate: -10 }, // #9  top basket — a size smaller, 1 rotation left
+  { route: "/giggles", masthead: "The Funny Pages",       kicker: "A LAUGH",   paper: "#e9dfe4", ink: "#33262e", x: 0.045, y: 0.685, w: 0.21, rotate: -10 }, // #10 middle basket
+  { route: "/thought", masthead: "The Letters Page",      kicker: "A DILEMMA", paper: "#d8e0dd", ink: "#24302c", x: 0.055, y: 0.770, w: 0.21, rotate: -10 }, // #11 bottom basket
 ];
 
 // #12 — Community: the label sits at the top of the A-frame corkboard, with a
 // couple of the latest Look prints pinned beneath it. Tune this box to the
 // corkboard; the companion (#8) may sit in front until they're placed.
-const CORK = { x: 0.255, y: 0.625, w: 0.235, gap: 6 };
+const CORK = { x: 0.275, y: 0.625, w: 0.235, gap: 6 };
 
 // The companion, standing pose (full body), greeting you in the room — feet on
 // the floor. Tune: xCenter moves her left/right, feetY sets where her feet land,
@@ -287,7 +287,8 @@ export default function HomeScreen() {
               position: "absolute",
               left: 0.45 * SCREEN_W,
               right: 0.035 * SCREEN_W,
-              top: 0.585 * IMG_H,
+              top: 0.549 * IMG_H,               // 3 nudges up
+              transform: [{ rotate: "2deg" }],  // 1 rotation right
               backgroundColor: "rgba(59,51,82,0.82)",
               borderWidth: 1,
               borderColor: "rgba(190,160,210,0.6)",
