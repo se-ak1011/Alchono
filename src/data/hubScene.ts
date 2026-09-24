@@ -15,6 +15,9 @@ import type { ImageSourcePropType } from "react-native";
  * the counter shows in front + right).
  *
  * Coordinates below were placed by hand in the in-app drag editor and exported.
+ *
+ * Full workflow — adding a room, the editor trick, the field meanings — is in
+ * docs/adventure-hub.md.
  */
 
 export type HubAction =
