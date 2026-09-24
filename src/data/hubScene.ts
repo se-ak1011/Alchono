@@ -3,21 +3,26 @@ import type { ImageSourcePropType } from "react-native";
 /**
  * The 00s CD-ROM adventure hub, described entirely as data.
  *
- * Each node is one first-person viewpoint you stand in. Hotspots are fractional
- * rectangles over the node image (x/y = top-left, w/h = size, all 0..1), and
- * they're diegetic — no label painted on the scene; the name shows in the
- * bottom caption bar, LucasArts-style. The *engine* never hard-codes art, so
- * dropping in Marta's redrawn 00s scenes later is: swap the `image`, nudge a
- * few coordinates. No engine changes.
+ * Each node is one first-person viewpoint. Hotspots are fractional rectangles
+ * over the node IMAGE (x/y = top-left, w/h = size, all 0..1). How a hotspot
+ * signals it's interactive is its `kind`:
+ *   - "board"  → chalk label rendered on the board (SkinnyCustard = chalk)
+ *   - "glow"   → a soft breathing light over the object (light = touchable)
+ *   - "sign"   → a small period sign with text (Resources; the urge sign)
+ *   - "plain"  → invisible tap target
+ * Labels/previews live on the boards; self-evident objects glow; the caption
+ * bar names whatever the finger is on. The engine never hard-codes art, so
+ * swapping in a redrawn scene is: replace the image, nudge coordinates.
  *
- * NOTE: everything here is currently PLACEHOLDER art. `cafe` uses the existing
- * café render; `reading` borrows the library (coach) room as a stand-in so
- * first-person travel is real and testable before the period scenes land.
+ * Coordinates below are first estimates against Marta's front render and WILL
+ * need tuning on-device — that's a one-number change each, by design.
  */
 
 export type HubAction =
   | { kind: "route"; route: string; warn?: boolean }
   | { kind: "node"; node: string };
+
+export type HotspotKind = "board" | "glow" | "sign" | "plain";
 
 export type Hotspot = {
   id: string;
@@ -27,16 +32,9 @@ export type Hotspot = {
   w: number;
   h: number;
   action: HubAction;
-};
-
-// An optional in-scene character (the companion), superposed on a viewpoint.
-export type NodeCompanion = {
-  caption: string;
-  action: HubAction;
-  xCenter: number; // 0..1 across the image
-  feetY: number; // 0..1 down the image (where the feet land)
-  width: number; // 0..1 of screen width
-  wh: number; // art aspect ratio (height / width)
+  kind?: HotspotKind;
+  label?: string; // chalk text for "board", sign text for "sign"
+  prominent?: boolean; // emphasise (the urge sign)
 };
 
 export type HubNode = {
@@ -45,60 +43,72 @@ export type HubNode = {
   image: ImageSourcePropType;
   imgW: number;
   imgH: number;
-  // tall  = scrollable portrait (the current placeholder art)
-  // screen = fit the viewport, no scroll (future first-person scenes)
   fit: "tall" | "screen";
   hotspots: Hotspot[];
-  companion?: NodeCompanion;
-  placeholder?: boolean; // true while wearing stand-in art
+  left?: string; // node reached by turning left
+  right?: string; // node reached by turning right
+  back?: string; // node reached by the back arrow
+  placeholder?: boolean;
 };
 
-export const HUB_START = "cafe";
+export const HUB_START = "front";
 
 export const HUB_NODES: Record<string, HubNode> = {
-  cafe: {
-    id: "cafe",
+  front: {
+    id: "front",
     title: "The Café",
-    image: require("../../assets/scenes/cafe_home.png"),
-    imgW: 853,
-    imgH: 1844,
-    fit: "tall",
-    placeholder: true,
-    companion: {
-      caption: "Talk to your companion",
-      action: { kind: "route", route: "/support/resources" },
-      xCenter: 0.4,
-      feetY: 0.735,
-      width: 0.44,
-      wh: 630 / 420,
-    },
+    image: require("../../assets/scenes/cafe_front.png"),
+    imgW: 851,
+    imgH: 1848,
+    fit: "screen",
+    left: "left",
+    right: "right",
     hotspots: [
-      { id: "support", caption: "Support", x: 0.42, y: 0.09, w: 0.19, h: 0.12, action: { kind: "route", route: "/(tabs)/support" } },
-      { id: "me", caption: "Your room", x: 0.11, y: 0.12, w: 0.21, h: 0.14, action: { kind: "route", route: "/(tabs)/profile" } },
-      { id: "bar", caption: "The bar", x: 0.63, y: 0.14, w: 0.22, h: 0.16, action: { kind: "route", route: "/barista" } },
-      { id: "reading", caption: "Reading corner", x: 0.1, y: 0.24, w: 0.23, h: 0.16, action: { kind: "node", node: "reading" } },
-      { id: "games", caption: "Games arcade", x: 0.81, y: 0.15, w: 0.18, h: 0.22, action: { kind: "route", route: "/session/games" } },
-      { id: "writing", caption: "Writing space", x: 0.01, y: 0.19, w: 0.17, h: 0.17, action: { kind: "route", route: "/(tabs)/journal" } },
-      { id: "resources", caption: "Resources", x: 0.45, y: 0.35, w: 0.17, h: 0.1, action: { kind: "route", route: "/support/resources" } },
-      { id: "tonight", caption: "Tonight", x: 0.62, y: 0.4, w: 0.18, h: 0.1, action: { kind: "route", route: "/session/track" } },
-      { id: "soul", caption: "The Good News Gazette", x: 0.01, y: 0.57, w: 0.25, h: 0.08, action: { kind: "route", route: "/soul" } },
-      { id: "giggles", caption: "The Funny Pages", x: 0.02, y: 0.66, w: 0.25, h: 0.08, action: { kind: "route", route: "/giggles" } },
-      { id: "thought", caption: "The Letters Page", x: 0.03, y: 0.75, w: 0.25, h: 0.08, action: { kind: "route", route: "/thought" } },
-      { id: "community", caption: "Community", x: 0.25, y: 0.6, w: 0.24, h: 0.16, action: { kind: "route", route: "/community" } },
-      { id: "urge", caption: "I need a drink", x: 0.44, y: 0.55, w: 0.51, h: 0.07, action: { kind: "route", route: "/session/urge", warn: true } },
+      // Boards — the chalk label is the button (previews land here later).
+      { id: "community", caption: "Community", kind: "board", label: "Community", x: 0.01, y: 0.27, w: 0.11, h: 0.14, action: { kind: "route", route: "/community" } },
+      { id: "reading", caption: "Reading Corner", kind: "board", label: "Reading\nCorner", x: 0.13, y: 0.235, w: 0.13, h: 0.065, action: { kind: "route", route: "/toolkit" } },
+      { id: "me", caption: "Me", kind: "board", label: "Me", x: 0.305, y: 0.28, w: 0.08, h: 0.05, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "support", caption: "Support", kind: "board", label: "Support", x: 0.41, y: 0.225, w: 0.16, h: 0.05, action: { kind: "route", route: "/(tabs)/support" } },
+      { id: "mysky", caption: "My Sky", kind: "board", label: "My Sky", x: 0.76, y: 0.28, w: 0.19, h: 0.08, action: { kind: "route", route: "/constellation" } },
+      // Glow objects — light says "touch me".
+      { id: "bar", caption: "Café / Bar", kind: "glow", x: 0.55, y: 0.285, w: 0.15, h: 0.24, action: { kind: "route", route: "/barista" } },
+      { id: "games", caption: "Games Arcade", kind: "glow", x: 0.85, y: 0.36, w: 0.14, h: 0.16, action: { kind: "route", route: "/session/games" } },
+      { id: "writing", caption: "Writing Space", kind: "glow", x: 0.0, y: 0.5, w: 0.2, h: 0.13, action: { kind: "route", route: "/(tabs)/journal" } },
+      // Signs.
+      { id: "resources", caption: "Resources", kind: "sign", label: "Resources", x: 0.66, y: 0.465, w: 0.14, h: 0.045, action: { kind: "route", route: "/support/resources" } },
+      { id: "urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", x: 0.57, y: 0.6, w: 0.36, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
-  reading: {
-    id: "reading",
-    title: "Reading Corner",
-    image: require("../../assets/scenes/coach_room.png"),
-    imgW: 853,
-    imgH: 1844,
-    fit: "tall",
+
+  // Placeholder side views (your earlier left/right art) so turning is real
+  // and testable until the tall period versions land.
+  left: {
+    id: "left",
+    title: "Reading & Writing",
+    image: require("../../assets/scenes/cafe_left_ph.png"),
+    imgW: 941,
+    imgH: 1672,
+    fit: "screen",
+    back: "front",
     placeholder: true,
     hotspots: [
-      { id: "read", caption: "Sit and read", x: 0.28, y: 0.42, w: 0.44, h: 0.3, action: { kind: "route", route: "/toolkit" } },
-      { id: "back", caption: "Back to the café", x: 0.04, y: 0.87, w: 0.44, h: 0.11, action: { kind: "node", node: "cafe" } },
+      { id: "l_writing", caption: "Writing Space", kind: "glow", x: 0.04, y: 0.42, w: 0.28, h: 0.2, action: { kind: "route", route: "/(tabs)/journal" } },
+      { id: "l_papers", caption: "The papers", kind: "glow", x: 0.0, y: 0.62, w: 0.24, h: 0.2, action: { kind: "route", route: "/soul" } },
+      { id: "l_reading", caption: "Reading Corner", kind: "glow", x: 0.5, y: 0.36, w: 0.34, h: 0.24, action: { kind: "route", route: "/toolkit" } },
+    ],
+  },
+  right: {
+    id: "right",
+    title: "The Counter",
+    image: require("../../assets/scenes/cafe_right_ph.png"),
+    imgW: 941,
+    imgH: 1672,
+    fit: "screen",
+    back: "front",
+    placeholder: true,
+    hotspots: [
+      { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", x: 0.42, y: 0.46, w: 0.2, h: 0.06, action: { kind: "route", route: "/session/track" } },
+      { id: "r_games", caption: "Games Arcade", kind: "glow", x: 0.8, y: 0.34, w: 0.18, h: 0.2, action: { kind: "route", route: "/session/games" } },
     ],
   },
 };

@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Dimensions, Animated } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated } from "react-native";
 import { useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { CompanionArt } from "@/components/ui/CompanionArt";
-import { useCompanion } from "@/hooks/useCompanion";
-import { HUB_NODES, HUB_START, type HubAction } from "@/data/hubScene";
+import { HUB_NODES, HUB_START, type HubAction, type Hotspot } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { HubLoadingScreen } from "@/components/home/HubLoadingScreen";
 
@@ -15,14 +14,13 @@ const SCREEN_H = Dimensions.get("window").height;
 let hubBooted = false;
 
 /**
- * The first-person adventure hub. You stand inside a scene and interact with
- * the real things in it — the whole map lives in `src/data/hubScene.ts`, so
- * this engine is art-agnostic: swap the placeholder scenes for Marta's 00s
- * renders and nothing here changes.
+ * The first-person adventure hub. You stand inside a scene and touch the real
+ * things in it. The whole map lives in `src/data/hubScene.ts`, so this engine
+ * is art-agnostic: swap the scenes for Marta's period renders and nothing here
+ * changes.
  */
 export function AdventureHub() {
   const router = useRouter();
-  const { pose } = useCompanion();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [booted, setBooted] = useState(hubBooted);
@@ -33,13 +31,13 @@ export function AdventureHub() {
 
   const node = HUB_NODES[nodeId];
 
-  // A quiet, looping shimmer on the hotspots — the touch-era stand-in for the
-  // mouse cursor changing over something clickable. Kept subtle on purpose.
+  // A slow breathing pulse for the "glow" affordances — the touch-era
+  // stand-in for a mouse cursor changing over something clickable.
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(glint, { toValue: 1, duration: 1600, useNativeDriver: true }),
-        Animated.timing(glint, { toValue: 0, duration: 1600, useNativeDriver: true }),
+        Animated.timing(glint, { toValue: 1, duration: 1700, useNativeDriver: true }),
+        Animated.timing(glint, { toValue: 0, duration: 1700, useNativeDriver: true }),
       ])
     );
     loop.start();
@@ -92,10 +90,98 @@ export function AdventureHub() {
     );
   }
 
-  const imgH = SCREEN_W * (node.imgH / node.imgW);
-  const glintOpacity = glint.interpolate({ inputRange: [0, 1], outputRange: [0, 0.18] });
+  // Map the node image onto the screen. For "screen" fit we cover the viewport
+  // and place hotspots against the covered image rect, so image-fraction
+  // coordinates land on the right objects regardless of device crop.
+  const isScreenFit = node.fit === "screen";
+  const scale = Math.max(SCREEN_W / node.imgW, SCREEN_H / node.imgH);
+  const dispW = isScreenFit ? node.imgW * scale : SCREEN_W;
+  const dispH = isScreenFit ? node.imgH * scale : SCREEN_W * (node.imgH / node.imgW);
+  const offX = isScreenFit ? (SCREEN_W - dispW) / 2 : 0;
+  const offY = isScreenFit ? (SCREEN_H - dispH) / 2 : 0;
 
-  const renderHotspots = (heightPx: number) =>
+  const glowOpacity = glint.interpolate({ inputRange: [0, 1], outputRange: [0.06, 0.3] });
+  const glowBorder = glint.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.55] });
+
+  const rectOf = (h: Hotspot) => ({
+    position: "absolute" as const,
+    left: offX + h.x * dispW,
+    top: offY + h.y * dispH,
+    width: h.w * dispW,
+    height: h.h * dispH,
+  });
+
+  const affordance = (h: Hotspot) => {
+    const kind = h.kind ?? "plain";
+    if (kind === "board") {
+      return (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2 }}>
+          <Text
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            style={{
+              fontFamily: "SkinnyCustard",
+              color: "#EFEAF5",
+              fontSize: 17,
+              lineHeight: 20,
+              textAlign: "center",
+              textShadowColor: "rgba(0,0,0,0.6)",
+              textShadowOffset: { width: 0, height: 1 },
+              textShadowRadius: 3,
+            }}
+          >
+            {h.label ?? h.caption}
+          </Text>
+        </View>
+      );
+    }
+    if (kind === "glow") {
+      return (
+        <Animated.View
+          style={{
+            flex: 1,
+            borderRadius: 10,
+            backgroundColor: "#A489DE",
+            opacity: glowOpacity,
+          }}
+        />
+      );
+    }
+    if (kind === "sign") {
+      const bg = h.prominent ? "rgba(59,51,82,0.92)" : "rgba(13,11,18,0.82)";
+      return (
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: bg,
+            borderColor: "rgba(190,160,210,0.6)",
+            borderWidth: 1,
+            borderRadius: h.prominent ? 8 : 4,
+            paddingHorizontal: 8,
+          }}
+        >
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={{
+              fontFamily: h.prominent ? "SkinnyCustard" : "Inter_500Medium",
+              color: "#F0EBF5",
+              fontSize: h.prominent ? 20 : 12,
+              letterSpacing: h.prominent ? 0.5 : 0.3,
+              textTransform: h.prominent ? "uppercase" : "none",
+            }}
+          >
+            {h.label ?? h.caption}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const renderHotspots = () =>
     node.hotspots.map((h) => (
       <Pressable
         key={h.id}
@@ -108,74 +194,77 @@ export function AdventureHub() {
           runAction(h.action);
         }}
         hitSlop={8}
-        style={{
-          position: "absolute",
-          left: h.x * SCREEN_W,
-          top: h.y * heightPx,
-          width: h.w * SCREEN_W,
-          height: h.h * heightPx,
-        }}
+        style={rectOf(h)}
       >
-        <Animated.View
-          style={{
-            flex: 1,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: "#A489DE",
-            opacity: glintOpacity,
-          }}
-        />
+        {affordance(h)}
       </Pressable>
     ));
 
-  const renderCompanion = (heightPx: number) => {
-    if (!node.companion) return null;
-    const c = node.companion;
-    const compW = c.width * SCREEN_W;
-    const compH = compW * c.wh;
+  const turnArrow = (dir: "left" | "right" | "back", target: string) => {
+    const caption = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
+    const icon = dir === "back" ? "corner-up-left" : dir === "left" ? "chevron-left" : "chevron-right";
+    const pos =
+      dir === "back"
+        ? { top: 52, left: 16 }
+        : dir === "left"
+        ? { top: SCREEN_H / 2 - 26, left: 8 }
+        : { top: SCREEN_H / 2 - 26, right: 8 };
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={c.caption}
-        onPressIn={() => showCaption(c.caption)}
+        accessibilityLabel={caption}
+        onPressIn={() => showCaption(caption)}
         onPressOut={clearCaptionSoon}
         onPress={() => {
-          showCaption(c.caption);
-          runAction(c.action);
+          showCaption(caption);
+          navigateNode(target);
         }}
+        hitSlop={12}
         style={{
           position: "absolute",
-          left: c.xCenter * SCREEN_W - compW / 2,
-          top: c.feetY * heightPx - compH,
-          width: compW,
-          height: compH,
+          ...pos,
+          width: 52,
+          height: 52,
+          borderRadius: 26,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(13,11,18,0.5)",
+          borderWidth: 1,
+          borderColor: "rgba(190,160,210,0.4)",
         }}
+        className="active:opacity-70"
       >
-        <CompanionArt source={pose("standing")} width={compW} height={compH} />
+        <Feather name={icon as any} size={24} color="#EFEAF5" />
       </Pressable>
     );
   };
 
-  const scene =
-    node.fit === "screen" ? (
-      <View style={{ flex: 1 }}>
-        <Image source={node.image} style={{ width: SCREEN_W, height: "100%" }} resizeMode="cover" />
-        {renderCompanion(SCREEN_H)}
-        {renderHotspots(SCREEN_H)}
+  const scene = (
+    <View style={{ flex: 1 }}>
+      <Image
+        source={node.image}
+        style={{ position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }}
+        resizeMode="cover"
+      />
+      {renderHotspots()}
+      {node.left ? turnArrow("left", node.left) : null}
+      {node.right ? turnArrow("right", node.right) : null}
+      {node.back ? turnArrow("back", node.back) : null}
+    </View>
+  );
+
+  const tallScene = (
+    <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+      <View style={{ width: SCREEN_W, height: dispH, position: "relative" }}>
+        <Image source={node.image} style={{ width: SCREEN_W, height: dispH }} resizeMode="cover" />
+        {renderHotspots()}
       </View>
-    ) : (
-      <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-        <View style={{ width: SCREEN_W, height: imgH, position: "relative" }}>
-          <Image source={node.image} style={{ width: SCREEN_W, height: imgH }} resizeMode="cover" />
-          {renderCompanion(imgH)}
-          {renderHotspots(imgH)}
-        </View>
-      </ScrollView>
-    );
+    </ScrollView>
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
-      <Animated.View style={{ flex: 1, opacity: fade }}>{scene}</Animated.View>
+      <Animated.View style={{ flex: 1, opacity: fade }}>{isScreenFit ? scene : tallScene}</Animated.View>
       <CaptionBar caption={caption} />
     </View>
   );
