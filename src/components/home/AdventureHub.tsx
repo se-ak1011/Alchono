@@ -381,7 +381,7 @@ export function AdventureHub() {
           onPress={() => setShowExport(true)}
           style={{
             position: "absolute",
-            bottom: 40,
+            bottom: 104,
             alignSelf: "center",
             paddingHorizontal: 18,
             paddingVertical: 10,
