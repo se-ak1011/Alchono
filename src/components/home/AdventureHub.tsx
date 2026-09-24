@@ -216,11 +216,11 @@ export function AdventureHub() {
     return respondersRef.current[key];
   };
 
-  const renderEditBoxes = () =>
-    node.hotspots.map((h) => {
+  const renderEditBoxes = () => {
+    const boxes = node.hotspots.map((h) => {
       const c = coordsOf(h);
       return (
-        <View key={h.id + "-edit"} style={rectOf(c)} {...getResponder(h.id, "move").panHandlers}>
+        <View key={h.id + "-box"} style={rectOf(c)} {...getResponder(h.id, "move").panHandlers}>
           <View
             style={{
               flex: 1,
@@ -239,28 +239,40 @@ export function AdventureHub() {
               {c.x.toFixed(2)},{c.y.toFixed(2)} · {c.w.toFixed(2)}×{c.h.toFixed(2)}
             </Text>
           </View>
-          {/* resize handle (drag to size the box to its object) */}
-          <View
-            {...getResponder(h.id, "resize").panHandlers}
-            style={{
-              position: "absolute",
-              right: -11,
-              bottom: -11,
-              width: 26,
-              height: 26,
-              borderRadius: 13,
-              backgroundColor: "rgba(164,137,222,0.95)",
-              borderWidth: 1,
-              borderColor: "#FFFFFF",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Feather name="maximize-2" size={12} color="#1a1622" />
-          </View>
         </View>
       );
     });
+    // Resize handles as their own top-layer siblings. A child positioned
+    // outside its parent's bounds is NOT touchable on iOS, so the handle has to
+    // live in the scene container (hit-testable) rather than hang off the box.
+    const handles = node.hotspots.map((h) => {
+      const c = coordsOf(h);
+      const left = offX + (c.x + c.w) * dispW - 16;
+      const top = offY + (c.y + c.h) * dispH - 16;
+      return (
+        <View
+          key={h.id + "-handle"}
+          {...getResponder(h.id, "resize").panHandlers}
+          style={{
+            position: "absolute",
+            left,
+            top,
+            width: 34,
+            height: 34,
+            borderRadius: 17,
+            backgroundColor: "rgba(164,137,222,0.98)",
+            borderWidth: 2,
+            borderColor: "#FFFFFF",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Feather name="maximize-2" size={14} color="#1a1622" />
+        </View>
+      );
+    });
+    return [...boxes, ...handles];
+  };
 
   const turnArrow = (dir: "left" | "right" | "back", target: string) => {
     const cap = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
