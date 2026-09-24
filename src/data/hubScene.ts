@@ -87,9 +87,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     placeholder: true,
     hotspots: [
       { id: "l_writing", caption: "Writing Space", kind: "glow", x: 0.098, y: 0.114, w: 0.28, h: 0.2, action: { kind: "route", route: "/(tabs)/journal" } },
-      { id: "l_papers", caption: "The papers", kind: "glow", x: 0.017, y: 0.362, w: 0.24, h: 0.2, action: { kind: "route", route: "/soul" } },
+      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", x: 0.017, y: 0.362, w: 0.24, h: 0.18, action: { kind: "route", route: "/soul" } },
+      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", x: 0.017, y: 0.56, w: 0.22, h: 0.16, action: { kind: "route", route: "/giggles" } },
       { id: "l_reading", caption: "Reading Corner", kind: "glow", x: 0.6, y: 0.235, w: 0.34, h: 0.24, action: { kind: "route", route: "/toolkit" } },
-      // NEW — Me door is visible here too. Drag into place.
+      { id: "l_community", caption: "Community", kind: "board", label: "Community", x: 0.3, y: 0.07, w: 0.18, h: 0.12, action: { kind: "route", route: "/community" } },
       { id: "l_me", caption: "Me", kind: "board", label: "Me", x: 0.42, y: 0.2, w: 0.14, h: 0.3, action: { kind: "route", route: "/(tabs)/profile" } },
     ],
   },
