@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated, PanResponder } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -13,31 +13,42 @@ const SCREEN_H = Dimensions.get("window").height;
 // Boot the CD-ROM once per app launch, not on every return to the hub.
 let hubBooted = false;
 
+type Coords = { x: number; y: number; w: number; h: number };
+
 /**
  * The first-person adventure hub. You stand inside a scene and touch the real
  * things in it. The whole map lives in `src/data/hubScene.ts`, so this engine
- * is art-agnostic: swap the scenes for Marta's period renders and nothing here
- * changes.
+ * is art-agnostic.
+ *
+ * Edit mode (on by default during the design pass, toggled by the eye/grid
+ * button) turns every hotspot into a draggable, resizable box so positions can
+ * be set by hand in-app; "Export" prints the coordinates to paste back into
+ * hubScene.ts. Flip the editMode default to false for a release build.
  */
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [booted, setBooted] = useState(hubBooted);
-  // Edit mode paints every hotspot as a labelled box (boards included) so the
-  // touch zones are visible for alignment. On by default during the design
-  // pass; the eye/grid button toggles it. (Flip the default to false for a
-  // release build.)
   const [editMode, setEditMode] = useState(true);
+  const [overrides, setOverrides] = useState<Record<string, Coords>>({});
+  const [showExport, setShowExport] = useState(false);
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
   const captionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const node = HUB_NODES[nodeId];
+  // Refs the pan responders read at gesture time so they stay current.
+  const geomRef = useRef({ dispW: 1, dispH: 1, offX: 0, offY: 0 });
+  const overridesRef = useRef(overrides);
+  const dragRef = useRef<{ id: string; mode: "move" | "resize"; x: number; y: number; w: number; h: number } | null>(null);
+  const respondersRef = useRef<Record<string, ReturnType<typeof PanResponder.create>>>({});
 
-  // A slow breathing pulse for the "glow" affordances — the touch-era
-  // stand-in for a mouse cursor changing over something clickable.
+  const node = HUB_NODES[nodeId];
+  const hotspotsRef = useRef(node.hotspots);
+  hotspotsRef.current = node.hotspots;
+  overridesRef.current = overrides;
+
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
@@ -95,30 +106,30 @@ export function AdventureHub() {
     );
   }
 
-  // Map the node image onto the screen. For "screen" fit we cover the viewport
-  // and place hotspots against the covered image rect, so image-fraction
-  // coordinates land on the right objects regardless of device crop.
   const isScreenFit = node.fit === "screen";
   const scale = Math.max(SCREEN_W / node.imgW, SCREEN_H / node.imgH);
   const dispW = isScreenFit ? node.imgW * scale : SCREEN_W;
   const dispH = isScreenFit ? node.imgH * scale : SCREEN_W * (node.imgH / node.imgW);
   const offX = isScreenFit ? (SCREEN_W - dispW) / 2 : 0;
   const offY = isScreenFit ? (SCREEN_H - dispH) / 2 : 0;
+  geomRef.current = { dispW, dispH, offX, offY };
 
-  const glowOpacity = glint.interpolate({ inputRange: [0, 1], outputRange: [0.06, 0.3] });
-  const glowBorder = glint.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.55] });
-
-  const rectOf = (h: Hotspot) => ({
+  const coordsOf = (h: Hotspot): Coords => overrides[h.id] ?? { x: h.x, y: h.y, w: h.w, h: h.h };
+  const rectOf = (c: Coords) => ({
     position: "absolute" as const,
-    left: offX + h.x * dispW,
-    top: offY + h.y * dispH,
-    width: h.w * dispW,
-    height: h.h * dispH,
+    left: offX + c.x * dispW,
+    top: offY + c.y * dispH,
+    width: c.w * dispW,
+    height: c.h * dispH,
   });
+
+  const glowOpacity = glint.interpolate({ inputRange: [0, 1], outputRange: [0.1, 0.34] });
 
   const affordance = (h: Hotspot) => {
     const kind = h.kind ?? "plain";
-    if (kind === "board") {
+    if (kind === "board" || kind === "sign") {
+      // Text only — no box — so it blends into the scene. SkinnyCustard has no
+      // bold, so it "pops" via size + a strong shadow rather than weight.
       return (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2 }}>
           <Text
@@ -126,13 +137,15 @@ export function AdventureHub() {
             adjustsFontSizeToFit
             style={{
               fontFamily: "SkinnyCustard",
-              color: "#EFEAF5",
-              fontSize: 17,
-              lineHeight: 20,
+              color: "#F4EFFA",
+              fontSize: h.prominent ? 26 : kind === "sign" ? 16 : 17,
+              lineHeight: h.prominent ? 32 : 20,
+              letterSpacing: h.prominent ? 0.5 : 0,
               textAlign: "center",
-              textShadowColor: "rgba(0,0,0,0.6)",
+              textTransform: h.prominent ? "uppercase" : "none",
+              textShadowColor: "rgba(0,0,0,0.95)",
               textShadowOffset: { width: 0, height: 1 },
-              textShadowRadius: 3,
+              textShadowRadius: 6,
             }}
           >
             {h.label ?? h.caption}
@@ -141,47 +154,7 @@ export function AdventureHub() {
       );
     }
     if (kind === "glow") {
-      return (
-        <Animated.View
-          style={{
-            flex: 1,
-            borderRadius: 10,
-            backgroundColor: "#A489DE",
-            opacity: glowOpacity,
-          }}
-        />
-      );
-    }
-    if (kind === "sign") {
-      const bg = h.prominent ? "rgba(59,51,82,0.92)" : "rgba(13,11,18,0.82)";
-      return (
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: bg,
-            borderColor: "rgba(190,160,210,0.6)",
-            borderWidth: 1,
-            borderRadius: h.prominent ? 8 : 4,
-            paddingHorizontal: 8,
-          }}
-        >
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            style={{
-              fontFamily: h.prominent ? "SkinnyCustard" : "Inter_500Medium",
-              color: "#F0EBF5",
-              fontSize: h.prominent ? 20 : 12,
-              letterSpacing: h.prominent ? 0.5 : 0.3,
-              textTransform: h.prominent ? "uppercase" : "none",
-            }}
-          >
-            {h.label ?? h.caption}
-          </Text>
-        </View>
-      );
+      return <Animated.View style={{ flex: 1, borderRadius: 10, backgroundColor: "#A489DE", opacity: glowOpacity }} />;
     }
     return null;
   };
@@ -199,37 +172,98 @@ export function AdventureHub() {
           runAction(h.action);
         }}
         hitSlop={8}
-        style={rectOf(h)}
+        style={rectOf(coordsOf(h))}
       >
         {affordance(h)}
       </Pressable>
     ));
 
-  // A visible box + id for every hotspot, for alignment. Non-interactive so the
-  // real hotspots underneath still take the taps.
-  const renderEditOverlay = () =>
-    node.hotspots.map((h) => (
-      <View
-        key={h.id + "-edit"}
-        pointerEvents="none"
-        style={{
-          ...rectOf(h),
-          borderWidth: 2,
-          borderColor: "#C9B8F0",
-          backgroundColor: "rgba(164,137,222,0.22)",
-          borderRadius: 4,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text numberOfLines={2} style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "700", textAlign: "center" }}>
-          {h.id}
-        </Text>
-      </View>
-    ));
+  // Stable per-hotspot pan responders (created once, read live values via refs).
+  const getResponder = (id: string, mode: "move" | "resize") => {
+    const key = id + ":" + mode;
+    if (!respondersRef.current[key]) {
+      respondersRef.current[key] = PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {
+          const base = hotspotsRef.current.find((x) => x.id === id);
+          if (!base) return;
+          const c = overridesRef.current[id] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
+          dragRef.current = { id, mode, x: c.x, y: c.y, w: c.w, h: c.h };
+        },
+        onPanResponderMove: (_e, g) => {
+          const d = dragRef.current;
+          if (!d || d.id !== id || d.mode !== mode) return;
+          const { dispW: dw, dispH: dh } = geomRef.current;
+          if (mode === "move") {
+            const x = Math.max(0, Math.min(1 - d.w, d.x + g.dx / dw));
+            const y = Math.max(0, Math.min(1 - d.h, d.y + g.dy / dh));
+            setOverrides((o) => ({ ...o, [id]: { x, y, w: d.w, h: d.h } }));
+          } else {
+            const w = Math.max(0.03, Math.min(1 - d.x, d.w + g.dx / dw));
+            const h2 = Math.max(0.02, Math.min(1 - d.y, d.h + g.dy / dh));
+            setOverrides((o) => ({ ...o, [id]: { x: d.x, y: d.y, w, h: h2 } }));
+          }
+        },
+        onPanResponderRelease: () => {
+          dragRef.current = null;
+        },
+        onPanResponderTerminate: () => {
+          dragRef.current = null;
+        },
+      });
+    }
+    return respondersRef.current[key];
+  };
+
+  const renderEditBoxes = () =>
+    node.hotspots.map((h) => {
+      const c = coordsOf(h);
+      return (
+        <View key={h.id + "-edit"} style={rectOf(c)} {...getResponder(h.id, "move").panHandlers}>
+          <View
+            style={{
+              flex: 1,
+              borderWidth: 2,
+              borderColor: "#C9B8F0",
+              backgroundColor: "rgba(164,137,222,0.28)",
+              borderRadius: 4,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text numberOfLines={1} style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "700", textAlign: "center" }}>
+              {h.id}
+            </Text>
+            <Text numberOfLines={1} style={{ color: "#EDE7F5", fontSize: 8, textAlign: "center" }}>
+              {c.x.toFixed(2)},{c.y.toFixed(2)} · {c.w.toFixed(2)}×{c.h.toFixed(2)}
+            </Text>
+          </View>
+          {/* resize handle (drag to size the box to its object) */}
+          <View
+            {...getResponder(h.id, "resize").panHandlers}
+            style={{
+              position: "absolute",
+              right: -11,
+              bottom: -11,
+              width: 26,
+              height: 26,
+              borderRadius: 13,
+              backgroundColor: "rgba(164,137,222,0.95)",
+              borderWidth: 1,
+              borderColor: "#FFFFFF",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Feather name="maximize-2" size={12} color="#1a1622" />
+          </View>
+        </View>
+      );
+    });
 
   const turnArrow = (dir: "left" | "right" | "back", target: string) => {
-    const caption = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
+    const cap = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
     const icon = dir === "back" ? "corner-up-left" : dir === "left" ? "chevron-left" : "chevron-right";
     const pos =
       dir === "back"
@@ -240,11 +274,11 @@ export function AdventureHub() {
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={caption}
-        onPressIn={() => showCaption(caption)}
+        accessibilityLabel={cap}
+        onPressIn={() => showCaption(cap)}
         onPressOut={clearCaptionSoon}
         onPress={() => {
-          showCaption(caption);
+          showCaption(cap);
           navigateNode(target);
         }}
         hitSlop={12}
@@ -267,42 +301,51 @@ export function AdventureHub() {
     );
   };
 
-  const scene = (
-    <View style={{ flex: 1 }}>
+  const exportText = node.hotspots
+    .map((h) => {
+      const c = coordsOf(h);
+      return `${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
+    })
+    .join("\n");
+
+  const sceneInner = (
+    <>
       <Image
         source={node.image}
-        style={{ position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }}
+        style={
+          isScreenFit
+            ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
+            : { width: SCREEN_W, height: dispH }
+        }
         resizeMode="cover"
       />
-      {renderHotspots()}
-      {editMode ? renderEditOverlay() : null}
-      {node.left ? turnArrow("left", node.left) : null}
-      {node.right ? turnArrow("right", node.right) : null}
-      {node.back ? turnArrow("back", node.back) : null}
-    </View>
-  );
-
-  const tallScene = (
-    <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-      <View style={{ width: SCREEN_W, height: dispH, position: "relative" }}>
-        <Image source={node.image} style={{ width: SCREEN_W, height: dispH }} resizeMode="cover" />
-        {renderHotspots()}
-        {editMode ? renderEditOverlay() : null}
-      </View>
-    </ScrollView>
+      {editMode ? renderEditBoxes() : renderHotspots()}
+      {!editMode && node.left ? turnArrow("left", node.left) : null}
+      {!editMode && node.right ? turnArrow("right", node.right) : null}
+      {!editMode && node.back ? turnArrow("back", node.back) : null}
+    </>
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
-      <Animated.View style={{ flex: 1, opacity: fade }}>{isScreenFit ? scene : tallScene}</Animated.View>
+      <Animated.View style={{ flex: 1, opacity: fade }}>
+        {isScreenFit ? (
+          <View style={{ flex: 1 }}>{sceneInner}</View>
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+            <View style={{ width: SCREEN_W, height: dispH, position: "relative" }}>{sceneInner}</View>
+          </ScrollView>
+        )}
+      </Animated.View>
+
       <CaptionBar caption={caption} />
 
-      {/* Design-pass toggle: show/hide the labelled touch-zone boxes. */}
+      {/* Design-pass: toggle the drag-to-place boxes on/off. */}
       <Pressable
         onPress={() => setEditMode((v) => !v)}
         hitSlop={12}
         accessibilityRole="button"
-        accessibilityLabel={editMode ? "Hide touch zones" : "Show touch zones"}
+        accessibilityLabel={editMode ? "Hide touch zones" : "Edit touch zones"}
         style={{
           position: "absolute",
           top: 52,
@@ -312,7 +355,7 @@ export function AdventureHub() {
           borderRadius: 20,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(13,11,18,0.55)",
+          backgroundColor: "rgba(13,11,18,0.6)",
           borderWidth: 1,
           borderColor: "rgba(190,160,210,0.4)",
         }}
@@ -320,6 +363,49 @@ export function AdventureHub() {
       >
         <Feather name={editMode ? "eye-off" : "grid"} size={18} color="#EFEAF5" />
       </Pressable>
+
+      {editMode ? (
+        <Pressable
+          onPress={() => setShowExport(true)}
+          style={{
+            position: "absolute",
+            bottom: 40,
+            alignSelf: "center",
+            paddingHorizontal: 18,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "rgba(59,51,82,0.95)",
+            borderWidth: 1,
+            borderColor: "rgba(190,160,210,0.6)",
+          }}
+          className="active:opacity-80"
+        >
+          <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>Export coordinates</Text>
+        </Pressable>
+      ) : null}
+
+      {showExport ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.96)", paddingTop: 90, paddingHorizontal: 20 }}>
+          <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", marginBottom: 4 }}>
+            {node.id} — hotspot coordinates
+          </Text>
+          <Text style={{ color: "#817B91", fontSize: 12, marginBottom: 14 }}>
+            Screenshot this (or copy) and send it over — I&apos;ll bake it into the scene.
+          </Text>
+          <ScrollView style={{ flex: 1 }}>
+            <Text selectable style={{ color: "#CFC8DE", fontSize: 13, lineHeight: 22 }}>
+              {exportText}
+            </Text>
+          </ScrollView>
+          <Pressable
+            onPress={() => setShowExport(false)}
+            style={{ alignSelf: "center", marginVertical: 24, paddingHorizontal: 22, paddingVertical: 11, borderRadius: 8, backgroundColor: "#A489DE" }}
+            className="active:opacity-80"
+          >
+            <Text style={{ color: "#1a1622", fontSize: 14, fontWeight: "700" }}>Close</Text>
+          </Pressable>
+        </View>
+      ) : null}
     </View>
   );
 }
