@@ -24,6 +24,11 @@ export function AdventureHub() {
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [booted, setBooted] = useState(hubBooted);
+  // Edit mode paints every hotspot as a labelled box (boards included) so the
+  // touch zones are visible for alignment. On by default during the design
+  // pass; the eye/grid button toggles it. (Flip the default to false for a
+  // release build.)
+  const [editMode, setEditMode] = useState(true);
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
@@ -200,6 +205,29 @@ export function AdventureHub() {
       </Pressable>
     ));
 
+  // A visible box + id for every hotspot, for alignment. Non-interactive so the
+  // real hotspots underneath still take the taps.
+  const renderEditOverlay = () =>
+    node.hotspots.map((h) => (
+      <View
+        key={h.id + "-edit"}
+        pointerEvents="none"
+        style={{
+          ...rectOf(h),
+          borderWidth: 2,
+          borderColor: "#C9B8F0",
+          backgroundColor: "rgba(164,137,222,0.22)",
+          borderRadius: 4,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text numberOfLines={2} style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "700", textAlign: "center" }}>
+          {h.id}
+        </Text>
+      </View>
+    ));
+
   const turnArrow = (dir: "left" | "right" | "back", target: string) => {
     const caption = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
     const icon = dir === "back" ? "corner-up-left" : dir === "left" ? "chevron-left" : "chevron-right";
@@ -247,6 +275,7 @@ export function AdventureHub() {
         resizeMode="cover"
       />
       {renderHotspots()}
+      {editMode ? renderEditOverlay() : null}
       {node.left ? turnArrow("left", node.left) : null}
       {node.right ? turnArrow("right", node.right) : null}
       {node.back ? turnArrow("back", node.back) : null}
@@ -258,6 +287,7 @@ export function AdventureHub() {
       <View style={{ width: SCREEN_W, height: dispH, position: "relative" }}>
         <Image source={node.image} style={{ width: SCREEN_W, height: dispH }} resizeMode="cover" />
         {renderHotspots()}
+        {editMode ? renderEditOverlay() : null}
       </View>
     </ScrollView>
   );
@@ -266,6 +296,30 @@ export function AdventureHub() {
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
       <Animated.View style={{ flex: 1, opacity: fade }}>{isScreenFit ? scene : tallScene}</Animated.View>
       <CaptionBar caption={caption} />
+
+      {/* Design-pass toggle: show/hide the labelled touch-zone boxes. */}
+      <Pressable
+        onPress={() => setEditMode((v) => !v)}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel={editMode ? "Hide touch zones" : "Show touch zones"}
+        style={{
+          position: "absolute",
+          top: 52,
+          right: 14,
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(13,11,18,0.55)",
+          borderWidth: 1,
+          borderColor: "rgba(190,160,210,0.4)",
+        }}
+        className="active:opacity-70"
+      >
+        <Feather name={editMode ? "eye-off" : "grid"} size={18} color="#EFEAF5" />
+      </Pressable>
     </View>
   );
 }
