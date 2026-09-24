@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -20,9 +20,9 @@ import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/authStore';
 import { useAuthListener } from '@/hooks/useAuth';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { AppSplash } from '@/components/ui/AppSplash';
 
 SplashScreen.preventAutoHideAsync();
-const APP_SPLASH = require('../assets/Splash_Screen.png');
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { session, profile, isInitialized } = useAuthStore();
@@ -182,33 +182,7 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#201D28' }}>
             <StatusBar style="light" backgroundColor="#201D28" />
             <RootLayoutNav />
-            {!splashReady && (
-              <View
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: '#201D28',
-                }}
-              >
-                <Image
-                  source={APP_SPLASH}
-                  style={[
-                    StyleSheet.absoluteFill,
-                    {
-                      width,
-                      height,
-                      // Match the native cover splash while biasing the crop a
-                      // little upward so tall iPhones keep the figure/title in view.
-                      transform: [{ translateY: -Math.round(height * 0.025) }],
-                    },
-                  ]}
-                  resizeMode="cover"
-                />
-              </View>
-            )}
+            {!splashReady && <AppSplash width={width} height={height} />}
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </QueryClientProvider>
