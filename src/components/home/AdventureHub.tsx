@@ -20,17 +20,17 @@ type Coords = { x: number; y: number; w: number; h: number };
  * things in it. The whole map lives in `src/data/hubScene.ts`, so this engine
  * is art-agnostic.
  *
- * Edit mode (on by default during the design pass, toggled by the eye/grid
- * button) turns every hotspot into a draggable, resizable box so positions can
- * be set by hand in-app; "Export" prints the coordinates to paste back into
- * hubScene.ts. Flip the editMode default to false for a release build.
+ * Edit mode (toggled by the eye/grid button) turns every hotspot into a
+ * draggable, resizable box so positions can be set by hand in-app; "Export"
+ * prints the coordinates to paste back into hubScene.ts. It's off by default
+ * now that all three rooms are placed — tap the grid button to nudge things.
  */
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [booted, setBooted] = useState(hubBooted);
-  const [editMode, setEditMode] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const [overrides, setOverrides] = useState<Record<string, Coords>>({});
   const [showExport, setShowExport] = useState(false);
 

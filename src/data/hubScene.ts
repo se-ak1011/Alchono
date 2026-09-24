@@ -105,13 +105,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     placeholder: true,
     hotspots: [
-      { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", x: 0.586, y: 0.508, w: 0.2, h: 0.06, action: { kind: "route", route: "/session/track" } },
-      { id: "r_games", caption: "Games Arcade", kind: "glow", x: 0.359, y: 0.29, w: 0.18, h: 0.2, action: { kind: "route", route: "/session/games" } },
-      // NEW — everything else visible on the right. Drag each into place.
-      { id: "r_bar", caption: "Café / Bar", kind: "glow", x: 0.02, y: 0.3, w: 0.16, h: 0.26, action: { kind: "route", route: "/barista" } },
-      { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", x: 0.13, y: 0.5, w: 0.16, h: 0.05, action: { kind: "route", route: "/support/resources" } },
-      { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", x: 0.06, y: 0.66, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", x: 0.72, y: 0.2, w: 0.2, h: 0.1, action: { kind: "route", route: "/constellation" } },
+      { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", x: 0.431, y: 0.497, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
+      { id: "r_games", caption: "Games Arcade", kind: "glow", x: 0.396, y: 0.318, w: 0.104, h: 0.138, action: { kind: "route", route: "/session/games" } },
+      { id: "r_bar", caption: "Café / Bar", kind: "glow", x: 0.098, y: 0.255, w: 0.115, h: 0.194, action: { kind: "route", route: "/barista" } },
+      { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", x: 0.195, y: 0.464, w: 0.16, h: 0.05, action: { kind: "route", route: "/support/resources" } },
+      { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", x: 0.064, y: 0.582, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", x: 0.39, y: 0.217, w: 0.127, h: 0.085, action: { kind: "route", route: "/constellation" } },
     ],
   },
 };
