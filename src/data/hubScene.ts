@@ -97,7 +97,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "l_papers3", caption: "The Letters Page", kind: "glow", x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
       { id: "l_reading", caption: "Reading Corner", kind: "glow", x: 0.627, y: 0.148, w: 0.174, h: 0.354, action: { kind: "route", route: "/toolkit" } },
       { id: "l_community", caption: "Community", kind: "board", label: "Community", x: 0.442, y: 0.146, w: 0.153, h: 0.184, action: { kind: "route", route: "/community" } },
-      { id: "l_me", caption: "Me", kind: "board", label: "Me", x: 0.788, y: 0.251, w: 0.169, h: 0.116, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 12, x: 0.788, y: 0.251, w: 0.169, h: 0.116, action: { kind: "route", route: "/(tabs)/profile" } },
     ],
   },
   right: {

@@ -133,11 +133,15 @@ export function AdventureHub() {
       // size is tunable via `labelSize` in hubScene.ts (a cap — the text still
       // shrinks to fit its box).
       const size = h.labelSize ?? (h.prominent ? 20 : kind === "sign" ? 13 : 14);
+      // With an explicit labelSize we hold that size and let the text spill
+      // outside its box (e.g. the tiny far-away "Me" door — small tap target,
+      // still-readable whisper). Otherwise the label shrinks to fit its box.
+      const fitToBox = h.labelSize == null;
       return (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2 }}>
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2, overflow: "visible" }}>
           <Text
             numberOfLines={2}
-            adjustsFontSizeToFit
+            adjustsFontSizeToFit={fitToBox}
             style={{
               fontFamily: "Bungee",
               color: "#F4EFFA",
