@@ -77,6 +77,11 @@ export type HubNode = {
   id: string;
   title: string;
   image: ImageSourcePropType;
+  /** Optional second layer, same composition as `image` but with the object
+   *  glows painted in. The engine cross-fades its opacity 0→1→0 so the baked
+   *  glows "breathe" together. When set, glow hotspots draw no engine bloom —
+   *  the art carries the affordance. */
+  glowImage?: ImageSourcePropType;
   imgW: number;
   imgH: number;
   fit: "tall" | "screen";
@@ -94,6 +99,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     id: "front",
     title: "The Café",
     image: require("../../assets/scenes/cafe_front.png"),
+    glowImage: require("../../assets/scenes/cafe_front_glow.png"),
     imgW: 851,
     imgH: 1848,
     fit: "screen",

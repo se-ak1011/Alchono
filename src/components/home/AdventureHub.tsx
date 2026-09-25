@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated, PanResponder } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -182,9 +182,11 @@ export function AdventureHub() {
   const affordance = (h: Hotspot) => {
     const kind = h.kind ?? "plain";
 
-    // Interactive objects: a soft breathing light bloom, borrowing the object's
-    // own light. No box, no text.
+    // Interactive objects: when the node has a painted glow layer, the art
+    // carries the affordance and the hotspot is just an invisible tap target.
+    // Otherwise fall back to a soft engine-drawn light bloom.
     if (kind === "glow") {
+      if (node.glowImage) return null;
       return <Bloom tint={h.tint ?? "purple"} anchor={h.anchor} scale={h.glowScale} glint={glint} />;
     }
 
@@ -401,17 +403,19 @@ export function AdventureHub() {
     })
     .join("\n");
 
+  const imgStyle: ImageStyle = isScreenFit
+    ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
+    : { width: SCREEN_W, height: dispH };
+
   const sceneInner = (
     <>
-      <Image
-        source={node.image}
-        style={
-          isScreenFit
-            ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
-            : { width: SCREEN_W, height: dispH }
-        }
-        resizeMode="cover"
-      />
+      <Image source={node.image} style={imgStyle} resizeMode="cover" />
+      {/* The painted glow layer, breathing 0→1→0 over the base so every object's
+          glow pulses together. When present, glow hotspots draw no engine bloom.
+          It sits below the hotspots (rendered next), so taps still reach them. */}
+      {node.glowImage ? (
+        <Animated.Image source={node.glowImage} style={[imgStyle, { opacity: glint }]} resizeMode="cover" />
+      ) : null}
       {editMode ? renderEditBoxes() : renderHotspots()}
       {!editMode && node.left ? turnArrow("left", node.left) : null}
       {!editMode && node.right ? turnArrow("right", node.right) : null}
