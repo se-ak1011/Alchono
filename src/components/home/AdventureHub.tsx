@@ -128,19 +128,22 @@ export function AdventureHub() {
   const affordance = (h: Hotspot) => {
     const kind = h.kind ?? "plain";
     if (kind === "board" || kind === "sign") {
-      // Text only — no box — so it blends into the scene. SkinnyCustard has no
-      // bold, so it "pops" via size + a strong shadow rather than weight.
+      // Text only — no box — so it blends into the scene. Bungee is a chunky
+      // retro signage face; it "pops" via weight + a strong shadow. Per-label
+      // size is tunable via `labelSize` in hubScene.ts (a cap — the text still
+      // shrinks to fit its box).
+      const size = h.labelSize ?? (h.prominent ? 20 : kind === "sign" ? 13 : 14);
       return (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2 }}>
           <Text
             numberOfLines={2}
             adjustsFontSizeToFit
             style={{
-              fontFamily: "SkinnyCustard",
+              fontFamily: "Bungee",
               color: "#F4EFFA",
-              fontSize: h.prominent ? 26 : kind === "sign" ? 16 : 17,
-              lineHeight: h.prominent ? 32 : 20,
-              letterSpacing: h.prominent ? 0.5 : 0,
+              fontSize: size,
+              lineHeight: Math.round(size * 1.2),
+              letterSpacing: 0,
               textAlign: "center",
               textTransform: h.prominent ? "uppercase" : "none",
               textShadowColor: "rgba(0,0,0,0.95)",

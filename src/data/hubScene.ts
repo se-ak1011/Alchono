@@ -37,6 +37,9 @@ export type Hotspot = {
   kind?: HotspotKind;
   label?: string;
   prominent?: boolean;
+  /** Per-label font size (px, at base scale). Omit for the kind's default.
+   *  It's a cap — text still shrinks to fit its box. */
+  labelSize?: number;
 };
 
 export type HubNode = {

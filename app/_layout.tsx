@@ -13,6 +13,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { Bungee_400Regular } from '@expo-google-fonts/bungee';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -154,6 +155,8 @@ export default function RootLayout() {
     // hero titles, the greeting, the wordmark and the orbit monograms. Body
     // and UI stay on Inter for legibility.
     SkinnyCustard: require('../assets/fonts/SkinnyCustardLemonCake.ttf'),
+    // Chunky retro signage face — the hub's chalk labels (Community, My Sky…).
+    Bungee: Bungee_400Regular,
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);
 
