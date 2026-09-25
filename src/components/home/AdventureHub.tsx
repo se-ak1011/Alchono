@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -29,6 +29,7 @@ type Edits = Coords & {
   glowMax?: number;
   rotate?: number;
   tint?: GlowTint;
+  label?: string;
 };
 
 const clampI = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
@@ -110,6 +111,9 @@ export function AdventureHub() {
   const [showExport, setShowExport] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  // Hotspots created in-app with the editor, keyed by node id. They're exported
+  // with a NEW tag so their destinations can be wired when baked into hubScene.
+  const [added, setAdded] = useState<Record<string, Hotspot[]>>({});
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
@@ -123,8 +127,11 @@ export function AdventureHub() {
   const respondersRef = useRef<Record<string, ReturnType<typeof PanResponder.create>>>({});
 
   const node = HUB_NODES[nodeId];
-  const hotspotsRef = useRef(node.hotspots);
-  hotspotsRef.current = node.hotspots;
+  // Base hotspots from the scene map, plus any added in-app for this node.
+  const hotspots = [...node.hotspots, ...(added[nodeId] ?? [])];
+  const isAdded = (id: string) => (added[nodeId] ?? []).some((h) => h.id === id);
+  const hotspotsRef = useRef(hotspots);
+  hotspotsRef.current = hotspots;
   overridesRef.current = overrides;
 
   useEffect(() => {
@@ -234,19 +241,44 @@ export function AdventureHub() {
       glowMax: o?.glowMax ?? h.glowMax,
       rotate: o?.rotate ?? h.rotate,
       tint: o?.tint ?? h.tint,
+      label: o?.label ?? h.label,
     };
   };
 
   // Write one editor property for the selected hotspot, seeding x/y/w/h so the
   // export always carries a full record.
-  const setProp = (key: keyof Edits, val: number | GlowTint) => {
+  const setProp = (key: keyof Edits, val: number | GlowTint | string) => {
     if (!selected) return;
-    const base = node.hotspots.find((h) => h.id === selected);
+    const base = hotspots.find((h) => h.id === selected);
     if (!base) return;
     setOverrides((o) => {
       const cur = o[selected] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
       return { ...o, [selected]: { ...cur, [key]: val } as Edits };
     });
+  };
+
+  // Create a new hotspot in the middle of the screen and select it. Its
+  // destination is wired when baked (the export tags it NEW).
+  const addHotspot = (kind: "label" | "glow") => {
+    const id = `${kind === "label" ? "lbl" : "glow"}_new_${Date.now().toString().slice(-4)}`;
+    const spot: Hotspot =
+      kind === "label"
+        ? { id, caption: "New label", kind: "label", label: "New label", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
+        : { id, caption: "New glow", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.5, x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
+    setAdded((a) => ({ ...a, [nodeId]: [...(a[nodeId] ?? []), spot] }));
+    setSelected(id);
+  };
+
+  const deleteSelected = () => {
+    if (!selected) return;
+    const id = selected;
+    setAdded((a) => ({ ...a, [nodeId]: (a[nodeId] ?? []).filter((h) => h.id !== id) }));
+    setOverrides((o) => {
+      const next = { ...o };
+      delete next[id];
+      return next;
+    });
+    setSelected(null);
   };
 
   const affordance = (h: Hotspot) => {
@@ -302,7 +334,7 @@ export function AdventureHub() {
               textShadowRadius: primary ? 10 : 6,
             }}
           >
-            {h.label ?? h.caption}
+            {e.label ?? h.label ?? h.caption}
           </Text>
         </View>
       );
@@ -311,7 +343,7 @@ export function AdventureHub() {
   };
 
   const renderHotspots = () =>
-    node.hotspots.map((h) => {
+    hotspots.map((h) => {
       // Pure signage (label kind, or anything with no action) isn't tappable —
       // taps fall through so it never behaves like a button.
       if (h.kind === "label" || !h.action) {
@@ -389,7 +421,7 @@ export function AdventureHub() {
     // Each box shows the REAL affordance (WYSIWYG) so edits preview live, with a
     // thin outline marking the tap zone — bright for the selected hotspot, faint
     // otherwise. Tapping (or dragging) a box selects it.
-    const boxes = node.hotspots.map((h) => {
+    const boxes = hotspots.map((h) => {
       const c = coordsOf(h);
       const isSel = selected === h.id;
       return (
@@ -421,7 +453,7 @@ export function AdventureHub() {
     // Resize handle for the SELECTED hotspot only, as a top-layer sibling. A
     // child positioned outside its parent's bounds is NOT touchable on iOS, so
     // the handle lives in the scene container rather than hanging off the box.
-    const handles = node.hotspots
+    const handles = hotspots
       .filter((h) => h.id === selected)
       .map((h) => {
         const c = coordsOf(h);
@@ -454,7 +486,7 @@ export function AdventureHub() {
 
   // The little control panel for the currently-selected hotspot.
   const renderInspector = () => {
-    const sel = selected ? node.hotspots.find((h) => h.id === selected) : null;
+    const sel = selected ? hotspots.find((h) => h.id === selected) : null;
     if (!sel) return null;
     const kind = sel.kind ?? "plain";
     const isText = kind === "label" || kind === "primary" || kind === "board" || kind === "sign";
@@ -498,10 +530,39 @@ export function AdventureHub() {
       >
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "700" }}>Editing: {sel.id}</Text>
-          <Pressable onPress={() => setSelected(null)} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)" }}>
-            <Text style={{ color: "#CFC8DE", fontSize: 12, fontWeight: "600" }}>Done</Text>
-          </Pressable>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            {isAdded(sel.id) ? (
+              <Pressable onPress={deleteSelected} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.22)", borderWidth: 1, borderColor: "rgba(220,120,130,0.5)" }}>
+                <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "600" }}>Delete</Text>
+              </Pressable>
+            ) : null}
+            <Pressable onPress={() => setSelected(null)} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)" }}>
+              <Text style={{ color: "#CFC8DE", fontSize: 12, fontWeight: "600" }}>Done</Text>
+            </Pressable>
+          </View>
         </View>
+
+        {isText ? (
+          <View style={{ marginTop: 10 }}>
+            <Text style={{ color: "#8b849b", fontSize: 11, marginBottom: 4 }}>Label text</Text>
+            <TextInput
+              value={e.label ?? sel.label ?? ""}
+              onChangeText={(t) => setProp("label", t)}
+              placeholder="Type the label…"
+              placeholderTextColor="#6f6880"
+              style={{
+                color: "#ECE9F1",
+                fontSize: 14,
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                borderRadius: 8,
+                backgroundColor: "rgba(255,255,255,0.06)",
+                borderWidth: 1,
+                borderColor: "rgba(236,233,241,0.16)",
+              }}
+            />
+          </View>
+        ) : null}
 
         {isText ? row("Text size", `${size}`, () => setProp("labelSize", clampI(size - 1, 6, 64)), () => setProp("labelSize", clampI(size + 1, 6, 64))) : null}
         {isText ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 2, -90, 90)), () => setProp("rotate", clampI(rot + 2, -90, 90))) : null}
@@ -575,7 +636,7 @@ export function AdventureHub() {
     );
   };
 
-  const exportText = node.hotspots
+  const exportText = hotspots
     .map((h) => {
       const c = coordsOf(h);
       const e = editsOf(h);
@@ -585,7 +646,18 @@ export function AdventureHub() {
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
       if (e.tint) extra.push(`tint ${e.tint}`);
-      const base = `${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
+      const newItem = isAdded(h.id);
+      // New items carry their kind + text so they can be baked from scratch (and
+      // their destination wired), not just matched to an existing hotspot.
+      if (newItem) {
+        extra.unshift(`kind ${h.kind ?? "label"}`);
+        const text = e.label ?? h.label;
+        if (text) extra.push(`text "${text}"`);
+      } else if (e.label != null && e.label !== h.label) {
+        extra.push(`text "${e.label}"`);
+      }
+      const prefix = newItem ? "NEW " : "";
+      const base = `${prefix}${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
       return extra.length ? `${base}, ${extra.join(", ")}` : base;
     })
     .join("\n");
@@ -668,6 +740,32 @@ export function AdventureHub() {
         >
           <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>Export coordinates</Text>
         </Pressable>
+      ) : null}
+
+      {editMode && !selected ? (
+        <View style={{ position: "absolute", left: 12, right: 12, bottom: 158, flexDirection: "row", gap: 10, justifyContent: "center" }}>
+          {(["label", "glow"] as const).map((k) => (
+            <Pressable
+              key={k}
+              onPress={() => addHotspot(k)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 10,
+                backgroundColor: "rgba(20,17,28,0.95)",
+                borderWidth: 1,
+                borderColor: "rgba(190,160,210,0.45)",
+              }}
+              className="active:opacity-80"
+            >
+              <Feather name={k === "label" ? "type" : "sun"} size={15} color="#EFEAF5" />
+              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add label" : "Add glow"}</Text>
+            </Pressable>
+          ))}
+        </View>
       ) : null}
 
       {editMode ? renderInspector() : null}
