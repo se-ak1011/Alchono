@@ -44,7 +44,7 @@ function openResource(r: Resource, router: ReturnType<typeof useRouter>) {
   else Linking.openURL(r.url).catch(() => {});
 }
 
-/** An orbit-style chip that IS the link. SkinnyCustard pill + plum dot; a
+/** An orbit-style chip that IS the link. Bungee pill + plum dot; a
  *  trailing arrow only when it opens a page (meetings), which then explain
  *  themselves in a popup first. */
 function Chip({ r, arrow, onPress }: { r: Resource; arrow?: boolean; onPress: () => void }) {
@@ -73,7 +73,7 @@ function Chip({ r, arrow, onPress }: { r: Resource; arrow?: boolean; onPress: ()
       }}
     >
       <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: PLUM }} />
-      <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 20, lineHeight: 24, color: '#ECE9F1' }} numberOfLines={1}>
+      <Text style={{ fontFamily: 'Bungee', fontSize: 20, lineHeight: 24, color: '#ECE9F1' }} numberOfLines={1}>
         {LABEL[r.title] ?? r.title}
       </Text>
       {arrow ? <Feather name="chevron-right" size={16} color={rgba(PLUM, 0.85)} /> : null}

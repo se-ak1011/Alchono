@@ -41,19 +41,22 @@ nothing is.
 5. **Muted for anything the eye can skip.** Meta, hints, and disclaimers live
    at `text-muted` — present, never competing.
 
-## The display face: SkinnyCustard
+## The display face: Bungee
 
-The hand-lettered face (`SkinnyCustard`) used for hero titles, orbit chips, and
-book spines has **very tall uppercase ascenders** — the capital **T** especially
-rides well above the cap height of most fonts.
+The chunky retro signage face (`Bungee`, loaded via `@expo-google-fonts/bungee`)
+used for hero titles, orbit chips, book spines and the hub's chalk labels is
+**heavy and wide**, with large, near-uppercase glyphs and generous built-in
+spacing. It replaced the old hand-lettered SkinnyCustard face.
 
-- **Give it line-height headroom: at least ~1.3× the font size.** A tight
-  line-height (e.g. `lineHeight: 20` on a `19px` title) clips the top of the
-  T against the line box — and inside any container with `overflow: hidden`
-  (cards, book covers, chips) the clip is hard-edged and obvious.
-- Rule of thumb by size: 20px → 26, 30px → 38. When in doubt, add more.
-- This is a per-placement guard, not a global one: check any *new* SkinnyCustard
-  text that sits in a tight or clipped container.
+- **It reads far bigger than a normal sans at the same px** — so titles ported
+  over from SkinnyCustard usually want their font size trimmed, not kept.
+- **Give it line-height headroom: at least ~1.2× the font size**, or the caps
+  crowd the line box (worse inside any `overflow: hidden` container).
+- **It needs horizontal room.** Bungee doesn't condense — a multi-word title
+  that fit before may now wrap or overflow. Prefer short, single-word titles;
+  otherwise drop the size or widen the container.
+- This is a per-placement guard, not a global one: check any *new* Bungee text
+  that sits in a tight or clipped container.
 
 ## Applying it
 

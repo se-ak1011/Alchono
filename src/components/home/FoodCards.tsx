@@ -34,7 +34,7 @@ export function FoodCards() {
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1 pr-3">
-            <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 26, lineHeight: 30, color: '#ECE9F1' }}>The Caff</Text>
+            <Text style={{ fontFamily: 'Bungee', fontSize: 26, lineHeight: 30, color: '#ECE9F1' }}>The Caff</Text>
             <Text style={{ color: '#B2ACC0', fontSize: 13.5, marginTop: 2 }}>Pull up a chair — a few minutes off.</Text>
           </View>
           <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(224,176,128,0.16)', borderWidth: 1, borderColor: 'rgba(224,176,128,0.4)' }}>

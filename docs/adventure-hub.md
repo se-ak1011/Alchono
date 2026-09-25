@@ -65,7 +65,7 @@ front: {
 - **`caption`** is the little text that appears in the bottom bar when you touch
   the object.
 - **`kind`** is how the object signals it's tappable:
-  - `board` — a chalk label in the SkinnyCustard font (for the chalkboards)
+  - `board` — a chalk label in the Bungee font (for the chalkboards)
   - `sign` — text with a strong shadow (Resources, the urge sign)
   - `glow` — a soft breathing light over the object, no text (the arcade, the
     counter, the paper rack)
@@ -145,8 +145,11 @@ on your device until it's baked in.)
 
 ## Handy facts
 
-- **Fonts:** the chalk labels use **SkinnyCustard** (the hand-lettered display
-  face). Body/UI everywhere else is Inter.
+- **Fonts:** the chalk labels use **Bungee** (the chunky retro display face,
+  loaded via `@expo-google-fonts/bungee`). Each label's size can be set with
+  `labelSize` on its hotspot; with a size set, the label holds that size and is
+  allowed to spill outside its box (e.g. the small, far-away "Me" door). Body/UI
+  everywhere else is Inter.
 - **Fit:** `fit: "screen"` fills the phone (`cover`) so there are no black bars;
   hotspots are measured against that covered image, so they stay put across
   different phone sizes.

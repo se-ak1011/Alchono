@@ -65,7 +65,7 @@ export default function CoachScreen() {
           <Pressable onPress={() => router.back()} hitSlop={12}>
             <Text style={{ color: '#ECE9F1', fontSize: 18 }}>←</Text>
           </Pressable>
-          <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 28, color: '#ECE9F1' }}>AI Coach</Text>
+          <Text style={{ fontFamily: 'Bungee', fontSize: 28, color: '#ECE9F1' }}>AI Coach</Text>
         </View>
         <View className="flex-1">
           <AiCoachChat hideCompanion />

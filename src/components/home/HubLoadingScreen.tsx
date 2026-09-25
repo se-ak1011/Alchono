@@ -76,7 +76,7 @@ export function HubLoadingScreen({ onDone }: { onDone: () => void }) {
         <View style={{ position: "absolute", top: 10, width: 2, height: 20, backgroundColor: "rgba(236,233,241,0.35)" }} />
       </Animated.View>
 
-      <Text style={{ fontFamily: "SkinnyCustard", fontSize: 40, lineHeight: 50, color: "#ECE9F1", letterSpacing: 2, marginBottom: 22 }}>
+      <Text style={{ fontFamily: "Bungee", fontSize: 40, lineHeight: 50, color: "#ECE9F1", letterSpacing: 2, marginBottom: 22 }}>
         ALCHONO
       </Text>
 

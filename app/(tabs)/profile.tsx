@@ -69,7 +69,7 @@ function RoomLabel({ label, imgH, onPress }: { label: Label; imgH: number; onPre
     >
       <Text
         style={{
-          fontFamily: 'SkinnyCustard',
+          fontFamily: 'Bungee',
           fontSize: 22,
           lineHeight: 26,
           color: '#F0EBF5',
@@ -148,7 +148,7 @@ export default function MeScreen() {
           <Pressable onPress={goHome} hitSlop={12} className="p-1 active:opacity-60">
             <Feather name="chevron-left" size={26} color="#ECE9F1" />
           </Pressable>
-          <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 30, color: '#ECE9F1' }}>Me</Text>
+          <Text style={{ fontFamily: 'Bungee', fontSize: 30, color: '#ECE9F1' }}>Me</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
           <Pressable onPress={() => go('/account')} hitSlop={12} className="p-2 active:opacity-60">

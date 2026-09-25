@@ -57,8 +57,8 @@ export function ZoneChip({
         </View>
       ) : null}
       <View className="flex-1">
-        {/* SkinnyCustard title — the app's hand-lettered voice, not generic bold. */}
-        <Text style={{ fontFamily: 'SkinnyCustard', fontSize: 19, lineHeight: 24, color: '#ECE9F1' }}>{title}</Text>
+        {/* Bungee title — the app's hand-lettered voice, not generic bold. */}
+        <Text style={{ fontFamily: 'Bungee', fontSize: 19, lineHeight: 24, color: '#ECE9F1' }}>{title}</Text>
         {subtitle ? (
           <Text className="text-text-secondary text-xs mt-0.5 leading-snug">{subtitle}</Text>
         ) : null}

@@ -6,7 +6,7 @@ import type { ImageSourcePropType } from "react-native";
  * Each node is one first-person viewpoint. Hotspots are fractional rectangles
  * over the node IMAGE (x/y = top-left, w/h = size, 0..1). `kind` sets how it
  * signals it's interactive:
- *   - "board"  → chalk label (SkinnyCustard), text only
+ *   - "board"  → chalk label (Bungee), text only
  *   - "glow"   → a soft breathing light over the object
  *   - "sign"   → text label with a strong shadow (Resources; the urge sign)
  *   - "plain"  → invisible tap target

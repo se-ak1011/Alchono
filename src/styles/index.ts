@@ -6,7 +6,7 @@ export const headingShadow = {
   // The display face carries every hero title and the greeting. It has a
   // single (medium) weight — at title size its thin, handwritten character
   // reads as premium identity, so we no longer lean on a bold weight here.
-  fontFamily: 'SkinnyCustard',
+  fontFamily: 'Bungee',
 };
 
 // Reserved for the few moments that should feel luminous: streaks, milestone

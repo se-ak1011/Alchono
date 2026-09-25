@@ -151,11 +151,9 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
-    // The app's display face — thin, handwritten. Used only for identity:
-    // hero titles, the greeting, the wordmark and the orbit monograms. Body
-    // and UI stay on Inter for legibility.
-    SkinnyCustard: require('../assets/fonts/SkinnyCustardLemonCake.ttf'),
-    // Chunky retro signage face — the hub's chalk labels (Community, My Sky…).
+    // The app's display face — chunky retro signage. Used for identity:
+    // hero titles, the greeting, the wordmark, the orbit monograms and the
+    // hub labels. Body and UI stay on Inter for legibility.
     Bungee: Bungee_400Regular,
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);

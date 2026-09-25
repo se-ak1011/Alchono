@@ -69,7 +69,7 @@ function RoomLabel({ label, onPress }: { label: Label; onPress: () => void }) {
     >
       <Text
         style={{
-          fontFamily: "SkinnyCustard",
+          fontFamily: "Bungee",
           fontSize: 22,
           lineHeight: 26,
           color: "#F0EBF5",
@@ -137,7 +137,7 @@ export default function SupportScreen() {
           <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 active:opacity-60">
             <Feather name="chevron-left" size={26} color="#ECE9F1" />
           </Pressable>
-          <Text style={{ fontFamily: "SkinnyCustard", fontSize: 30, color: "#ECE9F1" }}>Support</Text>
+          <Text style={{ fontFamily: "Bungee", fontSize: 30, color: "#ECE9F1" }}>Support</Text>
         </View>
         <Pressable
           onPress={() => go("/messages")}

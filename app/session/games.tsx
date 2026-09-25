@@ -188,7 +188,7 @@ export default function GamesScreen() {
                   <MiniPreview id={game.id} />
                 </View>
                 <View>
-                  <Text style={{ color: ivory, fontFamily: 'SkinnyCustard', fontSize: 20, lineHeight: 21 }}>{game.name}</Text>
+                  <Text style={{ color: ivory, fontFamily: 'Bungee', fontSize: 20, lineHeight: 21 }}>{game.name}</Text>
                   <Text style={{ color: violet, fontSize: 11.5, fontFamily: 'Inter_600SemiBold', marginTop: 2 }}>{game.duration}</Text>
                 </View>
               </Pressable>
@@ -196,7 +196,7 @@ export default function GamesScreen() {
           ))}
 
           <View style={{ position: 'absolute', left: 0, right: 0, top: 548, alignItems: 'center' }} pointerEvents="none">
-            <Text style={{ color: '#6a6478', fontSize: 13, fontFamily: 'SkinnyCustard', letterSpacing: 0.5 }}>tap a game to join</Text>
+            <Text style={{ color: '#6a6478', fontSize: 13, fontFamily: 'Bungee', letterSpacing: 0.5 }}>tap a game to join</Text>
           </View>
         </View>
       </ScrollView>
