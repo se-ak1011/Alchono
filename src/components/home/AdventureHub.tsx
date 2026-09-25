@@ -22,6 +22,28 @@ const SCREEN_H = Dimensions.get("window").height;
 let hubBooted = false;
 
 type Coords = { x: number; y: number; w: number; h: number };
+// The full set of things the in-app editor can override per hotspot.
+type Edits = Coords & {
+  labelSize?: number;
+  glowScale?: number;
+  glowMax?: number;
+  rotate?: number;
+  tint?: GlowTint;
+};
+
+const clampI = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
+const clampF = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v * 100) / 100));
+
+const stepBtn = {
+  width: 34,
+  height: 34,
+  borderRadius: 10,
+  alignItems: "center" as const,
+  justifyContent: "center" as const,
+  backgroundColor: "rgba(255,255,255,0.08)",
+  borderWidth: 1,
+  borderColor: "rgba(236,233,241,0.16)",
+};
 
 // The colour each glow borrows from its object's existing light.
 const GLOW_COLORS: Record<GlowTint, string> = { warm: "#F4C078", purple: "#B79CEA" };
@@ -84,9 +106,10 @@ export function AdventureHub() {
   const [caption, setCaption] = useState<string | null>(null);
   const [booted, setBooted] = useState(hubBooted);
   const [editMode, setEditMode] = useState(true);
-  const [overrides, setOverrides] = useState<Record<string, Coords>>({});
+  const [overrides, setOverrides] = useState<Record<string, Edits>>({});
   const [showExport, setShowExport] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
@@ -198,30 +221,68 @@ export function AdventureHub() {
     height: c.h * dispH,
   });
 
+  // The default text size for a kind, matching the styling below.
+  const defaultSize = (h: Hotspot) =>
+    h.kind === "primary" ? 22 : h.kind === "sign" ? 13 : h.prominent ? 20 : 14;
+
+  // Merge a hotspot's base visual props with any in-app editor overrides.
+  const editsOf = (h: Hotspot) => {
+    const o = overrides[h.id];
+    return {
+      labelSize: o?.labelSize ?? h.labelSize,
+      glowScale: o?.glowScale ?? h.glowScale,
+      glowMax: o?.glowMax ?? h.glowMax,
+      rotate: o?.rotate ?? h.rotate,
+      tint: o?.tint ?? h.tint,
+    };
+  };
+
+  // Write one editor property for the selected hotspot, seeding x/y/w/h so the
+  // export always carries a full record.
+  const setProp = (key: keyof Edits, val: number | GlowTint) => {
+    if (!selected) return;
+    const base = node.hotspots.find((h) => h.id === selected);
+    if (!base) return;
+    setOverrides((o) => {
+      const cur = o[selected] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
+      return { ...o, [selected]: { ...cur, [key]: val } as Edits };
+    });
+  };
+
   const affordance = (h: Hotspot) => {
     const kind = h.kind ?? "plain";
+    const e = editsOf(h);
 
     // Interactive objects: when the node has a painted glow layer, the art
     // carries the affordance and the hotspot is just an invisible tap target.
     // Otherwise fall back to a soft engine-drawn light bloom.
     if (kind === "glow") {
       if (node.glowImage) return null;
-      return <Bloom tint={h.tint ?? "purple"} anchor={h.anchor} scale={h.glowScale} glint={glint} />;
+      return <Bloom tint={e.tint ?? "purple"} anchor={h.anchor} scale={e.glowScale} glint={glint} max={e.glowMax ?? 0.5} />;
     }
 
     // Text: environmental signage (label) and the dominant urge action (primary),
     // plus the legacy interactive board/sign labels the left/right views use.
     if (kind === "label" || kind === "primary" || kind === "board" || kind === "sign") {
       const primary = kind === "primary";
-      // PatrickHand is a chunky retro signage face; it "pops" via weight + a strong
-      // shadow. Per-label size is tunable via `labelSize` in hubScene.ts.
-      const size = h.labelSize ?? (primary ? 22 : h.prominent ? 20 : kind === "sign" ? 13 : 14);
+      // PatrickHand is a light chalk-hand; per-label size, rotation and (for
+      // glows) colour/strength are all tunable live in the in-app editor.
+      const size = e.labelSize ?? defaultSize(h);
       // With an explicit labelSize we hold that size and let the text spill
       // outside its box (e.g. the tiny far-away "Me" door — small tap target,
       // still-readable whisper). Otherwise the label shrinks to fit its box.
-      const fitToBox = h.labelSize == null;
+      const fitToBox = e.labelSize == null;
       return (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2, overflow: "visible" }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 2,
+            overflow: "visible",
+            transform: [{ rotate: `${e.rotate ?? 0}deg` }],
+          }}
+        >
           {/* The urge sign carries a restrained idle glow so it's the easiest
               thing to find, without becoming neon signage. */}
           {primary ? <Bloom tint="purple" glint={glint} scale={1} max={0.32} /> : null}
@@ -295,6 +356,7 @@ export function AdventureHub() {
         onPanResponderGrant: () => {
           const base = hotspotsRef.current.find((x) => x.id === id);
           if (!base) return;
+          setSelected(id);
           const c = overridesRef.current[id] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
           dragRef.current = { id, mode, x: c.x, y: c.y, w: c.w, h: c.h };
         },
@@ -305,11 +367,11 @@ export function AdventureHub() {
           if (mode === "move") {
             const x = Math.max(0, Math.min(1 - d.w, d.x + g.dx / dw));
             const y = Math.max(0, Math.min(1 - d.h, d.y + g.dy / dh));
-            setOverrides((o) => ({ ...o, [id]: { x, y, w: d.w, h: d.h } }));
+            setOverrides((o) => ({ ...o, [id]: { ...(o[id] ?? {}), x, y, w: d.w, h: d.h } }));
           } else {
             const w = Math.max(0.03, Math.min(1 - d.x, d.w + g.dx / dw));
             const h2 = Math.max(0.02, Math.min(1 - d.y, d.h + g.dy / dh));
-            setOverrides((o) => ({ ...o, [id]: { x: d.x, y: d.y, w, h: h2 } }));
+            setOverrides((o) => ({ ...o, [id]: { ...(o[id] ?? {}), x: d.x, y: d.y, w, h: h2 } }));
           }
         },
         onPanResponderRelease: () => {
@@ -324,61 +386,154 @@ export function AdventureHub() {
   };
 
   const renderEditBoxes = () => {
+    // Each box shows the REAL affordance (WYSIWYG) so edits preview live, with a
+    // thin outline marking the tap zone — bright for the selected hotspot, faint
+    // otherwise. Tapping (or dragging) a box selects it.
     const boxes = node.hotspots.map((h) => {
       const c = coordsOf(h);
+      const isSel = selected === h.id;
       return (
         <View key={h.id + "-box"} style={rectOf(c)} {...getResponder(h.id, "move").panHandlers}>
+          {affordance(h)}
           <View
+            pointerEvents="none"
             style={{
-              flex: 1,
-              borderWidth: 2,
-              borderColor: "#C9B8F0",
-              backgroundColor: "rgba(164,137,222,0.28)",
+              position: "absolute",
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              borderWidth: isSel ? 2 : 1,
+              borderStyle: isSel ? "solid" : "dashed",
+              borderColor: isSel ? "#E9DEFF" : "rgba(201,184,240,0.4)",
               borderRadius: 4,
-              alignItems: "center",
-              justifyContent: "center",
+              backgroundColor: isSel ? "rgba(164,137,222,0.12)" : "transparent",
             }}
-          >
-            <Text numberOfLines={1} style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "700", textAlign: "center" }}>
+          />
+          <View pointerEvents="none" style={{ position: "absolute", top: -12, left: 0 }}>
+            <Text numberOfLines={1} style={{ color: isSel ? "#FFFFFF" : "rgba(233,222,255,0.7)", fontSize: 9, fontWeight: "700" }}>
               {h.id}
-            </Text>
-            <Text numberOfLines={1} style={{ color: "#EDE7F5", fontSize: 8, textAlign: "center" }}>
-              {c.x.toFixed(2)},{c.y.toFixed(2)} · {c.w.toFixed(2)}×{c.h.toFixed(2)}
             </Text>
           </View>
         </View>
       );
     });
-    // Resize handles as their own top-layer siblings. A child positioned
-    // outside its parent's bounds is NOT touchable on iOS, so the handle has to
-    // live in the scene container (hit-testable) rather than hang off the box.
-    const handles = node.hotspots.map((h) => {
-      const c = coordsOf(h);
-      const left = offX + (c.x + c.w) * dispW - 16;
-      const top = offY + (c.y + c.h) * dispH - 16;
-      return (
-        <View
-          key={h.id + "-handle"}
-          {...getResponder(h.id, "resize").panHandlers}
-          style={{
-            position: "absolute",
-            left,
-            top,
-            width: 34,
-            height: 34,
-            borderRadius: 17,
-            backgroundColor: "rgba(164,137,222,0.98)",
-            borderWidth: 2,
-            borderColor: "#FFFFFF",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Feather name="maximize-2" size={14} color="#1a1622" />
-        </View>
-      );
-    });
+    // Resize handle for the SELECTED hotspot only, as a top-layer sibling. A
+    // child positioned outside its parent's bounds is NOT touchable on iOS, so
+    // the handle lives in the scene container rather than hanging off the box.
+    const handles = node.hotspots
+      .filter((h) => h.id === selected)
+      .map((h) => {
+        const c = coordsOf(h);
+        const left = offX + (c.x + c.w) * dispW - 16;
+        const top = offY + (c.y + c.h) * dispH - 16;
+        return (
+          <View
+            key={h.id + "-handle"}
+            {...getResponder(h.id, "resize").panHandlers}
+            style={{
+              position: "absolute",
+              left,
+              top,
+              width: 34,
+              height: 34,
+              borderRadius: 17,
+              backgroundColor: "rgba(164,137,222,0.98)",
+              borderWidth: 2,
+              borderColor: "#FFFFFF",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Feather name="maximize-2" size={14} color="#1a1622" />
+          </View>
+        );
+      });
     return [...boxes, ...handles];
+  };
+
+  // The little control panel for the currently-selected hotspot.
+  const renderInspector = () => {
+    const sel = selected ? node.hotspots.find((h) => h.id === selected) : null;
+    if (!sel) return null;
+    const kind = sel.kind ?? "plain";
+    const isText = kind === "label" || kind === "primary" || kind === "board" || kind === "sign";
+    const isGlow = kind === "glow";
+    const e = editsOf(sel);
+    const size = e.labelSize ?? defaultSize(sel);
+    const rot = e.rotate ?? 0;
+    const gscale = e.glowScale ?? 1;
+    const gmax = e.glowMax ?? 0.5;
+    const tint = e.tint ?? "purple";
+
+    const row = (label: string, value: string, onDec: () => void, onInc: () => void) => (
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+        <Text style={{ color: "#CFC8DE", fontSize: 13 }}>{label}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Pressable onPress={onDec} hitSlop={8} style={stepBtn}>
+            <Feather name="minus" size={16} color="#EFEAF5" />
+          </Pressable>
+          <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "700", width: 54, textAlign: "center" }}>{value}</Text>
+          <Pressable onPress={onInc} hitSlop={8} style={stepBtn}>
+            <Feather name="plus" size={16} color="#EFEAF5" />
+          </Pressable>
+        </View>
+      </View>
+    );
+
+    return (
+      <View
+        style={{
+          position: "absolute",
+          left: 12,
+          right: 12,
+          bottom: 158,
+          backgroundColor: "rgba(20,17,28,0.97)",
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: "rgba(190,160,210,0.45)",
+          paddingHorizontal: 14,
+          paddingVertical: 12,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "700" }}>Editing: {sel.id}</Text>
+          <Pressable onPress={() => setSelected(null)} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)" }}>
+            <Text style={{ color: "#CFC8DE", fontSize: 12, fontWeight: "600" }}>Done</Text>
+          </Pressable>
+        </View>
+
+        {isText ? row("Text size", `${size}`, () => setProp("labelSize", clampI(size - 1, 6, 64)), () => setProp("labelSize", clampI(size + 1, 6, 64))) : null}
+        {isText ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 2, -90, 90)), () => setProp("rotate", clampI(rot + 2, -90, 90))) : null}
+        {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
+        {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
+        {isGlow ? (
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+            <Text style={{ color: "#CFC8DE", fontSize: 13 }}>Colour</Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {(["warm", "purple"] as const).map((t) => (
+                <Pressable
+                  key={t}
+                  onPress={() => setProp("tint", t)}
+                  hitSlop={6}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 8,
+                    backgroundColor: tint === t ? GLOW_COLORS[t] : "rgba(255,255,255,0.06)",
+                    borderWidth: 1,
+                    borderColor: tint === t ? "#FFFFFF" : "rgba(236,233,241,0.14)",
+                  }}
+                >
+                  <Text style={{ color: tint === t ? "#1a1622" : "#CFC8DE", fontSize: 12, fontWeight: "700" }}>{t}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        ) : null}
+        <Text style={{ color: "#6f6880", fontSize: 10.5, marginTop: 10 }}>drag to move · corner handle to resize</Text>
+      </View>
+    );
   };
 
   const turnArrow = (dir: "left" | "right" | "back", target: string) => {
@@ -423,7 +578,15 @@ export function AdventureHub() {
   const exportText = node.hotspots
     .map((h) => {
       const c = coordsOf(h);
-      return `${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
+      const e = editsOf(h);
+      const extra: string[] = [];
+      if (e.labelSize != null) extra.push(`labelSize ${Math.round(e.labelSize)}`);
+      if (e.rotate) extra.push(`rotate ${Math.round(e.rotate)}`);
+      if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
+      if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
+      if (e.tint) extra.push(`tint ${e.tint}`);
+      const base = `${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
+      return extra.length ? `${base}, ${extra.join(", ")}` : base;
     })
     .join("\n");
 
@@ -506,6 +669,8 @@ export function AdventureHub() {
           <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>Export coordinates</Text>
         </Pressable>
       ) : null}
+
+      {editMode ? renderInspector() : null}
 
       {showExport ? (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.96)", paddingTop: 90, paddingHorizontal: 20 }}>

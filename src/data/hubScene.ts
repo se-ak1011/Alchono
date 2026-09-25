@@ -69,6 +69,10 @@ export type Hotspot = {
   anchor?: { x: number; y: number };
   /** Glow size vs its box (1 ≈ fills it). Smaller = a tighter gleam. */
   glowScale?: number;
+  /** Glow peak opacity 0..1 (the editor's "glow strength"). Default ~0.5. */
+  glowMax?: number;
+  /** Text rotation in degrees (the editor's "orientation"). */
+  rotate?: number;
   /** Haptic strength on tap. Defaults to light. */
   haptic?: Haptic;
 };

@@ -123,17 +123,26 @@ tappable from there.
 
 ---
 
-## The editor trick (how we place hotspots)
+## The editor (a visual workbench)
 
-You never have to guess coordinates. The hub has a built-in editor.
+You never have to guess anything. The hub has a built-in editor that previews
+everything live (WYSIWYG) — the real labels and glows, not placeholder boxes.
 
 1. **Turn it on.** Tap the little **grid button** in the top-right of the hub.
-   Every hotspot becomes a draggable, resizable box.
-2. **Drag** a box by its middle to move it. **Resize** it with the arrow handle
-   at its bottom-right corner. Line each box up over its object in the picture.
-3. **Export.** Tap **"Export coordinates"** (bottom of the screen). It prints
-   the exact `x, y, w, h` for every hotspot in that room.
-4. **Send them over.** Screenshot the export list (or copy it) and send it to
+   Every hotspot shows its real affordance inside a thin outline (its tap zone).
+2. **Select one.** Tap a hotspot — its outline goes solid/bright and a **panel**
+   appears at the bottom with controls for *that* hotspot. Tap **Done** to
+   deselect.
+3. **Move & resize.** Drag the selected box by its middle to move it; drag the
+   round corner handle to resize. (Only the selected box shows a handle.)
+4. **Tune it** in the panel — each control is a −/+ stepper you can watch update
+   live:
+   - **Text size** and **Rotate** (for labels / the urge sign)
+   - **Glow size**, **Glow strength**, and **Colour** (warm / purple) for glows
+5. **Export.** Tap **"Export coordinates"**. It prints `x, y, w, h` for every
+   hotspot, *plus* any tuned values (`labelSize`, `rotate`, `glowScale`,
+   `glowMax`, `tint`) so nothing you set gets lost.
+6. **Send them over.** Screenshot the export list (or copy it) and send it to
    me. I paste the numbers into `hubScene.ts` — "baking" them in — so they
    become the real defaults.
 5. **Turn it off.** Tap the grid button again to go back to the finished view.
