@@ -64,21 +64,45 @@ front: {
   by hand — the in-app editor does it for you (see below).
 - **`caption`** is the little text that appears in the bottom bar when you touch
   the object.
-- **`kind`** is how the object signals it's tappable:
-  - `board` — a chalk label in the Bungee font (for the chalkboards)
-  - `sign` — text with a strong shadow (Resources, the urge sign)
-  - `glow` — a soft breathing light over the object, no text (the arcade, the
-    counter, the paper rack)
-  - `plain` — an invisible tap target, no visible hint
-- **`label`** is the words drawn on `board`/`sign` hotspots. Use `\n` for a line
-  break (`"Reading\nCorner"`). `glow` and `plain` ignore it.
-- **`prominent: true`** makes a `sign` bigger and uppercase — used for the urge
-  sign so it's impossible to miss.
-- **`action`** is where a tap goes:
+- **Nothing rectangular is ever drawn.** The box is an invisible, forgiving tap
+  target. `kind` sets what (if anything) is drawn to *hint* interactivity:
+  - `label` — environmental signage (Bungee text). **Not tappable** — it just
+    names a place. Pair it with a separate `glow` on the real object.
+  - `glow` — an interactive object: a soft, feathered, breathing light-bloom
+    that fades out well before the box edge (reads as ambient light, not a
+    button). No text.
+  - `primary` — the dominant immediate-help action (the counter "I NEED A
+    DRINK"): big Bungee text with a restrained idle glow.
+  - `board` / `sign` — legacy interactive text-labels still used by the left/right
+    views (text **and** tappable). The front view no longer uses these.
+  - `plain` — an invisible tap target, no visible hint.
+- **`label`** is the words drawn on `label`/`primary`/`board`/`sign`. Use `\n`
+  for a line break (`"Reading\nCorner"`). `glow` and `plain` ignore it.
+- **`labelSize`** caps a label's font size; with it set, the text holds that size
+  and may spill outside its box (e.g. the tiny far-away `Me` door — small tap
+  target, still-readable whisper).
+- **Glow styling:** `tint` picks the bloom colour — `"warm"` (borrow an object's
+  warm light) or `"purple"` (a restrained accent). `anchor: {x,y}` concentrates
+  the bloom at a point inside the box (0..1) — e.g. a doorknob gleam. `glowScale`
+  sizes the bloom vs its box (`1` ≈ fills it; smaller = a tighter gleam).
+- **`interaction`** tags what a tap *means*: `"destination"` (enter a room),
+  `"preview"` (zoom in place — currently still routes, pending art), `"object"`
+  (the object is the action). Semantic for now; the zoom lands later.
+- **`haptic`** sets the tap feedback: `"light"` (default), `"medium"` (room
+  transitions like Me / Support), `"heavy"`. The urge action uses a distinct
+  *warning* buzz regardless, so it always feels different.
+- **`action`** is where a tap goes (omit it entirely for a `label`):
   - `{ kind: "route", route: "/community" }` — jump to a screen in the app
-  - `{ kind: "route", route: "/session/urge", warn: true }` — same, but `warn`
-    is for the urge/craving flow (it fires a warning haptic)
+  - `{ kind: "route", route: "/session/urge", warn: true }` — the urge/craving
+    flow; `warn` fires the distinct stronger haptic
   - `{ kind: "node", node: "left" }` — move to another viewpoint in the hub
+
+### Labels and tap targets are independent
+
+A label names an *area*; a different physical *object* is the actual tap target.
+On the front view, "Writing" is a `label` on the blackboard, while the desk
+beneath it is a separate `glow` hotspot that opens the Writing room. Place the
+two independently in the editor.
 
 ### One object, many views
 
@@ -89,11 +113,13 @@ its own `l_me` and the right room its own `r_bar` — same destination, placed
 separately for each picture. Keep this up: if you can see it, it should be
 tappable from there.
 
-> The urge button is the exception — it doesn't rely on hotspots at all. It's a
-> global button (`src/components/ui/UrgeButton.tsx`) rendered once at the app
-> root, so it floats over **every** screen in the app, hub or not. Someone
-> mid-craving never has to find the right room. The `urge`/`r_urge` hotspots are
-> just extra, in-world doorways to the same place.
+> The urge flow has two ways in. There's a global floating pill
+> (`src/components/ui/UrgeButton.tsx`) rendered once at the app root, so it hovers
+> over screens app-wide — *except the hub*, where the in-world counter `primary`
+> ("I NEED A DRINK") is the access instead. And there are in-world urge hotspots
+> in the scenes (front counter, `r_urge` on the right). ⚠️ The **left view has no
+> in-world urge yet** — add one when it's redesigned, since the floating pill is
+> hidden on the whole hub.
 
 ---
 

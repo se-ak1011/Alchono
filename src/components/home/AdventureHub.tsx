@@ -3,7 +3,8 @@ import { View, ScrollView, Image, Pressable, Text, Dimensions, Animated, PanResp
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { HUB_NODES, HUB_START, type HubAction, type Hotspot } from "@/data/hubScene";
+import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
+import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { HubLoadingScreen } from "@/components/home/HubLoadingScreen";
 
@@ -14,6 +15,51 @@ const SCREEN_H = Dimensions.get("window").height;
 let hubBooted = false;
 
 type Coords = { x: number; y: number; w: number; h: number };
+
+// The colour each glow borrows from its object's existing light.
+const GLOW_COLORS: Record<GlowTint, string> = { warm: "#F4C078", purple: "#B79CEA" };
+
+/**
+ * A soft, feathered radial light-bloom — the interaction cue for an object.
+ * It fades to fully transparent well before its box edge, so nothing
+ * rectangular is ever visible; it reads as ambient light, not a button. The
+ * whole thing breathes via the shared `glint` value.
+ */
+function Bloom({
+  tint,
+  anchor,
+  scale,
+  glint,
+  max = 0.5,
+}: {
+  tint: GlowTint;
+  anchor?: { x: number; y: number };
+  scale?: number;
+  glint: Animated.Value;
+  max?: number;
+}) {
+  const color = GLOW_COLORS[tint] ?? GLOW_COLORS.purple;
+  const cx = `${Math.round((anchor?.x ?? 0.5) * 100)}%`;
+  const cy = `${Math.round((anchor?.y ?? 0.5) * 100)}%`;
+  const r = `${Math.round((scale ?? 1) * 62)}%`;
+  // useId can contain ":" which is invalid in an SVG id / url(#..) ref.
+  const gid = "bloom" + React.useId().replace(/[^a-zA-Z0-9]/g, "");
+  const opacity = glint.interpolate({ inputRange: [0, 1], outputRange: [max * 0.5, max] });
+  return (
+    <Animated.View pointerEvents="none" style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0, opacity }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <RadialGradient id={gid} cx={cx} cy={cy} r={r} fx={cx} fy={cy} gradientUnits="objectBoundingBox">
+            <Stop offset="0" stopColor={color} stopOpacity="0.95" />
+            <Stop offset="0.55" stopColor={color} stopOpacity="0.35" />
+            <Stop offset="1" stopColor={color} stopOpacity="0" />
+          </RadialGradient>
+        </Defs>
+        <SvgRect x="0" y="0" width="100%" height="100%" fill={`url(#${gid})`} />
+      </Svg>
+    </Animated.View>
+  );
+}
 
 /**
  * The first-person adventure hub. You stand inside a scene and touch the real
@@ -83,13 +129,23 @@ export function AdventureHub() {
     });
   };
 
-  const runAction = (action: HubAction) => {
+  const runAction = (action: HubAction, haptic?: Haptic) => {
     if (action.kind === "node") {
       navigateNode(action.node);
       return;
     }
-    if (action.warn) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (action.warn) {
+      // The urge/primary action gets a deliberately different, stronger cue.
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    } else {
+      const style =
+        haptic === "heavy"
+          ? Haptics.ImpactFeedbackStyle.Heavy
+          : haptic === "medium"
+          ? Haptics.ImpactFeedbackStyle.Medium
+          : Haptics.ImpactFeedbackStyle.Light;
+      Haptics.impactAsync(style);
+    }
     router.push(action.route as any);
   };
 
@@ -123,36 +179,45 @@ export function AdventureHub() {
     height: c.h * dispH,
   });
 
-  const glowOpacity = glint.interpolate({ inputRange: [0, 1], outputRange: [0.1, 0.34] });
-
   const affordance = (h: Hotspot) => {
     const kind = h.kind ?? "plain";
-    if (kind === "board" || kind === "sign") {
-      // Text only — no box — so it blends into the scene. Bungee is a chunky
-      // retro signage face; it "pops" via weight + a strong shadow. Per-label
-      // size is tunable via `labelSize` in hubScene.ts (a cap — the text still
-      // shrinks to fit its box).
-      const size = h.labelSize ?? (h.prominent ? 20 : kind === "sign" ? 13 : 14);
+
+    // Interactive objects: a soft breathing light bloom, borrowing the object's
+    // own light. No box, no text.
+    if (kind === "glow") {
+      return <Bloom tint={h.tint ?? "purple"} anchor={h.anchor} scale={h.glowScale} glint={glint} />;
+    }
+
+    // Text: environmental signage (label) and the dominant urge action (primary),
+    // plus the legacy interactive board/sign labels the left/right views use.
+    if (kind === "label" || kind === "primary" || kind === "board" || kind === "sign") {
+      const primary = kind === "primary";
+      // Bungee is a chunky retro signage face; it "pops" via weight + a strong
+      // shadow. Per-label size is tunable via `labelSize` in hubScene.ts.
+      const size = h.labelSize ?? (primary ? 22 : h.prominent ? 20 : kind === "sign" ? 13 : 14);
       // With an explicit labelSize we hold that size and let the text spill
       // outside its box (e.g. the tiny far-away "Me" door — small tap target,
       // still-readable whisper). Otherwise the label shrinks to fit its box.
       const fitToBox = h.labelSize == null;
       return (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 2, overflow: "visible" }}>
+          {/* The urge sign carries a restrained idle glow so it's the easiest
+              thing to find, without becoming neon signage. */}
+          {primary ? <Bloom tint="purple" glint={glint} scale={1} max={0.32} /> : null}
           <Text
             numberOfLines={2}
             adjustsFontSizeToFit={fitToBox}
             style={{
               fontFamily: "Bungee",
-              color: "#F4EFFA",
+              color: primary ? "#FFFFFF" : "#F4EFFA",
               fontSize: size,
               lineHeight: Math.round(size * 1.2),
               letterSpacing: 0,
               textAlign: "center",
-              textTransform: h.prominent ? "uppercase" : "none",
+              textTransform: primary || h.prominent ? "uppercase" : "none",
               textShadowColor: "rgba(0,0,0,0.95)",
               textShadowOffset: { width: 0, height: 1 },
-              textShadowRadius: 6,
+              textShadowRadius: primary ? 10 : 6,
             }}
           >
             {h.label ?? h.caption}
@@ -160,30 +225,39 @@ export function AdventureHub() {
         </View>
       );
     }
-    if (kind === "glow") {
-      return <Animated.View style={{ flex: 1, borderRadius: 10, backgroundColor: "#A489DE", opacity: glowOpacity }} />;
-    }
     return null;
   };
 
   const renderHotspots = () =>
-    node.hotspots.map((h) => (
-      <Pressable
-        key={h.id}
-        accessibilityRole="button"
-        accessibilityLabel={h.caption}
-        onPressIn={() => showCaption(h.caption)}
-        onPressOut={clearCaptionSoon}
-        onPress={() => {
-          showCaption(h.caption);
-          runAction(h.action);
-        }}
-        hitSlop={8}
-        style={rectOf(coordsOf(h))}
-      >
-        {affordance(h)}
-      </Pressable>
-    ));
+    node.hotspots.map((h) => {
+      // Pure signage (label kind, or anything with no action) isn't tappable —
+      // taps fall through so it never behaves like a button.
+      if (h.kind === "label" || !h.action) {
+        return (
+          <View key={h.id} pointerEvents="none" style={rectOf(coordsOf(h))}>
+            {affordance(h)}
+          </View>
+        );
+      }
+      const action = h.action;
+      return (
+        <Pressable
+          key={h.id}
+          accessibilityRole="button"
+          accessibilityLabel={h.caption}
+          onPressIn={() => showCaption(h.caption)}
+          onPressOut={clearCaptionSoon}
+          onPress={() => {
+            showCaption(h.caption);
+            runAction(action, h.haptic);
+          }}
+          hitSlop={12}
+          style={rectOf(coordsOf(h))}
+        >
+          {affordance(h)}
+        </Pressable>
+      );
+    });
 
   // Stable per-hotspot pan responders (created once, read live values via refs).
   const getResponder = (id: string, mode: "move" | "resize") => {

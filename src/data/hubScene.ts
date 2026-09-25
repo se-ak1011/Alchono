@@ -4,12 +4,16 @@ import type { ImageSourcePropType } from "react-native";
  * The 00s CD-ROM adventure hub, described entirely as data.
  *
  * Each node is one first-person viewpoint. Hotspots are fractional rectangles
- * over the node IMAGE (x/y = top-left, w/h = size, 0..1). `kind` sets how it
- * signals it's interactive:
- *   - "board"  → chalk label (Bungee), text only
- *   - "glow"   → a soft breathing light over the object
- *   - "sign"   → text label with a strong shadow (Resources; the urge sign)
- *   - "plain"  → invisible tap target
+ * over the node IMAGE (x/y = top-left, w/h = size, 0..1). Nothing rectangular
+ * is ever drawn — a hotspot's box is an invisible, forgiving tap target. `kind`
+ * sets what (if anything) is drawn to hint interactivity:
+ *   - "label"   → environmental signage, text only, NOT tappable
+ *   - "glow"    → interactive object — a soft breathing light bloom, no text
+ *   - "primary" → the dominant immediate-help action (the urge sign)
+ *   - "board"/"sign" → legacy interactive text labels (left/right views)
+ *   - "plain"   → invisible tap target
+ * A label and its tap target are independent: the "Writing" sign sits on the
+ * blackboard while the desk beneath it is the actual (invisible) hotspot.
  * Because the viewpoints overlap, an object visible in more than one view gets
  * a hotspot in EACH view it appears in (e.g. the Me door shows in front + left;
  * the counter shows in front + right).
@@ -24,7 +28,23 @@ export type HubAction =
   | { kind: "route"; route: string; warn?: boolean }
   | { kind: "node"; node: string };
 
-export type HotspotKind = "board" | "glow" | "sign" | "plain";
+export type HotspotKind =
+  | "label" // environmental signage — text only, NOT tappable
+  | "glow" // interactive object — a soft breathing light bloom, no text
+  | "primary" // the dominant immediate-help action (the urge sign)
+  | "board" // (legacy) interactive chalk label — text + tap
+  | "sign" // (legacy) interactive sign — text + tap
+  | "plain"; // invisible tap target
+
+/** How an interactive hotspot behaves conceptually (see docs/adventure-hub.md).
+ *  destination = enter a room; preview = zoom into it in place; object = the
+ *  object itself is the action. Currently semantic only (previews still route). */
+export type Interaction = "destination" | "preview" | "object";
+
+/** Which existing light a glow borrows — a warm object edge or restrained purple. */
+export type GlowTint = "warm" | "purple";
+
+export type Haptic = "light" | "medium" | "heavy";
 
 export type Hotspot = {
   id: string;
@@ -33,13 +53,24 @@ export type Hotspot = {
   y: number;
   w: number;
   h: number;
-  action: HubAction;
+  /** Omitted for `label` hotspots (pure signage, not tappable). */
+  action?: HubAction;
   kind?: HotspotKind;
   label?: string;
   prominent?: boolean;
   /** Per-label font size (px, at base scale). Omit for the kind's default.
    *  It's a cap — text still shrinks to fit its box. */
   labelSize?: number;
+  /** Semantic interaction type (destination/preview/object). */
+  interaction?: Interaction;
+  /** Glow bloom colour — borrow warm object light or a restrained purple. */
+  tint?: GlowTint;
+  /** Concentrate the glow at a point inside the box (0..1), e.g. a doorknob. */
+  anchor?: { x: number; y: number };
+  /** Glow size vs its box (1 ≈ fills it). Smaller = a tighter gleam. */
+  glowScale?: number;
+  /** Haptic strength on tap. Defaults to light. */
+  haptic?: Haptic;
 };
 
 export type HubNode = {
@@ -68,17 +99,36 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     left: "left",
     right: "right",
+    // NOTE: after the interaction redesign, labels and tap targets are separate.
+    // The lbl_* entries are non-tappable signage kept at the old (good) board
+    // positions; the interactive entries below them need dragging onto their
+    // real objects in the editor (desk, armchair, door, curtain, phone), then
+    // exported. See docs/adventure-hub.md.
     hotspots: [
-      { id: "community", caption: "Community", kind: "board", label: "Community", x: 0.012, y: 0.242, w: 0.11, h: 0.14, action: { kind: "route", route: "/community" } },
-      { id: "reading", caption: "Reading Corner", kind: "board", label: "Reading\nCorner", x: 0.138, y: 0.231, w: 0.134, h: 0.061, action: { kind: "route", route: "/toolkit" } },
-      { id: "me", caption: "Me", kind: "board", label: "Me", x: 0.341, y: 0.3, w: 0.106, h: 0.057, action: { kind: "route", route: "/(tabs)/profile" } },
-      { id: "support", caption: "Support", kind: "board", label: "Support", x: 0.425, y: 0.207, w: 0.16, h: 0.05, action: { kind: "route", route: "/(tabs)/support" } },
-      { id: "mysky", caption: "My Sky", kind: "board", label: "My Sky", x: 0.789, y: 0.249, w: 0.19, h: 0.08, action: { kind: "route", route: "/constellation" } },
-      { id: "bar", caption: "Café / Bar", kind: "glow", x: 0.578, y: 0.286, w: 0.125, h: 0.171, action: { kind: "route", route: "/barista" } },
-      { id: "games", caption: "Games Arcade", kind: "glow", x: 0.904, y: 0.345, w: 0.096, h: 0.123, action: { kind: "route", route: "/session/games" } },
-      { id: "writing", caption: "Writing Space", kind: "glow", x: 0.026, y: 0.556, w: 0.2, h: 0.13, action: { kind: "route", route: "/(tabs)/journal" } },
-      { id: "resources", caption: "Resources", kind: "sign", label: "Resources", x: 0.665, y: 0.48, w: 0.223, h: 0.033, action: { kind: "route", route: "/support/resources" } },
-      { id: "urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", x: 0.616, y: 0.576, w: 0.36, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+      // — environmental signage (text only, NOT tappable) —
+      { id: "lbl_writing", caption: "Writing", kind: "label", label: "Writing", x: 0.03, y: 0.3, w: 0.2, h: 0.07 },
+      { id: "lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading\nCorner", x: 0.138, y: 0.231, w: 0.134, h: 0.061 },
+      { id: "lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 12, x: 0.341, y: 0.3, w: 0.106, h: 0.057 },
+      { id: "lbl_support", caption: "Support", kind: "label", label: "Support", x: 0.425, y: 0.207, w: 0.16, h: 0.05 },
+      { id: "lbl_resources", caption: "Resources", kind: "label", label: "Resources", x: 0.665, y: 0.48, w: 0.223, h: 0.033 },
+
+      // — destinations (enter a room); the object glows, not a box —
+      { id: "writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", x: 0.026, y: 0.556, w: 0.2, h: 0.13, action: { kind: "route", route: "/(tabs)/journal" } },
+      { id: "me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", anchor: { x: 0.82, y: 0.55 }, glowScale: 0.4, x: 0.34, y: 0.3, w: 0.12, h: 0.34, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "support", caption: "Support", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", x: 0.44, y: 0.26, w: 0.16, h: 0.34, action: { kind: "route", route: "/(tabs)/support" } },
+
+      // — previews (zoom in place later; open the room for now) —
+      { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "preview", haptic: "light", glowScale: 0.9, x: 0.012, y: 0.242, w: 0.11, h: 0.14, action: { kind: "route", route: "/community" } },
+      { id: "reading", caption: "Reading Corner", kind: "glow", tint: "warm", interaction: "preview", haptic: "light", x: 0.1, y: 0.4, w: 0.2, h: 0.22, action: { kind: "route", route: "/toolkit" } },
+      { id: "mysky", caption: "My Sky", kind: "glow", tint: "purple", interaction: "preview", haptic: "light", glowScale: 0.9, x: 0.789, y: 0.249, w: 0.19, h: 0.08, action: { kind: "route", route: "/constellation" } },
+
+      // — objects (the object itself communicates its function) —
+      { id: "bar", caption: "The Bar", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.578, y: 0.286, w: 0.125, h: 0.171, action: { kind: "route", route: "/barista" } },
+      { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "object", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, x: 0.904, y: 0.345, w: 0.096, h: 0.123, action: { kind: "route", route: "/session/games" } },
+      { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, x: 0.62, y: 0.45, w: 0.1, h: 0.07, action: { kind: "route", route: "/support/resources" } },
+
+      // — primary immediate-help action (dominant; distinct heavy haptic) —
+      { id: "urge", caption: "I need a drink", kind: "primary", label: "I need a drink", interaction: "object", haptic: "heavy", x: 0.616, y: 0.576, w: 0.36, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
 

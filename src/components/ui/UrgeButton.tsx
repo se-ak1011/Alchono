@@ -23,6 +23,10 @@ export function UrgeButton() {
     top === "(auth)" ||
     top === "onboarding" ||
     top === "pro" ||
+    // The hub (tabs index) has its own in-world "I NEED A DRINK" on the counter,
+    // so the floating pill would be a duplicate there. It still shows on every
+    // other screen, including the other tabs.
+    (top === "(tabs)" && sub === "") ||
     (top === "session" && sub === "urge") ||
     (top === "support" && sub === "sos");
 
