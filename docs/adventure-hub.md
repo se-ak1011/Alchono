@@ -66,13 +66,13 @@ front: {
   the object.
 - **Nothing rectangular is ever drawn.** The box is an invisible, forgiving tap
   target. `kind` sets what (if anything) is drawn to *hint* interactivity:
-  - `label` — environmental signage (Bungee text). **Not tappable** — it just
+  - `label` — environmental signage (Patrick Hand text). **Not tappable** — it just
     names a place. Pair it with a separate `glow` on the real object.
   - `glow` — an interactive object: a soft, feathered, breathing light-bloom
     that fades out well before the box edge (reads as ambient light, not a
     button). No text.
   - `primary` — the dominant immediate-help action (the counter "I NEED A
-    DRINK"): big Bungee text with a restrained idle glow.
+    DRINK"): big Patrick Hand text with a restrained idle glow.
   - `board` / `sign` — legacy interactive text-labels still used by the left/right
     views (text **and** tappable). The front view no longer uses these.
   - `plain` — an invisible tap target, no visible hint.
@@ -171,8 +171,8 @@ on your device until it's baked in.)
 
 ## Handy facts
 
-- **Fonts:** the chalk labels use **Bungee** (the chunky retro display face,
-  loaded via `@expo-google-fonts/bungee`). Each label's size can be set with
+- **Fonts:** the chalk labels use **Patrick Hand** (a light handwritten chalk
+  print, loaded via `@expo-google-fonts/patrick-hand`). Each label's size can be set with
   `labelSize` on its hotspot; with a size set, the label holds that size and is
   allowed to spill outside its box (e.g. the small, far-away "Me" door). Body/UI
   everywhere else is Inter.

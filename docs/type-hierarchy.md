@@ -41,22 +41,21 @@ nothing is.
 5. **Muted for anything the eye can skip.** Meta, hints, and disclaimers live
    at `text-muted` — present, never competing.
 
-## The display face: Bungee
+## The display face: Patrick Hand
 
-The chunky retro signage face (`Bungee`, loaded via `@expo-google-fonts/bungee`)
-used for hero titles, orbit chips, book spines and the hub's chalk labels is
-**heavy and wide**, with large, near-uppercase glyphs and generous built-in
-spacing. It replaced the old hand-lettered SkinnyCustard face.
+The neat handwritten chalk print (`PatrickHand`, loaded via
+`@expo-google-fonts/patrick-hand`) used for hero titles, orbit chips, book
+spines and the hub's chalk labels is a **light, legible hand** — casual, warm,
+readable on the dark boards without the heft of a bold display face. It replaced
+the too-thin SkinnyCustard and the too-bulky Bungee.
 
-- **It reads far bigger than a normal sans at the same px** — so titles ported
-  over from SkinnyCustard usually want their font size trimmed, not kept.
-- **Give it line-height headroom: at least ~1.2× the font size**, or the caps
-  crowd the line box (worse inside any `overflow: hidden` container).
-- **It needs horizontal room.** Bungee doesn't condense — a multi-word title
-  that fit before may now wrap or overflow. Prefer short, single-word titles;
-  otherwise drop the size or widen the container.
-- This is a per-placement guard, not a global one: check any *new* Bungee text
-  that sits in a tight or clipped container.
+- **It's a handwriting**, so it reads a touch smaller and softer than a plain
+  sans at the same px — size it a little more generously than body Inter.
+- **Give it line-height headroom: at least ~1.2× the font size**, so ascenders
+  and descenders don't clip inside an `overflow: hidden` container.
+- Single weight (400) — there's no bold; emphasis comes from size and a shadow.
+- This is a per-placement guard, not a global one: check any *new* PatrickHand
+  text that sits in a tight or clipped container.
 
 ## Applying it
 

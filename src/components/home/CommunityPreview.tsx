@@ -48,7 +48,7 @@ export function CommunityPreview({ onClose }: { onClose: () => void }) {
       {/* Header */}
       <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginBottom: 6 }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: "Bungee", fontSize: 22, color: "#ECE9F1" }}>Community</Text>
+          <Text style={{ fontFamily: "PatrickHand", fontSize: 22, color: "#ECE9F1" }}>Community</Text>
           <Text style={{ fontFamily: MONO, fontSize: 11.5, color: "#817B91", marginTop: 3 }}>
             a peek at the board
           </Text>
@@ -165,7 +165,7 @@ export function CommunityPreview({ onClose }: { onClose: () => void }) {
             backgroundColor: PLUM,
           }}
         >
-          <Text style={{ fontFamily: "Bungee", fontSize: 14, color: "#1a1622" }}>Drop in</Text>
+          <Text style={{ fontFamily: "PatrickHand", fontSize: 14, color: "#1a1622" }}>Drop in</Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -175,7 +175,7 @@ export function CommunityPreview({ onClose }: { onClose: () => void }) {
 function SectionHeader({ label, onSeeAll }: { label: string; onSeeAll: () => void }) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 10 }}>
-      <Text style={{ fontFamily: "Bungee", fontSize: 14, color: "#C6B2F0" }}>{label}</Text>
+      <Text style={{ fontFamily: "PatrickHand", fontSize: 14, color: "#C6B2F0" }}>{label}</Text>
       <Pressable onPress={onSeeAll} hitSlop={8} className="active:opacity-70">
         <Text style={{ fontFamily: MONO, fontSize: 11.5, color: "#817B91" }}>see all ›</Text>
       </Pressable>

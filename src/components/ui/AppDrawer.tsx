@@ -95,7 +95,7 @@ export function AppDrawer({
         <View className="flex-row items-center justify-between px-2 mb-6">
           <Text
             className="text-text-primary"
-            style={{ fontFamily: 'Bungee', fontSize: 30 }}
+            style={{ fontFamily: 'PatrickHand', fontSize: 30 }}
           >
             Where to?
           </Text>
@@ -124,7 +124,7 @@ export function AppDrawer({
             >
               <Text
                 style={{
-                  fontFamily: 'Bungee',
+                  fontFamily: 'PatrickHand',
                   fontSize: 23,
                   lineHeight: 26,
                   color: zone.accent,
@@ -137,7 +137,7 @@ export function AppDrawer({
               style={{
                 flex: 1,
                 color: '#ECE9F1',
-                fontFamily: 'Bungee',
+                fontFamily: 'PatrickHand',
                 fontSize: 23,
                 letterSpacing: 1.5,
                 textTransform: 'uppercase',
@@ -166,13 +166,13 @@ export function AppDrawer({
               borderColor: 'rgba(224,176,128,0.42)',
             }}
           >
-            <Text style={{ fontFamily: 'Bungee', fontSize: 23, lineHeight: 26, color: '#E0B080' }}>B</Text>
+            <Text style={{ fontFamily: 'PatrickHand', fontSize: 23, lineHeight: 26, color: '#E0B080' }}>B</Text>
           </View>
           <Text
             style={{
               flex: 1,
               color: '#ECE9F1',
-              fontFamily: 'Bungee',
+              fontFamily: 'PatrickHand',
               fontSize: 23,
               letterSpacing: 1.5,
               textTransform: 'uppercase',

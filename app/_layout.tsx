@@ -13,7 +13,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
-import { Bungee_400Regular } from '@expo-google-fonts/bungee';
+import { PatrickHand_400Regular } from '@expo-google-fonts/patrick-hand';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -151,10 +151,10 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
-    // The app's display face — chunky retro signage. Used for identity:
-    // hero titles, the greeting, the wordmark, the orbit monograms and the
-    // hub labels. Body and UI stay on Inter for legibility.
-    Bungee: Bungee_400Regular,
+    // The app's display face — a neat handwritten chalk print. Used for
+    // identity: hero titles, the greeting, the wordmark, the orbit monograms
+    // and the hub labels. Body and UI stay on Inter for legibility.
+    PatrickHand: PatrickHand_400Regular,
   });
   const isInitialized = useAuthStore((s) => s.isInitialized);
 

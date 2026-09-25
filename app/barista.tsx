@@ -174,7 +174,7 @@ function DrinkLink({ recipe, onPress }: { recipe: Recipe; onPress: () => void })
     <Pressable onPress={onPress} hitSlop={10} style={{ width: '46%', paddingVertical: 6 }} accessibilityRole="button" accessibilityLabel={`${recipe.name}, recipe`}>
       <Text
         style={{
-          fontFamily: 'Bungee',
+          fontFamily: 'PatrickHand',
           fontSize: 23,
           lineHeight: 30,
           color: '#EDE6D8',

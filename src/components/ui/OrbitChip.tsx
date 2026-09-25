@@ -75,7 +75,7 @@ export function OrbitChip({
         numberOfLines={numberOfLines}
         style={{
           color: "#ECE9F1",
-          fontFamily: "Bungee",
+          fontFamily: "PatrickHand",
           fontSize: 20,
           lineHeight: 23,
           textAlign: "center",

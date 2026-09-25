@@ -36,7 +36,7 @@ module.exports = {
         bold: ['Inter_700Bold', 'System'],
         // The handwritten display face — identity only (monograms, the urge
         // pill, anywhere we want the wordmark's character).
-        display: ['Bungee'],
+        display: ['PatrickHand'],
       },
       borderRadius: {
         '2xl': '8px',

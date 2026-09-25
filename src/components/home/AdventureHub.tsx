@@ -213,7 +213,7 @@ export function AdventureHub() {
     // plus the legacy interactive board/sign labels the left/right views use.
     if (kind === "label" || kind === "primary" || kind === "board" || kind === "sign") {
       const primary = kind === "primary";
-      // Bungee is a chunky retro signage face; it "pops" via weight + a strong
+      // PatrickHand is a chunky retro signage face; it "pops" via weight + a strong
       // shadow. Per-label size is tunable via `labelSize` in hubScene.ts.
       const size = h.labelSize ?? (primary ? 22 : h.prominent ? 20 : kind === "sign" ? 13 : 14);
       // With an explicit labelSize we hold that size and let the text spill
@@ -229,7 +229,7 @@ export function AdventureHub() {
             numberOfLines={2}
             adjustsFontSizeToFit={fitToBox}
             style={{
-              fontFamily: "Bungee",
+              fontFamily: "PatrickHand",
               color: primary ? "#FFFFFF" : "#F4EFFA",
               fontSize: size,
               lineHeight: Math.round(size * 1.2),

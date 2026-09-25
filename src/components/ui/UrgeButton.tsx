@@ -62,7 +62,7 @@ export function UrgeButton() {
         }}
         className="active:opacity-85"
       >
-        <Text style={{ fontFamily: "Bungee", fontSize: 20, lineHeight: 24, color: "#1a1622", letterSpacing: 0.5 }}>
+        <Text style={{ fontFamily: "PatrickHand", fontSize: 20, lineHeight: 24, color: "#1a1622", letterSpacing: 0.5 }}>
           I need a drink
         </Text>
       </Pressable>
