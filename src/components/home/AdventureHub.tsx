@@ -7,6 +7,13 @@ import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-s
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { HubLoadingScreen } from "@/components/home/HubLoadingScreen";
+import { CommunityPreview } from "@/components/home/CommunityPreview";
+
+// Hotspots whose `preview` interaction opens an in-place zoom with real content
+// instead of routing to a room. Add an entry as each preview's content is built.
+const PREVIEW_CONTENT: Record<string, (props: { onClose: () => void }) => React.ReactElement> = {
+  community: CommunityPreview,
+};
 
 const SCREEN_W = Dimensions.get("window").width;
 const SCREEN_H = Dimensions.get("window").height;
@@ -79,9 +86,11 @@ export function AdventureHub() {
   const [editMode, setEditMode] = useState(true);
   const [overrides, setOverrides] = useState<Record<string, Coords>>({});
   const [showExport, setShowExport] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
+  const zoom = useRef(new Animated.Value(0)).current;
   const captionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Refs the pan responders read at gesture time so they stay current.
@@ -147,6 +156,16 @@ export function AdventureHub() {
       Haptics.impactAsync(style);
     }
     router.push(action.route as any);
+  };
+
+  const openPreview = (id: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setPreview(id);
+    zoom.setValue(0);
+    Animated.timing(zoom, { toValue: 1, duration: 320, useNativeDriver: true }).start();
+  };
+  const closePreview = () => {
+    Animated.timing(zoom, { toValue: 0, duration: 240, useNativeDriver: true }).start(() => setPreview(null));
   };
 
   if (!booted) {
@@ -251,6 +270,11 @@ export function AdventureHub() {
           onPressOut={clearCaptionSoon}
           onPress={() => {
             showCaption(h.caption);
+            // Previews with built content zoom in place; everything else routes.
+            if (h.interaction === "preview" && PREVIEW_CONTENT[h.id]) {
+              openPreview(h.id);
+              return;
+            }
             runAction(action, h.haptic);
           }}
           hitSlop={12}
@@ -425,7 +449,9 @@ export function AdventureHub() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
-      <Animated.View style={{ flex: 1, opacity: fade }}>
+      <Animated.View
+        style={{ flex: 1, opacity: fade, transform: [{ scale: zoom.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] }) }] }}
+      >
         {isScreenFit ? (
           <View style={{ flex: 1 }}>{sceneInner}</View>
         ) : (
@@ -502,6 +528,22 @@ export function AdventureHub() {
             <Text style={{ color: "#1a1622", fontSize: 14, fontWeight: "700" }}>Close</Text>
           </Pressable>
         </View>
+      ) : null}
+
+      {/* Preview zoom — a hotspot's content peeked in place, over the room. */}
+      {preview ? (
+        <Animated.View style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0, opacity: zoom }}>
+          <Pressable
+            style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0, backgroundColor: "rgba(8,6,12,0.8)" }}
+            onPress={closePreview}
+          />
+          <Animated.View style={{ flex: 1, transform: [{ scale: zoom.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }] }}>
+            {(() => {
+              const Content = PREVIEW_CONTENT[preview];
+              return Content ? <Content onClose={closePreview} /> : null;
+            })()}
+          </Animated.View>
+        </Animated.View>
       ) : null}
     </View>
   );
