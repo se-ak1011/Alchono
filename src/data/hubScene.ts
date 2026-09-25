@@ -99,7 +99,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     id: "front",
     title: "The Café",
     image: require("../../assets/scenes/cafe_front.png"),
-    glowImage: require("../../assets/scenes/cafe_front_glow.png"),
+    // Painted glow layer is parked until it can be drawn as a pixel-true overlay
+    // on the exact base (a re-generated version drifts and shimmers). Until then
+    // the engine draws the soft breathing blooms per glow hotspot.
+    // glowImage: require("../../assets/scenes/cafe_front_glow.png"),
     imgW: 851,
     imgH: 1848,
     fit: "screen",
