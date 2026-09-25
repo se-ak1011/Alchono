@@ -22,15 +22,15 @@ type Coords = { x: number; y: number; w: number; h: number };
  *
  * Edit mode (toggled by the eye/grid button) turns every hotspot into a
  * draggable, resizable box so positions can be set by hand in-app; "Export"
- * prints the coordinates to paste back into hubScene.ts. It's off by default
- * now that all three rooms are placed — tap the grid button to nudge things.
+ * prints the coordinates to paste back into hubScene.ts. On during a design
+ * pass (relocating hotspots after new art); flip to false for a release build.
  */
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [booted, setBooted] = useState(hubBooted);
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(true);
   const [overrides, setOverrides] = useState<Record<string, Coords>>({});
   const [showExport, setShowExport] = useState(false);
 

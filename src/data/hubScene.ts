@@ -87,7 +87,6 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgH: 1672,
     fit: "screen",
     back: "front",
-    placeholder: true,
     hotspots: [
       { id: "l_writing", caption: "Writing Space", kind: "glow", x: 0.085, y: 0.115, w: 0.306, h: 0.198, action: { kind: "route", route: "/(tabs)/journal" } },
       { id: "l_papers", caption: "The Good News Gazette", kind: "glow", x: 0.0, y: 0.42, w: 0.349, h: 0.136, action: { kind: "route", route: "/soul" } },
@@ -106,7 +105,6 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgH: 1672,
     fit: "screen",
     back: "front",
-    placeholder: true,
     hotspots: [
       { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", x: 0.431, y: 0.497, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
       { id: "r_games", caption: "Games Arcade", kind: "glow", x: 0.396, y: 0.318, w: 0.104, h: 0.138, action: { kind: "route", route: "/session/games" } },
