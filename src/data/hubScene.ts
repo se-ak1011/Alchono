@@ -227,6 +227,9 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "a_pattern", caption: "Pattern", kind: "glow", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.29, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/simon" } },
       { id: "a_odd", caption: "Odd One Out", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.51, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/odd-one-out" } },
       { id: "a_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, x: 0.82, y: 0.37, w: 0.14, h: 0.09, action: { kind: "route", route: "/session/stroop" } },
+      // Word Search runs on the retro computer on the desk. Rough box — place it
+      // on the monitor screen in the editor.
+      { id: "a_word", caption: "Word Search", kind: "glow", interaction: "object", inlay: "arcade_word", glowMax: 0.6, x: 0.31, y: 0.43, w: 0.15, h: 0.11, action: { kind: "route", route: "/session/word-search" } },
     ],
   },
   arcade_left: {
