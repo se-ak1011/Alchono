@@ -368,12 +368,17 @@ export function AdventureHub() {
           if (!d || d.id !== id || d.mode !== mode) return;
           const { dispW: dw, dispH: dh } = geomRef.current;
           if (mode === "move") {
-            const x = Math.max(0, Math.min(1 - d.w, d.x + g.dx / dw));
-            const y = Math.max(0, Math.min(1 - d.h, d.y + g.dy / dh));
+            // Allow dragging partly off-screen (a paper tucked into the rack, an
+            // object running off the edge), keeping a small sliver on-screen so
+            // the box can still be grabbed back.
+            const x = Math.max(-d.w + 0.06, Math.min(0.94, d.x + g.dx / dw));
+            const y = Math.max(-d.h + 0.06, Math.min(0.94, d.y + g.dy / dh));
             setOverrides((o) => ({ ...o, [id]: { ...(o[id] ?? {}), x, y, w: d.w, h: d.h } }));
           } else {
-            const w = Math.max(0.03, Math.min(1 - d.x, d.w + g.dx / dw));
-            const h2 = Math.max(0.02, Math.min(1 - d.y, d.h + g.dy / dh));
+            // Allow oversized boxes — a paper big enough to read whose edge runs
+            // off the screen.
+            const w = Math.max(0.03, Math.min(2, d.w + g.dx / dw));
+            const h2 = Math.max(0.02, Math.min(2, d.h + g.dy / dh));
             setOverrides((o) => ({ ...o, [id]: { ...(o[id] ?? {}), x: d.x, y: d.y, w, h: h2 } }));
           }
         },
@@ -460,8 +465,12 @@ export function AdventureHub() {
     const sel = selected ? hotspots.find((h) => h.id === selected) : null;
     if (!sel) return null;
     const kind = sel.kind ?? "plain";
+    const hasInlay = !!sel.inlay;
     const isText = kind === "label" || kind === "primary" || kind === "board" || kind === "sign";
-    const isGlow = kind === "glow";
+    // A glow's colour/size controls are meaningless once an inlay replaces the
+    // bloom; inlays get the rotate control instead so they sit on the object.
+    const isGlow = kind === "glow" && !hasInlay;
+    const canRotate = isText || hasInlay;
     const e = editsOf(sel);
     const size = e.labelSize ?? defaultSize(sel);
     const rot = e.rotate ?? 0;
@@ -536,7 +545,7 @@ export function AdventureHub() {
         ) : null}
 
         {isText ? row("Text size", `${size}`, () => setProp("labelSize", clampI(size - 1, 6, 64)), () => setProp("labelSize", clampI(size + 1, 6, 64))) : null}
-        {isText ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 2, -90, 90)), () => setProp("rotate", clampI(rot + 2, -90, 90))) : null}
+        {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 2, -180, 180)), () => setProp("rotate", clampI(rot + 2, -180, 180))) : null}
         {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
         {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
         {isGlow ? (

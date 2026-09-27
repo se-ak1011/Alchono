@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, StyleSheet, Platform, type LayoutChangeEvent } from "react-native";
+import { View, Text, Image, StyleSheet, Platform, type LayoutChangeEvent } from "react-native";
 import Svg, { Circle, Line as SvgLine } from "react-native-svg";
-import { useCommunityFeed } from "@/hooks/useCommunity";
+import { useCommunityMoments } from "@/hooks/useMoments";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
@@ -42,11 +42,12 @@ export function ArcadeInlay() {
     const t = setInterval(() => setRound(makeRound()), 1600);
     return () => clearInterval(t);
   }, []);
+  // Translucent so the cabinet's own screen shows through — it reads as a game
+  // glowing on the glass, not an opaque panel stuck over it.
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#0a0812", alignItems: "center", justifyContent: "center", overflow: "hidden" }]}>
-      {/* screen glow */}
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(164,137,222,0.10)" }]} />
-      <View style={{ width: "78%", aspectRatio: 1, flexDirection: "row", flexWrap: "wrap" }}>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(10,8,18,0.22)", alignItems: "center", justifyContent: "center", overflow: "hidden" }]}>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(164,137,222,0.06)" }]} />
+      <View style={{ width: "78%", aspectRatio: 1, flexDirection: "row", flexWrap: "wrap", opacity: 0.72 }}>
         {Array.from({ length: 9 }).map((_, i) => (
           <View key={i} style={{ width: "33.33%", height: "33.33%", padding: "3%" }}>
             <View style={{ flex: 1, borderRadius: 3, backgroundColor: i === round.odd ? round.odd_c : round.base }} />
@@ -58,29 +59,33 @@ export function ArcadeInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
-// Community — the two latest posts, chalked onto the board.
+// Community — the latest videos from the wall, playing on the board. Thumbnails
+// (not text — text gets cut on a small board), stacked to fill.
 // ————————————————————————————————————————————————————————————————
 export function CommunityInlay() {
-  const { data: feed } = useCommunityFeed();
-  const posts = (feed?.pages?.[0] ?? []).slice(0, 2) as any[];
+  const { data: moments } = useCommunityMoments();
+  const videos = ((moments ?? []) as any[]).filter((m) => m.media_type === "video").slice(0, 2);
   return (
-    <View style={[StyleSheet.absoluteFill, { paddingHorizontal: "8%", paddingVertical: "6%", justifyContent: "center", overflow: "hidden" }]}>
-      <Text style={{ fontFamily: MONO, fontSize: 7, letterSpacing: 1.5, color: "rgba(214,201,240,0.55)", marginBottom: 3 }}>
-        ON THE BOARD
-      </Text>
-      {posts.length === 0 ? (
-        <Text style={{ fontFamily: "PatrickHand", fontSize: 11, color: "rgba(236,233,241,0.8)" }}>be the first to post…</Text>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#15111c", overflow: "hidden", gap: 2 }]}>
+      {videos.length === 0 ? (
+        <View style={[StyleSheet.absoluteFill, { alignItems: "center", justifyContent: "center" }]}>
+          <Text style={{ fontFamily: MONO, fontSize: 8, color: "rgba(214,201,240,0.5)" }}>videos soon</Text>
+        </View>
       ) : (
-        posts.map((p, i) => (
-          <Text
-            key={p.id ?? i}
-            numberOfLines={2}
-            style={{ fontFamily: "PatrickHand", fontSize: 11, lineHeight: 13, color: "rgba(240,236,247,0.92)", marginTop: i ? 5 : 0 }}
-          >
-            {"“"}
-            {p.content}
-            {"”"}
-          </Text>
+        videos.map((m, i) => (
+          <View key={m.id ?? i} style={{ flex: 1, overflow: "hidden" }}>
+            {m.thumb_url ? (
+              <Image source={{ uri: m.thumb_url }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+            ) : (
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: "#241d30" }]} />
+            )}
+            {/* play glyph — a CSS triangle, no icon dependency */}
+            <View style={[StyleSheet.absoluteFill, { alignItems: "center", justifyContent: "center" }]}>
+              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "rgba(0,0,0,0.45)", alignItems: "center", justifyContent: "center" }}>
+                <View style={{ width: 0, height: 0, borderTopWidth: 4, borderBottomWidth: 4, borderLeftWidth: 6, borderTopColor: "transparent", borderBottomColor: "transparent", borderLeftColor: "#fff", marginLeft: 2 }} />
+              </View>
+            </View>
+          </View>
         ))
       )}
     </View>
@@ -134,14 +139,14 @@ export function SkyInlay() {
 // ————————————————————————————————————————————————————————————————
 function PaperInlay({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: PAPER, paddingHorizontal: "7%", paddingVertical: "6%", justifyContent: "center", overflow: "hidden" }]}>
-      <Text numberOfLines={1} style={{ fontFamily: MONO, fontSize: 6.5, letterSpacing: 1.5, color: "rgba(0,0,0,0.5)" }}>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: PAPER, paddingHorizontal: "8%", paddingVertical: "7%", justifyContent: "center", overflow: "hidden" }]}>
+      <Text numberOfLines={1} style={{ fontFamily: MONO, fontSize: 9, letterSpacing: 1.5, color: "rgba(0,0,0,0.5)" }}>
         {eyebrow}
       </Text>
-      <Text numberOfLines={2} adjustsFontSizeToFit style={{ fontFamily: SERIF, fontWeight: "700", fontSize: 15, lineHeight: 17, color: INK, marginTop: 2 }}>
+      <Text numberOfLines={2} style={{ fontFamily: SERIF, fontWeight: "700", fontSize: 24, lineHeight: 26, color: INK, marginTop: 3 }}>
         {title}
       </Text>
-      <View style={{ height: 1, backgroundColor: "rgba(0,0,0,0.25)", marginTop: 4 }} />
+      <View style={{ height: 1.5, backgroundColor: "rgba(0,0,0,0.3)", marginTop: 6 }} />
     </View>
   );
 }
