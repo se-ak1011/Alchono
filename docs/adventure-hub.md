@@ -188,8 +188,11 @@ on your device until it's baked in.)
 - **Fit:** `fit: "screen"` fills the phone (`cover`) so there are no black bars;
   hotspots are measured against that covered image, so they stay put across
   different phone sizes.
-- **The boot screen** (`HubLoadingScreen.tsx`) — the spinning-disc "ALCHONO"
-  CD-ROM intro — plays once per app launch, then the hub fades in.
+- **The boot screen** is the app splash (`src/components/ui/AppSplash.tsx`) —
+  the driving-into-sunset brand art full-bleed, with the spinning-disc "ALCHONO"
+  CD-ROM loader (disc + wordmark + progress bar) superposed near the bottom. It's
+  the single screen shown before the app opens (there's no separate in-hub boot
+  anymore); it lifts once fonts + auth are ready and the hub fades in.
 - **Routes** in `action.route` are just expo-router paths — the same ones the
   rest of the app uses (`/community`, `/(tabs)/journal`, `/session/games`, …).
   If a screen exists in the app, a hotspot can point at it.

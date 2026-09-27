@@ -6,7 +6,6 @@ import * as Haptics from "expo-haptics";
 import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
-import { HubLoadingScreen } from "@/components/home/HubLoadingScreen";
 import { CommunityPreview } from "@/components/home/CommunityPreview";
 
 // Hotspots whose `preview` interaction opens an in-place zoom with real content
@@ -17,9 +16,6 @@ const PREVIEW_CONTENT: Record<string, (props: { onClose: () => void }) => React.
 
 const SCREEN_W = Dimensions.get("window").width;
 const SCREEN_H = Dimensions.get("window").height;
-
-// Boot the CD-ROM once per app launch, not on every return to the hub.
-let hubBooted = false;
 
 type Coords = { x: number; y: number; w: number; h: number };
 // The full set of things the in-app editor can override per hotspot.
@@ -105,7 +101,6 @@ export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
-  const [booted, setBooted] = useState(hubBooted);
   const [editMode, setEditMode] = useState(true);
   const [overrides, setOverrides] = useState<Record<string, Edits>>({});
   const [showExport, setShowExport] = useState(false);
@@ -197,19 +192,6 @@ export function AdventureHub() {
   const closePreview = () => {
     Animated.timing(zoom, { toValue: 0, duration: 240, useNativeDriver: true }).start(() => setPreview(null));
   };
-
-  if (!booted) {
-    return (
-      <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
-        <HubLoadingScreen
-          onDone={() => {
-            hubBooted = true;
-            setBooted(true);
-          }}
-        />
-      </View>
-    );
-  }
 
   const isScreenFit = node.fit === "screen";
   const scale = Math.max(SCREEN_W / node.imgW, SCREEN_H / node.imgH);
