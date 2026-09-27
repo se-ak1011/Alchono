@@ -166,6 +166,9 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "l_papers3", caption: "The Letters Page", kind: "glow", interaction: "destination", inlay: "paper-letters", x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
       { id: "l_reading", caption: "Reading Corner", kind: "glow", x: 0.638, y: 0.317, w: 0.144, h: 0.164, action: { kind: "route", route: "/toolkit" } },
       { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
+      // Live posts on the board face below the "Community" sign — same inlay as
+      // the front. Rough box; drag it onto the board in the editor.
+      { id: "l_community_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", x: 0.356, y: 0.2, w: 0.3, h: 0.17, action: { kind: "route", route: "/community" } },
       { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "route", route: "/(tabs)/profile" } },
       // Added in-app: signage labels (non-tappable).
       { id: "l_lbl_writing", caption: "Writing Space", kind: "label", label: "Writing Space", labelSize: 23, rotate: 2, x: 0.084, y: 0.089, w: 0.285, h: 0.243 },
