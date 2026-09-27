@@ -121,7 +121,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     // exported. See docs/adventure-hub.md.
     hotspots: [
       // — environmental signage (text only, NOT tappable) — placed + tuned in-app —
-      { id: "lbl_community", caption: "Community", kind: "label", label: "Community", labelSize: 12, rotate: 8, x: 0.0, y: 0.207, w: 0.144, h: 0.058 },
+      { id: "lbl_community", caption: "Community", kind: "label", label: "Community", labelSize: 11, rotate: 8, x: 0.0, y: 0.207, w: 0.144, h: 0.058 },
       { id: "lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading\nCorner", labelSize: 9, rotate: 6, x: 0.105, y: 0.208, w: 0.17, h: 0.113 },
       { id: "lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 11, x: 0.298, y: 0.266, w: 0.187, h: 0.109 },
       { id: "lbl_support", caption: "Support", kind: "label", label: "Support", rotate: -4, x: 0.4, y: 0.199, w: 0.197, h: 0.059 },
