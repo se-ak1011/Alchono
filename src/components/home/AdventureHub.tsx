@@ -294,10 +294,9 @@ export function AdventureHub() {
       // PatrickHand is a light chalk-hand; per-label size, rotation and (for
       // glows) colour/strength are all tunable live in the in-app editor.
       const size = e.labelSize ?? defaultSize(h);
-      // With an explicit labelSize we hold that size and let the text spill
-      // outside its box (e.g. the tiny far-away "Me" door — small tap target,
-      // still-readable whisper). Otherwise the label shrinks to fit its box.
-      const fitToBox = e.labelSize == null;
+      // Labels always shrink to fit their box and stay centered (labelSize is the
+      // max/starting size). Rotation and depth tilt apply through a perspective,
+      // just like inlays, so a sign can sit into an angled surface.
       return (
         <View
           style={{
@@ -306,7 +305,12 @@ export function AdventureHub() {
             justifyContent: "center",
             paddingHorizontal: 2,
             overflow: "visible",
-            transform: [{ rotate: `${e.rotate ?? 0}deg` }],
+            transform: [
+              { perspective: 600 },
+              { rotateX: `${e.rotateX ?? 0}deg` },
+              { rotateY: `${e.rotateY ?? 0}deg` },
+              { rotate: `${e.rotate ?? 0}deg` },
+            ],
           }}
         >
           {/* The urge sign carries a restrained idle glow so it's the easiest
@@ -314,7 +318,7 @@ export function AdventureHub() {
           {primary ? <Bloom tint="purple" glint={glint} scale={1} max={0.32} /> : null}
           <Text
             numberOfLines={2}
-            adjustsFontSizeToFit={fitToBox}
+            adjustsFontSizeToFit
             style={{
               fontFamily: "PatrickHand",
               color: primary ? "#FFFFFF" : "#F4EFFA",
@@ -566,8 +570,8 @@ export function AdventureHub() {
 
         {isText ? row("Text size", `${size}`, () => setProp("labelSize", clampI(size - 1, 6, 64)), () => setProp("labelSize", clampI(size + 1, 6, 64))) : null}
         {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 1, -180, 180)), () => setProp("rotate", clampI(rot + 1, -180, 180))) : null}
-        {hasInlay ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
-        {hasInlay ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
+        {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
+        {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
         {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
         {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
         {isGlow ? (

@@ -238,7 +238,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     right: "arcade",
     back: "front",
-    hotspots: [],
+    hotspots: [
+      // The door → Support: a "way out" that lands on a Home-screen feature.
+      // Rough box over the door — place it in the editor.
+      { id: "al_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.06, y: 0.1, w: 0.34, h: 0.7, action: { kind: "route", route: "/(tabs)/support" } },
+    ],
   },
   arcade_right: {
     id: "arcade_right",
@@ -252,6 +256,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Colour Match seen from the side. Rough box — place on its screen.
       { id: "ar_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, x: 0.06, y: 0.42, w: 0.18, h: 0.11, action: { kind: "route", route: "/session/stroop" } },
+      // The door → Tonight (drink-tracking): the right-side "way out".
+      { id: "ar_tonight", caption: "Tonight", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.7, y: 0.08, w: 0.3, h: 0.82, action: { kind: "route", route: "/session/track" } },
     ],
   },
 };
