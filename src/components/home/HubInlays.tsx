@@ -116,11 +116,14 @@ export function SkyInlay() {
   const latent = sky.stars.filter((s) => !s.lit);
 
   return (
-    <View onLayout={onLayout} style={[StyleSheet.absoluteFill, { backgroundColor: "#141019", overflow: "hidden" }]}>
+    <View onLayout={onLayout} style={[StyleSheet.absoluteFill, { backgroundColor: "#191428", overflow: "hidden" }]}>
+      {/* A faint sky-glow so the panel — and its tilt — reads even when few stars
+          are lit (an all-black rectangle hides the depth entirely). */}
+      <View pointerEvents="none" style={{ position: "absolute", left: "10%", top: "8%", right: "10%", bottom: "8%", borderRadius: 999, backgroundColor: "rgba(126,104,178,0.16)" }} />
       {k > 0 ? (
         <Svg width={layout.w} height={layout.h}>
           {latent.map((s, i) => (
-            <Circle key={`u${i}`} cx={cx + s.x * k} cy={cy + s.y * k} r={Math.max(0.4, s.r * k * 0.6)} fill="#9A93AD" fillOpacity={0.22 + s.twinkle * 0.3} />
+            <Circle key={`u${i}`} cx={cx + s.x * k} cy={cy + s.y * k} r={Math.max(0.5, s.r * k * 0.7)} fill="#B3ABC6" fillOpacity={0.34 + s.twinkle * 0.34} />
           ))}
           {sky.lines.map((l, i) => (
             <SvgLine key={`l${i}`} x1={cx + l.x1 * k} y1={cy + l.y1 * k} x2={cx + l.x2 * k} y2={cy + l.y2 * k} stroke="#A489DE" strokeOpacity={l.opacity} strokeWidth={0.5} />
