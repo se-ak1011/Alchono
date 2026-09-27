@@ -86,13 +86,20 @@ front: {
   the bloom at a point inside the box (0..1) — e.g. a doorknob gleam. `glowScale`
   sizes the bloom vs its box (`1` ≈ fills it; smaller = a tighter gleam).
 - **`interaction`** tags what a tap *means*: `"destination"` (enter a room),
-  `"preview"` (zoom in place — peek the content without leaving the café),
-  `"object"` (the object is the action). Previews are wired in `PREVIEW_CONTENT`
-  (in `AdventureHub.tsx`), keyed by hotspot id: **Community**, **Games Arcade**
-  (games / r_games), **My Sky** (mysky / r_mysky) and **The Rack** (l_papers /
-  l_papers2 / l_papers3) each open a live peek panel; several ids can share one
-  panel. A `preview` hotspot with no registered panel just routes via its
-  `action`, so it's safe to tag ahead of building the peek.
+  `"object"` (the object is the action), `"preview"` (reserved). It's semantic
+  only — a tap always routes via `action`.
+- **`inlay`** paints **live content onto the object**, filling its box (clipped
+  and rotated to sit on it) and always on — the café is alive, and a tap still
+  takes you straight in (the inlay is pointer-transparent). Inlays are keyed into
+  `INLAYS` in `src/components/home/HubInlays.tsx`:
+  - `"arcade"` — a self-running Odd One Out on the cabinet screen (games / r_games)
+  - `"community"` — the two latest posts chalked on the board (community)
+  - `"sky"` — your real constellation drawn small (mysky / r_mysky)
+  - `"paper-gazette"` / `"paper-funny"` / `"paper-letters"` — a masthead clipping
+    on each rack slot (l_papers / l_papers2 / l_papers3)
+  Place the box with the editor so the content lands on the object; give it a
+  `rotate` to match the object's angle. To add one: write a small fill-the-box
+  component, register it in `INLAYS`, and set `inlay: "<key>"` on the hotspot.
 - **`haptic`** sets the tap feedback: `"light"` (default), `"medium"` (room
   transitions like Me / Support), `"heavy"`. The urge action uses a distinct
   *warning* buzz regardless, so it always feels different.
