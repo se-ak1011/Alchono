@@ -165,15 +165,18 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "front",
     hotspots: [
-      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.65, x: 0.334, y: 0.503, w: 0.22, h: 0.23, action: { kind: "route", route: "/(tabs)/journal" } },
-      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", interaction: "destination", inlay: "paper-gazette", x: 0.0, y: 0.42, w: 0.303, h: 0.103, action: { kind: "route", route: "/soul" } },
-      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", interaction: "destination", inlay: "paper-funny", x: 0.013, y: 0.641, w: 0.283, h: 0.096, action: { kind: "route", route: "/giggles" } },
-      { id: "l_papers3", caption: "The Letters Page", kind: "glow", interaction: "destination", inlay: "paper-letters", x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
-      { id: "l_reading", caption: "Reading Corner", kind: "glow", glowMax: 0.65, x: 0.638, y: 0.317, w: 0.144, h: 0.164, action: { kind: "route", route: "/toolkit" } },
+      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.65, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "route", route: "/(tabs)/journal" } },
+      // The rack: tiny routing glows (paper previews removed — real newspapers
+      // will be drawn into the baskets, with name-sticker labels added in-app).
+      // Reposition onto the baskets in the editor.
+      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", interaction: "destination", glowMax: 0.65, x: 0.093, y: 0.503, w: 0.17, h: 0.101, action: { kind: "route", route: "/soul" } },
+      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", interaction: "destination", glowMax: 0.65, x: 0.013, y: 0.641, w: 0.283, h: 0.096, action: { kind: "route", route: "/giggles" } },
+      { id: "l_papers3", caption: "The Letters Page", kind: "glow", interaction: "destination", glowMax: 0.65, x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
+      { id: "l_reading", caption: "Reading Corner", kind: "glow", glowMax: 0.65, x: 0.637, y: 0.326, w: 0.144, h: 0.164, action: { kind: "route", route: "/toolkit" } },
       { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
-      // Live posts on the board face below the "Community" sign — same inlay as
-      // the front. Rough box; drag it onto the board in the editor.
-      { id: "l_community_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", x: 0.356, y: 0.2, w: 0.3, h: 0.17, action: { kind: "route", route: "/community" } },
+      // Live videos on the board face below the "Community" sign, tilted into
+      // the wall — same inlay as the front.
+      { id: "l_community_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", rotate: 1, rotateY: 44, x: 0.445, y: 0.172, w: 0.112, h: 0.134, action: { kind: "route", route: "/community" } },
       { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "route", route: "/(tabs)/profile" } },
       // Added in-app: signage labels (non-tappable).
       { id: "l_lbl_writing", caption: "Writing Space", kind: "label", label: "Writing Space", labelSize: 23, rotate: 2, x: 0.084, y: 0.089, w: 0.285, h: 0.243 },

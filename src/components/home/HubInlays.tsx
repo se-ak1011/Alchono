@@ -18,10 +18,7 @@ import { buildSky } from "@/lib/constellation";
  * pointerEvents="none"), so taps always reach the object underneath.
  */
 
-const SERIF = Platform.select({ ios: "Georgia", default: "serif" }) as string;
 const MONO = Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }) as string;
-const PAPER = "#e7e1d2";
-const INK = "#2b2620";
 
 // ————————————————————————————————————————————————————————————————
 // Arcade — a self-running Odd One Out on the cabinet screen. Rolls on its own
@@ -138,34 +135,10 @@ export function SkyInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
-// Papers — a masthead clipping sat on the rack. One per paper.
-// ————————————————————————————————————————————————————————————————
-function PaperInlay({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: PAPER, paddingHorizontal: "8%", paddingVertical: "7%", justifyContent: "center", overflow: "hidden" }]}>
-      <Text numberOfLines={1} style={{ fontFamily: MONO, fontSize: 9, letterSpacing: 1.5, color: "rgba(0,0,0,0.5)" }}>
-        {eyebrow}
-      </Text>
-      <Text numberOfLines={2} style={{ fontFamily: SERIF, fontWeight: "700", fontSize: 24, lineHeight: 26, color: INK, marginTop: 3 }}>
-        {title}
-      </Text>
-      <View style={{ height: 1.5, backgroundColor: "rgba(0,0,0,0.3)", marginTop: 6 }} />
-    </View>
-  );
-}
-
-export const GazetteInlay = () => <PaperInlay eyebrow="GOOD NEWS" title="The Good News Gazette" />;
-export const FunnyInlay = () => <PaperInlay eyebrow="HAVE A GIGGLE" title="The Funny Pages" />;
-export const LettersInlay = () => <PaperInlay eyebrow="LETTERS" title="The Letters Page" />;
-
-// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay,
   community: CommunityInlay,
   sky: SkyInlay,
-  "paper-gazette": GazetteInlay,
-  "paper-funny": FunnyInlay,
-  "paper-letters": LettersInlay,
 };
