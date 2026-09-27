@@ -7,11 +7,27 @@ import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-s
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { CommunityPreview } from "@/components/home/CommunityPreview";
+import { GamesPreview } from "@/components/home/GamesPreview";
+import { SkyPreview } from "@/components/home/SkyPreview";
+import { RackPreview } from "@/components/home/RackPreview";
 
 // Hotspots whose `preview` interaction opens an in-place zoom with real content
-// instead of routing to a room. Add an entry as each preview's content is built.
+// instead of routing to a room. Keyed by hotspot id — several ids can share one
+// preview (e.g. the games peek opens from the café AND the counter view; the
+// rack peek opens from any of the three papers). Add an entry as each preview's
+// content is built.
 const PREVIEW_CONTENT: Record<string, (props: { onClose: () => void }) => React.ReactElement> = {
   community: CommunityPreview,
+  // Games Arcade — from the café (games) and the counter (r_games).
+  games: GamesPreview,
+  r_games: GamesPreview,
+  // My Sky — from the café (mysky) and the counter (r_mysky).
+  mysky: SkyPreview,
+  r_mysky: SkyPreview,
+  // The newspaper rack — from any paper on it (left view).
+  l_papers: RackPreview,
+  l_papers2: RackPreview,
+  l_papers3: RackPreview,
 };
 
 const SCREEN_W = Dimensions.get("window").width;
@@ -92,16 +108,16 @@ function Bloom({
  * things in it. The whole map lives in `src/data/hubScene.ts`, so this engine
  * is art-agnostic.
  *
- * Edit mode (toggled by the eye/grid button) turns every hotspot into a
- * draggable, resizable box so positions can be set by hand in-app; "Export"
- * prints the coordinates to paste back into hubScene.ts. On during a design
- * pass (relocating hotspots after new art); flip to false for a release build.
+ * Edit mode (toggled by the eye/grid button, top-right) turns every hotspot into
+ * a draggable, resizable box so positions can be set by hand in-app; "Export"
+ * prints the coordinates to paste back into hubScene.ts. Off by default now the
+ * rooms are placed — the grid button switches it back on for a design pass.
  */
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
-  const [editMode, setEditMode] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const [overrides, setOverrides] = useState<Record<string, Edits>>({});
   const [showExport, setShowExport] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);

@@ -86,8 +86,13 @@ front: {
   the bloom at a point inside the box (0..1) — e.g. a doorknob gleam. `glowScale`
   sizes the bloom vs its box (`1` ≈ fills it; smaller = a tighter gleam).
 - **`interaction`** tags what a tap *means*: `"destination"` (enter a room),
-  `"preview"` (zoom in place — currently still routes, pending art), `"object"`
-  (the object is the action). Semantic for now; the zoom lands later.
+  `"preview"` (zoom in place — peek the content without leaving the café),
+  `"object"` (the object is the action). Previews are wired in `PREVIEW_CONTENT`
+  (in `AdventureHub.tsx`), keyed by hotspot id: **Community**, **Games Arcade**
+  (games / r_games), **My Sky** (mysky / r_mysky) and **The Rack** (l_papers /
+  l_papers2 / l_papers3) each open a live peek panel; several ids can share one
+  panel. A `preview` hotspot with no registered panel just routes via its
+  `action`, so it's safe to tag ahead of building the peek.
 - **`haptic`** sets the tap feedback: `"light"` (default), `"medium"` (room
   transitions like Me / Support), `"heavy"`. The urge action uses a distinct
   *warning* buzz regardless, so it always feels different.

@@ -37,8 +37,10 @@ export type HotspotKind =
   | "plain"; // invisible tap target
 
 /** How an interactive hotspot behaves conceptually (see docs/adventure-hub.md).
- *  destination = enter a room; preview = zoom into it in place; object = the
- *  object itself is the action. Currently semantic only (previews still route). */
+ *  destination = enter a room; preview = zoom into it in place (community, games,
+ *  my sky and the paper rack have built peeks — see PREVIEW_CONTENT in
+ *  AdventureHub); object = the object itself is the action. A `preview` hotspot
+ *  with no built peek falls back to routing via its `action`. */
 export type Interaction = "destination" | "preview" | "object";
 
 /** Which existing light a glow borrows — a warm object edge or restrained purple. */
@@ -137,7 +139,7 @@ export const HUB_NODES: Record<string, HubNode> = {
 
       // — objects (the object itself communicates its function) —
       { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.8, x: 0.686, y: 0.286, w: 0.191, h: 0.182, action: { kind: "route", route: "/barista" } },
-      { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "object", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, x: 0.904, y: 0.382, w: 0.096, h: 0.068, action: { kind: "route", route: "/session/games" } },
+      { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "preview", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, x: 0.904, y: 0.382, w: 0.096, h: 0.068, action: { kind: "route", route: "/session/games" } },
       { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.85, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/support/resources" } },
 
       // — primary immediate-help action (dominant; distinct heavy haptic) —
@@ -155,9 +157,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", x: 0.334, y: 0.503, w: 0.22, h: 0.23, action: { kind: "route", route: "/(tabs)/journal" } },
-      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", x: 0.0, y: 0.42, w: 0.303, h: 0.103, action: { kind: "route", route: "/soul" } },
-      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", x: 0.013, y: 0.641, w: 0.283, h: 0.096, action: { kind: "route", route: "/giggles" } },
-      { id: "l_papers3", caption: "The Letters Page", kind: "glow", x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
+      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", interaction: "preview", x: 0.0, y: 0.42, w: 0.303, h: 0.103, action: { kind: "route", route: "/soul" } },
+      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", interaction: "preview", x: 0.013, y: 0.641, w: 0.283, h: 0.096, action: { kind: "route", route: "/giggles" } },
+      { id: "l_papers3", caption: "The Letters Page", kind: "glow", interaction: "preview", x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
       { id: "l_reading", caption: "Reading Corner", kind: "glow", x: 0.638, y: 0.317, w: 0.144, h: 0.164, action: { kind: "route", route: "/toolkit" } },
       { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
       { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "route", route: "/(tabs)/profile" } },
@@ -179,11 +181,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", labelSize: 17, rotate: 14, x: 0.472, y: 0.45, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
-      { id: "r_games", caption: "Games Arcade", kind: "glow", glowMax: 0.6, x: 0.367, y: 0.292, w: 0.104, h: 0.138, action: { kind: "route", route: "/session/games" } },
+      { id: "r_games", caption: "Games Arcade", kind: "glow", interaction: "preview", glowMax: 0.6, x: 0.367, y: 0.292, w: 0.104, h: 0.138, action: { kind: "route", route: "/session/games" } },
       { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.6, x: 0.165, y: 0.224, w: 0.215, h: 0.153, action: { kind: "route", route: "/barista" } },
       { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/support/resources" } },
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, x: 0.338, y: 0.202, w: 0.182, h: 0.07, action: { kind: "route", route: "/constellation" } },
+      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "preview", x: 0.338, y: 0.202, w: 0.182, h: 0.07, action: { kind: "route", route: "/constellation" } },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
       { id: "r_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.7, x: 0.618, y: 0.149, w: 0.201, h: 0.123 },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.85, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },

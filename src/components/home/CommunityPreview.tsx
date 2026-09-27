@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, Image, ScrollView, Platform, Dimensions } from "react-native";
+import { View, Text, Pressable, Image, ScrollView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,8 +9,6 @@ import { useCommunityMoments, type FeedMoment } from "@/hooks/useMoments";
 
 const MONO = Platform.select({ ios: "Menlo", android: "monospace", default: "monospace" }) as string;
 const PLUM = "#A489DE";
-const { width: SCREEN_W } = Dimensions.get("window");
-const VID_W = Math.min(150, (SCREEN_W - 48) / 2.4);
 
 /**
  * The Community board, zoomed into. Instead of navigating to the Community room
@@ -24,8 +22,8 @@ export function CommunityPreview({ onClose }: { onClose: () => void }) {
   const { data: feed, isLoading: postsLoading } = useCommunityFeed();
   const { data: moments, isLoading: vidsLoading } = useCommunityMoments();
 
-  const posts = (feed?.pages?.[0] ?? []).slice(0, 3);
-  const videos = (moments ?? []).filter((m) => m.media_type === "video").slice(0, 8);
+  const posts = (feed?.pages?.[0] ?? []).slice(0, 2);
+  const videos = (moments ?? []).filter((m) => m.media_type === "video").slice(0, 2);
 
   const go = (path: string, params?: Record<string, string>) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -81,39 +79,36 @@ export function CommunityPreview({ onClose }: { onClose: () => void }) {
         ) : videos.length === 0 ? (
           <Placeholder text="no videos on the wall yet" />
         ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
-          >
+          <View style={{ paddingHorizontal: 20, gap: 10 }}>
             {videos.map((m) => (
-              <Pressable key={m.id} onPress={() => openVideo(m)} className="active:opacity-90" style={{ width: VID_W }}>
+              <Pressable
+                key={m.id}
+                onPress={() => openVideo(m)}
+                className="active:opacity-90"
+                style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              >
                 <View style={{ position: "relative" }}>
                   {m.thumb_url ? (
                     <Image
                       source={{ uri: m.thumb_url }}
-                      style={{ width: VID_W, height: VID_W, borderRadius: 10, backgroundColor: "#2a2533" }}
+                      style={{ width: 56, height: 56, borderRadius: 10, backgroundColor: "#2a2533" }}
                       resizeMode="cover"
                     />
                   ) : (
-                    <View style={{ width: VID_W, height: VID_W, borderRadius: 10, backgroundColor: "#2a2533", alignItems: "center", justifyContent: "center" }}>
-                      <Text style={{ fontFamily: MONO, fontSize: 10, color: "#817B91" }}>developing…</Text>
-                    </View>
+                    <View style={{ width: 56, height: 56, borderRadius: 10, backgroundColor: "#2a2533" }} />
                   )}
                   <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
-                    <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center" }}>
-                      <Feather name="play" size={18} color="#fff" style={{ marginLeft: 2 }} />
+                    <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center" }}>
+                      <Feather name="play" size={13} color="#fff" style={{ marginLeft: 1 }} />
                     </View>
                   </View>
                 </View>
-                {m.caption ? (
-                  <Text numberOfLines={1} style={{ color: "#B2ACC0", fontSize: 12, marginTop: 6 }}>
-                    {m.caption}
-                  </Text>
-                ) : null}
+                <Text numberOfLines={2} style={{ flex: 1, color: "#D8D3E2", fontSize: 13.5, lineHeight: 18 }}>
+                  {m.caption || "a moment from the wall"}
+                </Text>
               </Pressable>
             ))}
-          </ScrollView>
+          </View>
         )}
 
         {/* Posts */}
