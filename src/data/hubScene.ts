@@ -143,7 +143,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.85, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/support/resources" } },
 
       // — primary immediate-help action (dominant; distinct heavy haptic) —
-      { id: "urge", caption: "I need a drink", kind: "primary", label: "I need a drink", interaction: "object", haptic: "heavy", labelSize: 24, rotate: 22, x: 0.619, y: 0.665, w: 0.36, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "urge", caption: "I need a drink", kind: "primary", label: "I need a drink", interaction: "object", haptic: "heavy", labelSize: 20, rotate: 22, x: 0.619, y: 0.665, w: 0.36, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
 
