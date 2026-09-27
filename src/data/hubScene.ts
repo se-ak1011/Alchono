@@ -148,7 +148,7 @@ export const HUB_NODES: Record<string, HubNode> = {
 
       // — objects (the object itself communicates its function) —
       { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "route", route: "/barista" } },
-      { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "object", inlay: "arcade", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, rotate: 7, rotateX: 30, x: 0.923, y: 0.395, w: 0.089, h: 0.041, action: { kind: "route", route: "/session/games" } },
+      { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "object", inlay: "arcade", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, rotate: 7, rotateX: 30, x: 0.923, y: 0.395, w: 0.089, h: 0.041, action: { kind: "node", node: "arcade" } },
       { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.65, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/support/resources" } },
 
       // — primary immediate-help action (dominant; distinct heavy haptic) —
@@ -196,7 +196,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", labelSize: 17, rotate: 14, x: 0.472, y: 0.45, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
-      { id: "r_games", caption: "Games Arcade", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, rotate: 9, rotateY: -10, rotateX: 26, x: 0.382, y: 0.347, w: 0.068, h: 0.043, action: { kind: "route", route: "/session/games" } },
+      { id: "r_games", caption: "Games Arcade", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, rotate: 9, rotateY: -10, rotateX: 26, x: 0.382, y: 0.347, w: 0.068, h: 0.043, action: { kind: "node", node: "arcade" } },
       { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "route", route: "/barista" } },
       { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/support/resources" } },
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
@@ -205,6 +205,53 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.65, x: 0.618, y: 0.149, w: 0.201, h: 0.123 },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
+    ],
+  },
+
+  // The Arcade — its own little room, entered from the café's arcade cabinet.
+  // Each cabinet screen plays its game (a live inlay) and a tap launches it.
+  // Turn arrows look around; the back arrow exits to the café.
+  arcade: {
+    id: "arcade",
+    title: "The Arcade",
+    image: require("../../assets/scenes/arcade_front.png"),
+    imgW: 941,
+    imgH: 1671,
+    fit: "screen",
+    left: "arcade_left",
+    right: "arcade_right",
+    back: "front",
+    hotspots: [
+      // Rough boxes — drag each onto its cabinet screen in the editor, export.
+      { id: "a_memory", caption: "Memory Match", kind: "glow", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.06, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/memory-match" } },
+      { id: "a_pattern", caption: "Pattern", kind: "glow", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.29, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/simon" } },
+      { id: "a_odd", caption: "Odd One Out", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.51, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/odd-one-out" } },
+      { id: "a_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, x: 0.82, y: 0.37, w: 0.14, h: 0.09, action: { kind: "route", route: "/session/stroop" } },
+    ],
+  },
+  arcade_left: {
+    id: "arcade_left",
+    title: "The Arcade",
+    image: require("../../assets/scenes/arcade_left.png"),
+    imgW: 941,
+    imgH: 1670,
+    fit: "screen",
+    right: "arcade",
+    back: "front",
+    hotspots: [],
+  },
+  arcade_right: {
+    id: "arcade_right",
+    title: "The Arcade",
+    image: require("../../assets/scenes/arcade_right.png"),
+    imgW: 941,
+    imgH: 1672,
+    fit: "screen",
+    left: "arcade",
+    back: "front",
+    hotspots: [
+      // Colour Match seen from the side. Rough box — place on its screen.
+      { id: "ar_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, x: 0.06, y: 0.42, w: 0.18, h: 0.11, action: { kind: "route", route: "/session/stroop" } },
     ],
   },
 };

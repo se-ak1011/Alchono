@@ -92,14 +92,17 @@ front: {
   and rotated to sit on it) and always on — the café is alive, and a tap still
   takes you straight in (the inlay is pointer-transparent). Inlays are keyed into
   `INLAYS` in `src/components/home/HubInlays.tsx`:
-  - `"arcade"` — a self-running Odd One Out on the cabinet screen (games / r_games)
-  - `"community"` — the two latest posts chalked on the board (community)
+  - `"arcade"` — a self-running Odd One Out on a cabinet screen (café games /
+    r_games, and the Odd One Out cabinet in the arcade room)
+  - `"arcade_memory"` / `"arcade_pattern"` / `"arcade_colour"` / `"arcade_word"` —
+    the other games playing on their cabinets in the arcade room
+  - `"community"` — the latest video thumbnails on the board (community /
+    l_community_board)
   - `"sky"` — your real constellation drawn small (mysky / r_mysky)
-  - `"paper-gazette"` / `"paper-funny"` / `"paper-letters"` — a masthead clipping
-    on each rack slot (l_papers / l_papers2 / l_papers3)
   Place the box with the editor so the content lands on the object; give it a
-  `rotate` to match the object's angle. To add one: write a small fill-the-box
-  component, register it in `INLAYS`, and set `inlay: "<key>"` on the hotspot.
+  `rotate` (spin) plus `rotateX`/`rotateY` (depth) to sit it into an angled
+  surface. To add one: write a small fill-the-box component, register it in
+  `INLAYS`, and set `inlay: "<key>"` on the hotspot.
 - **`haptic`** sets the tap feedback: `"light"` (default), `"medium"` (room
   transitions like Me / Support), `"heavy"`. The urge action uses a distinct
   *warning* buzz regardless, so it always feels different.

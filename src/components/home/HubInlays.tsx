@@ -135,10 +135,110 @@ export function SkyInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
+// Arcade cabinets — one tiny self-running demo per game, for the screens in the
+// arcade room. All translucent, so they read as a game glowing on the glass.
+// (Odd One Out reuses ArcadeInlay above.)
+// ————————————————————————————————————————————————————————————————
+const SCREEN_BG = "rgba(10,8,18,0.22)";
+
+export function MemoryInlay() {
+  const [flip, setFlip] = useState<[number, number]>([0, 3]);
+  useEffect(() => {
+    const t = setInterval(() => {
+      const a = Math.floor(Math.random() * 6);
+      let b = Math.floor(Math.random() * 6);
+      if (b === a) b = (b + 1) % 6;
+      setFlip([a, b]);
+    }, 1500);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: SCREEN_BG, alignItems: "center", justifyContent: "center", overflow: "hidden" }]}>
+      <View style={{ width: "82%", height: "72%", flexDirection: "row", flexWrap: "wrap", opacity: 0.75 }}>
+        {Array.from({ length: 6 }).map((_, i) => {
+          const up = flip.includes(i);
+          return (
+            <View key={i} style={{ width: "33.33%", height: "50%", padding: "4%" }}>
+              <View style={{ flex: 1, borderRadius: 3, backgroundColor: up ? "rgba(202,182,242,0.9)" : "rgba(92,80,122,0.6)", alignItems: "center", justifyContent: "center" }}>
+                {up ? <View style={{ width: "38%", height: "38%", borderRadius: 99, backgroundColor: "#3a2f52" }} /> : null}
+              </View>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+export function PatternInlay() {
+  const [on, setOn] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setOn((o) => (o + 1) % 4), 700);
+    return () => clearInterval(t);
+  }, []);
+  const cols = ["#5fbf6f", "#d95f6f", "#e6c24a", "#5f8fd9"];
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: SCREEN_BG, alignItems: "center", justifyContent: "center", overflow: "hidden" }]}>
+      <View style={{ width: "74%", aspectRatio: 1, flexDirection: "row", flexWrap: "wrap", opacity: 0.78 }}>
+        {cols.map((c, i) => (
+          <View key={i} style={{ width: "50%", height: "50%", padding: "4%" }}>
+            <View style={{ flex: 1, borderRadius: 6, backgroundColor: c, opacity: on === i ? 1 : 0.3 }} />
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const STROOP: ReadonlyArray<[string, string]> = [["RED", "#5f8fd9"], ["BLUE", "#5fbf6f"], ["GREEN", "#e6c24a"], ["GOLD", "#d95f6f"]];
+export function ColourInlay() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((v) => (v + 1) % STROOP.length), 1200);
+    return () => clearInterval(t);
+  }, []);
+  const [word, color] = STROOP[i];
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(10,8,18,0.3)", alignItems: "center", justifyContent: "center", overflow: "hidden", paddingHorizontal: "8%" }]}>
+      <Text adjustsFontSizeToFit numberOfLines={1} style={{ fontFamily: MONO, fontWeight: "800", fontSize: 40, color, letterSpacing: 1 }}>
+        {word}
+      </Text>
+    </View>
+  );
+}
+
+const WGRID = ["C", "A", "L", "M", "O", "H", "P", "E", "R", "S", "T", "A", "B", "I", "N", "D"];
+export function WordInlay() {
+  const [row, setRow] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setRow((r) => (r + 1) % 4), 1100);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(10,8,18,0.28)", alignItems: "center", justifyContent: "center", overflow: "hidden" }]}>
+      <View style={{ width: "82%", aspectRatio: 1, flexDirection: "row", flexWrap: "wrap", opacity: 0.85 }}>
+        {WGRID.map((ch, i) => {
+          const hot = Math.floor(i / 4) === row;
+          return (
+            <View key={i} style={{ width: "25%", height: "25%", alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ fontFamily: MONO, fontSize: 9, fontWeight: "700", color: hot ? "#E9DEFF" : "rgba(180,170,205,0.5)" }}>{ch}</Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 export const INLAYS: Record<string, React.ComponentType> = {
-  arcade: ArcadeInlay,
+  arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
+  arcade_memory: MemoryInlay,
+  arcade_pattern: PatternInlay,
+  arcade_colour: ColourInlay,
+  arcade_word: WordInlay,
   community: CommunityInlay,
   sky: SkyInlay,
 };
