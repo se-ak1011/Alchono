@@ -144,7 +144,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // — live objects: content painted on, tap enters the room directly —
       { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 1, rotateY: 40, x: 0.018, y: 0.249, w: 0.112, h: 0.123, action: { kind: "route", route: "/community" } },
       { id: "reading", caption: "Reading Corner", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.102, y: 0.431, w: 0.192, h: 0.09, action: { kind: "route", route: "/toolkit" } },
-      { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotateY: -14, x: 0.839, y: 0.265, w: 0.102, h: 0.047, action: { kind: "route", route: "/constellation" } },
+      { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
 
       // — objects (the object itself communicates its function) —
       { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "route", route: "/barista" } },
@@ -200,7 +200,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "route", route: "/barista" } },
       { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/support/resources" } },
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.402, y: 0.207, w: 0.055, h: 0.057, action: { kind: "route", route: "/constellation" } },
+      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.396, y: 0.209, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
       { id: "r_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.65, x: 0.618, y: 0.149, w: 0.201, h: 0.123 },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
