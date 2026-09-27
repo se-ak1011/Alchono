@@ -18,6 +18,8 @@ type Edits = Coords & {
   glowScale?: number;
   glowMax?: number;
   rotate?: number;
+  rotateX?: number;
+  rotateY?: number;
   tint?: GlowTint;
   label?: string;
 };
@@ -204,6 +206,8 @@ export function AdventureHub() {
       glowScale: o?.glowScale ?? h.glowScale,
       glowMax: o?.glowMax ?? h.glowMax,
       rotate: o?.rotate ?? h.rotate,
+      rotateX: o?.rotateX ?? h.rotateX,
+      rotateY: o?.rotateY ?? h.rotateY,
       tint: o?.tint ?? h.tint,
       label: o?.label ?? h.label,
     };
@@ -255,7 +259,21 @@ export function AdventureHub() {
     if (h.inlay && INLAYS[h.inlay]) {
       const Inlay = INLAYS[h.inlay];
       return (
-        <View pointerEvents="none" style={{ flex: 1, overflow: "hidden", borderRadius: 3, transform: [{ rotate: `${e.rotate ?? 0}deg` }] }}>
+        <View
+          pointerEvents="none"
+          style={{
+            flex: 1,
+            overflow: "hidden",
+            borderRadius: 3,
+            // perspective first so the tilts foreshorten (depth); then spin.
+            transform: [
+              { perspective: 600 },
+              { rotateX: `${e.rotateX ?? 0}deg` },
+              { rotateY: `${e.rotateY ?? 0}deg` },
+              { rotate: `${e.rotate ?? 0}deg` },
+            ],
+          }}
+        >
           <Inlay />
         </View>
       );
@@ -474,6 +492,8 @@ export function AdventureHub() {
     const e = editsOf(sel);
     const size = e.labelSize ?? defaultSize(sel);
     const rot = e.rotate ?? 0;
+    const rotY = e.rotateY ?? 0;
+    const rotX = e.rotateX ?? 0;
     const gscale = e.glowScale ?? 1;
     const gmax = e.glowMax ?? 0.5;
     const tint = e.tint ?? "purple";
@@ -545,7 +565,9 @@ export function AdventureHub() {
         ) : null}
 
         {isText ? row("Text size", `${size}`, () => setProp("labelSize", clampI(size - 1, 6, 64)), () => setProp("labelSize", clampI(size + 1, 6, 64))) : null}
-        {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 2, -180, 180)), () => setProp("rotate", clampI(rot + 2, -180, 180))) : null}
+        {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 1, -180, 180)), () => setProp("rotate", clampI(rot + 1, -180, 180))) : null}
+        {hasInlay ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
+        {hasInlay ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
         {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
         {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
         {isGlow ? (
@@ -623,6 +645,8 @@ export function AdventureHub() {
       const extra: string[] = [];
       if (e.labelSize != null) extra.push(`labelSize ${Math.round(e.labelSize)}`);
       if (e.rotate) extra.push(`rotate ${Math.round(e.rotate)}`);
+      if (e.rotateY) extra.push(`rotateY ${Math.round(e.rotateY)}`);
+      if (e.rotateX) extra.push(`rotateX ${Math.round(e.rotateX)}`);
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
       if (e.tint) extra.push(`tint ${e.tint}`);

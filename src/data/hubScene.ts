@@ -72,8 +72,13 @@ export type Hotspot = {
   glowScale?: number;
   /** Glow peak opacity 0..1 (the editor's "glow strength"). Default ~0.5. */
   glowMax?: number;
-  /** Text rotation in degrees (the editor's "orientation"). */
+  /** Text rotation in degrees (the editor's "orientation" / spin). */
   rotate?: number;
+  /** 3D tilt (degrees) so an inlay sits INTO an angled surface instead of flat on
+   *  top of it — depth. `rotateY` turns it left/right into a wall; `rotateX` tips
+   *  it up/down. Applied through a perspective, for the painted screens/papers. */
+  rotateX?: number;
+  rotateY?: number;
   /** Haptic strength on tap. Defaults to light. */
   haptic?: Haptic;
   /** Live content painted onto the object, filling this box (clipped + rotated
