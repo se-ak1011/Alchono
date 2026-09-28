@@ -142,7 +142,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // — destinations (enter a room); the object glows, not a box —
       { id: "writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.023, y: 0.534, w: 0.192, h: 0.114, action: { kind: "route", route: "/(tabs)/journal" } },
       { id: "me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", anchor: { x: 0.82, y: 0.55 }, glowScale: 0.5, glowMax: 0.65, x: 0.235, y: 0.37, w: 0.127, h: 0.059, action: { kind: "route", route: "/(tabs)/profile" } },
-      { id: "support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 1.05, glowMax: 0.65, x: 0.437, y: 0.374, w: 0.148, h: 0.097, action: { kind: "route", route: "/(tabs)/support" } },
+      { id: "support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 1.05, glowMax: 0.65, x: 0.437, y: 0.374, w: 0.148, h: 0.097, action: { kind: "node", node: "support" } },
 
       // — live objects: content painted on, tap enters the room directly —
       { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 1, rotateY: 40, x: 0.018, y: 0.249, w: 0.112, h: 0.123, action: { kind: "route", route: "/community" } },
@@ -250,7 +250,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Destination changed from Support; the chalk sign is relabelled on screen.
       { id: "al_bar", caption: "The Bar", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.65, x: 0.132, y: 0.334, w: 0.254, h: 0.21, action: { kind: "route", route: "/barista" } },
       // Chalk sign on the door (added in-app) — relabel to "Bar" in the editor.
-      { id: "al_lbl_support", caption: "Bar", kind: "label", label: "Support", labelSize: 24, rotate: 15, rotateY: 12, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
+      { id: "al_lbl_support", caption: "Bar", kind: "label", label: "Bar", labelSize: 24, rotate: 15, rotateY: 12, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
     ],
   },
   arcade_right: {
@@ -269,6 +269,58 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "ar_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.771, y: 0.433, w: 0.109, h: 0.087, action: { kind: "route", route: "/session/track" } },
       // The retro phone → Resources (same as the café landline).
       { id: "ar_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.7, x: 0.424, y: 0.41, w: 0.13, h: 0.083, action: { kind: "route", route: "/support/resources" } },
+    ],
+  },
+
+  // The Support room — entered from the café's Support curtain. A warm lounge:
+  // sit with a mentor, talk to the coach, read recovery, check messages. Every
+  // known feature is pre-placed at a rough box; position/tilt in the editor and
+  // export in one pass. The two doors are building connections — inert until you
+  // tell me where each goes.
+  support: {
+    id: "support",
+    title: "Support",
+    image: require("../../assets/scenes/support_front.png"),
+    imgW: 853,
+    imgH: 1843,
+    fit: "screen",
+    left: "support_left",
+    right: "support_right",
+    back: "front",
+    hotspots: [
+      { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.5, y: 0.42, w: 0.22, h: 0.06, action: { kind: "route", route: "/support/mentors" } },
+      { id: "s_recovery", caption: "Recovery", kind: "sign", label: "Recovery", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.04, y: 0.42, w: 0.22, h: 0.06, action: { kind: "route", route: "/support/recovery" } },
+      { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.78, w: 0.4, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+    ],
+  },
+  support_left: {
+    id: "support_left",
+    title: "Support",
+    image: require("../../assets/scenes/support_left.png"),
+    imgW: 853,
+    imgH: 1844,
+    fit: "screen",
+    right: "support",
+    back: "front",
+    hotspots: [
+      // The door — a building connection (destination pending).
+      { id: "sl_door", caption: "Door", kind: "glow", tint: "purple", glowScale: 0.4, glowMax: 0.6, x: 0.05, y: 0.15, w: 0.3, h: 0.6 },
+    ],
+  },
+  support_right: {
+    id: "support_right",
+    title: "Support",
+    image: require("../../assets/scenes/support_right.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "support",
+    back: "front",
+    hotspots: [
+      { id: "sr_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.28, y: 0.42, w: 0.22, h: 0.06, action: { kind: "route", route: "/support/coach" } },
+      { id: "sr_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.14, y: 0.24, w: 0.24, h: 0.06, action: { kind: "route", route: "/messages" } },
+      // The door — a building connection (destination pending).
+      { id: "sr_door", caption: "Door", kind: "glow", tint: "purple", glowScale: 0.4, glowMax: 0.6, x: 0.55, y: 0.2, w: 0.3, h: 0.55 },
     ],
   },
 };
