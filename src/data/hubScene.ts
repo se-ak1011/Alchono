@@ -166,6 +166,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 941,
     imgH: 1672,
     fit: "screen",
+    // Side arrow panning back toward the counter side, the way the arcade/support
+    // side-views connect back to their room-front. Keeps the "look around" feel
+    // consistent across every room, instead of forcing a trip through Back.
+    right: "front",
     back: "front",
     hotspots: [
       { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.65, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "route", route: "/(tabs)/journal" } },
@@ -196,6 +200,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 941,
     imgH: 1672,
     fit: "screen",
+    // Side arrow panning back toward the reading/writing side — mirror of the
+    // left view, matching the arcade/support side-to-side navigation.
+    left: "front",
     back: "front",
     hotspots: [
       { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", labelSize: 17, rotate: 14, x: 0.472, y: 0.45, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
