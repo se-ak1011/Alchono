@@ -112,6 +112,7 @@ function RootLayoutNav() {
         <Stack.Screen name="support/community" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/mentors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/resources" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="support/recommendations" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="pro" />
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
