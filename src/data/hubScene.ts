@@ -235,17 +235,17 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Top shelf.
-      { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.11, y: 0.1, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/in-the-moment" } },
-      { id: "bk_understand", caption: "Understand", kind: "plain", interaction: "destination", haptic: "light", x: 0.195, y: 0.1, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/understand" } },
-      { id: "bk_triggers", caption: "Triggers", kind: "plain", interaction: "destination", haptic: "light", x: 0.28, y: 0.1, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/triggers" } },
+      { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.121, y: 0.101, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/in-the-moment" } },
+      { id: "bk_understand", caption: "Understand", kind: "plain", interaction: "destination", haptic: "light", x: 0.221, y: 0.098, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/understand" } },
+      { id: "bk_triggers", caption: "Triggers", kind: "plain", interaction: "destination", haptic: "light", x: 0.317, y: 0.097, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/triggers" } },
       // Middle shelf.
-      { id: "bk_planning", caption: "Planning ahead", kind: "plain", interaction: "destination", haptic: "light", x: 0.53, y: 0.38, w: 0.095, h: 0.19, action: { kind: "route", route: "/toolkit/c/planning-ahead" } },
-      { id: "bk_stress", caption: "Stress", kind: "plain", interaction: "destination", haptic: "light", x: 0.63, y: 0.38, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/stress" } },
-      { id: "bk_sleep", caption: "Sleep", kind: "plain", interaction: "destination", haptic: "light", x: 0.72, y: 0.38, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/sleep" } },
+      { id: "bk_planning", caption: "Planning ahead", kind: "plain", interaction: "destination", haptic: "light", x: 0.561, y: 0.371, w: 0.095, h: 0.19, action: { kind: "route", route: "/toolkit/c/planning-ahead" } },
+      { id: "bk_stress", caption: "Stress", kind: "plain", interaction: "destination", haptic: "light", x: 0.674, y: 0.369, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/stress" } },
+      { id: "bk_sleep", caption: "Sleep", kind: "plain", interaction: "destination", haptic: "light", x: 0.772, y: 0.368, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/sleep" } },
       // Bottom shelf.
-      { id: "bk_relationships", caption: "Relationships", kind: "plain", interaction: "destination", haptic: "light", x: 0.24, y: 0.62, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/relationships" } },
-      { id: "bk_identity", caption: "Identity", kind: "plain", interaction: "destination", haptic: "light", x: 0.34, y: 0.62, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/identity" } },
-      { id: "bk_slip", caption: "After a slip", kind: "plain", interaction: "destination", haptic: "light", x: 0.43, y: 0.62, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/after-a-slip" } },
+      { id: "bk_relationships", caption: "Relationships", kind: "plain", interaction: "destination", haptic: "light", x: 0.258, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/relationships" } },
+      { id: "bk_identity", caption: "Identity", kind: "plain", interaction: "destination", haptic: "light", x: 0.378, y: 0.629, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/identity" } },
+      { id: "bk_slip", caption: "After a slip", kind: "plain", interaction: "destination", haptic: "light", x: 0.482, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/after-a-slip" } },
     ],
   },
 
@@ -262,13 +262,13 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The open notebook → write a note.
-      { id: "wd_note", caption: "A note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.6, w: 0.62, h: 0.17, action: { kind: "route", route: "/journal/write" } },
+      { id: "wd_note", caption: "A note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.144, y: 0.607, w: 0.62, h: 0.17, action: { kind: "route", route: "/journal/write" } },
       // The envelopes → write a letter.
-      { id: "wd_letters", caption: "Letters", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.58, y: 0.5, w: 0.36, h: 0.1, action: { kind: "route", route: "/letters/write" } },
+      { id: "wd_letters", caption: "Letters", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.65, glowMax: 0.6, x: 0.62, y: 0.5, w: 0.36, h: 0.1, action: { kind: "route", route: "/letters/write" } },
       // The voice recorder → the Voice note screen: a big mic you press to record.
-      { id: "wd_voice", caption: "Voice note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.03, y: 0.5, w: 0.2, h: 0.09, action: { kind: "route", route: "/journal/voice" } },
+      { id: "wd_voice", caption: "Voice note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.65, x: 0.061, y: 0.501, w: 0.2, h: 0.09, action: { kind: "route", route: "/journal/voice" } },
       // The paper tray → your saved notes.
-      { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.63, y: 0.38, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
+      { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.658, y: 0.375, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
       // Drink safety-valve, present in every room (easy to move or delete in-app).
       { id: "wd_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 20, interaction: "object", haptic: "heavy", x: 0.28, y: 0.8, w: 0.44, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
