@@ -304,11 +304,15 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Recovery — the writing desk + chair.
-      { id: "s_recovery", caption: "Recovery", kind: "sign", label: "Recovery", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.12, y: 0.48, w: 0.3, h: 0.1, action: { kind: "route", route: "/support/recovery" } },
+      { id: "s_recovery", caption: "Recovery", kind: "sign", label: "Recovery", labelSize: 15, rotateY: 34, rotateX: -4, interaction: "destination", haptic: "medium", x: 0.242, y: 0.38, w: 0.3, h: 0.1, action: { kind: "route", route: "/support/recovery" } },
       // Mentors — the empty corkboard above the desk.
-      { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.1, y: 0.2, w: 0.3, h: 0.12, action: { kind: "route", route: "/support/mentors" } },
+      { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 18, rotate: 10, rotateY: 42, interaction: "destination", haptic: "medium", x: 0.284, y: 0.18, w: 0.3, h: 0.12, action: { kind: "route", route: "/support/mentors" } },
       // The left-view door → Me (profile).
-      { id: "sl_door", caption: "Me", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.05, y: 0.15, w: 0.3, h: 0.6, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "sl_door", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: -0.037, y: 0.371, w: 0.218, h: 0.104, action: { kind: "route", route: "/(tabs)/profile" } },
+      // "Me" chalked on the door (added in-app).
+      { id: "sl_lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 18, rotate: 8, rotateY: 32, x: 0.028, y: 0.169, w: 0.2, h: 0.08 },
+      // Added in-app: new glow — DESTINATION PENDING (inert until wired).
+      { id: "sl_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.5, x: 0.474, y: 0.429, w: 0.16, h: 0.16 },
     ],
   },
   support_right: {
