@@ -288,9 +288,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "support_right",
     back: "front",
     hotspots: [
-      { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.5, y: 0.42, w: 0.22, h: 0.06, action: { kind: "route", route: "/support/mentors" } },
-      { id: "s_recovery", caption: "Recovery", kind: "sign", label: "Recovery", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.04, y: 0.42, w: 0.22, h: 0.06, action: { kind: "route", route: "/support/recovery" } },
-      { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.78, w: 0.4, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+      // AI Coach — the armchairs + table (a big, only-thing-here tap zone).
+      { id: "s_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 16, interaction: "destination", haptic: "medium", x: 0.12, y: 0.36, w: 0.72, h: 0.3, action: { kind: "route", route: "/support/coach" } },
+      { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.82, w: 0.4, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
   support_left: {
@@ -303,6 +303,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "support",
     back: "front",
     hotspots: [
+      // Recovery — the writing desk + chair.
+      { id: "s_recovery", caption: "Recovery", kind: "sign", label: "Recovery", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.12, y: 0.48, w: 0.3, h: 0.1, action: { kind: "route", route: "/support/recovery" } },
+      // Mentors — the empty corkboard above the desk.
+      { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.1, y: 0.2, w: 0.3, h: 0.12, action: { kind: "route", route: "/support/mentors" } },
       // The door — a building connection (destination pending).
       { id: "sl_door", caption: "Door", kind: "glow", tint: "purple", glowScale: 0.4, glowMax: 0.6, x: 0.05, y: 0.15, w: 0.3, h: 0.6 },
     ],
@@ -317,8 +321,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "support",
     back: "front",
     hotspots: [
-      { id: "sr_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.28, y: 0.42, w: 0.22, h: 0.06, action: { kind: "route", route: "/support/coach" } },
-      { id: "sr_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.14, y: 0.24, w: 0.24, h: 0.06, action: { kind: "route", route: "/messages" } },
+      // Messages — on the computer screen.
+      { id: "s_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.25, y: 0.4, w: 0.22, h: 0.08, action: { kind: "route", route: "/messages" } },
+      // Recommendations — the 4-card corkboard. Provisional: no screen yet, so
+      // inert (unroutable) until /support/recommendations exists.
+      { id: "s_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", glowScale: 0.6, glowMax: 0.6, x: 0.15, y: 0.22, w: 0.26, h: 0.14 },
       // The door — a building connection (destination pending).
       { id: "sr_door", caption: "Door", kind: "glow", tint: "purple", glowScale: 0.4, glowMax: 0.6, x: 0.55, y: 0.2, w: 0.3, h: 0.55 },
     ],
