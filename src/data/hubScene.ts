@@ -223,13 +223,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Rough boxes — drag each onto its cabinet screen in the editor, export.
-      { id: "a_memory", caption: "Memory Match", kind: "glow", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.06, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/memory-match" } },
-      { id: "a_pattern", caption: "Pattern", kind: "glow", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.29, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/simon" } },
-      { id: "a_odd", caption: "Odd One Out", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.51, y: 0.34, w: 0.15, h: 0.09, action: { kind: "route", route: "/session/odd-one-out" } },
-      { id: "a_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, x: 0.82, y: 0.37, w: 0.14, h: 0.09, action: { kind: "route", route: "/session/stroop" } },
-      // Word Search runs on the retro computer on the desk. Rough box — place it
-      // on the monitor screen in the editor.
-      { id: "a_word", caption: "Word Search", kind: "glow", interaction: "object", inlay: "arcade_word", glowMax: 0.6, x: 0.31, y: 0.43, w: 0.15, h: 0.11, action: { kind: "route", route: "/session/word-search" } },
+      { id: "a_memory", caption: "Memory Match", kind: "glow", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.19, y: 0.301, w: 0.119, h: 0.068, action: { kind: "route", route: "/session/memory-match" } },
+      { id: "a_pattern", caption: "Pattern", kind: "glow", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.39, y: 0.3, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/simon" } },
+      { id: "a_odd", caption: "Odd One Out", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.587, y: 0.299, w: 0.117, h: 0.066, action: { kind: "route", route: "/session/odd-one-out" } },
+      { id: "a_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 12, rotateY: -36, rotateX: 14, x: 0.858, y: 0.315, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/stroop" } },
+      // Word Search runs on the retro computer on the desk.
+      { id: "a_word", caption: "Word Search", kind: "glow", interaction: "object", inlay: "arcade_word", glowMax: 0.6, rotate: 3, x: 0.346, y: 0.428, w: 0.083, h: 0.033, action: { kind: "route", route: "/session/word-search" } },
     ],
   },
   arcade_left: {
@@ -243,8 +242,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The door → Support: a "way out" that lands on a Home-screen feature.
-      // Rough box over the door — place it in the editor.
-      { id: "al_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.06, y: 0.1, w: 0.34, h: 0.7, action: { kind: "route", route: "/(tabs)/support" } },
+      { id: "al_support", caption: "Support", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.65, x: 0.132, y: 0.334, w: 0.254, h: 0.21, action: { kind: "route", route: "/(tabs)/support" } },
+      // "Support" chalked on the door (added in-app), tilted into it.
+      { id: "al_lbl_support", caption: "Support", kind: "label", label: "Support", labelSize: 24, rotate: 15, rotateY: 12, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
     ],
   },
   arcade_right: {
@@ -257,10 +257,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "arcade",
     back: "front",
     hotspots: [
-      // Colour Match seen from the side. Rough box — place on its screen.
-      { id: "ar_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, x: 0.06, y: 0.42, w: 0.18, h: 0.11, action: { kind: "route", route: "/session/stroop" } },
+      // Colour Match seen from the side, tilted onto the angled cabinet.
+      { id: "ar_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 25, rotateY: -22, rotateX: 44, x: 0.174, y: 0.412, w: 0.088, h: 0.05, action: { kind: "route", route: "/session/stroop" } },
       // The door → Tonight (drink-tracking): the right-side "way out".
-      { id: "ar_tonight", caption: "Tonight", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.7, y: 0.08, w: 0.3, h: 0.82, action: { kind: "route", route: "/session/track" } },
+      { id: "ar_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.771, y: 0.433, w: 0.109, h: 0.087, action: { kind: "route", route: "/session/track" } },
+      // Added in-app: new glow (the phone/bar shelf) — DESTINATION PENDING.
+      { id: "ar_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.7, x: 0.424, y: 0.41, w: 0.13, h: 0.083 },
     ],
   },
 };
