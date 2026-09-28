@@ -265,9 +265,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "wd_note", caption: "A note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.6, w: 0.62, h: 0.17, action: { kind: "route", route: "/journal/write" } },
       // The envelopes → write a letter.
       { id: "wd_letters", caption: "Letters", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.58, y: 0.5, w: 0.36, h: 0.1, action: { kind: "route", route: "/letters/write" } },
-      // The voice recorder → voice note. Lives in the Writing Room (no standalone
-      // record route yet), so this opens the room where the mic is.
-      { id: "wd_voice", caption: "Voice note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.03, y: 0.5, w: 0.2, h: 0.09, action: { kind: "route", route: "/(tabs)/journal" } },
+      // The voice recorder → the Voice note screen: a big mic you press to record.
+      { id: "wd_voice", caption: "Voice note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.03, y: 0.5, w: 0.2, h: 0.09, action: { kind: "route", route: "/journal/voice" } },
       // The paper tray → your saved notes.
       { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.63, y: 0.38, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
       // Drink safety-valve, present in every room (easy to move or delete in-app).
