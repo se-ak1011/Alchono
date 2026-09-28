@@ -140,13 +140,13 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "lbl_resources", caption: "Resources", kind: "label", label: "Resources", labelSize: 18, rotate: 8, x: 0.633, y: 0.486, w: 0.223, h: 0.033 },
 
       // — destinations (enter a room); the object glows, not a box —
-      { id: "writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.023, y: 0.534, w: 0.192, h: 0.114, action: { kind: "route", route: "/(tabs)/journal" } },
+      { id: "writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.023, y: 0.534, w: 0.192, h: 0.114, action: { kind: "node", node: "writing_desk" } },
       { id: "me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", anchor: { x: 0.82, y: 0.55 }, glowScale: 0.5, glowMax: 0.65, x: 0.235, y: 0.37, w: 0.127, h: 0.059, action: { kind: "route", route: "/(tabs)/profile" } },
       { id: "support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 1.05, glowMax: 0.65, x: 0.437, y: 0.374, w: 0.148, h: 0.097, action: { kind: "node", node: "support" } },
 
       // — live objects: content painted on, tap enters the room directly —
       { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 1, rotateY: 40, x: 0.018, y: 0.249, w: 0.112, h: 0.123, action: { kind: "route", route: "/community" } },
-      { id: "reading", caption: "Reading Corner", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.102, y: 0.431, w: 0.192, h: 0.09, action: { kind: "route", route: "/toolkit" } },
+      { id: "reading", caption: "Reading Corner", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.102, y: 0.431, w: 0.192, h: 0.09, action: { kind: "node", node: "reading_shelf" } },
       { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
 
       // — objects (the object itself communicates its function) —
@@ -172,14 +172,14 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "front",
     back: "front",
     hotspots: [
-      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.65, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "route", route: "/(tabs)/journal" } },
+      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.65, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "node", node: "writing_desk" } },
       // The rack: tiny routing glows (paper previews removed — real newspapers
       // will be drawn into the baskets, with name-sticker labels added in-app).
       // Reposition onto the baskets in the editor.
       { id: "l_papers", caption: "The Good News Gazette", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.074, y: 0.503, w: 0.115, h: 0.068, action: { kind: "route", route: "/soul" } },
       { id: "l_papers2", caption: "The Funny Pages", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.076, y: 0.583, w: 0.142, h: 0.079, action: { kind: "route", route: "/giggles" } },
       { id: "l_papers3", caption: "The Letters Page", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.065, y: 0.669, w: 0.136, h: 0.076, action: { kind: "route", route: "/thought" } },
-      { id: "l_reading", caption: "Reading Corner", kind: "glow", glowMax: 0.65, x: 0.637, y: 0.326, w: 0.144, h: 0.164, action: { kind: "route", route: "/toolkit" } },
+      { id: "l_reading", caption: "Reading Corner", kind: "glow", glowMax: 0.65, x: 0.637, y: 0.326, w: 0.144, h: 0.164, action: { kind: "node", node: "reading_shelf" } },
       { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
       // Live videos on the board face below the "Community" sign, tilted into
       // the wall — same inlay as the front.
@@ -217,6 +217,61 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
       { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 44, rotateY: -18, opacity: 0.5, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
+    ],
+  },
+
+  // Reading close-up — zoom into the bookshelf from the café Reading Corner.
+  // Each pre-drawn book (title + emblem baked into the art) is an invisible tap
+  // target that opens its toolkit category. Books read left→right, top→bottom in
+  // the same order as the Reading Corner grid. Rough boxes — drag each onto its
+  // spine in the editor and export; the back arrow exits to the café.
+  reading_shelf: {
+    id: "reading_shelf",
+    title: "Reading Corner",
+    image: require("../../assets/scenes/reading_shelf.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    back: "front",
+    hotspots: [
+      // Top shelf.
+      { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.11, y: 0.1, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/in-the-moment" } },
+      { id: "bk_understand", caption: "Understand", kind: "plain", interaction: "destination", haptic: "light", x: 0.195, y: 0.1, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/understand" } },
+      { id: "bk_triggers", caption: "Triggers", kind: "plain", interaction: "destination", haptic: "light", x: 0.28, y: 0.1, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/triggers" } },
+      // Middle shelf.
+      { id: "bk_planning", caption: "Planning ahead", kind: "plain", interaction: "destination", haptic: "light", x: 0.53, y: 0.38, w: 0.095, h: 0.19, action: { kind: "route", route: "/toolkit/c/planning-ahead" } },
+      { id: "bk_stress", caption: "Stress", kind: "plain", interaction: "destination", haptic: "light", x: 0.63, y: 0.38, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/stress" } },
+      { id: "bk_sleep", caption: "Sleep", kind: "plain", interaction: "destination", haptic: "light", x: 0.72, y: 0.38, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/sleep" } },
+      // Bottom shelf.
+      { id: "bk_relationships", caption: "Relationships", kind: "plain", interaction: "destination", haptic: "light", x: 0.24, y: 0.62, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/relationships" } },
+      { id: "bk_identity", caption: "Identity", kind: "plain", interaction: "destination", haptic: "light", x: 0.34, y: 0.62, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/identity" } },
+      { id: "bk_slip", caption: "After a slip", kind: "plain", interaction: "destination", haptic: "light", x: 0.43, y: 0.62, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/after-a-slip" } },
+    ],
+  },
+
+  // Writing close-up — zoom into the desk from the café Writing Space. Each
+  // object on the desk is a different way to write. A soft glow hints each is
+  // tappable; drag onto the exact object in the editor and export.
+  writing_desk: {
+    id: "writing_desk",
+    title: "Writing Space",
+    image: require("../../assets/scenes/writing_desk.png"),
+    imgW: 851,
+    imgH: 1848,
+    fit: "screen",
+    back: "front",
+    hotspots: [
+      // The open notebook → write a note.
+      { id: "wd_note", caption: "A note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.6, w: 0.62, h: 0.17, action: { kind: "route", route: "/journal/write" } },
+      // The envelopes → write a letter.
+      { id: "wd_letters", caption: "Letters", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.58, y: 0.5, w: 0.36, h: 0.1, action: { kind: "route", route: "/letters/write" } },
+      // The voice recorder → voice note. Lives in the Writing Room (no standalone
+      // record route yet), so this opens the room where the mic is.
+      { id: "wd_voice", caption: "Voice note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.03, y: 0.5, w: 0.2, h: 0.09, action: { kind: "route", route: "/(tabs)/journal" } },
+      // The paper tray → your saved notes.
+      { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.63, y: 0.38, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
+      // Drink safety-valve, present in every room (easy to move or delete in-app).
+      { id: "wd_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 20, interaction: "object", haptic: "heavy", x: 0.28, y: 0.8, w: 0.44, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
 
