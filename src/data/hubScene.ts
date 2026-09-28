@@ -205,6 +205,11 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.65, x: 0.618, y: 0.149, w: 0.201, h: 0.123 },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
+      // Text posts on the long board behind the counter (wider than the front
+      // community board, so the text reads). Rough box — place in the editor.
+      { id: "r_community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community_posts", glowMax: 0.65, x: 0.3, y: 0.15, w: 0.36, h: 0.2, action: { kind: "route", route: "/community" } },
+      // Vertical "24/7" sign (stacked characters). Rough box — place in the editor.
+      { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 18, x: 0.9, y: 0.3, w: 0.08, h: 0.3 },
     ],
   },
 

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Platform, type LayoutChangeEvent } from "react-native";
 import Svg, { Circle, Line as SvgLine } from "react-native-svg";
 import { useCommunityMoments } from "@/hooks/useMoments";
+import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
@@ -231,6 +232,30 @@ export function WordInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
+// Community posts — the latest posts as chalk text. For a wide board where the
+// text has room to read (the right-view board behind the counter).
+// ————————————————————————————————————————————————————————————————
+export function CommunityPostsInlay() {
+  const { data: feed } = useCommunityFeed();
+  const posts = ((feed?.pages?.[0] ?? []) as any[]).slice(0, 3);
+  return (
+    <View style={[StyleSheet.absoluteFill, { paddingHorizontal: "6%", paddingVertical: "6%", justifyContent: "center", overflow: "hidden" }]}>
+      {posts.length === 0 ? (
+        <Text style={{ fontFamily: "PatrickHand", fontSize: 12, color: "rgba(236,233,241,0.8)" }}>be the first to post…</Text>
+      ) : (
+        posts.map((p, i) => (
+          <Text key={p.id ?? i} numberOfLines={2} style={{ fontFamily: "PatrickHand", fontSize: 12, lineHeight: 14, color: "rgba(240,236,247,0.92)", marginTop: i ? 6 : 0 }}>
+            {"“"}
+            {p.content}
+            {"”"}
+          </Text>
+        ))
+      )}
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 export const INLAYS: Record<string, React.ComponentType> = {
@@ -239,6 +264,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   arcade_pattern: PatternInlay,
   arcade_colour: ColourInlay,
   arcade_word: WordInlay,
-  community: CommunityInlay,
+  community: CommunityInlay, // video thumbnails
+  community_posts: CommunityPostsInlay, // text posts (wide board)
   sky: SkyInlay,
 };

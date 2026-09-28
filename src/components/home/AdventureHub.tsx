@@ -294,6 +294,10 @@ export function AdventureHub() {
       // PatrickHand is a light chalk-hand; per-label size, rotation and (for
       // glows) colour/strength are all tunable live in the in-app editor.
       const size = e.labelSize ?? defaultSize(h);
+      const labelText = e.label ?? h.label ?? h.caption;
+      // Allow as many lines as the text needs (min 2), so a vertical sign like
+      // "2\n4\n/\n7" isn't clipped at two lines.
+      const labelLines = Math.max(2, String(labelText ?? "").split("\n").length);
       // Labels always shrink to fit their box and stay centered (labelSize is the
       // max/starting size). Rotation and depth tilt apply through a perspective,
       // just like inlays, so a sign can sit into an angled surface.
@@ -317,7 +321,7 @@ export function AdventureHub() {
               thing to find, without becoming neon signage. */}
           {primary ? <Bloom tint="purple" glint={glint} scale={1} max={0.32} /> : null}
           <Text
-            numberOfLines={2}
+            numberOfLines={labelLines}
             adjustsFontSizeToFit
             style={{
               fontFamily: "PatrickHand",
@@ -332,7 +336,7 @@ export function AdventureHub() {
               textShadowRadius: primary ? 10 : 6,
             }}
           >
-            {e.label ?? h.label ?? h.caption}
+            {labelText}
           </Text>
         </View>
       );
