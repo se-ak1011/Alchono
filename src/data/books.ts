@@ -18,4 +18,12 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
     cover: require("../../assets/books/understand-cover.png"),
     open: require("../../assets/books/understand-open.png"),
   },
+  triggers: {
+    cover: require("../../assets/books/triggers-cover.png"),
+    open: require("../../assets/books/triggers-open.png"),
+  },
+  "planning-ahead": {
+    cover: require("../../assets/books/planning-ahead-cover.png"),
+    open: require("../../assets/books/planning-ahead-open.png"),
+  },
 };
