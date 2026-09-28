@@ -289,7 +289,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // AI Coach — the armchairs + table (a big, only-thing-here tap zone).
-      { id: "s_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 16, interaction: "destination", haptic: "medium", x: 0.12, y: 0.36, w: 0.72, h: 0.3, action: { kind: "route", route: "/support/coach" } },
+      { id: "s_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 23, rotate: 1, rotateY: 14, interaction: "destination", haptic: "medium", x: 0.125, y: 0.173, w: 0.72, h: 0.3, action: { kind: "route", route: "/support/coach" } },
       { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.82, w: 0.4, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
@@ -322,11 +322,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Messages — on the computer screen.
-      { id: "s_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 15, interaction: "destination", haptic: "medium", x: 0.25, y: 0.4, w: 0.22, h: 0.08, action: { kind: "route", route: "/messages" } },
+      { id: "s_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 11, interaction: "destination", haptic: "medium", x: 0.309, y: 0.332, w: 0.22, h: 0.08, action: { kind: "route", route: "/messages" } },
       // Recommendations — the 4-card corkboard (0.0 alcohol-free swaps).
-      { id: "s_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.6, glowMax: 0.6, x: 0.15, y: 0.22, w: 0.26, h: 0.14, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.6, glowMax: 0.6, x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
       // The right-view door → the Bar.
-      { id: "sr_door", caption: "The Bar", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.55, y: 0.2, w: 0.3, h: 0.55, action: { kind: "route", route: "/barista" } },
+      { id: "sr_door", caption: "The Bar", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "route", route: "/barista" } },
     ],
   },
 };
