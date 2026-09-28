@@ -311,8 +311,6 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "sl_door", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: -0.037, y: 0.371, w: 0.218, h: 0.104, action: { kind: "route", route: "/(tabs)/profile" } },
       // "Me" chalked on the door (added in-app).
       { id: "sl_lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 18, rotate: 8, rotateY: 32, x: 0.028, y: 0.169, w: 0.2, h: 0.08 },
-      // Added in-app: new glow — DESTINATION PENDING (inert until wired).
-      { id: "sl_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.5, x: 0.474, y: 0.429, w: 0.16, h: 0.16 },
     ],
   },
   support_right: {
