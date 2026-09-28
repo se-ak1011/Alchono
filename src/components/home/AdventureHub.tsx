@@ -20,6 +20,7 @@ type Edits = Coords & {
   rotate?: number;
   rotateX?: number;
   rotateY?: number;
+  opacity?: number;
   tint?: GlowTint;
   label?: string;
 };
@@ -208,6 +209,7 @@ export function AdventureHub() {
       rotate: o?.rotate ?? h.rotate,
       rotateX: o?.rotateX ?? h.rotateX,
       rotateY: o?.rotateY ?? h.rotateY,
+      opacity: o?.opacity ?? h.opacity,
       tint: o?.tint ?? h.tint,
       label: o?.label ?? h.label,
     };
@@ -265,6 +267,7 @@ export function AdventureHub() {
             flex: 1,
             overflow: "hidden",
             borderRadius: 3,
+            opacity: e.opacity ?? 1,
             // perspective first so the tilts foreshorten (depth); then spin.
             transform: [
               { perspective: 600 },
@@ -309,6 +312,7 @@ export function AdventureHub() {
             justifyContent: "center",
             paddingHorizontal: 2,
             overflow: "visible",
+            opacity: e.opacity ?? 1,
             transform: [
               { perspective: 600 },
               { rotateX: `${e.rotateX ?? 0}deg` },
@@ -502,6 +506,7 @@ export function AdventureHub() {
     const rot = e.rotate ?? 0;
     const rotY = e.rotateY ?? 0;
     const rotX = e.rotateX ?? 0;
+    const op = e.opacity ?? 1;
     const gscale = e.glowScale ?? 1;
     const gmax = e.glowMax ?? 0.5;
     const tint = e.tint ?? "purple";
@@ -576,6 +581,7 @@ export function AdventureHub() {
         {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 1, -180, 180)), () => setProp("rotate", clampI(rot + 1, -180, 180))) : null}
         {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
         {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
+        {isText || hasInlay ? row("Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
         {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
         {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
         {isGlow ? (
@@ -655,6 +661,7 @@ export function AdventureHub() {
       if (e.rotate) extra.push(`rotate ${Math.round(e.rotate)}`);
       if (e.rotateY) extra.push(`rotateY ${Math.round(e.rotateY)}`);
       if (e.rotateX) extra.push(`rotateX ${Math.round(e.rotateX)}`);
+      if (e.opacity != null && e.opacity !== 1) extra.push(`opacity ${e.opacity.toFixed(2)}`);
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
       if (e.tint) extra.push(`tint ${e.tint}`);

@@ -79,6 +79,9 @@ export type Hotspot = {
    *  it up/down. Applied through a perspective, for the painted screens/papers. */
   rotateX?: number;
   rotateY?: number;
+  /** Affordance opacity 0..1 (the editor's "Opacity"). Dim a label or inlay so it
+   *  blends as a subtle, discoverable detail rather than bold signage. */
+  opacity?: number;
   /** Haptic strength on tap. Defaults to light. */
   haptic?: Haptic;
   /** Live content painted onto the object, filling this box (clipped + rotated
@@ -206,7 +209,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
-      { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 44, rotateY: -18, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
+      { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 44, rotateY: -18, opacity: 0.5, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
     ],
   },
 
