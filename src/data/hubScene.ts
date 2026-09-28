@@ -250,7 +250,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Destination changed from Support; the chalk sign is relabelled on screen.
       { id: "al_bar", caption: "The Bar", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.65, x: 0.132, y: 0.334, w: 0.254, h: 0.21, action: { kind: "route", route: "/barista" } },
       // Chalk sign on the door (added in-app) — relabel to "Bar" in the editor.
-      { id: "al_lbl_support", caption: "Café Bar", kind: "label", label: "CAFFE-BAR", labelSize: 24, rotate: 15, rotateY: 12, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
+      { id: "al_lbl_support", caption: "Cafe Bar", kind: "label", label: "CAFE-BAR", labelSize: 24, rotate: 14, rotateY: 18, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
     ],
   },
   arcade_right: {
