@@ -169,9 +169,9 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The rack: tiny routing glows (paper previews removed — real newspapers
       // will be drawn into the baskets, with name-sticker labels added in-app).
       // Reposition onto the baskets in the editor.
-      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", interaction: "destination", glowMax: 0.65, x: 0.093, y: 0.503, w: 0.17, h: 0.101, action: { kind: "route", route: "/soul" } },
-      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", interaction: "destination", glowMax: 0.65, x: 0.013, y: 0.641, w: 0.283, h: 0.096, action: { kind: "route", route: "/giggles" } },
-      { id: "l_papers3", caption: "The Letters Page", kind: "glow", interaction: "destination", glowMax: 0.65, x: 0.031, y: 0.854, w: 0.297, h: 0.085, action: { kind: "route", route: "/thought" } },
+      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.074, y: 0.503, w: 0.115, h: 0.068, action: { kind: "route", route: "/soul" } },
+      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.076, y: 0.583, w: 0.142, h: 0.079, action: { kind: "route", route: "/giggles" } },
+      { id: "l_papers3", caption: "The Letters Page", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.065, y: 0.669, w: 0.136, h: 0.076, action: { kind: "route", route: "/thought" } },
       { id: "l_reading", caption: "Reading Corner", kind: "glow", glowMax: 0.65, x: 0.637, y: 0.326, w: 0.144, h: 0.164, action: { kind: "route", route: "/toolkit" } },
       { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
       // Live videos on the board face below the "Community" sign, tilted into
