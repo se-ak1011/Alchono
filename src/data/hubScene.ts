@@ -235,17 +235,17 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Top shelf.
-      { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.121, y: 0.101, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/in-the-moment" } },
-      { id: "bk_understand", caption: "Understand", kind: "plain", interaction: "destination", haptic: "light", x: 0.221, y: 0.098, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/understand" } },
-      { id: "bk_triggers", caption: "Triggers", kind: "plain", interaction: "destination", haptic: "light", x: 0.317, y: 0.097, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/triggers" } },
+      { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.121, y: 0.101, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/in-the-moment" } },
+      { id: "bk_understand", caption: "Understand", kind: "plain", interaction: "destination", haptic: "light", x: 0.221, y: 0.098, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/understand" } },
+      { id: "bk_triggers", caption: "Triggers", kind: "plain", interaction: "destination", haptic: "light", x: 0.317, y: 0.097, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/triggers" } },
       // Middle shelf.
-      { id: "bk_planning", caption: "Planning ahead", kind: "plain", interaction: "destination", haptic: "light", x: 0.561, y: 0.371, w: 0.095, h: 0.19, action: { kind: "route", route: "/toolkit/c/planning-ahead" } },
-      { id: "bk_stress", caption: "Stress", kind: "plain", interaction: "destination", haptic: "light", x: 0.674, y: 0.369, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/stress" } },
-      { id: "bk_sleep", caption: "Sleep", kind: "plain", interaction: "destination", haptic: "light", x: 0.772, y: 0.368, w: 0.085, h: 0.19, action: { kind: "route", route: "/toolkit/c/sleep" } },
+      { id: "bk_planning", caption: "Planning ahead", kind: "plain", interaction: "destination", haptic: "light", x: 0.561, y: 0.371, w: 0.095, h: 0.19, action: { kind: "route", route: "/reading/planning-ahead" } },
+      { id: "bk_stress", caption: "Stress", kind: "plain", interaction: "destination", haptic: "light", x: 0.674, y: 0.369, w: 0.085, h: 0.19, action: { kind: "route", route: "/reading/stress" } },
+      { id: "bk_sleep", caption: "Sleep", kind: "plain", interaction: "destination", haptic: "light", x: 0.772, y: 0.368, w: 0.085, h: 0.19, action: { kind: "route", route: "/reading/sleep" } },
       // Bottom shelf.
-      { id: "bk_relationships", caption: "Relationships", kind: "plain", interaction: "destination", haptic: "light", x: 0.258, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/relationships" } },
-      { id: "bk_identity", caption: "Identity", kind: "plain", interaction: "destination", haptic: "light", x: 0.378, y: 0.629, w: 0.085, h: 0.2, action: { kind: "route", route: "/toolkit/c/identity" } },
-      { id: "bk_slip", caption: "After a slip", kind: "plain", interaction: "destination", haptic: "light", x: 0.482, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/toolkit/c/after-a-slip" } },
+      { id: "bk_relationships", caption: "Relationships", kind: "plain", interaction: "destination", haptic: "light", x: 0.258, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/reading/relationships" } },
+      { id: "bk_identity", caption: "Identity", kind: "plain", interaction: "destination", haptic: "light", x: 0.378, y: 0.629, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/identity" } },
+      { id: "bk_slip", caption: "After a slip", kind: "plain", interaction: "destination", haptic: "light", x: 0.482, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/reading/after-a-slip" } },
     ],
   },
 
