@@ -65,7 +65,11 @@ function Bloom({
   const color = GLOW_COLORS[tint] ?? GLOW_COLORS.purple;
   const cx = `${Math.round((anchor?.x ?? 0.5) * 100)}%`;
   const cy = `${Math.round((anchor?.y ?? 0.5) * 100)}%`;
-  const r = `${Math.round((scale ?? 1) * 62)}%`;
+  // Cap at half the box so the bloom always reaches zero opacity BEFORE the box
+  // edge — the square Rect then clips only fully-transparent pixels, so no
+  // rectangle is ever visible. `scale` tightens it below that; a bigger bloom
+  // means a bigger box. Reads as a soft round light, not a lit box.
+  const r = `${Math.round(Math.min(scale ?? 1, 1) * 50)}%`;
   // useId can contain ":" which is invalid in an SVG id / url(#..) ref.
   const gid = "bloom" + React.useId().replace(/[^a-zA-Z0-9]/g, "");
   const opacity = glint.interpolate({ inputRange: [0, 1], outputRange: [max * 0.5, max] });
@@ -74,8 +78,8 @@ function Bloom({
       <Svg width="100%" height="100%">
         <Defs>
           <RadialGradient id={gid} cx={cx} cy={cy} r={r} fx={cx} fy={cy} gradientUnits="objectBoundingBox">
-            <Stop offset="0" stopColor={color} stopOpacity="0.95" />
-            <Stop offset="0.55" stopColor={color} stopOpacity="0.35" />
+            <Stop offset="0" stopColor={color} stopOpacity="0.9" />
+            <Stop offset="0.6" stopColor={color} stopOpacity="0.32" />
             <Stop offset="1" stopColor={color} stopOpacity="0" />
           </RadialGradient>
         </Defs>
