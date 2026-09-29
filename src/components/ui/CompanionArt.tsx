@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 type CompanionArtProps = {
-  source: ImageSourcePropType;
+  source?: ImageSourcePropType | null;
   width: number;
   height: number;
   cropHeight?: number;
@@ -36,6 +36,10 @@ export function CompanionArt({
   const scale = useRef(new Animated.Value(1)).current;
   const suppressNextPress = useRef(false);
   const Container = onPress || onLongPress ? Pressable : View;
+
+  // Companions retired: no art means nothing to draw. Screens keep their
+  // layout; the spot the companion used to fill is simply empty.
+  if (!source) return null;
 
   const bounce = () => {
     Animated.sequence([

@@ -28,21 +28,15 @@ import {
   DEFAULT_PREFERENCES,
   nameInputStyle,
 } from '@/components/preferences/PreferenceSections';
-import { CompanionCarousel } from '@/components/companion/CompanionCarousel';
 import type { UserPreferences } from '@/types';
 
-// Trust first, information second. Two things are asked for (a name, a
-// companion); everything after is optional and clearly skippable.
+// Trust first, information second. One thing is asked for (a name); everything
+// after is optional and clearly skippable.
 const STEPS = [
   {
     id: 'username',
     title: 'What should we call you?',
     body: "Pick a username — it's the only name others ever see. Nothing else to fill in here.",
-  },
-  {
-    id: 'companion',
-    title: "Who's walking with you?",
-    body: 'A mate who’s just there with you, on the good days and the hard ones. You can change them any time.',
   },
   {
     id: 'reasons',
@@ -262,12 +256,6 @@ export default function OnboardingScreen() {
                   </Text>
                 )}
               </View>
-            )}
-            {currentStep.id === 'companion' && (
-              <CompanionCarousel
-                value={prefs.companionId}
-                onChange={(id) => updatePrefs({ companionId: id })}
-              />
             )}
             {currentStep.id === 'reasons' && (
               <ReasonsStep prefs={prefs} onChange={updatePrefs} />

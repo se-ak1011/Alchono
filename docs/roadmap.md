@@ -85,6 +85,21 @@ _Last updated: 2026-09-29 (Me room in; glows rounded; Saved stub added)_
   zone + font (from Marta's Export), and the Resources thumb-tab tap-zones
   (currently guessed).
 
+## 🧹 Companion removal — done + leftover cleanup
+
+The decorative "companion" character (a chosen mate shown as an image overlay on
+many screens) is **retired** — the hub rooms replaced that presence.
+- **Done:** `companions.ts` stripped of all image requires (poses resolve to
+  nothing); `CompanionArt` renders null when there's no art, so the overlay is
+  gone from every screen with no layout changes; the onboarding **companion step
+  removed** (now 4 steps); the **73 character assets deleted** (the 4 star images
+  in `assets/companions/` stay — the constellation screen may use them).
+- **Leftover cleanup (cosmetic, low priority):** remove the now-imageless
+  companion picker entry points (`app/companion/choose.tsx`, any Settings
+  "change companion" link) and the unused `CompanionCarousel/Picker/Menu/
+  ActionZone` components; drop `companionId` from `UserPreferences`. None of this
+  blocks anything — they just render empty now.
+
 ## 🔮 Backlog & ideas
 
 - **Emergency "I need a drink" — the LAST thing.** The floating purple pill has
