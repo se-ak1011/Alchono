@@ -152,7 +152,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // — objects (the object itself communicates its function) —
       { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "route", route: "/barista" } },
       { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "object", inlay: "arcade", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, rotate: 7, rotateX: 30, x: 0.923, y: 0.395, w: 0.089, h: 0.041, action: { kind: "node", node: "arcade" } },
-      { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.65, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/support/resources" } },
+      { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.65, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/resources/home" } },
 
       // — primary immediate-help action (dominant; distinct heavy haptic) —
       { id: "urge", caption: "I need a drink", kind: "primary", label: "I need a drink", interaction: "object", haptic: "heavy", labelSize: 20, rotate: 22, x: 0.554, y: 0.67, w: 0.552, h: 0.074, action: { kind: "route", route: "/session/urge", warn: true } },
@@ -208,7 +208,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", labelSize: 17, rotate: 14, x: 0.472, y: 0.45, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
       { id: "r_games", caption: "Games Arcade", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, rotate: 9, rotateY: -10, rotateX: 26, x: 0.382, y: 0.347, w: 0.068, h: 0.043, action: { kind: "node", node: "arcade" } },
       { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "route", route: "/barista" } },
-      { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/support/resources" } },
+      { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/resources/home" } },
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
       { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.396, y: 0.209, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
