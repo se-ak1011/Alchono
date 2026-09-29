@@ -480,12 +480,13 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "cafebar_left",
     back: "front",
     hotspots: [
-      // The recipe book on the counter → the mocktail menu (the current bar page).
-      { id: "cb_recipes", caption: "Recipes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.02, y: 0.39, w: 0.19, h: 0.05, action: { kind: "route", route: "/barista" } },
-      { id: "cb_lbl_recipes", caption: "Recipes", kind: "label", label: "Recipes", labelSize: 13, x: 0.02, y: 0.33, w: 0.2, h: 0.05 },
-      // The fridge of cans → 0.0 alcohol-free recommendations (grab one in).
-      { id: "cb_fridge", caption: "0.0 Fridge", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.0, y: 0.31, w: 0.19, h: 0.11, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "cb_lbl_fridge", caption: "0.0 Fridge", kind: "label", label: "0.0 Fridge", labelSize: 12, x: 0.0, y: 0.44, w: 0.2, h: 0.05 },
+      // The board = the bar menu. Each drink name opens its recipe popup; the
+      // fridge is now just scenery. (Drinks 1–3 here, 4–6 on the left view.)
+      { id: "cb_d1", caption: "Sunrise Fizz", kind: "sign", label: "Sunrise Fizz", labelSize: 20, x: 0.28, y: 0.16, w: 0.44, h: 0.06, action: { kind: "route", route: "/recipe/sunrise-fizz" } },
+      { id: "cb_d2", caption: "Honey & Lemon Warmer", kind: "sign", label: "Honey & Lemon Warmer", labelSize: 20, x: 0.24, y: 0.24, w: 0.52, h: 0.06, action: { kind: "route", route: "/recipe/honey-lemon" } },
+      { id: "cb_d3", caption: "Slow Iced Tea", kind: "sign", label: "Slow Iced Tea", labelSize: 20, x: 0.28, y: 0.32, w: 0.44, h: 0.06, action: { kind: "route", route: "/recipe/slow-iced-tea" } },
+      // 0.0 recommendations — a text prompt on the board (reposition/relabel in-app).
+      { id: "cb_recs", caption: "0.0 recommendations", kind: "sign", label: "Ask the barista for 0.0 recommendations!", labelSize: 13, x: 0.2, y: 0.42, w: 0.6, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
     ],
   },
   cafebar_left: {
@@ -498,15 +499,13 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "cafebar",
     back: "front",
     hotspots: [
-      // The recipe book → the mocktail menu.
-      { id: "cbl_recipes", caption: "Recipes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.82, y: 0.42, w: 0.16, h: 0.06, action: { kind: "route", route: "/barista" } },
-      { id: "cbl_lbl_recipes", caption: "Recipes", kind: "label", label: "Recipes", labelSize: 13, x: 0.78, y: 0.37, w: 0.2, h: 0.05 },
-      // The fridge of cans → 0.0 recommendations.
-      { id: "cbl_fridge", caption: "0.0 Fridge", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.83, y: 0.31, w: 0.15, h: 0.1, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "cbl_lbl_fridge", caption: "0.0 Fridge", kind: "label", label: "0.0 Fridge", labelSize: 12, x: 0.78, y: 0.25, w: 0.2, h: 0.05 },
-      // The door on the left → the Support room (a building connection).
-      { id: "cbl_door", caption: "Support", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.0, y: 0.24, w: 0.16, h: 0.32, action: { kind: "node", node: "support" } },
-      { id: "cbl_lbl_door", caption: "Support", kind: "label", label: "Support", labelSize: 13, x: 0.0, y: 0.2, w: 0.18, h: 0.05 },
+      // The board = the bar menu, continued (drinks 4–6). Each opens its recipe.
+      { id: "cbl_d1", caption: "Cinnamon Milk Steamer", kind: "sign", label: "Cinnamon Milk Steamer", labelSize: 19, x: 0.3, y: 0.14, w: 0.5, h: 0.06, action: { kind: "route", route: "/recipe/cinnamon-steamer" } },
+      { id: "cbl_d2", caption: "Mock Mojito", kind: "sign", label: "Mock Mojito", labelSize: 20, x: 0.35, y: 0.22, w: 0.4, h: 0.06, action: { kind: "route", route: "/recipe/mock-mojito" } },
+      { id: "cbl_d3", caption: "Golden Milk", kind: "sign", label: "Golden Milk", labelSize: 20, x: 0.35, y: 0.3, w: 0.4, h: 0.06, action: { kind: "route", route: "/recipe/golden-milk" } },
+      // The door on the left → the Support room (a building connection). Locked in.
+      { id: "cbl_door", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: -0.014, y: 0.334, w: 0.144, h: 0.073, action: { kind: "node", node: "support" } },
+      { id: "cbl_lbl_door", caption: "Support", kind: "label", label: "Support", labelSize: 13, rotate: 4, x: 0.02, y: 0.232, w: 0.18, h: 0.05 },
     ],
   },
 

@@ -223,9 +223,20 @@ Captured while she stepped away; work through top-down.
    → Outside. Fixed the label/route scramble (care-team label had been wired to
    community). Built **`app/profile/people.tsx`** — a "Your people" landing
    linking to care-team + trusted.
-4. **Connections + labels** — several pages still need wiring to hotspots, and
+4. **✅ Café-Bar — done.** Fridge/0.0 hotspots removed (just a fridge now).
+   The old bar (`app/barista.tsx`) is now on the boards: each drink name is a
+   `kind:"sign"` hotspot → `/recipe/<id>` popup. 6 drinks split 3 (front) / 3
+   (left). Recipes + sheet extracted to `src/data/recipes.ts` +
+   `src/components/bar/RecipeSheet.tsx`; new `app/recipe/[id].tsx` transparent
+   modal (registered in `_layout`). 0.0 recommendations = a board `sign` ("Ask
+   the barista for 0.0 recommendations!") → /support/recommendations. Left view:
+   support door baked/locked; everything else removed. `barista.tsx` kept (still
+   linked from the drawer + urge screen) now importing the shared modules.
+   NOTE: drink positions are rough guesses — Marta will drag onto the boards and
+   export.
+5. **Connections + labels** — several pages still need wiring to hotspots, and
    some labels need renaming (she'll specify which).
-5. More to come — she was mid-list when she paused for dishes.
+6. More to come.
 
 ## ✏️ In-app text placement — now everywhere
 
