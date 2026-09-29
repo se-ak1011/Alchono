@@ -10,19 +10,22 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { SafeArea } from '@/components/ui/SafeArea';
-import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { PaperBackground } from '@/components/ui/PaperBackground';
 import { useAddTextNote } from '@/hooks/useJournalNotes';
-import { headingShadow } from '@/styles';
+
+const INK = '#332a24';
+const INK_SOFT = 'rgba(51,42,36,0.4)';
 
 /**
- * A note — the text-compose surface, lifted out of the Writing Room launcher
- * onto its own screen so the room can be a calm companion + chips.
+ * A note — written in ink on the notebook page. Text-compose surface, lifted
+ * out of the Writing Room launcher onto its own paper.
  */
 export default function WriteNoteScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState('');
   const { mutate: addText, isPending } = useAddTextNote();
 
@@ -36,54 +39,49 @@ export default function WriteNoteScreen() {
     });
   };
 
+  const canSave = !!draft.trim() && !isPending;
+
   return (
-    <SafeArea bottom={false}>
-      <ZoneGlow zone="writing" />
+    <PaperBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-        keyboardVerticalOffset={90}
+        style={{ flex: 1, paddingTop: insets.top }}
+        keyboardVerticalOffset={0}
       >
-        <View className="px-6 pt-5 pb-3 flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
-            <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-              <Feather name="chevron-left" size={26} color="#B2ACC0" />
+        <View style={{ paddingHorizontal: 22, paddingTop: 8, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
+              <Feather name="chevron-left" size={26} color={INK} />
             </Pressable>
-            <Text className="text-text-primary text-3xl tracking-tight" style={headingShadow}>
-              A note
-            </Text>
+            <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>A note</Text>
           </View>
           <Pressable
             onPress={save}
-            disabled={!draft.trim() || isPending}
-            className={`px-5 py-2.5 rounded-xl ${draft.trim() && !isPending ? 'bg-accent' : 'bg-surface-2'}`}
+            disabled={!canSave}
+            style={{ paddingHorizontal: 18, paddingVertical: 9, borderRadius: 16, backgroundColor: canSave ? '#A489DE' : 'rgba(51,42,36,0.12)' }}
           >
             {isPending ? (
-              <ActivityIndicator size="small" color="#ECE9F1" />
+              <ActivityIndicator size="small" color="#201D28" />
             ) : (
-              <Text className={`text-sm font-semibold ${draft.trim() ? 'text-bg' : 'text-text-muted'}`}>
-                Save
-              </Text>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: canSave ? '#201D28' : INK_SOFT }}>Save</Text>
             )}
           </Pressable>
         </View>
 
-        <View className="mx-6 mt-1 flex-1 bg-surface rounded-2xl p-4 border border-white/8">
-          <TextInput
-            value={draft}
-            onChangeText={setDraft}
-            placeholder="What's on your mind? Tap the mic on your keyboard to just talk…"
-            placeholderTextColor="#817B91"
-            multiline
-            autoFocus
-            maxLength={2000}
-            className="text-text-primary text-base leading-relaxed flex-1"
-            style={{ textAlignVertical: 'top' }}
-            selectionColor="#B2ACC0"
-          />
-        </View>
-        <View className="h-6" />
+        <TextInput
+          value={draft}
+          onChangeText={setDraft}
+          placeholder="What's on your mind? Tap the mic on your keyboard to just talk…"
+          placeholderTextColor={INK_SOFT}
+          multiline
+          autoFocus
+          maxLength={2000}
+          selectionColor="#A489DE"
+          textAlignVertical="top"
+          style={{ flex: 1, marginHorizontal: 30, marginTop: 4, color: INK, fontFamily: 'PatrickHand', fontSize: 19, lineHeight: 26 }}
+        />
+        <View style={{ height: 24 }} />
       </KeyboardAvoidingView>
-    </SafeArea>
+    </PaperBackground>
   );
 }
