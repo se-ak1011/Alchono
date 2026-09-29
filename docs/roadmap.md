@@ -4,7 +4,26 @@ The living, cross-session record of what's built, what's in flight, and what's
 next for the adventure-hub reimagining of Alchono. **Keep this current** — update
 it at the end of a working session so the next one starts oriented.
 
-_Last updated: 2026-09-29 (Me room in; glows rounded; Saved stub added)_
+_Last updated: 2026-09-29 (break room + café-bar rewired; recipe popups; labels-with-actions now tappable)_
+
+---
+
+## ★ North star: no administrative pages
+
+Once the building is 5–7 rooms, **nothing flat/admin-looking should survive** —
+no settings list, no form-y page, not even "utility" screens. Every destination
+should be an OBJECT YOU OPEN in the world, the way the bookshelf, letters desk,
+and yellow-pages directory already are. When we finish placing all room labels/
+hotspots, we do a **page hunt**: for each remaining screen, decide delete / fold
+elsewhere / redesign-as-object.
+- **Profile & Recovery** → Marta's idea: **plastic A–Z index folders** you flip
+  through (skeuomorphic object, not a list). Strong pattern — reuse it for other
+  "directory" style content too.
+- Anything genuinely admin (account/settings guts) still needs to exist, but
+  should live *inside* an object (a drawer, a folder, a binder), never as a bare
+  screen.
+- Pattern kit we already have to reuse: PaperBackground pages, PageTuner reader,
+  RecipeSheet popups, tabbed resource directory, inlays on objects.
 
 ---
 
