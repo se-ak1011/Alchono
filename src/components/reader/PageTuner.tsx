@@ -42,12 +42,16 @@ export function PageTuner({
   const editingRef = useRef(editing); editingRef.current = editing;
   const dim = useRef({ width, height }); dim.current = { width, height };
   const startZone = useRef<PageZone>(zone);
+  // True while the corner handle is being dragged, so the box's move responder
+  // stops capturing and lets the resize gesture through.
+  const resizingRef = useRef(false);
 
   const move = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: () => editingRef.current,
-      // Capture so dragging wins over any scroll views inside the box.
-      onMoveShouldSetPanResponderCapture: () => editingRef.current,
+      onMoveShouldSetPanResponder: () => editingRef.current && !resizingRef.current,
+      // Capture so dragging wins over any scroll views inside the box — but NOT
+      // when the touch is a resize on the corner handle.
+      onMoveShouldSetPanResponderCapture: () => editingRef.current && !resizingRef.current,
       onPanResponderGrant: () => { startZone.current = zoneRef.current; },
       onPanResponderMove: (_, g) => {
         setZone({
@@ -61,8 +65,14 @@ export function PageTuner({
 
   const resize = useRef(
     PanResponder.create({
+      // Claim the gesture at both the start and the capture phase so the parent
+      // box never takes it over mid-drag.
       onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => { startZone.current = zoneRef.current; },
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: () => { resizingRef.current = true; startZone.current = zoneRef.current; },
       onPanResponderMove: (_, g) => {
         setZone({
           ...zoneRef.current,
@@ -70,6 +80,8 @@ export function PageTuner({
           height: clamp(startZone.current.height + g.dy / dim.current.height, 0.08, 0.9),
         });
       },
+      onPanResponderRelease: () => { resizingRef.current = false; },
+      onPanResponderTerminate: () => { resizingRef.current = false; },
     }),
   ).current;
 
