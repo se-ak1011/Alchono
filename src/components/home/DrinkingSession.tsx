@@ -3,7 +3,7 @@ import { View, Text, Pressable, Alert } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { Card } from '@/components/ui/Card';
+import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/Button';
 import {
   useActiveSession,
@@ -15,6 +15,10 @@ import { useLogDrinkEntry } from '@/hooks/useDrinkEntries';
 import { useAfToday, useToggleAlcoholFree } from '@/hooks/useVictories';
 import { useAppStore } from '@/store/appStore';
 import { DrinkPicker } from '@/components/session/DrinkPicker';
+
+// Ink tones for the resting state, which now sits on the Tonight notebook page.
+const INK = '#332a24';
+const INK_SOFT = 'rgba(51,42,36,0.55)';
 
 function formatDuration(startedAt: string): string {
   const ms = Date.now() - new Date(startedAt).getTime();
@@ -224,73 +228,53 @@ export function DrinkingSession() {
     );
   }
 
+  // Resting state — written on the notebook page (Tonight). Ink rows, not
+  // dark cards, so it belongs with A note / Your notes / Recovery.
   return (
-    <Animated.View entering={FadeIn.duration(400)} className="mx-6 mt-4">
-      <Card>
-        <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">
-          Today
+    <Animated.View entering={FadeIn.duration(400)} style={{ marginHorizontal: 30, marginTop: 10 }}>
+      <Text style={{ fontFamily: 'PatrickHand', fontSize: 15, color: INK_SOFT, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
+        Today
+      </Text>
+
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          toggleAlcoholFree(!alcoholFreeMarked);
+        }}
+        className="active:opacity-70"
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
+      >
+        <Feather name={alcoholFreeMarked ? 'check-circle' : 'circle'} size={21} color={alcoholFreeMarked ? '#5a8a4e' : INK_SOFT} />
+        <Text style={{ fontFamily: 'PatrickHand', fontSize: 20, color: INK, flex: 1 }}>Alcohol-free today</Text>
+        {alcoholFreeMarked && <Text style={{ color: INK_SOFT, fontSize: 12.5 }}>tap to undo</Text>}
+      </Pressable>
+
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push('/session/urge');
+        }}
+        className="active:opacity-70"
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
+      >
+        <Feather name="anchor" size={20} color="#7b5fc0" />
+        <Text style={{ fontFamily: 'PatrickHand', fontSize: 20, color: INK, flex: 1 }}>I want a drink</Text>
+        <Feather name="chevron-right" size={16} color={INK_SOFT} />
+      </Pressable>
+
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          startSession();
+        }}
+        className="active:opacity-70"
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
+      >
+        <Feather name="clock" size={20} color={INK_SOFT} />
+        <Text style={{ fontFamily: 'PatrickHand', fontSize: 20, color: INK, flex: 1 }}>
+          {isStarting ? 'Starting…' : 'Already drinking'}
         </Text>
-
-        <View className="gap-2">
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              toggleAlcoholFree(!alcoholFreeMarked);
-            }}
-            className={`flex-row items-center gap-4 rounded-xl px-4 py-4 border ${
-              alcoholFreeMarked
-                ? 'bg-surface border-white/25'
-                : 'bg-surface border-white/8 active:border-white/20'
-            }`}
-          >
-            <Text className="text-text-muted text-sm w-3">{alcoholFreeMarked ? '◆' : '○'}</Text>
-            <Text className="text-text-primary text-base font-medium">
-              Alcohol-free today
-            </Text>
-            {alcoholFreeMarked && (
-              <Text className="text-text-muted text-sm ml-auto">tap to undo</Text>
-            )}
-          </Pressable>
-
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/session/urge');
-            }}
-            className="flex-row items-center gap-4 bg-urge-surface rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
-            style={{
-              shadowColor: '#3B3352',
-              shadowOpacity: 0.8,
-              shadowRadius: 10,
-              shadowOffset: { width: 0, height: 5 },
-            }}
-          >
-            <Text className="text-text-muted text-sm w-3">≈</Text>
-            <Text className="text-text-primary text-base font-medium">
-              I want a drink
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              startSession();
-            }}
-            className="flex-row items-center gap-4 rounded-xl px-4 py-4 border border-white/8 active:border-white/20"
-            style={{ backgroundColor: '#060708' }}
-          >
-            {isStarting
-              ? <Text className="text-text-muted text-base">Starting…</Text>
-              : <>
-                  <Text className="text-text-muted text-sm w-3">○</Text>
-                  <Text className="text-text-secondary text-base font-medium">
-                    Already drinking
-                  </Text>
-                </>
-            }
-          </Pressable>
-        </View>
-      </Card>
+      </Pressable>
     </Animated.View>
   );
 }

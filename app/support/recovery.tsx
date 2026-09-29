@@ -1,15 +1,13 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { View, Text, Pressable, ScrollView } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
-import { ZoneChip } from '@/components/ui/ZoneChip';
-import { headingShadow } from '@/styles';
+import { PaperBackground } from '@/components/ui/PaperBackground';
 
-const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string;
+const INK = '#332a24';
+const INK_SOFT = 'rgba(51,42,36,0.55)';
 
 type Row = { title: string; subtitle: string; route: string; icon: keyof typeof Feather.glyphMap; accent: string };
 
@@ -17,34 +15,10 @@ type Row = { title: string; subtitle: string; route: string; icon: keyof typeof 
 // elsewhere (progress in Me, milestones in the timeline, mentors in Community) —
 // this slot is the proactive, plan-ahead corner.
 const ROWS: Row[] = [
-  {
-    title: 'My plan',
-    subtitle: 'Your reasons, people and go-to moves — written calmly, for a harder moment later.',
-    route: '/plan',
-    icon: 'clipboard',
-    accent: '#B9A4EC',
-  },
-  {
-    title: 'After a slip',
-    subtitle: 'Get back up, no shame. A gentle way through the day after.',
-    route: '/toolkit/c/after-a-slip',
-    icon: 'refresh-ccw',
-    accent: '#A9D19E',
-  },
-  {
-    title: 'Share with your GP',
-    subtitle: 'A clean summary and drinks diary to print or email to a professional.',
-    route: '/summary',
-    icon: 'file-text',
-    accent: '#C7B58A',
-  },
-  {
-    title: 'Resources',
-    subtitle: 'Helplines, meetings, and support services.',
-    route: '/support/resources',
-    icon: 'life-buoy',
-    accent: '#A082BE',
-  },
+  { title: 'My plan', subtitle: 'Your reasons, people and go-to moves — written calmly, for a harder moment later.', route: '/plan', icon: 'clipboard', accent: '#7b5fc0' },
+  { title: 'After a slip', subtitle: 'Get back up, no shame. A gentle way through the day after.', route: '/toolkit/c/after-a-slip', icon: 'refresh-ccw', accent: '#5a8a4e' },
+  { title: 'Share with your GP', subtitle: 'A clean summary and drinks diary to print or email to a professional.', route: '/summary', icon: 'file-text', accent: '#8a7440' },
+  { title: 'Resources', subtitle: 'Helplines, meetings, and support services.', route: '/support/resources', icon: 'life-buoy', accent: '#6b4f8f' },
 ];
 
 export default function RecoveryScreen() {
@@ -52,76 +26,40 @@ export default function RecoveryScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#201D28',
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-      }}
-    >
-      <ZoneGlow zone="support" intensity={0.55} />
-      {/* A calm bedside room — enough warmth to feel like somewhere, kept low
-          and legible because this page gets opened in the hard hours. */}
-      <RoomBackdrop warmth="#B9A4EC" floor="#26222E" lampTop={170} horizon={0.68} intensity={0.5} />
-      <Animated.View
-        entering={FadeIn.duration(300)}
-        className="flex-row items-center gap-4 px-6 pt-4 pb-2"
-      >
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
-        </Pressable>
-      </Animated.View>
+    <PaperBackground>
+      <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 26, paddingTop: 6, paddingBottom: 2 }}>
+          <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
+            <Feather name="chevron-left" size={26} color={INK} />
+          </Pressable>
+        </View>
 
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View entering={FadeInDown.duration(400)}>
-          <Text
-            className="text-text-primary text-4xl font-semibold tracking-tight leading-tight mt-6 mb-3"
-            style={headingShadow}
-          >
-            Recovery
-          </Text>
-          <Text className="text-text-secondary text-lg leading-relaxed mb-6">
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 30, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+          <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK, marginTop: 6, marginBottom: 1 }}>Recovery</Text>
+          <Text style={{ color: INK_SOFT, fontSize: 15, lineHeight: 21, marginBottom: 16 }}>
             Not a hard moment — just here. Take your time.
           </Text>
 
-          {/* A keepsake tin: the calm, important things kept where you can find
-              them. Deliberately understated — this page gets opened in the hard
-              hours, so it stays legible, not themed to death. */}
-          <View
-            style={{
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: 'rgba(236,233,241,0.12)',
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              paddingHorizontal: 12,
-              paddingTop: 16,
-              paddingBottom: 12,
-            }}
-          >
-            <View style={{ position: 'absolute', top: -9, left: 18, backgroundColor: '#201D28', paddingHorizontal: 8 }}>
-              <Text style={{ fontFamily: MONO, fontSize: 10.5, letterSpacing: 2, color: '#817B91' }}>YOUR KIT</Text>
-            </View>
-            {ROWS.map((r, i) => (
-              <Animated.View
-                key={r.title}
-                entering={FadeInDown.duration(400).delay(100 + i * 60)}
+          {ROWS.map((r, i) => (
+            <Animated.View key={r.title} entering={FadeInDown.duration(400).delay(80 + i * 60)}>
+              <Pressable
+                onPress={() => router.push(r.route as any)}
+                className="active:opacity-70"
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
               >
-                <ZoneChip
-                  icon={r.icon}
-                  accent={r.accent}
-                  title={r.title}
-                  subtitle={r.subtitle}
-                  onPress={() => router.push(r.route as any)}
-                />
-              </Animated.View>
-            ))}
-          </View>
-        </Animated.View>
-      </ScrollView>
-    </View>
+                <View style={{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(51,42,36,0.06)' }}>
+                  <Feather name={r.icon} size={18} color={r.accent} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontFamily: 'PatrickHand', fontSize: 19, color: INK }}>{r.title}</Text>
+                  <Text style={{ color: INK_SOFT, fontSize: 12.5, lineHeight: 17 }}>{r.subtitle}</Text>
+                </View>
+                <Feather name="chevron-right" size={16} color={INK_SOFT} />
+              </Pressable>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </View>
+    </PaperBackground>
   );
 }

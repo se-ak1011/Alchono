@@ -1,34 +1,40 @@
 import React from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { SafeArea } from '@/components/ui/SafeArea';
-import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
+import { PaperBackground } from '@/components/ui/PaperBackground';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
-import { headingShadow } from '@/styles';
-import { ScreenHeader } from '@/components/ui/ScreenHeader';
+
+const INK = '#332a24';
+const INK_SOFT = 'rgba(51,42,36,0.55)';
 
 /**
- * "Tonight" — the home for day-to-day drink awareness that used to live on the
- * old dashboard: the alcohol-free marker, starting/managing a session, and the
- * live harm-reduction nudges. Split out so the companion Home can stay calm,
- * while none of this is lost. Reached from Home (a live chip when a session is
- * on) and from Me.
+ * "Tonight" — day-to-day drink awareness (the alcohol-free marker, starting /
+ * managing a session, live harm-reduction nudges), written on the notebook
+ * page like the other quiet screens. When a session is live the tracker's card
+ * stays deliberately dark — the one stark object on the page.
  */
 export default function TrackScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   return (
-    <SafeArea>
-      <ZoneGlow zone="urge" intensity={0.8} />
-      {/* A room at dusk — a windowsill where you check in with the evening,
-          calm and low-lit rather than a form on a black void. */}
-      <RoomBackdrop warmth="#8AB2AE" floor="#26222E" lampTop={140} horizon={0.6} intensity={0.8} />
-      <ScreenHeader title="Tonight" subtitle="Awareness, not judgement." size={34} />
+    <PaperBackground>
+      <View style={{ flex: 1, paddingTop: insets.top }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 22, paddingTop: 8 }}>
+          <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
+            <Feather name="chevron-left" size={26} color={INK} />
+          </Pressable>
+          <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK }}>Tonight</Text>
+        </View>
+        <Text style={{ color: INK_SOFT, fontSize: 14, paddingHorizontal: 24, marginTop: 1 }}>
+          Awareness, not judgement.
+        </Text>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        <DrinkingSession />
-      </ScrollView>
-    </SafeArea>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
+          <DrinkingSession />
+        </ScrollView>
+      </View>
+    </PaperBackground>
   );
 }
