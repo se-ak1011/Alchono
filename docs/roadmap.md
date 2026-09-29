@@ -4,7 +4,7 @@ The living, cross-session record of what's built, what's in flight, and what's
 next for the adventure-hub reimagining of Alchono. **Keep this current** — update
 it at the end of a working session so the next one starts oriented.
 
-_Last updated: 2026-09-29_
+_Last updated: 2026-09-29 (Me room in; glows rounded; Saved stub added)_
 
 ---
 
@@ -55,6 +55,11 @@ _Last updated: 2026-09-29_
   here return to the arcade front view on finish/back. Left door → Café-Bar.
 - **Support** — front / left / right. AI Coach, Recovery, Mentors, Messages,
   Recommendations, Break-Room door.
+- **Me** — left / front / right, your private space. **No lateral doors by
+  design** (close the door and you're just there); only L↔F↔R + back to café.
+  Profile (locker), Your moments (corkboard), Looking forward to (notebook),
+  My Sky (window), AI Coach (armchair), Tonight (bed), Saved (bedside drawer).
+  Entered from the café/support "Me". Awaiting Marta's tuned coordinates.
 - **Close-ups:** the **Writing desk** (notebook → note, envelopes → letters,
   recorder → press-to-record Voice note screen, tray → saved notes) and the
   **Reading shelf** (9 drawn books).
@@ -71,11 +76,14 @@ _Last updated: 2026-09-29_
 
 ## ▶ In progress / next up
 
-- **Me — 3-view room** (NEXT). Marta's bedroom aesthetic (Massive Attack
-  _Mezzanine_ poster, moments, looking-forward-to, your sky, profile, tonight).
-  Replaces the current single "Me" screen. Art incoming.
-- **Bake pending coordinates:** book page zone + font (from Marta's Export), and
-  double-check the Resources thumb-tab tap-zones (currently guessed).
+- **Saved / favourites system (NEXT).** The Me room's bedside drawer links to
+  `/saved` (currently a shell — `app/saved.tsx`). Build the mechanism: a
+  favourite toggle on savable items (arcade games, reading articles, moments/
+  community posts, drink recommendations) + a store, then real saved rows in the
+  drawer. The point: reach your saved things without leaving the room mid-craving.
+- **Bake pending coordinates:** the Me room hotspots/labels/glows, the book page
+  zone + font (from Marta's Export), and the Resources thumb-tab tap-zones
+  (currently guessed).
 
 ## 🔮 Backlog & ideas
 

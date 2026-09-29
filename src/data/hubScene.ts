@@ -141,7 +141,7 @@ export const HUB_NODES: Record<string, HubNode> = {
 
       // — destinations (enter a room); the object glows, not a box —
       { id: "writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.023, y: 0.534, w: 0.192, h: 0.114, action: { kind: "node", node: "writing_desk" } },
-      { id: "me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", anchor: { x: 0.82, y: 0.55 }, glowScale: 0.5, glowMax: 0.65, x: 0.235, y: 0.37, w: 0.127, h: 0.059, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", anchor: { x: 0.82, y: 0.55 }, glowScale: 0.5, glowMax: 0.65, x: 0.235, y: 0.37, w: 0.127, h: 0.059, action: { kind: "node", node: "me_front" } },
       { id: "support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 1.05, glowMax: 0.65, x: 0.437, y: 0.374, w: 0.148, h: 0.097, action: { kind: "node", node: "support" } },
 
       // — live objects: content painted on, tap enters the room directly —
@@ -184,7 +184,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Live videos on the board face below the "Community" sign, tilted into
       // the wall — same inlay as the front.
       { id: "l_community_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", rotate: 1, rotateY: 44, x: 0.445, y: 0.172, w: 0.112, h: 0.134, action: { kind: "route", route: "/community" } },
-      { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "node", node: "me_front" } },
       // Added in-app: signage labels (non-tappable).
       { id: "l_lbl_writing", caption: "Writing Space", kind: "label", label: "Writing Space", labelSize: 23, rotate: 2, x: 0.084, y: 0.089, w: 0.285, h: 0.243 },
       { id: "l_lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading Corner", labelSize: 12, rotate: 6, x: 0.629, y: 0.123, w: 0.146, h: 0.127 },
@@ -369,7 +369,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Mentors — the empty corkboard above the desk.
       { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 18, rotate: 10, rotateY: 42, interaction: "destination", haptic: "medium", x: 0.284, y: 0.18, w: 0.3, h: 0.12, action: { kind: "route", route: "/support/mentors" } },
       // The left-view door → Me (profile).
-      { id: "sl_door", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: -0.037, y: 0.371, w: 0.218, h: 0.104, action: { kind: "route", route: "/(tabs)/profile" } },
+      { id: "sl_door", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: -0.037, y: 0.371, w: 0.218, h: 0.104, action: { kind: "node", node: "me_front" } },
       // "Me" chalked on the door (added in-app).
       { id: "sl_lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 18, rotate: 8, rotateY: 32, x: 0.028, y: 0.169, w: 0.2, h: 0.08 },
     ],
@@ -392,6 +392,68 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "route", route: "/barista" } },
       // "BREAK ROOM" chalked on the door (added in-app).
       { id: "sr_lbl_break", caption: "Break Room", kind: "label", label: "BREAK ROOM", rotate: 3, rotateY: 20, x: 0.599, y: 0.193, w: 0.2, h: 0.08 },
+    ],
+  },
+
+  // The Me room — your private space, entered from the café/support "Me".
+  // Deliberately NO doors to other rooms: the one place you close the door and
+  // you're just here. Only L↔F↔R and the back arrow out to the café.
+  me_front: {
+    id: "me_front",
+    title: "Me",
+    image: require("../../assets/scenes/me_front.png"),
+    imgW: 851,
+    imgH: 1848,
+    fit: "screen",
+    left: "me_left",
+    right: "me_right",
+    back: "front",
+    hotspots: [
+      // My Sky — the window full of stars.
+      { id: "mf_sky", caption: "My Sky", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.9, glowMax: 0.55, x: 0.16, y: 0.13, w: 0.68, h: 0.4, action: { kind: "route", route: "/constellation" } },
+      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 14, x: 0.4, y: 0.5, w: 0.2, h: 0.05 },
+      // AI Coach — the armchair (same coach as Support).
+      { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.0, y: 0.56, w: 0.28, h: 0.22, action: { kind: "route", route: "/support/coach" } },
+      { id: "mf_lbl_coach", caption: "AI Coach", kind: "label", label: "AI Coach", labelSize: 14, x: 0.02, y: 0.5, w: 0.24, h: 0.05 },
+    ],
+  },
+  me_left: {
+    id: "me_left",
+    title: "Me",
+    image: require("../../assets/scenes/me_left.png"),
+    imgW: 851,
+    imgH: 1848,
+    fit: "screen",
+    right: "me_front",
+    back: "front",
+    hotspots: [
+      // Profile — the tall locker.
+      { id: "ml_profile", caption: "Profile", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.0, y: 0.23, w: 0.24, h: 0.48, action: { kind: "route", route: "/account" } },
+      { id: "ml_lbl_profile", caption: "Profile", kind: "label", label: "Profile", labelSize: 14, x: 0.02, y: 0.68, w: 0.2, h: 0.05 },
+      // Your moments — the corkboard.
+      { id: "ml_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.28, y: 0.24, w: 0.33, h: 0.26, action: { kind: "route", route: "/moments" } },
+      { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, x: 0.3, y: 0.3, w: 0.28, h: 0.05 },
+      // Looking forward to — the purple notebook on the desk.
+      { id: "ml_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.28, y: 0.5, w: 0.14, h: 0.05, action: { kind: "route", route: "/goals" } },
+      { id: "ml_lbl_goals", caption: "Looking forward to", kind: "label", label: "Looking forward to", labelSize: 12, x: 0.26, y: 0.56, w: 0.32, h: 0.05 },
+    ],
+  },
+  me_right: {
+    id: "me_right",
+    title: "Me",
+    image: require("../../assets/scenes/me_right.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "me_front",
+    back: "front",
+    hotspots: [
+      // Tonight — the bed (drink tracking).
+      { id: "mr_tonight", caption: "Tonight", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.9, glowMax: 0.55, x: 0.36, y: 0.52, w: 0.6, h: 0.34, action: { kind: "route", route: "/session/track" } },
+      { id: "mr_lbl_tonight", caption: "Tonight", kind: "label", label: "Tonight", labelSize: 14, x: 0.5, y: 0.62, w: 0.2, h: 0.05 },
+      // Saved — the bedside drawers (your favourites stash).
+      { id: "mr_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.05, y: 0.52, w: 0.28, h: 0.2, action: { kind: "route", route: "/saved" } },
+      { id: "mr_lbl_saved", caption: "Saved", kind: "label", label: "Saved", labelSize: 14, x: 0.06, y: 0.48, w: 0.2, h: 0.05 },
     ],
   },
 };
