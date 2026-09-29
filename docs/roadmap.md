@@ -216,14 +216,13 @@ Captured while she stepped away; work through top-down.
 1. **✅ Letters desk editor** — drag + **rotate** the 4 envelope labels, move/
    resize the paper text zone, font step, Export. Envelope titles aren't sitting
    on the drawn envelopes yet; she'll place + rotate them and export.
-2. **Break Room — move "Community"** from beside the table to the **kitchen
-   board on the OTHER view** (`breakroom` front ↔ `breakroom_right`). So the
-   Community hotspot/label belongs on the kitchen-board view, not the table view.
-3. **Break Room table** — both chairs currently carry labels, but the **hotspot
-   should be the TABLE**, opening **Care team + Trusted person together**. Check
-   state of that combined page — may need building (currently they're separate:
-   `mr_care`/`mr_trusted` on the Me bed → routes?). One table hotspot → a screen
-   that holds both.
+2. **✅ Break Room — done.** Front view: Community on the chalkboard
+   (`br_board` → /community); vending machine is now scenery (removed
+   `br_vending`). Right view: table → Mentors (`brr_table` → /support/mentors),
+   wall → Care team + Trusted person (`brr_wall` → new `/profile/people`), door
+   → Outside. Fixed the label/route scramble (care-team label had been wired to
+   community). Built **`app/profile/people.tsx`** — a "Your people" landing
+   linking to care-team + trusted.
 4. **Connections + labels** — several pages still need wiring to hotspots, and
    some labels need renaming (she'll specify which).
 5. More to come — she was mid-list when she paused for dishes.

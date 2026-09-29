@@ -525,9 +525,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "breakroom_right",
     back: "front",
     hotspots: [
-      // The vending machine → 0.0 alcohol-free recommendations.
-      { id: "br_vending", caption: "0.0 Drinks", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.45, x: 0.04, y: 0.23, w: 0.36, h: 0.4, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "br_lbl_vending", caption: "0.0 Drinks", kind: "label", label: "0.0 Drinks", labelSize: 12, x: 0.04, y: 0.18, w: 0.3, h: 0.05 },
+      // The chalkboard → Community. The vending machine is now just scenery.
+      { id: "br_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.44, y: 0.33, w: 0.42, h: 0.28, action: { kind: "route", route: "/community" } },
+      { id: "br_lbl_board", caption: "Community", kind: "label", label: "Community", labelSize: 18, x: 0.452, y: 0.283, w: 0.355, h: 0.078 },
     ],
   },
   breakroom_right: {
@@ -540,12 +540,15 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "breakroom",
     back: "front",
     hotspots: [
-      // The table → Community (the social gathering place).
-      { id: "brr_table", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.18, y: 0.42, w: 0.5, h: 0.22, action: { kind: "route", route: "/community" } },
-      { id: "brr_lbl_table", caption: "Community", kind: "label", label: "Community", labelSize: 13, x: 0.3, y: 0.48, w: 0.26, h: 0.05 },
+      // The table → Mentors.
+      { id: "brr_table", caption: "Mentors", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.16, y: 0.394, w: 0.654, h: 0.098, action: { kind: "route", route: "/support/mentors" } },
+      { id: "brr_lbl_mentors", caption: "Mentors", kind: "label", label: "Mentors", labelSize: 18, x: 0.386, y: 0.421, w: 0.2, h: 0.08 },
+      // The wall → Care team + Trusted person (the human safety net, together).
+      { id: "brr_wall", caption: "Care team & trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.3, y: 0.19, w: 0.34, h: 0.16, action: { kind: "route", route: "/profile/people" } },
+      { id: "brr_lbl_wall", caption: "Care team & trusted person", kind: "label", label: "Care Team & Trusted Person", labelSize: 14, rotateY: -10, x: 0.336, y: 0.218, w: 0.26, h: 0.05 },
       // The door → "outside": the wider-life stuff (struggling with something else).
-      { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.78, y: 0.16, w: 0.2, h: 0.46, action: { kind: "node", node: "outside" } },
-      { id: "brr_lbl_door", caption: "Outside", kind: "label", label: "Outside", labelSize: 13, x: 0.76, y: 0.12, w: 0.22, h: 0.05 },
+      { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.866, y: 0.32, w: 0.104, h: 0.047, action: { kind: "node", node: "outside" } },
+      { id: "brr_lbl_door", caption: "Outside", kind: "label", label: "Outside", labelSize: 13, rotate: -3, x: 0.763, y: 0.174, w: 0.22, h: 0.05 },
     ],
   },
 
