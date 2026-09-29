@@ -23,4 +23,12 @@ export const RESOURCE_BOOKS: Record<string, ResourceBookArt> = {
       meetings: require("../../assets/books/resources-home-meetings.png"),
     },
   },
+  arcade: {
+    cover: require("../../assets/books/resources-arcade-cover.png"),
+    tabs: {
+      call: require("../../assets/books/resources-arcade-call.png"),
+      text: require("../../assets/books/resources-arcade-text.png"),
+      meetings: require("../../assets/books/resources-arcade-meetings.png"),
+    },
+  },
 };

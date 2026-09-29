@@ -25,7 +25,7 @@ import type { ImageSourcePropType } from "react-native";
  */
 
 export type HubAction =
-  | { kind: "route"; route: string; warn?: boolean }
+  | { kind: "route"; route: string; warn?: boolean; returnNode?: string }
   | { kind: "node"; node: string };
 
 export type HotspotKind =
@@ -289,12 +289,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Rough boxes — drag each onto its cabinet screen in the editor, export.
-      { id: "a_memory", caption: "Memory Match", kind: "glow", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.19, y: 0.301, w: 0.119, h: 0.068, action: { kind: "route", route: "/session/memory-match" } },
-      { id: "a_pattern", caption: "Pattern", kind: "glow", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.39, y: 0.3, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/simon" } },
-      { id: "a_odd", caption: "Odd One Out", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.587, y: 0.299, w: 0.117, h: 0.066, action: { kind: "route", route: "/session/odd-one-out" } },
-      { id: "a_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 12, rotateY: -36, rotateX: 14, x: 0.858, y: 0.315, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/stroop" } },
+      { id: "a_memory", caption: "Memory Match", kind: "glow", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.19, y: 0.301, w: 0.119, h: 0.068, action: { kind: "route", route: "/session/memory-match", returnNode: "arcade" } },
+      { id: "a_pattern", caption: "Pattern", kind: "glow", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.39, y: 0.3, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/simon", returnNode: "arcade" } },
+      { id: "a_odd", caption: "Odd One Out", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.587, y: 0.299, w: 0.117, h: 0.066, action: { kind: "route", route: "/session/odd-one-out", returnNode: "arcade" } },
+      { id: "a_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 12, rotateY: -36, rotateX: 14, x: 0.858, y: 0.315, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/stroop", returnNode: "arcade" } },
       // Word Search runs on the retro computer on the desk.
-      { id: "a_word", caption: "Word Search", kind: "glow", interaction: "object", inlay: "arcade_word", glowMax: 0.6, rotate: 3, x: 0.346, y: 0.428, w: 0.083, h: 0.033, action: { kind: "route", route: "/session/word-search" } },
+      { id: "a_word", caption: "Word Search", kind: "glow", interaction: "object", inlay: "arcade_word", glowMax: 0.6, rotate: 3, x: 0.346, y: 0.428, w: 0.083, h: 0.033, action: { kind: "route", route: "/session/word-search", returnNode: "arcade" } },
     ],
   },
   arcade_left: {
@@ -325,11 +325,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Colour Match seen from the side, tilted onto the angled cabinet.
-      { id: "ar_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 25, rotateY: -22, rotateX: 44, x: 0.174, y: 0.412, w: 0.088, h: 0.05, action: { kind: "route", route: "/session/stroop" } },
+      { id: "ar_colour", caption: "Colour Match", kind: "glow", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 25, rotateY: -22, rotateX: 44, x: 0.174, y: 0.412, w: 0.088, h: 0.05, action: { kind: "route", route: "/session/stroop", returnNode: "arcade" } },
       // The door → Tonight (drink-tracking): the right-side "way out".
       { id: "ar_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.771, y: 0.433, w: 0.109, h: 0.087, action: { kind: "route", route: "/session/track" } },
       // The retro phone → Resources (same as the café landline).
-      { id: "ar_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.7, x: 0.424, y: 0.41, w: 0.13, h: 0.083, action: { kind: "route", route: "/support/resources" } },
+      { id: "ar_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.7, x: 0.424, y: 0.41, w: 0.13, h: 0.083, action: { kind: "route", route: "/resources/arcade" } },
     ],
   },
 

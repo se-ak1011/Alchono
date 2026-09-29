@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS } from "@/components/home/HubInlays";
+import { useHubStore } from "@/store/hubStore";
 
 const SCREEN_W = Dimensions.get("window").width;
 const SCREEN_H = Dimensions.get("window").height;
@@ -150,6 +151,21 @@ export function AdventureHub() {
     captionTimer.current = setTimeout(() => setCaption(null), 900);
   };
 
+  // Returning from something a room launched (e.g. an arcade game): if the
+  // launcher left a return-node, land back in that room rather than wherever
+  // the hub happened to be. Stable ([]-dep) so it only fires on real focus
+  // changes, never when the pending note is written mid-render.
+  useFocusEffect(
+    useCallback(() => {
+      const pending = useHubStore.getState().pendingNode;
+      if (pending && HUB_NODES[pending]) {
+        setNodeId(pending);
+        setCaption(null);
+      }
+      useHubStore.getState().setPendingNode(null);
+    }, []),
+  );
+
   const navigateNode = (next: string) => {
     Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
       setNodeId(next);
@@ -175,6 +191,8 @@ export function AdventureHub() {
           : Haptics.ImpactFeedbackStyle.Light;
       Haptics.impactAsync(style);
     }
+    // Remember where to come back to (e.g. arcade games → arcade front view).
+    if (action.returnNode) useHubStore.getState().setPendingNode(action.returnNode);
     router.push(action.route as any);
   };
 
