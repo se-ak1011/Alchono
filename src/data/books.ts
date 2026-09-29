@@ -42,4 +42,8 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
     cover: require("../../assets/books/identity-cover.png"),
     open: require("../../assets/books/identity-open.png"),
   },
+  "after-a-slip": {
+    cover: require("../../assets/books/after-a-slip-cover.png"),
+    open: require("../../assets/books/after-a-slip-open.png"),
+  },
 };
