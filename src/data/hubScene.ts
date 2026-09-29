@@ -544,8 +544,30 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "brr_table", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.18, y: 0.42, w: 0.5, h: 0.22, action: { kind: "route", route: "/community" } },
       { id: "brr_lbl_table", caption: "Community", kind: "label", label: "Community", labelSize: 13, x: 0.3, y: 0.48, w: 0.26, h: 0.05 },
       // The door → "outside": the wider-life stuff (struggling with something else).
-      { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.78, y: 0.16, w: 0.2, h: 0.46, action: { kind: "route", route: "/ecosystem" } },
+      { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.78, y: 0.16, w: 0.2, h: 0.46, action: { kind: "node", node: "outside" } },
       { id: "brr_lbl_door", caption: "Outside", kind: "label", label: "Outside", labelSize: 13, x: 0.76, y: 0.12, w: 0.22, h: 0.05 },
+    ],
+  },
+
+  // The outdoor space — "outside" from the Break Room, for the wider-life stuff.
+  // A single view for now, but drawn to open up further to the right later (an
+  // interactive outdoors). The board carries the "struggling with something else"
+  // content; the door is a shortcut to the café counter; back → the Break Room.
+  outside: {
+    id: "outside",
+    title: "Outside",
+    image: require("../../assets/scenes/outside.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    back: "breakroom_right",
+    hotspots: [
+      // The board → "struggling with something else" content.
+      { id: "out_board", caption: "Something else", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.33, y: 0.27, w: 0.35, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
+      { id: "out_lbl_board", caption: "Something else", kind: "label", label: "Something else", labelSize: 12, x: 0.31, y: 0.22, w: 0.4, h: 0.05 },
+      // The door → the café counter (Home right view).
+      { id: "out_door", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.02, y: 0.2, w: 0.24, h: 0.5, action: { kind: "node", node: "right" } },
+      { id: "out_lbl_door", caption: "Café", kind: "label", label: "Café", labelSize: 13, x: 0.02, y: 0.15, w: 0.2, h: 0.05 },
     ],
   },
 };

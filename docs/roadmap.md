@@ -169,11 +169,22 @@ dead "Your companion" row removed from Settings.
   faint breathing glow so it's always findable without hunting. Implementation:
   one global overlay, Marta draws the fixture, Claude mounts it + glow + tap→urge,
   maybe a red "alarm" flash on tap. **Must be on every page.**
-- **"Outside" room (future):** the Break Room's right door currently opens the
-  `/ecosystem` screen ("struggling with something else"). Lovely candidate to
-  become its own immersive **outside room** when Marta draws it — stepping
-  *outside* the immediate stuff. Also the natural home for **mentoring** and
-  other wider-life bits.
+- **Outside room — ✅ built** (1 view): stepping *outside* from the Break Room
+  door. The board → `/ecosystem` ("struggling with something else"); the door →
+  café counter (Home right); back → the Break Room. Drawn to expand further right
+  later (an interactive outdoors); also the natural future home for **mentoring**.
+
+## 🎨 Next phase — restyle the inner pages to match the world
+
+The rooms are done and gorgeous, but the **destination pages** they open still
+look like "a different administration app" (generic dark admin UI) rather than
+the hand-drawn, Patrick-Hand, skeleton-and-purple world. Bring them into the
+same visual language. Flagged by Marta, starting with:
+- **Tonight** (`/session/track`) — the drink-tracking page.
+- **Settings** and **Profile/account** — very utilitarian right now.
+- (then the rest: toolkit/article internals, journal, messages, etc.)
+Keep it a restyle (typography, palette, warmth, texture), not a rebuild — the
+functionality is fine.
 - **More popups** in the same spirit as the books/directory where they fit.
 
 ## 🎨 Editable in-app vs code
