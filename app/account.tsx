@@ -9,6 +9,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { ZoneChip } from '@/components/ui/ZoneChip';
 import { useAuthStore } from '@/store/authStore';
 import { headingShadow } from '@/styles';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 /**
  * Profile — who you are and the people around you: identity, the details that
@@ -27,14 +28,7 @@ export default function ProfileScreen() {
           hallway rather than a settings list. */}
       <RoomBackdrop warmth="#C6BFB0" floor="#2A2530" lampTop={150} horizon={0.64} intensity={0.7} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="px-6 pt-5 pb-4 flex-row items-center gap-3">
-          <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-            <Feather name="chevron-left" size={26} color="#B2ACC0" />
-          </Pressable>
-          <Text className="text-text-primary text-4xl tracking-tight" style={headingShadow}>
-            Profile
-          </Text>
-        </View>
+        <ScreenHeader title="Profile" size={34} />
 
         {/* Identity */}
         <Pressable

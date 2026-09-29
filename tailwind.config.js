@@ -11,8 +11,10 @@ module.exports = {
         // Plum-charcoal system: purple-undertoned charcoal — serious and calm,
         // but lifted and airy, never flat near-black (see docs/theme.md).
         bg: '#201D28',            // app background — deep plum charcoal (base layer)
-        surface: '#383243',       // primary cards — clearly raised off the bg
-        'surface-2': '#474151',   // secondary cards / inputs — highest layer
+        // Card surfaces, warmed a touch off the cool grey toward the world's
+        // lamp-lit plum so pages read less like an admin panel (see docs/theme.md).
+        surface: '#3B3140',       // primary cards — clearly raised off the bg
+        'surface-2': '#4A4049',   // secondary cards / inputs — highest layer
         'text-primary': '#ECE9F1', // soft lavender-white
         'text-secondary': '#B2ACC0', // reading text, violet-grey
         'text-muted': '#817B91',  // meta / hints, violet-grey
@@ -39,8 +41,10 @@ module.exports = {
         display: ['PatrickHand'],
       },
       borderRadius: {
-        '2xl': '8px',
-        '3xl': '12px',
+        // Softer than admin-tight; rounded warmth to match the hand-drawn world.
+        'xl': '12px',
+        '2xl': '16px',
+        '3xl': '22px',
       },
     },
   },

@@ -12,6 +12,7 @@ import { useIsAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import { headingShadow } from '@/styles';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 export default function SettingsScreen() {
   const user = useAuthStore((s) => s.user);
@@ -139,14 +140,7 @@ export default function SettingsScreen() {
   return (
     <SafeArea>
       <ZoneGlow zone="me" intensity={0.55} />
-      <View className="px-6 pt-4 pb-5 flex-row items-center gap-3">
-        <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-          <Feather name="chevron-left" size={26} color="#B2ACC0" />
-        </Pressable>
-        <Text className="text-text-primary text-3xl font-semibold tracking-tight" style={headingShadow}>
-          Settings
-        </Text>
-      </View>
+      <ScreenHeader title="Settings" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}

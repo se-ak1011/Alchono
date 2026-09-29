@@ -174,17 +174,22 @@ dead "Your companion" row removed from Settings.
   café counter (Home right); back → the Break Room. Drawn to expand further right
   later (an interactive outdoors); also the natural future home for **mentoring**.
 
-## 🎨 Next phase — restyle the inner pages to match the world
+## 🎨 Restyle the inner pages to match the world (in progress)
 
-The rooms are done and gorgeous, but the **destination pages** they open still
-look like "a different administration app" (generic dark admin UI) rather than
-the hand-drawn, Patrick-Hand, skeleton-and-purple world. Bring them into the
-same visual language. Flagged by Marta, starting with:
-- **Tonight** (`/session/track`) — the drink-tracking page.
-- **Settings** and **Profile/account** — very utilitarian right now.
-- (then the rest: toolkit/article internals, journal, messages, etc.)
-Keep it a restyle (typography, palette, warmth, texture), not a rebuild — the
-functionality is fine.
+The destination pages looked like "a different administration app". The plan:
+find one or two **platform-level levers** that propagate everywhere, rather than
+restyling 15 pages bespoke. Two are in:
+- **✅ Warmed the card tokens** (`tailwind.config.js`): surfaces nudged off cool
+  grey toward lamp-lit plum, and border radii softened (2xl 8→16, 3xl 12→22).
+  One change → every card across the app warms + rounds.
+- **✅ Shared `<ScreenHeader>`** (`src/components/ui/ScreenHeader.tsx`): back
+  chevron + **Patrick Hand** (chalk) title + subtitle. Applied to **Tonight,
+  Settings, Profile** as the proof. Diagnosis: 33 pages used Inter "admin"
+  headings vs 11 on the chalk face — this is the identity lever.
+- **Rollout (ongoing):** swap the remaining hand-rolled headers to `ScreenHeader`
+  (the warm backdrop `ZoneGlow` is already on ~41 pages, so atmosphere's there).
+Keep it a restyle (typography, palette, warmth), not a rebuild. Marta is
+thinking about the rest of the design direction.
 - **More popups** in the same spirit as the books/directory where they fit.
 
 ## 🎨 Editable in-app vs code

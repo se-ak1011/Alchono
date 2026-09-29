@@ -7,6 +7,7 @@ import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { RoomBackdrop } from '@/components/ui/RoomBackdrop';
 import { DrinkingSession } from '@/components/home/DrinkingSession';
 import { headingShadow } from '@/styles';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 /**
  * "Tonight" — the home for day-to-day drink awareness that used to live on the
@@ -23,19 +24,7 @@ export default function TrackScreen() {
       {/* A room at dusk — a windowsill where you check in with the evening,
           calm and low-lit rather than a form on a black void. */}
       <RoomBackdrop warmth="#8AB2AE" floor="#26222E" lampTop={140} horizon={0.6} intensity={0.8} />
-      <View className="px-6 pt-4 pb-2 flex-row items-center gap-3">
-        <Pressable onPress={() => router.back()} hitSlop={12} className="p-1 -ml-1 active:opacity-60">
-          <Feather name="chevron-left" size={26} color="#B2ACC0" />
-        </Pressable>
-        <View>
-          <Text className="text-text-primary text-4xl tracking-tight" style={headingShadow}>
-            Tonight
-          </Text>
-          <Text className="text-text-muted text-sm mt-0.5">
-            Awareness, not judgement.
-          </Text>
-        </View>
-      </View>
+      <ScreenHeader title="Tonight" subtitle="Awareness, not judgement." size={34} />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         <DrinkingSession />
