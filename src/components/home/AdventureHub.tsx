@@ -372,9 +372,11 @@ export function AdventureHub() {
 
   const renderHotspots = () =>
     hotspots.map((h) => {
-      // Pure signage (label kind, or anything with no action) isn't tappable —
-      // taps fall through so it never behaves like a button.
-      if (h.kind === "label" || !h.action) {
+      // Pure signage (no action) isn't tappable — taps fall through so it never
+      // behaves like a button. A label WITH an action IS tappable, so a text
+      // label (e.g. "My Sky" over the window) can be the tap target on its own,
+      // with no glow blob needed to catch the press.
+      if (!h.action) {
         return (
           <View key={h.id} pointerEvents="none" style={rectOf(coordsOf(h))}>
             {affordance(h)}

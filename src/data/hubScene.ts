@@ -410,9 +410,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "me_right",
     back: "front",
     hotspots: [
-      // My Sky — the window full of stars.
-      { id: "mf_sky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.2, glowMax: 0.1, x: 0.468, y: 0.055, w: 0.088, h: 0.045, action: { kind: "route", route: "/constellation" } },
-      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.203, y: 0.229, w: 0.597, h: 0.269 },
+      // My Sky — the window full of stars. The label itself is the tap target
+      // (covering the window), so no glow blob spoils the sky.
+      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.203, y: 0.229, w: 0.597, h: 0.269, action: { kind: "route", route: "/constellation" } },
       // AI Coach — the armchair (same coach as Support).
       { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: -0.062, y: 0.548, w: 0.272, h: 0.136, action: { kind: "route", route: "/support/coach" } },
       { id: "mf_lbl_coach", caption: "AI Coach", kind: "label", label: "AI Coach", labelSize: 14, rotate: -9, x: 0.022, y: 0.653, w: 0.24, h: 0.05 },
