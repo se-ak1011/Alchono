@@ -274,7 +274,7 @@ export const TOOLKIT: ToolkitTool[] = [
         ],
       },
     ],
-    action: { label: 'Browse alcohol-free swaps', route: '/swaps' },
+    action: { label: 'Browse alcohol-free swaps', route: '/support/recommendations' },
   },
 
   // ── Sleep ───────────────────────────────────────────────────────────────
