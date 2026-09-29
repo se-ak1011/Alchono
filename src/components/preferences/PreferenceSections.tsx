@@ -600,3 +600,80 @@ export function RhythmStep({
     </View>
   );
 }
+
+// Suggested hobbies for "Things I enjoy". Plain strings (custom ones append).
+export const HOBBY_SUGGESTIONS: string[] = [
+  'Reading', 'Walking', 'Gym', 'Photography', 'Fishing', 'Motorcycles',
+  'Gaming', 'Gardening', 'Cooking', 'Music', 'Art', 'Running', 'Cycling',
+  'Swimming', 'Hiking', 'Yoga', 'Writing', 'Crafts', 'DIY', 'Film',
+];
+
+/** "Things I enjoy" — hobbies/interests. Personalisation context for the coach.
+ *  Controlled: it edits prefs.hobbies via onChange; the page's Save persists. */
+export function HobbiesStep({
+  prefs,
+  onChange,
+}: {
+  prefs: UserPreferences;
+  onChange: (p: Partial<UserPreferences>) => void;
+}) {
+  const [custom, setCustom] = React.useState('');
+  const selected = prefs.hobbies ?? [];
+  const customOnes = selected.filter((h) => !HOBBY_SUGGESTIONS.includes(h));
+  const allChips = [...HOBBY_SUGGESTIONS, ...customOnes];
+
+  const toggle = (hobby: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onChange({
+      hobbies: selected.includes(hobby)
+        ? selected.filter((h) => h !== hobby)
+        : [...selected, hobby],
+    });
+  };
+  const addCustom = () => {
+    const h = custom.trim();
+    if (!h || selected.includes(h)) { setCustom(''); return; }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onChange({ hobbies: [...selected, h] });
+    setCustom('');
+  };
+
+  return (
+    <View>
+      <View className="flex-row flex-wrap gap-2 mb-4">
+        {allChips.map((hobby) => {
+          const isOn = selected.includes(hobby);
+          return (
+            <Pressable
+              key={hobby}
+              onPress={() => toggle(hobby)}
+              className={`px-4 py-2.5 rounded-xl border ${isOn ? 'bg-surface border-white/25' : 'bg-surface border-white/8'}`}
+            >
+              <Text className={`text-sm font-medium ${isOn ? 'text-text-primary' : 'text-text-muted'}`}>{hobby}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <View className="flex-row gap-2">
+        <TextInput
+          value={custom}
+          onChangeText={setCustom}
+          onSubmitEditing={addCustom}
+          returnKeyType="done"
+          placeholder="Add your own"
+          placeholderTextColor="#817B91"
+          maxLength={40}
+          className="flex-1 bg-surface rounded-xl px-4 py-3 text-text-primary text-base border border-white/8"
+          selectionColor="#B2ACC0"
+        />
+        <Pressable
+          onPress={addCustom}
+          disabled={!custom.trim()}
+          className={`px-4 rounded-xl border items-center justify-center ${custom.trim() ? 'bg-accent border-transparent' : 'bg-surface border-white/8'}`}
+        >
+          <Text className={`text-base font-semibold ${custom.trim() ? 'text-bg' : 'text-text-muted'}`}>Add</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}

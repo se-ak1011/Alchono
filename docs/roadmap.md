@@ -108,9 +108,13 @@ and lies to the GP, so they'll lie to (or skip) a sign-up quiz too. So:
 
 - **Onboarding = username & in.** Done. Alchono is anonymous and account-free —
   a handle is the only thing asked. Reasons/drinking/people were removed.
-- **"My circumstances" is a living page**, not a one-time form. It already exists
-  (`app/profile/preferences.tsx`) and is editable; now reachable from the **Me
-  room's left-view desk drawers**. Your situation, changed whenever life changes.
+- **"My circumstances" is a living page**, not a one-time form
+  (`app/profile/preferences.tsx`), reachable from the **Me room's left-view desk
+  drawers**. Consolidating the scattered personalisation bits here: circumstances
+  (family/work/location) + **"Things I enjoy" (hobbies) now folded in**. Still
+  separate and could also fold in if wanted: **Identity** (`/profile/identity`)
+  and **"struggling with something else"** (`/ecosystem`). The standalone
+  `/profile/hobbies` screen still exists (same data) and can be retired later.
 - **The AI coach personalises from three streams, no up-front quiz:** behaviour
   (what you actually do in the app), the living circumstances page, and questions
   it asks conversationally over time (dodgeable). It starts general/useful and

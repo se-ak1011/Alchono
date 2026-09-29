@@ -18,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import {
   CircleStep,
   RhythmStep,
+  HobbiesStep,
   DEFAULT_PREFERENCES,
 } from '@/components/preferences/PreferenceSections';
 import type { UserPreferences } from '@/types';
@@ -125,6 +126,15 @@ export default function PreferencesScreen() {
             locationCaptured={!!latLng || hadLocation}
             onCaptureLocation={captureLocation}
           />
+
+          <View style={{ height: 28 }} />
+
+          <Text className="text-text-primary text-base font-semibold mb-1">Things I enjoy</Text>
+          <Text className="text-text-secondary text-sm leading-relaxed mb-4">
+            The good stuff — what a better day looks like. Helps the coach point you
+            back towards it.
+          </Text>
+          <HobbiesStep prefs={prefs} onChange={updatePrefs} />
         </ScrollView>
 
         <View className="px-6 pt-3">
