@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Platform, type LayoutChangeEvent } from "react-native";
 import Svg, { Circle, Line as SvgLine } from "react-native-svg";
 import { useCommunityMoments } from "@/hooks/useMoments";
+import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
@@ -82,6 +83,36 @@ export function CommunityInlay() {
                 <View style={{ width: 0, height: 0, borderTopWidth: 4, borderBottomWidth: 4, borderLeftWidth: 6, borderTopColor: "transparent", borderBottomColor: "transparent", borderLeftColor: "#fff", marginLeft: 2 }} />
               </View>
             </View>
+          </View>
+        ))
+      )}
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
+// Community board — the latest WRITTEN posts, chalked onto the break-room
+// board. PatrickHand reads as handwriting on the blackboard; transparent so the
+// drawn board shows through.
+// ————————————————————————————————————————————————————————————————
+export function CommunityBoardInlay() {
+  const { data } = useCommunityFeed();
+  const posts = ((data?.pages?.[0] ?? []) as any[]).filter((p) => p?.content).slice(0, 3);
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", paddingHorizontal: "7%", paddingVertical: "6%", justifyContent: "center" }]}>
+      {posts.length === 0 ? (
+        <Text style={{ fontFamily: "PatrickHand", fontSize: 13, color: "rgba(242,244,238,0.55)", textAlign: "center" }}>
+          the wall's quiet — start a thread
+        </Text>
+      ) : (
+        posts.map((p, i) => (
+          <View key={p.id ?? i} style={{ marginBottom: "5%" }}>
+            <Text numberOfLines={2} style={{ fontFamily: "PatrickHand", fontSize: 13, lineHeight: 16, color: "rgba(244,244,238,0.92)" }}>
+              “{p.content}”
+            </Text>
+            <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 11, color: "rgba(198,222,208,0.62)" }}>
+              — @{p.username ?? "anon"}
+            </Text>
           </View>
         ))
       )}
@@ -263,6 +294,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   arcade_colour: ColourInlay,
   arcade_word: WordInlay,
   community: CommunityInlay, // video thumbnails
+  community_board: CommunityBoardInlay, // written posts, chalked on the board
   sky: SkyInlay,
   zine: ZineInlay, // a zine cover pinned to the café-right corkboard
 };

@@ -526,7 +526,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The chalkboard → Community. The vending machine is now just scenery.
-      { id: "br_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.44, y: 0.33, w: 0.42, h: 0.28, action: { kind: "route", route: "/community" } },
+      { id: "br_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community_board", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.44, y: 0.33, w: 0.42, h: 0.28, action: { kind: "route", route: "/community" } },
       { id: "br_lbl_board", caption: "Community", kind: "label", label: "Community", labelSize: 18, x: 0.452, y: 0.283, w: 0.355, h: 0.078 },
     ],
   },
