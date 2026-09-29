@@ -192,6 +192,24 @@ Keep it a restyle (typography, palette, warmth), not a rebuild. Marta is
 thinking about the rest of the design direction.
 - **More popups** in the same spirit as the books/directory where they fit.
 
+### ✅ Notebook-paper pages (done)
+The four screens Marta flagged now live on the drawn notebook page
+(`<PaperBackground>`, `assets/scenes/notebook_page.png`), content layered on top
+in DARK INK (`INK #332a24`, `INK_SOFT rgba(51,42,36,.4–.55)`, PatrickHand body):
+- **A note** (`app/journal/write.tsx`) — ink compose surface.
+- **Your notes** (`app/journal/notes.tsx`) — ink entries + hairline dividers, no
+  dark cards; voice notes keep a purple play button with ink labels.
+- **Recovery** (`app/support/recovery.tsx`) — ink list rows (icon + title +
+  subtitle + divider), accents darkened for cream legibility.
+- **Tonight** (`app/session/track.tsx` + resting state of
+  `src/components/home/DrinkingSession.tsx`) — ink header + ink "Today" rows.
+  The LIVE-session card stays deliberately dark (`#060708`, "the dark side,
+  plainly") — the one stark object on the page. Only the resting state changed.
+- **Letters** (`app/letters/write.tsx`) — its own interactive desk close-up
+  (`letters_desk.png`): 4 envelopes = delivery timing (30d/90d/6m/1y), body on
+  the centre sheet. "Surprise me" removed from `DELIVERY_OPTIONS`.
+Shared component: `src/components/ui/PaperBackground.tsx`.
+
 ## 🎨 Editable in-app vs code
 
 - **In-app (Marta, via editors):** hotspot placement/size, labels (size, rotate,
