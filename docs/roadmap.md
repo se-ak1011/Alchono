@@ -210,6 +210,24 @@ in DARK INK (`INK #332a24`, `INK_SOFT rgba(51,42,36,.4–.55)`, PatrickHand body
   the centre sheet. "Surprise me" removed from `DELIVERY_OPTIONS`.
 Shared component: `src/components/ui/PaperBackground.tsx`.
 
+## 📥 Marta's open change-list (in progress — 15:xx build session)
+
+Captured while she stepped away; work through top-down.
+1. **✅ Letters desk editor** — drag + **rotate** the 4 envelope labels, move/
+   resize the paper text zone, font step, Export. Envelope titles aren't sitting
+   on the drawn envelopes yet; she'll place + rotate them and export.
+2. **Break Room — move "Community"** from beside the table to the **kitchen
+   board on the OTHER view** (`breakroom` front ↔ `breakroom_right`). So the
+   Community hotspot/label belongs on the kitchen-board view, not the table view.
+3. **Break Room table** — both chairs currently carry labels, but the **hotspot
+   should be the TABLE**, opening **Care team + Trusted person together**. Check
+   state of that combined page — may need building (currently they're separate:
+   `mr_care`/`mr_trusted` on the Me bed → routes?). One table hotspot → a screen
+   that holds both.
+4. **Connections + labels** — several pages still need wiring to hotspots, and
+   some labels need renaming (she'll specify which).
+5. More to come — she was mid-list when she paused for dishes.
+
 ## 🎨 Editable in-app vs code
 
 - **In-app (Marta, via editors):** hotspot placement/size, labels (size, rotate,
