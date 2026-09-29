@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ImageBackground, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, ScrollView, ImageBackground, useWindowDimensions } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -19,25 +19,25 @@ function Section({ s, scale }: { s: ToolSection; scale: number }) {
   const fs = (n: number) => n * scale;
   switch (s.type) {
     case "heading":
-      return <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: fs(17), marginTop: 10, marginBottom: 3 }}>{s.text}</Text>;
+      return <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: fs(16), marginTop: 8, marginBottom: 3 }}>{s.text}</Text>;
     case "paragraph":
-      return <Text style={{ color: INK, fontSize: fs(12.5), lineHeight: fs(18), marginBottom: 7 }}>{s.text}</Text>;
+      return <Text style={{ color: INK, fontSize: fs(12), lineHeight: fs(17), marginBottom: 6 }}>{s.text}</Text>;
     case "callout":
-      return <Text style={{ color: INK_SOFT, fontSize: fs(12), lineHeight: fs(17), marginBottom: 7, fontStyle: "italic" }}>{s.text}</Text>;
+      return <Text style={{ color: INK_SOFT, fontSize: fs(11.5), lineHeight: fs(16), marginBottom: 6, fontStyle: "italic" }}>{s.text}</Text>;
     case "steps":
       return (
-        <View style={{ marginBottom: 7, gap: 3 }}>
+        <View style={{ marginBottom: 6, gap: 2 }}>
           {s.items.map((it, i) => (
-            <Text key={i} style={{ color: INK, fontSize: fs(12.5), lineHeight: fs(18) }}>{`${i + 1}.  ${it}`}</Text>
+            <Text key={i} style={{ color: INK, fontSize: fs(12), lineHeight: fs(17) }}>{`${i + 1}.  ${it}`}</Text>
           ))}
         </View>
       );
     case "list":
     case "lines":
       return (
-        <View style={{ marginBottom: 7, gap: 3 }}>
+        <View style={{ marginBottom: 6, gap: 2 }}>
           {s.items.map((it, i) => (
-            <Text key={i} style={{ color: INK, fontSize: fs(12.5), lineHeight: fs(18) }}>{`•  ${it}`}</Text>
+            <Text key={i} style={{ color: INK, fontSize: fs(12), lineHeight: fs(17) }}>{`•  ${it}`}</Text>
           ))}
         </View>
       );
@@ -46,10 +46,32 @@ function Section({ s, scale }: { s: ToolSection; scale: number }) {
   }
 }
 
+// Rough "how much space" a section takes, so an article can be split across the
+// two pages without cutting a section in half at the spine.
+function weight(s: ToolSection): number {
+  if (s.type === "paragraph" || s.type === "callout") return s.text.length + 20;
+  if (s.type === "heading") return s.text.length + 40;
+  if (s.type === "steps" || s.type === "list" || s.type === "lines") return s.items.reduce((n, it) => n + it.length + 16, 0);
+  return 0;
+}
+
+/** Fill the left page until roughly half the article is placed, then the right. */
+function paginate(sections: ToolSection[], titleWeight: number): [ToolSection[], ToolSection[]] {
+  const target = (titleWeight + sections.reduce((n, s) => n + weight(s), 0)) / 2;
+  let acc = titleWeight;
+  const left: ToolSection[] = [];
+  const right: ToolSection[] = [];
+  for (const s of sections) {
+    if (acc < target) { left.push(s); acc += weight(s); }
+    else right.push(s);
+  }
+  return [left, right];
+}
+
 export default function BookReaderScreen() {
   const { cat } = useLocalSearchParams<{ cat: string }>();
   const router = useRouter();
-  const { height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const category = cat as ToolkitCategory;
   const art = BOOKS[category];
   const meta = CATEGORY_META[category];
@@ -76,6 +98,8 @@ export default function BookReaderScreen() {
     setPhase("article");
   };
 
+  const spine = width * 0.06; // gutter down the middle, over the book's spine
+
   return (
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
       {/* The book. Cover first; tap it to open to the spread. */}
@@ -89,40 +113,58 @@ export default function BookReaderScreen() {
               <Text style={{ color: "rgba(236,233,241,0.7)", fontSize: 13, fontFamily: "PatrickHand" }}>tap to open</Text>
             </Animated.View>
           ) : (
-            <PageTuner label={`reading (${category})`} defaultZone={PAGE} contentKey={`${phase}-${idx}`}>
-              {(fs) => (
-                <View style={{ paddingHorizontal: 4 }}>
-                  {phase === "contents" ? (
-                    <>
-                      <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 22 * fs, textAlign: "center", marginBottom: 2 }}>{meta.label}</Text>
-                      <Text style={{ color: INK_SOFT, fontSize: 11.5 * fs, textAlign: "center", marginBottom: 12 }}>{meta.blurb}</Text>
-                      {articles.map((a, i) => (
-                        <Pressable key={a.id} onPress={() => openArticle(i)} style={{ paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: "rgba(51,42,36,0.14)" }}>
-                          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                            <Text style={{ color: INK_SOFT, fontSize: 12 * fs, width: 16 }}>{i + 1}</Text>
-                            <View style={{ flex: 1 }}>
-                              <Text style={{ color: INK, fontSize: 14 * fs, fontFamily: "PatrickHand" }}>{a.title}</Text>
-                              <Text style={{ color: INK_SOFT, fontSize: 10.5 * fs }} numberOfLines={1}>{a.minutes} min · {a.teaser}</Text>
-                            </View>
-                            <Feather name="chevron-right" size={14} color={INK_SOFT} />
+            <PageTuner
+              label={`reading (${category})`}
+              defaultZone={PAGE}
+              defaultFontScale={0.8}
+              contentKey={`${phase}-${idx}`}
+              scroll={phase === "contents"}
+            >
+              {(fs) =>
+                phase === "contents" ? (
+                  <View style={{ paddingHorizontal: 4 }}>
+                    <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 22 * fs, textAlign: "center", marginBottom: 2 }}>{meta.label}</Text>
+                    <Text style={{ color: INK_SOFT, fontSize: 11.5 * fs, textAlign: "center", marginBottom: 12 }}>{meta.blurb}</Text>
+                    {articles.map((a, i) => (
+                      <Pressable key={a.id} onPress={() => openArticle(i)} style={{ paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: "rgba(51,42,36,0.14)" }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                          <Text style={{ color: INK_SOFT, fontSize: 12 * fs, width: 16 }}>{i + 1}</Text>
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: INK, fontSize: 14 * fs, fontFamily: "PatrickHand" }}>{a.title}</Text>
+                            <Text style={{ color: INK_SOFT, fontSize: 10.5 * fs }} numberOfLines={1}>{a.minutes} min · {a.teaser}</Text>
                           </View>
-                        </Pressable>
-                      ))}
-                    </>
-                  ) : (
-                    <>
-                      <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 20 * fs, marginBottom: 8 }}>{articles[idx]?.title}</Text>
-                      {articles[idx]?.sections.map((s, i) => <Section key={i} s={s} scale={fs} />)}
-                      {idx < articles.length - 1 ? (
-                        <Pressable onPress={() => openArticle(idx + 1)} style={{ marginTop: 12, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
-                          <Text style={{ color: INK_SOFT, fontSize: 12 * fs, fontFamily: "PatrickHand" }}>next page</Text>
                           <Feather name="chevron-right" size={14} color={INK_SOFT} />
-                        </Pressable>
-                      ) : null}
-                    </>
-                  )}
-                </View>
-              )}
+                        </View>
+                      </Pressable>
+                    ))}
+                  </View>
+                ) : (
+                  (() => {
+                    const a = articles[idx];
+                    const [left, right] = paginate(a?.sections ?? [], 44);
+                    return (
+                      <View style={{ flex: 1, flexDirection: "row" }}>
+                        {/* Left page. */}
+                        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10, paddingHorizontal: 4 }}>
+                          <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 18 * fs, marginBottom: 7 }}>{a?.title}</Text>
+                          {left.map((s, i) => <Section key={i} s={s} scale={fs} />)}
+                        </ScrollView>
+                        <View style={{ width: spine }} />
+                        {/* Right page. */}
+                        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10, paddingHorizontal: 4 }}>
+                          {right.map((s, i) => <Section key={i} s={s} scale={fs} />)}
+                          {idx < articles.length - 1 ? (
+                            <Pressable onPress={() => openArticle(idx + 1)} style={{ marginTop: 10, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                              <Text style={{ color: INK_SOFT, fontSize: 12 * fs, fontFamily: "PatrickHand" }}>next page</Text>
+                              <Feather name="chevron-right" size={14} color={INK_SOFT} />
+                            </Pressable>
+                          ) : null}
+                        </ScrollView>
+                      </View>
+                    );
+                  })()
+                )
+              }
             </PageTuner>
           )}
         </ImageBackground>

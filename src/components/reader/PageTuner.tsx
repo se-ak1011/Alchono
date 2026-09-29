@@ -18,6 +18,7 @@ export function PageTuner({
   defaultZone,
   defaultFontScale = 1,
   contentKey,
+  scroll = true,
   children,
 }: {
   label: string;
@@ -25,6 +26,9 @@ export function PageTuner({
   defaultFontScale?: number;
   /** Changing this re-mounts the scroll content (e.g. new article/tab). */
   contentKey?: string;
+  /** false = the children manage their own layout/scroll (e.g. two page columns);
+   *  the tuner just positions + sizes the box and supplies the font scale. */
+  scroll?: boolean;
   children: (fontScale: number) => React.ReactNode;
 }) {
   const { width, height } = useWindowDimensions();
@@ -42,6 +46,8 @@ export function PageTuner({
   const move = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => editingRef.current,
+      // Capture so dragging wins over any scroll views inside the box.
+      onMoveShouldSetPanResponderCapture: () => editingRef.current,
       onPanResponderGrant: () => { startZone.current = zoneRef.current; },
       onPanResponderMove: (_, g) => {
         setZone({
@@ -78,14 +84,20 @@ export function PageTuner({
   return (
     <>
       <View style={box} {...(editing ? move.panHandlers : {})}>
-        <ScrollView
-          key={contentKey}
-          scrollEnabled={!editing}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 12 }}
-        >
-          {children(fontScale)}
-        </ScrollView>
+        {scroll ? (
+          <ScrollView
+            key={contentKey}
+            scrollEnabled={!editing}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 12 }}
+          >
+            {children(fontScale)}
+          </ScrollView>
+        ) : (
+          <View key={contentKey} style={{ flex: 1 }}>
+            {children(fontScale)}
+          </View>
+        )}
 
         {editing ? (
           <>
