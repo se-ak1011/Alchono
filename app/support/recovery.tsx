@@ -37,10 +37,10 @@ export default function RecoveryScreen() {
           </View>
 
           <ScrollView contentContainerStyle={{ paddingHorizontal: 30, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-            <Placeable id="title">
+            <Placeable id="title" def={{ dx: 0.234, dy: -0.002 }}>
               <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK, marginTop: 6, marginBottom: 1 }}>Recovery</Text>
             </Placeable>
-            <Placeable id="subtitle">
+            <Placeable id="subtitle" def={{ dx: 0.034, dy: 0.015 }}>
               <Text style={{ color: INK_SOFT, fontSize: 15, lineHeight: 21, marginBottom: 16 }}>
                 Not a hard moment — just here. Take your time.
               </Text>

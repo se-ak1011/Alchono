@@ -103,7 +103,7 @@ export default function NotesScreen() {
           <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
             <Feather name="chevron-left" size={26} color={INK} />
           </Pressable>
-          <Placeable id="title">
+          <Placeable id="title" def={{ dx: 0.173, dy: 0.052 }}>
             <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>Your notes</Text>
           </Placeable>
         </View>

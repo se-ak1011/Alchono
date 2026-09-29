@@ -213,7 +213,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.396, y: 0.209, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
       // The Zine — a cover pinned to the corkboard (a live preview; tap to read).
-      { id: "r_zine", caption: "The Zine", kind: "glow", tint: "warm", interaction: "destination", inlay: "zine", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.618, y: 0.149, w: 0.201, h: 0.123, action: { kind: "route", route: "/newsletter" } },
+      { id: "r_zine", caption: "The Zine", kind: "glow", tint: "warm", interaction: "destination", inlay: "zine", haptic: "light", glowScale: 0.8, glowMax: 0.5, rotateY: -42, rotateX: 12, x: 0.63, y: 0.161, w: 0.165, h: 0.114, action: { kind: "route", route: "/newsletter" } },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
@@ -429,18 +429,18 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Profile — the tall locker.
-      { id: "ml_profile", caption: "Profile", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.0, y: 0.23, w: 0.24, h: 0.48, action: { kind: "route", route: "/account" } },
-      { id: "ml_lbl_profile", caption: "Profile", kind: "label", label: "Profile", labelSize: 14, x: 0.02, y: 0.68, w: 0.2, h: 0.05 },
+      { id: "ml_profile", caption: "Profile", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.35, glowMax: 0.45, x: -0.058, y: 0.246, w: 0.24, h: 0.48, action: { kind: "route", route: "/account" } },
+      { id: "ml_lbl_profile", caption: "Profile", kind: "label", label: "Profile", labelSize: 16, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
       // Your moments — the corkboard.
       { id: "ml_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.28, y: 0.24, w: 0.33, h: 0.26, action: { kind: "route", route: "/moments" } },
-      { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, x: 0.3, y: 0.3, w: 0.28, h: 0.05 },
+      { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, rotate: 7, x: 0.315, y: 0.238, w: 0.28, h: 0.05 },
       // Looking forward to — the purple notebook on the desk.
-      { id: "ml_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.28, y: 0.5, w: 0.14, h: 0.05, action: { kind: "route", route: "/goals" } },
-      { id: "ml_lbl_goals", caption: "Looking forward to", kind: "label", label: "Looking forward to", labelSize: 12, x: 0.26, y: 0.56, w: 0.32, h: 0.05 },
+      { id: "ml_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.75, x: 0.283, y: 0.48, w: 0.14, h: 0.05, action: { kind: "route", route: "/goals" } },
+      { id: "ml_lbl_goals", caption: "Looking forward to", kind: "label", label: "Looking forward to", labelSize: 12, x: 0.214, y: 0.423, w: 0.305, h: 0.071 },
       // My circumstances — the desk drawers. The living page: your situation,
       // edited whenever it changes, read by the AI coach.
-      { id: "ml_circumstances", caption: "My circumstances", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.3, y: 0.58, w: 0.2, h: 0.06, action: { kind: "route", route: "/profile/preferences" } },
-      { id: "ml_lbl_circumstances", caption: "My circumstances", kind: "label", label: "My circumstances", labelSize: 11, x: 0.28, y: 0.64, w: 0.28, h: 0.05 },
+      { id: "ml_circumstances", caption: "My circumstances", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.632, y: 0.528, w: 0.2, h: 0.06, action: { kind: "route", route: "/profile/preferences" } },
+      { id: "ml_lbl_circumstances", caption: "My circumstances", kind: "label", label: "Circumstances ", labelSize: 10, rotate: -4, rotateY: -2, x: 0.595, y: 0.548, w: 0.28, h: 0.05 },
     ],
   },
   me_right: {
@@ -564,10 +564,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // The board → "struggling with something else" content.
       { id: "out_board", caption: "Something else", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.33, y: 0.27, w: 0.35, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
-      { id: "out_lbl_board", caption: "Something else", kind: "label", label: "Something else", labelSize: 12, x: 0.31, y: 0.22, w: 0.4, h: 0.05 },
+      { id: "out_lbl_board", caption: "Something else", kind: "label", label: "Struggling with something else too?", labelSize: 11, rotate: 12, x: 0.377, y: 0.282, w: 0.318, h: 0.076 },
       // The door → the café counter (Home right view).
       { id: "out_door", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.02, y: 0.2, w: 0.24, h: 0.5, action: { kind: "node", node: "right" } },
-      { id: "out_lbl_door", caption: "Café", kind: "label", label: "Café", labelSize: 13, x: 0.02, y: 0.15, w: 0.2, h: 0.05 },
+      { id: "out_lbl_door", caption: "Café", kind: "label", label: "Café", labelSize: 18, rotate: 13, rotateY: 2, opacity: 0.95, x: 0.035, y: 0.231, w: 0.2, h: 0.05 },
     ],
   },
 };

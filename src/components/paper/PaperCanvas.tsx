@@ -22,23 +22,35 @@ const EDIT_UI = 'rgba(164,137,222,0.98)';
 type Ctx = {
   editing: boolean;
   editingRef: React.MutableRefObject<boolean>;
-  get: (id: string) => Placement;
+  get: (id: string) => Placement | undefined;
   set: (id: string, p: Placement) => void;
-  register: (id: string) => void;
+  register: (id: string, def: Placement) => void;
   selected: string | null;
   select: (id: string) => void;
 };
 const PaperCtx = createContext<Ctx | null>(null);
 
-export function Placeable({ id, children }: { id: string; children: React.ReactNode }) {
+/**
+ * `def` is the baked-in placement in the SAME units the editor exports:
+ * dx/dy are fractions of the screen, rot in degrees, scale a multiplier.
+ * Left off, the block starts in its natural flow position.
+ */
+export function Placeable({ id, def, children }: { id: string; def?: { dx?: number; dy?: number; rot?: number; scale?: number }; children: React.ReactNode }) {
   const ctx = useContext(PaperCtx);
+  const { width, height } = useWindowDimensions();
   if (!ctx) return <>{children}</>;
 
-  const p = ctx.get(id);
+  const defPx: Placement = {
+    dx: (def?.dx ?? 0) * width,
+    dy: (def?.dy ?? 0) * height,
+    rot: def?.rot ?? 0,
+    scale: def?.scale ?? 1,
+  };
+  const p = ctx.get(id) ?? defPx;
   const pRef = useRef(p); pRef.current = p;
   const start = useRef(p);
 
-  useEffect(() => { ctx.register(id); }, [id]);
+  useEffect(() => { ctx.register(id, defPx); }, [id]);
 
   const pan = useRef(
     PanResponder.create({
@@ -76,9 +88,12 @@ export function PaperCanvas({ label, children, pencilTop = 52 }: { label: string
   const [selected, setSelected] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
 
-  const get = (id: string) => map[id] ?? DEFAULT;
+  const get = (id: string): Placement | undefined => map[id];
   const set = (id: string, p: Placement) => setMap((m) => ({ ...m, [id]: p }));
-  const register = (id: string) => setIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  const register = (id: string, def: Placement) => {
+    setIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setMap((m) => (id in m ? m : { ...m, [id]: def }));
+  };
 
   const patchSelected = (patch: Partial<Placement>) =>
     setMap((m) => (selected ? { ...m, [selected]: { ...(m[selected] ?? DEFAULT), ...patch } } : m));
@@ -91,7 +106,7 @@ export function PaperCanvas({ label, children, pencilTop = 52 }: { label: string
   const exportText = ids.length
     ? ids
         .map((id) => {
-          const t = get(id);
+          const t = get(id) ?? DEFAULT;
           return `  ${id}: dx ${(t.dx / width).toFixed(3)}, dy ${(t.dy / height).toFixed(3)}, rot ${t.rot}, scale ${t.scale}`;
         })
         .join('\n')
