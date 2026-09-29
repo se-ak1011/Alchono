@@ -504,6 +504,9 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The fridge of cans → 0.0 recommendations.
       { id: "cbl_fridge", caption: "0.0 Fridge", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.83, y: 0.31, w: 0.15, h: 0.1, action: { kind: "route", route: "/support/recommendations" } },
       { id: "cbl_lbl_fridge", caption: "0.0 Fridge", kind: "label", label: "0.0 Fridge", labelSize: 12, x: 0.78, y: 0.25, w: 0.2, h: 0.05 },
+      // The door on the left → the Support room (a building connection).
+      { id: "cbl_door", caption: "Support", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.0, y: 0.24, w: 0.16, h: 0.32, action: { kind: "node", node: "support" } },
+      { id: "cbl_lbl_door", caption: "Support", kind: "label", label: "Support", labelSize: 13, x: 0.0, y: 0.2, w: 0.18, h: 0.05 },
     ],
   },
 };
