@@ -29,8 +29,10 @@ const TAB_RECTS: Record<ResourceTab, { top: number; height: number }> = {
   meetings: { top: 0.52, height: 0.085 },
 };
 
-// Default text zone on the open spread (fractions of screen). Tunable in-app.
-const PAGE = { left: 0.08, top: 0.35, width: 0.72, height: 0.24 };
+// Default text zone on the open spread (fractions of screen), tuned in-app.
+// Each Call/Text/Meetings list fits one page, so 0.80× reads cleanly.
+const PAGE = { left: 0.086, top: 0.336, width: 0.72, height: 0.24 };
+const PAGE_FONT = 0.8;
 
 function openResource(r: Resource, router: ReturnType<typeof useRouter>) {
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -77,7 +79,7 @@ export default function ResourceBookScreen() {
             </Animated.View>
           ) : (
             <>
-              <PageTuner label={`resources (${room ?? "home"})`} defaultZone={PAGE} contentKey={tab}>
+              <PageTuner label={`resources (${room ?? "home"})`} defaultZone={PAGE} defaultFontScale={PAGE_FONT} contentKey={tab}>
                 {(fs) => (
                   <View style={{ paddingHorizontal: 4 }}>
                     {items.map((r) => (

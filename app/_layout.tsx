@@ -22,7 +22,6 @@ import { useAuthStore } from '@/store/authStore';
 import { useAuthListener } from '@/hooks/useAuth';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { AppSplash } from '@/components/ui/AppSplash';
-import { UrgeButton } from '@/components/ui/UrgeButton';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -185,7 +184,6 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#201D28' }}>
             <StatusBar style="light" backgroundColor="#201D28" />
             <RootLayoutNav />
-            <UrgeButton />
             {!splashReady && <AppSplash width={width} height={height} />}
           </GestureHandlerRootView>
         </SafeAreaProvider>
