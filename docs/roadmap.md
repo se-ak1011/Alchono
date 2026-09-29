@@ -100,6 +100,25 @@ many screens) is **retired** — the hub rooms replaced that presence.
   ActionZone` components; drop `companionId` from `UserPreferences`. None of this
   blocks anything — they just render empty now.
 
+## 🧭 Onboarding & AI-coach personalization (direction)
+
+Design principle (Marta's, and it's the right one): **you can't extract the
+truth up front.** Someone actively drinking "can't be bothered" with a long form
+and lies to the GP, so they'll lie to (or skip) a sign-up quiz too. So:
+
+- **Onboarding = username & in.** Done. Alchono is anonymous and account-free —
+  a handle is the only thing asked. Reasons/drinking/people were removed.
+- **"My circumstances" is a living page**, not a one-time form. It already exists
+  (`app/profile/preferences.tsx`) and is editable; now reachable from the **Me
+  room's left-view desk drawers**. Your situation, changed whenever life changes.
+- **The AI coach personalises from three streams, no up-front quiz:** behaviour
+  (what you actually do in the app), the living circumstances page, and questions
+  it asks conversationally over time (dodgeable). It starts general/useful and
+  sharpens with use.
+- **Follow-up:** the living page can absorb the sections onboarding dropped
+  (reasons, drinking) so the coach has a fuller declared picture — as/when Marta
+  wants. And wire the coach to actually read behaviour + the page.
+
 ## 🔮 Backlog & ideas
 
 - **Emergency "I need a drink" — the LAST thing.** The floating purple pill has

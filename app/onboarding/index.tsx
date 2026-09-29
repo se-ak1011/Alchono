@@ -22,38 +22,19 @@ import {
   savePushToken,
 } from '@/lib/notifications';
 import {
-  CircleStep,
-  ReasonsStep,
-  DrinkingStep,
   DEFAULT_PREFERENCES,
   nameInputStyle,
 } from '@/components/preferences/PreferenceSections';
 import type { UserPreferences } from '@/types';
 
-// Trust first, information second. One thing is asked for (a name); everything
-// after is optional and clearly skippable.
+// Anonymity first. Alchono asks for one thing — a username — and lets you in.
+// No real name, no account. Everything else lives on the living "My
+// circumstances" page in your room, added if and when you want to.
 const STEPS = [
   {
     id: 'username',
-    title: 'What should we call you?',
-    body: "Pick a username — it's the only name others ever see. Nothing else to fill in here.",
-  },
-  {
-    id: 'reasons',
-    title: 'What brings you here?',
-    body: 'Choose whatever fits — more than one is fine. It just helps me understand where you’re coming from.',
-  },
-  {
-    id: 'drinking',
-    title: 'Would it help if I understood your drinking a little better?',
-    body: 'Completely optional, and never judged. Rough answers are perfect — this only helps me suggest the right things.',
-    optional: true,
-  },
-  {
-    id: 'people',
-    title: 'Who matters to you?',
-    body: 'First names are enough. On a hard night, I can bring them to mind. Skip anything you’d rather not share.',
-    optional: true,
+    title: 'Pick a username',
+    body: 'Anonymous — no real name, no account, nothing to verify. A handle is the only thing we ask, and the only thing anyone ever sees. Everything else is yours to add later, from your room.',
     isLast: true,
   },
 ] as const;
@@ -201,17 +182,21 @@ export default function OnboardingScreen() {
       style={{ flex: 1, backgroundColor: '#201D28' }}
     >
       <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom + 16 }}>
-        {/* Progress dots */}
-        <View className="flex-row gap-1.5 px-6 pt-4 mb-8">
-          {STEPS.map((_, i) => (
-            <View
-              key={i}
-              className={`h-1 flex-1 rounded-full ${
-                i <= step ? 'bg-accent' : 'bg-surface-2'
-              }`}
-            />
-          ))}
-        </View>
+        {/* Progress dots — only when there's more than one step to track. */}
+        {STEPS.length > 1 ? (
+          <View className="flex-row gap-1.5 px-6 pt-4 mb-8">
+            {STEPS.map((_, i) => (
+              <View
+                key={i}
+                className={`h-1 flex-1 rounded-full ${
+                  i <= step ? 'bg-accent' : 'bg-surface-2'
+                }`}
+              />
+            ))}
+          </View>
+        ) : (
+          <View className="pt-4 mb-8" />
+        )}
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
@@ -256,15 +241,6 @@ export default function OnboardingScreen() {
                   </Text>
                 )}
               </View>
-            )}
-            {currentStep.id === 'reasons' && (
-              <ReasonsStep prefs={prefs} onChange={updatePrefs} />
-            )}
-            {currentStep.id === 'drinking' && (
-              <DrinkingStep prefs={prefs} onChange={updatePrefs} />
-            )}
-            {currentStep.id === 'people' && (
-              <CircleStep prefs={prefs} onChange={updatePrefs} />
             )}
           </Animated.View>
         </ScrollView>

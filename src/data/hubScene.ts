@@ -436,6 +436,10 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Looking forward to — the purple notebook on the desk.
       { id: "ml_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.28, y: 0.5, w: 0.14, h: 0.05, action: { kind: "route", route: "/goals" } },
       { id: "ml_lbl_goals", caption: "Looking forward to", kind: "label", label: "Looking forward to", labelSize: 12, x: 0.26, y: 0.56, w: 0.32, h: 0.05 },
+      // My circumstances — the desk drawers. The living page: your situation,
+      // edited whenever it changes, read by the AI coach.
+      { id: "ml_circumstances", caption: "My circumstances", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.3, y: 0.58, w: 0.2, h: 0.06, action: { kind: "route", route: "/profile/preferences" } },
+      { id: "ml_lbl_circumstances", caption: "My circumstances", kind: "label", label: "My circumstances", labelSize: 11, x: 0.28, y: 0.64, w: 0.28, h: 0.05 },
     ],
   },
   me_right: {
