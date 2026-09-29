@@ -390,7 +390,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Recommendations — the 4-card corkboard (0.0 alcohol-free swaps).
       { id: "s_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.6, glowMax: 0.6, x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
       // The right-view door → the Bar (labelled "Break Room").
-      { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "route", route: "/barista" } },
+      { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "node", node: "breakroom" } },
       // "BREAK ROOM" chalked on the door (added in-app).
       { id: "sr_lbl_break", caption: "Break Room", kind: "label", label: "BREAK ROOM", rotate: 3, rotateY: 20, x: 0.599, y: 0.193, w: 0.2, h: 0.08 },
     ],
@@ -507,6 +507,45 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The door on the left → the Support room (a building connection).
       { id: "cbl_door", caption: "Support", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.0, y: 0.24, w: 0.16, h: 0.32, action: { kind: "node", node: "support" } },
       { id: "cbl_lbl_door", caption: "Support", kind: "label", label: "Support", labelSize: 13, x: 0.0, y: 0.2, w: 0.18, h: 0.05 },
+    ],
+  },
+
+  // The Break Room — the second bar/social room. A 2-view room entered from the
+  // Support-right "Break Room" door: you arrive at the vending machine (front),
+  // turn right for the table + the door out. The right door leads "outside" to
+  // the wider-life stuff (ecosystem) rather than back to Support, so the rooms
+  // don't form a closed loop.
+  breakroom: {
+    id: "breakroom",
+    title: "Break Room",
+    image: require("../../assets/scenes/breakroom_front.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    right: "breakroom_right",
+    back: "front",
+    hotspots: [
+      // The vending machine → 0.0 alcohol-free recommendations.
+      { id: "br_vending", caption: "0.0 Drinks", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.45, x: 0.04, y: 0.23, w: 0.36, h: 0.4, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "br_lbl_vending", caption: "0.0 Drinks", kind: "label", label: "0.0 Drinks", labelSize: 12, x: 0.04, y: 0.18, w: 0.3, h: 0.05 },
+    ],
+  },
+  breakroom_right: {
+    id: "breakroom_right",
+    title: "Break Room",
+    image: require("../../assets/scenes/breakroom_right.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "breakroom",
+    back: "front",
+    hotspots: [
+      // The table → Community (the social gathering place).
+      { id: "brr_table", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.18, y: 0.42, w: 0.5, h: 0.22, action: { kind: "route", route: "/community" } },
+      { id: "brr_lbl_table", caption: "Community", kind: "label", label: "Community", labelSize: 13, x: 0.3, y: 0.48, w: 0.26, h: 0.05 },
+      // The door → "outside": the wider-life stuff (struggling with something else).
+      { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.78, y: 0.16, w: 0.2, h: 0.46, action: { kind: "route", route: "/ecosystem" } },
+      { id: "brr_lbl_door", caption: "Outside", kind: "label", label: "Outside", labelSize: 13, x: 0.76, y: 0.12, w: 0.22, h: 0.05 },
     ],
   },
 };

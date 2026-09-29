@@ -64,7 +64,17 @@ _Last updated: 2026-09-29 (Me room in; glows rounded; Saved stub added)_
 - **Café-Bar** — 2-view room (front + left), mocktails you make at home. Entered
   from the café's right counter + the arcade's CAFE-BAR door. Recipe book →
   `/barista` (the mocktail menu, transferred in); the can fridge → 0.0
-  recommendations. Awaiting tuned coordinates.
+  recommendations. Its left-view door → the **Support room**. Awaiting tuned
+  coordinates.
+- **Break Room** — 2-view room (front vending/kitchenette + right table/door),
+  the social second bar. Entered from the Support-right "Break Room" door.
+  Vending → 0.0 recommendations; table → Community; the right door → **"Outside"**
+  (`/ecosystem`, the "struggling with something else" stuff) — deliberately NOT
+  back to Support, to avoid a closed loop. Awaiting tuned coordinates.
+
+**That's every room in the building drawn + wired.** 🎉 The whole world:
+café (front/left/right) + reading shelf + writing desk + arcade ×3 + support ×3
++ Me ×3 + Café-Bar ×2 + Break Room ×2 = 18 connected viewpoints.
 - **Close-ups:** the **Writing desk** (notebook → note, envelopes → letters,
   recorder → press-to-record Voice note screen, tray → saved notes) and the
   **Reading shelf** (9 drawn books).
@@ -159,10 +169,11 @@ dead "Your companion" row removed from Settings.
   faint breathing glow so it's always findable without hunting. Implementation:
   one global overlay, Marta draws the fixture, Claude mounts it + glow + tap→urge,
   maybe a red "alarm" flash on tap. **Must be on every page.**
-- **Break Room** (NEXT room build) — the second bar, the "we're building it" one
-  (Café-Bar is done). Social hub: maybe community / coffee mixes / the stuff we
-  want to surface (mentoring, etc.). Currently the Support-right door and its
-  own future entrance point at `/barista` as a placeholder.
+- **"Outside" room (future):** the Break Room's right door currently opens the
+  `/ecosystem` screen ("struggling with something else"). Lovely candidate to
+  become its own immersive **outside room** when Marta draws it — stepping
+  *outside* the immediate stuff. Also the natural home for **mentoring** and
+  other wider-life bits.
 - **More popups** in the same spirit as the books/directory where they fit.
 
 ## 🎨 Editable in-app vs code
