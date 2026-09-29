@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { PaperBackground } from '@/components/ui/PaperBackground';
+import { PaperCanvas, Placeable } from '@/components/paper/PaperCanvas';
 
 const INK = '#332a24';
 const INK_SOFT = 'rgba(51,42,36,0.55)';
@@ -27,39 +28,49 @@ export default function RecoveryScreen() {
 
   return (
     <PaperBackground>
-      <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 26, paddingTop: 6, paddingBottom: 2 }}>
-          <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
-            <Feather name="chevron-left" size={26} color={INK} />
-          </Pressable>
+      <PaperCanvas label="Recovery">
+        <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 26, paddingTop: 6, paddingBottom: 2 }}>
+            <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
+              <Feather name="chevron-left" size={26} color={INK} />
+            </Pressable>
+          </View>
+
+          <ScrollView contentContainerStyle={{ paddingHorizontal: 30, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+            <Placeable id="title">
+              <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK, marginTop: 6, marginBottom: 1 }}>Recovery</Text>
+            </Placeable>
+            <Placeable id="subtitle">
+              <Text style={{ color: INK_SOFT, fontSize: 15, lineHeight: 21, marginBottom: 16 }}>
+                Not a hard moment — just here. Take your time.
+              </Text>
+            </Placeable>
+
+            <Placeable id="list">
+              <View>
+                {ROWS.map((r, i) => (
+                  <Animated.View key={r.title} entering={FadeInDown.duration(400).delay(80 + i * 60)}>
+                    <Pressable
+                      onPress={() => router.push(r.route as any)}
+                      className="active:opacity-70"
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
+                    >
+                      <View style={{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(51,42,36,0.06)' }}>
+                        <Feather name={r.icon} size={18} color={r.accent} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontFamily: 'PatrickHand', fontSize: 19, color: INK }}>{r.title}</Text>
+                        <Text style={{ color: INK_SOFT, fontSize: 12.5, lineHeight: 17 }}>{r.subtitle}</Text>
+                      </View>
+                      <Feather name="chevron-right" size={16} color={INK_SOFT} />
+                    </Pressable>
+                  </Animated.View>
+                ))}
+              </View>
+            </Placeable>
+          </ScrollView>
         </View>
-
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 30, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-          <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK, marginTop: 6, marginBottom: 1 }}>Recovery</Text>
-          <Text style={{ color: INK_SOFT, fontSize: 15, lineHeight: 21, marginBottom: 16 }}>
-            Not a hard moment — just here. Take your time.
-          </Text>
-
-          {ROWS.map((r, i) => (
-            <Animated.View key={r.title} entering={FadeInDown.duration(400).delay(80 + i * 60)}>
-              <Pressable
-                onPress={() => router.push(r.route as any)}
-                className="active:opacity-70"
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
-              >
-                <View style={{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(51,42,36,0.06)' }}>
-                  <Feather name={r.icon} size={18} color={r.accent} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: 'PatrickHand', fontSize: 19, color: INK }}>{r.title}</Text>
-                  <Text style={{ color: INK_SOFT, fontSize: 12.5, lineHeight: 17 }}>{r.subtitle}</Text>
-                </View>
-                <Feather name="chevron-right" size={16} color={INK_SOFT} />
-              </Pressable>
-            </Animated.View>
-          ))}
-        </ScrollView>
-      </View>
+      </PaperCanvas>
     </PaperBackground>
   );
 }

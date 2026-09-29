@@ -228,6 +228,22 @@ Captured while she stepped away; work through top-down.
    some labels need renaming (she'll specify which).
 5. More to come — she was mid-list when she paused for dishes.
 
+## ✏️ In-app text placement — now everywhere
+
+"All text, not just the letters." Move/rotate/size any text in-app:
+- **Room labels** — hub editor already does move + size + rotate + depth-tilt.
+- **Reader / resources** (`PageTuner`) — move + resize + font, **+ rotate** (added).
+- **Letters desk** — envelopes drag + rotate; paper move/resize + font.
+- **Paper pages** (Tonight, A note, Your notes, Recovery) — wrapped in
+  `<PaperCanvas>` with `<Placeable id="…">` blocks: pencil (top-right) → each
+  block drags + rotates + scales, Reset + **Export placement**. Placement is a
+  transform (translate/rotate/scale) so flow is untouched until moved. Your
+  notes = title only placeable (its body is a scrolling FlatList; can't be
+  transform-placed without breaking scroll). Component:
+  `src/components/paper/PaperCanvas.tsx`. Export gives dx/dy (fractions), rot,
+  scale per block — send them and Claude bakes as `defaultRotate` /
+  default-placement props.
+
 ## 🎨 Editable in-app vs code
 
 - **In-app (Marta, via editors):** hotspot placement/size, labels (size, rotate,

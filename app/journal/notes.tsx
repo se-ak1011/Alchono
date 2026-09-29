@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { PaperBackground } from '@/components/ui/PaperBackground';
+import { PaperCanvas, Placeable } from '@/components/paper/PaperCanvas';
 import {
   useJournalNotes,
   useDeleteNote,
@@ -96,12 +97,15 @@ export default function NotesScreen() {
 
   return (
     <PaperBackground>
+      <PaperCanvas label="Your notes">
       <View style={{ flex: 1, paddingTop: insets.top }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingTop: 8, paddingBottom: 4 }}>
           <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
             <Feather name="chevron-left" size={26} color={INK} />
           </Pressable>
-          <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>Your notes</Text>
+          <Placeable id="title">
+            <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>Your notes</Text>
+          </Placeable>
         </View>
 
         <FlatList
@@ -143,6 +147,7 @@ export default function NotesScreen() {
           )}
         />
       </View>
+      </PaperCanvas>
     </PaperBackground>
   );
 }
