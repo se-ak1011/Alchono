@@ -128,21 +128,21 @@ and lies to the GP, so they'll lie to (or skip) a sign-up quiz too. So:
 A lot lives in Settings/Profile that almost no one will find. Candidates to give
 a real home in the world (diegetic object / page / pop-up), not just a settings
 row:
-- **Emergency contacts** — important; pair with the future emergency "break-glass"
-  button, and/or surface near Resources.
-- **Care team** (counsellor sees your trends) + **Trusted person** (quiet heads-up
-  on a hard day) — the human safety net; fit the **Support room**.
-- **Support someone else / mentoring** — social; **Support** or the future
-  **Break Room**.
-- **The Zine** (a periodic something in your inbox — stories, puzzle, recipe) —
-  begs to be a diegetic object: a zine/magazine on the **café newspaper rack** or
-  in the Break Room.
+- **The Zine** — ✅ **done**: a `ZineInlay` cover pinned to the **café-right
+  corkboard** (live preview, taps through to `/newsletter`).
+- **Care team** + **Trusted person** — ✅ **done**: placed on the **bed** in the
+  Me right view (Tonight moved to the bedside lamp to make room). Human safety
+  net, in your private room.
+- **Emergency contacts** — parked: pair with the future emergency "break-glass"
+  button (same idea — reach a human fast).
+- **Support someone else / mentoring** — parked until the **Support/Break Room**
+  work.
 - **Messages** already has a home (Support room computer).
 - Notifications/nudges toggles, export/delete data, privacy → stay in Settings,
   now reachable via the hub's top-right gear.
 
-Done this pass: Settings + Profile shortcuts added to the hub (top-right); the
-dead "Your companion" row removed from Settings (companion cleanup progress).
+Done earlier this pass: Settings + Profile shortcuts on the hub (top-right); the
+dead "Your companion" row removed from Settings.
 
 ## 🔮 Backlog & ideas
 

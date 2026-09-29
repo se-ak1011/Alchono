@@ -231,6 +231,29 @@ export function WordInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
+// The Zine — a little cover pinned to the corkboard, like a paper on a board.
+// Static (a pinned paper, not a live screen): a masthead, a line, faux columns.
+// ————————————————————————————————————————————————————————————————
+export function ZineInlay() {
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#efe6d2", overflow: "hidden", paddingHorizontal: "9%", paddingVertical: "8%" }]}>
+      <Text style={{ fontFamily: "PatrickHand", fontSize: 13, color: "#2b2320", textAlign: "center", letterSpacing: 1 }} numberOfLines={1}>
+        THE ZINE
+      </Text>
+      <View style={{ height: 1, backgroundColor: "rgba(43,35,32,0.4)", marginVertical: "5%" }} />
+      <Text style={{ fontFamily: "PatrickHand", fontSize: 9, color: "#2b2320", lineHeight: 11 }} numberOfLines={2}>
+        Stories · a puzzle · a recipe
+      </Text>
+      <View style={{ gap: 3, marginTop: "7%" }}>
+        {[1, 0.82, 0.93, 0.68].map((w, i) => (
+          <View key={i} style={{ height: 2.5, width: `${w * 100}%`, backgroundColor: "rgba(43,35,32,0.22)", borderRadius: 1 }} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 export const INLAYS: Record<string, React.ComponentType> = {
@@ -241,4 +264,5 @@ export const INLAYS: Record<string, React.ComponentType> = {
   arcade_word: WordInlay,
   community: CommunityInlay, // video thumbnails
   sky: SkyInlay,
+  zine: ZineInlay, // a zine cover pinned to the café-right corkboard
 };

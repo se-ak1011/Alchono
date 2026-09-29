@@ -212,7 +212,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
       { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.396, y: 0.209, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
-      { id: "r_glow_1", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.65, x: 0.618, y: 0.149, w: 0.201, h: 0.123 },
+      // The Zine — a cover pinned to the corkboard (a live preview; tap to read).
+      { id: "r_zine", caption: "The Zine", kind: "glow", tint: "warm", interaction: "destination", inlay: "zine", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.618, y: 0.149, w: 0.201, h: 0.123, action: { kind: "route", route: "/newsletter" } },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
@@ -452,9 +453,14 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "me_front",
     back: "front",
     hotspots: [
-      // Tonight — the bed (drink tracking).
-      { id: "mr_tonight", caption: "Tonight", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.9, glowMax: 0.55, x: 0.36, y: 0.52, w: 0.6, h: 0.34, action: { kind: "route", route: "/session/track" } },
-      { id: "mr_lbl_tonight", caption: "Tonight", kind: "label", label: "Tonight", labelSize: 14, x: 0.5, y: 0.62, w: 0.2, h: 0.05 },
+      // Tonight — the bedside lamp (drink tracking).
+      { id: "mr_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.16, y: 0.36, w: 0.16, h: 0.14, action: { kind: "route", route: "/session/track" } },
+      { id: "mr_lbl_tonight", caption: "Tonight", kind: "label", label: "Tonight", labelSize: 13, x: 0.13, y: 0.5, w: 0.22, h: 0.05 },
+      // Care team + Trusted person — the bed (your human safety net).
+      { id: "mr_care", caption: "Care team", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.5, y: 0.5, w: 0.3, h: 0.13, action: { kind: "route", route: "/profile/care-team" } },
+      { id: "mr_lbl_care", caption: "Care team", kind: "label", label: "Care team", labelSize: 13, x: 0.52, y: 0.55, w: 0.26, h: 0.05 },
+      { id: "mr_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.44, y: 0.66, w: 0.42, h: 0.16, action: { kind: "route", route: "/profile/trusted" } },
+      { id: "mr_lbl_trusted", caption: "Trusted person", kind: "label", label: "Trusted person", labelSize: 12, x: 0.5, y: 0.72, w: 0.32, h: 0.05 },
       // Saved — the bedside drawers (your favourites stash).
       { id: "mr_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.05, y: 0.52, w: 0.28, h: 0.2, action: { kind: "route", route: "/saved" } },
       { id: "mr_lbl_saved", caption: "Saved", kind: "label", label: "Saved", labelSize: 14, x: 0.06, y: 0.48, w: 0.2, h: 0.05 },
