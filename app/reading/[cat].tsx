@@ -1,34 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ScrollView, ImageBackground, useWindowDimensions } from "react-native";
-import Animated, { FadeIn, SlideInRight } from "react-native-reanimated";
+import { View, Text, Pressable, ImageBackground, useWindowDimensions } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { BOOKS } from "@/data/books";
 import { TOOLKIT, CATEGORY_META, type ToolkitCategory, type ToolSection } from "@/lib/toolkit";
+import { PageTuner } from "@/components/reader/PageTuner";
 
 const INK = "#332a24"; // warm dark ink on the cream page
 const INK_SOFT = "#6a5d52";
 
-// The open book sits in a band across the middle of the spread art (the rest is
-// the shelf around it). Text is painted into the two page zones. These are
-// fractions of the screen — nudge them once, they hold for every book since the
-// spreads are all drawn from the same template.
-const PAGE = { top: 0.375, bottom: 0.6, left: 0.075, right: 0.075, spineGap: 0.06 };
+// Default text zone over the open spread (fractions of screen). Tunable in-app
+// via the pencil; once dialled in, one set holds for every book (same template).
+const PAGE = { left: 0.075, top: 0.375, width: 0.85, height: 0.225 };
 
-function Section({ s }: { s: ToolSection }) {
+function Section({ s, scale }: { s: ToolSection; scale: number }) {
+  const fs = (n: number) => n * scale;
   switch (s.type) {
     case "heading":
-      return <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 17, marginTop: 10, marginBottom: 3 }}>{s.text}</Text>;
+      return <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: fs(17), marginTop: 10, marginBottom: 3 }}>{s.text}</Text>;
     case "paragraph":
-      return <Text style={{ color: INK, fontSize: 12.5, lineHeight: 18, marginBottom: 7 }}>{s.text}</Text>;
+      return <Text style={{ color: INK, fontSize: fs(12.5), lineHeight: fs(18), marginBottom: 7 }}>{s.text}</Text>;
     case "callout":
-      return <Text style={{ color: INK_SOFT, fontSize: 12, lineHeight: 17, marginBottom: 7, fontStyle: "italic" }}>{s.text}</Text>;
+      return <Text style={{ color: INK_SOFT, fontSize: fs(12), lineHeight: fs(17), marginBottom: 7, fontStyle: "italic" }}>{s.text}</Text>;
     case "steps":
       return (
         <View style={{ marginBottom: 7, gap: 3 }}>
           {s.items.map((it, i) => (
-            <Text key={i} style={{ color: INK, fontSize: 12.5, lineHeight: 18 }}>{`${i + 1}.  ${it}`}</Text>
+            <Text key={i} style={{ color: INK, fontSize: fs(12.5), lineHeight: fs(18) }}>{`${i + 1}.  ${it}`}</Text>
           ))}
         </View>
       );
@@ -37,7 +37,7 @@ function Section({ s }: { s: ToolSection }) {
       return (
         <View style={{ marginBottom: 7, gap: 3 }}>
           {s.items.map((it, i) => (
-            <Text key={i} style={{ color: INK, fontSize: 12.5, lineHeight: 18 }}>{`•  ${it}`}</Text>
+            <Text key={i} style={{ color: INK, fontSize: fs(12.5), lineHeight: fs(18) }}>{`•  ${it}`}</Text>
           ))}
         </View>
       );
@@ -49,7 +49,7 @@ function Section({ s }: { s: ToolSection }) {
 export default function BookReaderScreen() {
   const { cat } = useLocalSearchParams<{ cat: string }>();
   const router = useRouter();
-  const { width, height } = useWindowDimensions();
+  const { height } = useWindowDimensions();
   const category = cat as ToolkitCategory;
   const art = BOOKS[category];
   const meta = CATEGORY_META[category];
@@ -63,11 +63,6 @@ export default function BookReaderScreen() {
     if (!art) router.replace(`/toolkit/c/${category}` as any);
   }, [art, category, router]);
   if (!art) return <View style={{ flex: 1, backgroundColor: "#0d0b12" }} />;
-
-  const pageTop = height * PAGE.top;
-  const pageHeight = height * (PAGE.bottom - PAGE.top);
-  const pageLeft = width * PAGE.left;
-  const pageRight = width * PAGE.right;
 
   const goBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -94,47 +89,41 @@ export default function BookReaderScreen() {
               <Text style={{ color: "rgba(236,233,241,0.7)", fontSize: 13, fontFamily: "PatrickHand" }}>tap to open</Text>
             </Animated.View>
           ) : (
-            // The reading surface, painted into the page band of the spread.
-            <Animated.View
-              key={`${phase}-${idx}`}
-              entering={SlideInRight.duration(260)}
-              style={{ position: "absolute", top: pageTop, left: pageLeft, right: pageRight, height: pageHeight }}
-            >
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 14, paddingHorizontal: width * PAGE.spineGap }}
-              >
-                {phase === "contents" ? (
-                  <>
-                    <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 22, textAlign: "center", marginBottom: 2 }}>{meta.label}</Text>
-                    <Text style={{ color: INK_SOFT, fontSize: 11.5, textAlign: "center", marginBottom: 12 }}>{meta.blurb}</Text>
-                    {articles.map((a, i) => (
-                      <Pressable key={a.id} onPress={() => openArticle(i)} style={{ paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: "rgba(51,42,36,0.14)" }}>
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                          <Text style={{ color: INK_SOFT, fontSize: 12, width: 16 }}>{i + 1}</Text>
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ color: INK, fontSize: 14, fontFamily: "PatrickHand" }}>{a.title}</Text>
-                            <Text style={{ color: INK_SOFT, fontSize: 10.5 }} numberOfLines={1}>{a.minutes} min · {a.teaser}</Text>
+            <PageTuner label={`reading (${category})`} defaultZone={PAGE} contentKey={`${phase}-${idx}`}>
+              {(fs) => (
+                <View style={{ paddingHorizontal: 4 }}>
+                  {phase === "contents" ? (
+                    <>
+                      <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 22 * fs, textAlign: "center", marginBottom: 2 }}>{meta.label}</Text>
+                      <Text style={{ color: INK_SOFT, fontSize: 11.5 * fs, textAlign: "center", marginBottom: 12 }}>{meta.blurb}</Text>
+                      {articles.map((a, i) => (
+                        <Pressable key={a.id} onPress={() => openArticle(i)} style={{ paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: "rgba(51,42,36,0.14)" }}>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                            <Text style={{ color: INK_SOFT, fontSize: 12 * fs, width: 16 }}>{i + 1}</Text>
+                            <View style={{ flex: 1 }}>
+                              <Text style={{ color: INK, fontSize: 14 * fs, fontFamily: "PatrickHand" }}>{a.title}</Text>
+                              <Text style={{ color: INK_SOFT, fontSize: 10.5 * fs }} numberOfLines={1}>{a.minutes} min · {a.teaser}</Text>
+                            </View>
+                            <Feather name="chevron-right" size={14} color={INK_SOFT} />
                           </View>
+                        </Pressable>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 20 * fs, marginBottom: 8 }}>{articles[idx]?.title}</Text>
+                      {articles[idx]?.sections.map((s, i) => <Section key={i} s={s} scale={fs} />)}
+                      {idx < articles.length - 1 ? (
+                        <Pressable onPress={() => openArticle(idx + 1)} style={{ marginTop: 12, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                          <Text style={{ color: INK_SOFT, fontSize: 12 * fs, fontFamily: "PatrickHand" }}>next page</Text>
                           <Feather name="chevron-right" size={14} color={INK_SOFT} />
-                        </View>
-                      </Pressable>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <Text style={{ color: INK, fontFamily: "PatrickHand", fontSize: 20, marginBottom: 8 }}>{articles[idx]?.title}</Text>
-                    {articles[idx]?.sections.map((s, i) => <Section key={i} s={s} />)}
-                    {idx < articles.length - 1 ? (
-                      <Pressable onPress={() => openArticle(idx + 1)} style={{ marginTop: 12, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
-                        <Text style={{ color: INK_SOFT, fontSize: 12, fontFamily: "PatrickHand" }}>next page</Text>
-                        <Feather name="chevron-right" size={14} color={INK_SOFT} />
-                      </Pressable>
-                    ) : null}
-                  </>
-                )}
-              </ScrollView>
-            </Animated.View>
+                        </Pressable>
+                      ) : null}
+                    </>
+                  )}
+                </View>
+              )}
+            </PageTuner>
           )}
         </ImageBackground>
       </Pressable>

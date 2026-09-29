@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ScrollView, ImageBackground, Linking, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, ImageBackground, Linking, useWindowDimensions } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { RESOURCE_BOOKS, type ResourceTab } from "@/data/resourceBooks";
 import { RESOURCE_SECTIONS, type Resource } from "@/lib/resources";
+import { PageTuner } from "@/components/reader/PageTuner";
 
 const INK = "#332a24";
 const INK_SOFT = "#6a5d52";
@@ -28,8 +29,8 @@ const TAB_RECTS: Record<ResourceTab, { top: number; height: number }> = {
   meetings: { top: 0.52, height: 0.085 },
 };
 
-// The cream page band on the open spread (fractions of the screen).
-const PAGE = { top: 0.35, bottom: 0.59, left: 0.08, right: 0.2 };
+// Default text zone on the open spread (fractions of screen). Tunable in-app.
+const PAGE = { left: 0.08, top: 0.35, width: 0.72, height: 0.24 };
 
 function openResource(r: Resource, router: ReturnType<typeof useRouter>) {
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -76,21 +77,18 @@ export default function ResourceBookScreen() {
             </Animated.View>
           ) : (
             <>
-              {/* Entries for the active tab, on the page. */}
-              <Animated.View
-                key={tab}
-                entering={FadeIn.duration(240)}
-                style={{ position: "absolute", top: height * PAGE.top, left: width * PAGE.left, right: width * PAGE.right, height: height * (PAGE.bottom - PAGE.top) }}
-              >
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 12 }}>
-                  {items.map((r) => (
-                    <Pressable key={r.title} onPress={() => openResource(r, router)} style={{ paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: "rgba(51,42,36,0.14)" }}>
-                      <Text style={{ color: INK, fontSize: 15, fontFamily: "PatrickHand" }}>{r.title}</Text>
-                      <Text style={{ color: INK_SOFT, fontSize: 11 }} numberOfLines={1}>{r.action}</Text>
-                    </Pressable>
-                  ))}
-                </ScrollView>
-              </Animated.View>
+              <PageTuner label={`resources (${room ?? "home"})`} defaultZone={PAGE} contentKey={tab}>
+                {(fs) => (
+                  <View style={{ paddingHorizontal: 4 }}>
+                    {items.map((r) => (
+                      <Pressable key={r.title} onPress={() => openResource(r, router)} style={{ paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: "rgba(51,42,36,0.14)" }}>
+                        <Text style={{ color: INK, fontSize: 15 * fs, fontFamily: "PatrickHand" }}>{r.title}</Text>
+                        <Text style={{ color: INK_SOFT, fontSize: 11 * fs }} numberOfLines={1}>{r.action}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+              </PageTuner>
 
               {/* Invisible tap zones over the drawn thumb-tabs. */}
               {TABS.map((t) => (
