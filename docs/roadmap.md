@@ -57,9 +57,14 @@ _Last updated: 2026-09-29 (Me room in; glows rounded; Saved stub added)_
   Recommendations, Break-Room door.
 - **Me** — left / front / right, your private space. **No lateral doors by
   design** (close the door and you're just there); only L↔F↔R + back to café.
-  Profile (locker), Your moments (corkboard), Looking forward to (notebook),
-  My Sky (window), AI Coach (armchair), Tonight (bed), Saved (bedside drawer).
+  Profile (locker), Your moments (corkboard), Looking forward to (notebook), My
+  circumstances (desk drawer), My Sky (window), AI Coach (armchair), Tonight
+  (bedside lamp), Care team + Trusted person (bed), Saved (bedside drawer).
   Entered from the café/support "Me". Awaiting Marta's tuned coordinates.
+- **Café-Bar** — 2-view room (front + left), mocktails you make at home. Entered
+  from the café's right counter + the arcade's CAFE-BAR door. Recipe book →
+  `/barista` (the mocktail menu, transferred in); the can fridge → 0.0
+  recommendations. Awaiting tuned coordinates.
 - **Close-ups:** the **Writing desk** (notebook → note, envelopes → letters,
   recorder → press-to-record Voice note screen, tray → saved notes) and the
   **Reading shelf** (9 drawn books).
@@ -154,8 +159,10 @@ dead "Your companion" row removed from Settings.
   faint breathing glow so it's always findable without hunting. Implementation:
   one global overlay, Marta draws the fixture, Claude mounts it + glow + tap→urge,
   maybe a red "alarm" flash on tap. **Must be on every page.**
-- **Future rooms:** two bar rooms — **Café-Bar** (mocktails you can make at home)
-  and **Break Room** (social hub: maybe profile / community / coffee mixes).
+- **Break Room** (NEXT room build) — the second bar, the "we're building it" one
+  (Café-Bar is done). Social hub: maybe community / coffee mixes / the stuff we
+  want to surface (mentoring, etc.). Currently the Support-right door and its
+  own future entrance point at `/barista` as a placeholder.
 - **More popups** in the same spirit as the books/directory where they fit.
 
 ## 🎨 Editable in-app vs code

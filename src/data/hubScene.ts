@@ -150,7 +150,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
 
       // — objects (the object itself communicates its function) —
-      { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "route", route: "/barista" } },
+      { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "node", node: "cafebar" } },
       { id: "games", caption: "Games", kind: "glow", tint: "purple", interaction: "object", inlay: "arcade", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, rotate: 7, rotateX: 30, x: 0.923, y: 0.395, w: 0.089, h: 0.041, action: { kind: "node", node: "arcade" } },
       { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.65, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/resources/home" } },
 
@@ -207,7 +207,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", labelSize: 17, rotate: 14, x: 0.472, y: 0.45, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
       { id: "r_games", caption: "Games Arcade", kind: "glow", interaction: "object", inlay: "arcade", glowMax: 0.6, rotate: 9, rotateY: -10, rotateX: 26, x: 0.382, y: 0.347, w: 0.068, h: 0.043, action: { kind: "node", node: "arcade" } },
-      { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "route", route: "/barista" } },
+      { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "node", node: "cafebar" } },
       { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/resources/home" } },
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
       { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.396, y: 0.209, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
@@ -310,7 +310,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // The left door → the Bar (the arcade sits by the bar on the café view).
       // Destination changed from Support; the chalk sign is relabelled on screen.
-      { id: "al_bar", caption: "The Bar", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.65, x: 0.132, y: 0.334, w: 0.254, h: 0.21, action: { kind: "route", route: "/barista" } },
+      { id: "al_bar", caption: "The Bar", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.65, x: 0.132, y: 0.334, w: 0.254, h: 0.21, action: { kind: "node", node: "cafebar" } },
       // Chalk sign on the door (added in-app) — relabel to "Bar" in the editor.
       { id: "al_lbl_support", caption: "Cafe Bar", kind: "label", label: "CAFE-BAR", labelSize: 24, rotate: 14, rotateY: 18, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
     ],
@@ -464,6 +464,46 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Saved — the bedside drawers (your favourites stash).
       { id: "mr_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.05, y: 0.52, w: 0.28, h: 0.2, action: { kind: "route", route: "/saved" } },
       { id: "mr_lbl_saved", caption: "Saved", kind: "label", label: "Saved", labelSize: 14, x: 0.06, y: 0.48, w: 0.2, h: 0.05 },
+    ],
+  },
+
+  // The Café-Bar — mocktails you can make at home. A 2-view room, entered from
+  // the café's right counter (and the arcade's CAFE-BAR door); turn left for the
+  // mixing station. The back arrow exits to the café.
+  cafebar: {
+    id: "cafebar",
+    title: "Café-Bar",
+    image: require("../../assets/scenes/cafebar_front.png"),
+    imgW: 851,
+    imgH: 1848,
+    fit: "screen",
+    left: "cafebar_left",
+    back: "front",
+    hotspots: [
+      // The recipe book on the counter → the mocktail menu (the current bar page).
+      { id: "cb_recipes", caption: "Recipes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.02, y: 0.39, w: 0.19, h: 0.05, action: { kind: "route", route: "/barista" } },
+      { id: "cb_lbl_recipes", caption: "Recipes", kind: "label", label: "Recipes", labelSize: 13, x: 0.02, y: 0.33, w: 0.2, h: 0.05 },
+      // The fridge of cans → 0.0 alcohol-free recommendations (grab one in).
+      { id: "cb_fridge", caption: "0.0 Fridge", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.0, y: 0.31, w: 0.19, h: 0.11, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "cb_lbl_fridge", caption: "0.0 Fridge", kind: "label", label: "0.0 Fridge", labelSize: 12, x: 0.0, y: 0.44, w: 0.2, h: 0.05 },
+    ],
+  },
+  cafebar_left: {
+    id: "cafebar_left",
+    title: "Café-Bar",
+    image: require("../../assets/scenes/cafebar_left.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    right: "cafebar",
+    back: "front",
+    hotspots: [
+      // The recipe book → the mocktail menu.
+      { id: "cbl_recipes", caption: "Recipes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.6, x: 0.82, y: 0.42, w: 0.16, h: 0.06, action: { kind: "route", route: "/barista" } },
+      { id: "cbl_lbl_recipes", caption: "Recipes", kind: "label", label: "Recipes", labelSize: 13, x: 0.78, y: 0.37, w: 0.2, h: 0.05 },
+      // The fridge of cans → 0.0 recommendations.
+      { id: "cbl_fridge", caption: "0.0 Fridge", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.83, y: 0.31, w: 0.15, h: 0.1, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "cbl_lbl_fridge", caption: "0.0 Fridge", kind: "label", label: "0.0 Fridge", labelSize: 12, x: 0.78, y: 0.25, w: 0.2, h: 0.05 },
     ],
   },
 };
