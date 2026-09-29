@@ -761,6 +761,34 @@ export function AdventureHub() {
         <Feather name={editMode ? "eye-off" : "grid"} size={18} color="#EFEAF5" />
       </Pressable>
 
+      {/* App-level shortcuts, always one tap away from any view in the hub.
+          Settings (nudges/notifications/widgets) + your profile. Hidden while
+          the editor is on so it doesn't clutter a design pass. */}
+      {!editMode ? (
+        <>
+          <Pressable
+            onPress={() => router.push("/settings" as any)}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Settings"
+            className="active:opacity-70"
+            style={{ position: "absolute", top: 100, right: 14, width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(13,11,18,0.6)", borderWidth: 1, borderColor: "rgba(190,160,210,0.4)" }}
+          >
+            <Feather name="settings" size={18} color="#EFEAF5" />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/account" as any)}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Profile"
+            className="active:opacity-70"
+            style={{ position: "absolute", top: 148, right: 14, width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(13,11,18,0.6)", borderWidth: 1, borderColor: "rgba(190,160,210,0.4)" }}
+          >
+            <Feather name="user" size={18} color="#EFEAF5" />
+          </Pressable>
+        </>
+      ) : null}
+
       {editMode ? (
         <Pressable
           onPress={() => setShowExport(true)}
