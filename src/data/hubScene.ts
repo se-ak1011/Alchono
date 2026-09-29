@@ -411,11 +411,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // My Sky — the window full of stars.
-      { id: "mf_sky", caption: "My Sky", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.9, glowMax: 0.55, x: 0.16, y: 0.13, w: 0.68, h: 0.4, action: { kind: "route", route: "/constellation" } },
-      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 14, x: 0.4, y: 0.5, w: 0.2, h: 0.05 },
+      { id: "mf_sky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.2, glowMax: 0.1, x: 0.468, y: 0.055, w: 0.088, h: 0.045, action: { kind: "route", route: "/constellation" } },
+      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.203, y: 0.229, w: 0.597, h: 0.269 },
       // AI Coach — the armchair (same coach as Support).
-      { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.0, y: 0.56, w: 0.28, h: 0.22, action: { kind: "route", route: "/support/coach" } },
-      { id: "mf_lbl_coach", caption: "AI Coach", kind: "label", label: "AI Coach", labelSize: 14, x: 0.02, y: 0.5, w: 0.24, h: 0.05 },
+      { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: -0.062, y: 0.548, w: 0.272, h: 0.136, action: { kind: "route", route: "/support/coach" } },
+      { id: "mf_lbl_coach", caption: "AI Coach", kind: "label", label: "AI Coach", labelSize: 14, rotate: -9, x: 0.022, y: 0.653, w: 0.24, h: 0.05 },
     ],
   },
   me_left: {
