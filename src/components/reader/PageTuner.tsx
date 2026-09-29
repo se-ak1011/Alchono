@@ -17,6 +17,7 @@ export function PageTuner({
   label,
   defaultZone,
   defaultFontScale = 1,
+  defaultRotate = 0,
   contentKey,
   scroll = true,
   children,
@@ -24,6 +25,7 @@ export function PageTuner({
   label: string;
   defaultZone: PageZone;
   defaultFontScale?: number;
+  defaultRotate?: number;
   /** Changing this re-mounts the scroll content (e.g. new article/tab). */
   contentKey?: string;
   /** false = the children manage their own layout/scroll (e.g. two page columns);
@@ -35,6 +37,7 @@ export function PageTuner({
   const [editing, setEditing] = useState(false);
   const [zone, setZone] = useState<PageZone>(defaultZone);
   const [fontScale, setFontScale] = useState(defaultFontScale);
+  const [rot, setRot] = useState(defaultRotate);
   const [showExport, setShowExport] = useState(false);
 
   // Refs mirror state so the PanResponders (created once) read live values.
@@ -91,6 +94,7 @@ export function PageTuner({
     top: zone.top * height,
     width: zone.width * width,
     height: zone.height * height,
+    transform: [{ rotate: `${rot}deg` }],
   };
 
   return (
@@ -134,6 +138,16 @@ export function PageTuner({
       {editing ? (
         <View style={{ position: "absolute", left: 12, right: 12, bottom: 34, backgroundColor: "rgba(20,17,28,0.97)", borderRadius: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", padding: 12, gap: 10 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "600" }}>Rotate</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              {[-15, -3, 3, 15].map((d) => (
+                <Pressable key={d} onPress={() => setRot((r) => clamp(+(r + d).toFixed(1), -180, 180))} hitSlop={6} style={{ paddingHorizontal: 10, height: 34, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.08)" }}>
+                  <Text style={{ color: "#ECE9F1", fontSize: 13 }}>{d > 0 ? `+${d}` : d}°</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "600" }}>Text size</Text>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
               <Pressable onPress={() => setFontScale((s) => clamp(+(s - 0.05).toFixed(2), 0.6, 2))} hitSlop={8} style={{ width: 34, height: 34, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.08)" }}>
@@ -150,7 +164,7 @@ export function PageTuner({
           </Pressable>
           {showExport ? (
             <Text selectable style={{ color: "#C9C2D6", fontSize: 12, lineHeight: 18 }}>
-              {label} — left {zone.left.toFixed(3)}, top {zone.top.toFixed(3)}, w {zone.width.toFixed(3)}, h {zone.height.toFixed(3)}, fontScale {fontScale.toFixed(2)}
+              {label} — left {zone.left.toFixed(3)}, top {zone.top.toFixed(3)}, w {zone.width.toFixed(3)}, h {zone.height.toFixed(3)}, fontScale {fontScale.toFixed(2)}, rotate {rot}
             </Text>
           ) : null}
         </View>
