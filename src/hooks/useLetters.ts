@@ -20,7 +20,6 @@ export const DELIVERY_OPTIONS: { key: DeliveryChoice; label: string }[] = [
   { key: '90d', label: '90 days' },
   { key: '6m', label: '6 months' },
   { key: '1y', label: '1 year' },
-  { key: 'surprise', label: 'Surprise me' },
 ];
 
 function deliverAtFor(choice: DeliveryChoice): Date {
