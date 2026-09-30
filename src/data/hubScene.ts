@@ -442,7 +442,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "ml_profile", caption: "Personal file", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.35, glowMax: 0.45, x: -0.058, y: 0.246, w: 0.24, h: 0.48, action: { kind: "route", route: "/profile/file" } },
       { id: "ml_lbl_profile", caption: "Personal file", kind: "label", label: "Personal file", labelSize: 16, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
       // Your moments — the corkboard.
-      { id: "ml_moments", caption: "Your moments", kind: "board", tint: "purple", interaction: "destination", haptic: "light", inlay: "moments", x: 0.28, y: 0.24, w: 0.334, h: 0.177, action: { kind: "route", route: "/moments" } },
+      { id: "ml_moments", caption: "Your moments", kind: "board", tint: "purple", interaction: "destination", haptic: "light", inlay: "moments", rotate: 4, rotateY: 36, x: 0.315, y: 0.266, w: 0.302, h: 0.137, action: { kind: "route", route: "/moments" } },
       { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, rotate: 7, x: 0.315, y: 0.238, w: 0.28, h: 0.05 },
       // Looking forward to — the purple notebook on the desk.
       { id: "ml_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.75, x: 0.283, y: 0.48, w: 0.14, h: 0.05, action: { kind: "route", route: "/goals" } },
