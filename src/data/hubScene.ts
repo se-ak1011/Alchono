@@ -387,9 +387,16 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Messages — on the computer screen.
       { id: "s_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 11, interaction: "destination", haptic: "medium", x: 0.309, y: 0.332, w: 0.22, h: 0.08, action: { kind: "route", route: "/messages" } },
-      // Recommendations — the 4-card corkboard (0.0 alcohol-free swaps), now a
-      // live preview: four postits, each a swap category with a couple of names.
-      { id: "s_recommendations", caption: "Recommendations", kind: "board", tint: "purple", interaction: "destination", inlay: "recommendations", x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
+      // Recommendations — the drawn 4-postit corkboard (0.0 alcohol-free swaps).
+      // The whole board is the tap target; the labels below sit on the drawn
+      // postits (type per postit) plus a "bar line" call to action. Positioned
+      // in the editor onto the base art.
+      { id: "s_recommendations", caption: "Recommendations", kind: "plain", interaction: "destination", x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_beer", caption: "Beer", kind: "label", label: "Beer", labelSize: 14, interaction: "destination", x: 0.19, y: 0.235, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_wine", caption: "Wine", kind: "label", label: "Wine", labelSize: 14, interaction: "destination", x: 0.35, y: 0.235, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_spirits", caption: "Spirits", kind: "label", label: "Spirits", labelSize: 14, interaction: "destination", x: 0.19, y: 0.285, w: 0.15, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_cider", caption: "Cider", kind: "label", label: "Cider", labelSize: 14, interaction: "destination", x: 0.35, y: 0.285, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_ask", caption: "Ask for recommendations", kind: "label", label: "Ask for Recommendations!", labelSize: 12, interaction: "destination", x: 0.17, y: 0.335, w: 0.34, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
       // The right-view door → the Bar (labelled "Break Room").
       { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "node", node: "breakroom" } },
       // "BREAK ROOM" chalked on the door (added in-app).
