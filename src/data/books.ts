@@ -40,16 +40,20 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   "planning-ahead": {
     cover: require("../../assets/books/planning-ahead-cover.png"),
     open: require("../../assets/books/planning-ahead-open.png"),
-    page: { left: 0.131, top: 0.385, width: 0.747, height: 0.191 },
-    fontScale: 0.8,
+    page: { left: 0.135, top: 0.366, width: 0.771, height: 0.357 },
+    fontScale: 0.6,
   },
   stress: {
     cover: require("../../assets/books/stress-cover.png"),
     open: require("../../assets/books/stress-open.png"),
+    page: { left: 0.143, top: 0.384, width: 0.724, height: 0.195 },
+    fontScale: 0.8,
   },
   sleep: {
     cover: require("../../assets/books/sleep-cover.png"),
     open: require("../../assets/books/sleep-open.png"),
+    page: { left: 0.134, top: 0.366, width: 0.734, height: 0.246 },
+    fontScale: 0.6,
   },
   relationships: {
     cover: require("../../assets/books/relationships-cover.png"),
