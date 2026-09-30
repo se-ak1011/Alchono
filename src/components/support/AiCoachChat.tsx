@@ -114,8 +114,8 @@ export function AiCoachChat({ sessionType = "general", hideCompanion = false }: 
         renderItem={({ item }) => <ChatBubble message={item} />}
         ListHeaderComponent={
           hideCompanion ? (
-            // The room already shows her in her chair — just reserve the top
-            // space so the conversation begins below her.
+            // The room is the backdrop — reserve the top space so the
+            // conversation begins below it.
             <View style={{ height: winH * 0.4 }} />
           ) : showQuickActions ? (
             <View className="pt-2 pb-1 items-center">
