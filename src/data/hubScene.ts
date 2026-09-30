@@ -147,7 +147,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // — live objects: content painted on, tap enters the room directly —
       { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 1, rotateY: 40, x: 0.018, y: 0.249, w: 0.112, h: 0.123, action: { kind: "route", route: "/community" } },
       { id: "reading", caption: "Reading Corner", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.102, y: 0.431, w: 0.192, h: 0.09, action: { kind: "node", node: "reading_shelf" } },
-      { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
+      { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, opacity: 0.2, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
 
       // — objects (the object itself communicates its function) —
       { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "node", node: "cafebar" } },
@@ -413,10 +413,10 @@ export const HUB_NODES: Record<string, HubNode> = {
       // My Sky — the window shows a live preview of your real constellation
       // (SkyInlay), and tapping it opens the full sky. No glow blob; the inlay is
       // the whole point of the big window. The label sits on top.
-      { id: "mf_sky", caption: "My Sky", kind: "board", inlay: "sky", interaction: "destination", haptic: "light", x: 0.16, y: 0.13, w: 0.68, h: 0.4, action: { kind: "route", route: "/constellation" } },
-      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.203, y: 0.229, w: 0.597, h: 0.269, action: { kind: "route", route: "/constellation" } },
+      { id: "mf_sky", caption: "My Sky", kind: "board", inlay: "sky", interaction: "destination", haptic: "light", opacity: 0.2, x: 0.107, y: 0.12, w: 0.802, h: 0.483, action: { kind: "route", route: "/constellation" } },
+      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.212, y: 0.273, w: 0.597, h: 0.269, action: { kind: "route", route: "/constellation" } },
       // AI Coach — the armchair (same coach as Support).
-      { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: -0.062, y: 0.548, w: 0.272, h: 0.136, action: { kind: "route", route: "/support/coach" } },
+      { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.008, y: 0.582, w: 0.134, h: 0.071, action: { kind: "route", route: "/support/coach" } },
       { id: "mf_lbl_coach", caption: "AI Coach", kind: "label", label: "AI Coach", labelSize: 14, rotate: -9, x: 0.022, y: 0.653, w: 0.24, h: 0.05 },
     ],
   },
