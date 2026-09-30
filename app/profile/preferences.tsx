@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
-import { Button } from '@/components/ui/Button';
+import { PaperBackground } from '@/components/ui/PaperBackground';
+import { PaperLabel, PaperButton, INK, INK_SOFT } from '@/components/paper/PaperForm';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/lib/supabase';
 import {
@@ -89,65 +91,53 @@ export default function PreferencesScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-bg"
-    >
-      <View
-        className="flex-1"
-        style={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom + 12 }}
+    <PaperBackground>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
       >
-        <View className="flex-row items-center px-6 mb-4">
-          <Pressable onPress={() => router.back()} className="mr-4" hitSlop={12}>
-            <Text className="text-text-secondary text-lg">←</Text>
-          </Pressable>
-          <Text className="text-text-primary text-lg font-semibold">
-            My circumstances
-          </Text>
+        <View style={{ flex: 1, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 22, paddingBottom: 6 }}>
+            <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
+              <Feather name="chevron-left" size={26} color={INK} />
+            </Pressable>
+            <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>My circumstances</Text>
+          </View>
+
+          <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 28, paddingBottom: 24 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text style={{ color: INK_SOFT, fontSize: 14, lineHeight: 20, marginBottom: 20 }}>
+              Life changes — new baby, new job, new town. Keep this current and the app keeps up with you.
+            </Text>
+
+            <CircleStep prefs={prefs} onChange={updatePrefs} />
+
+            <View style={{ height: 28 }} />
+
+            <RhythmStep
+              prefs={prefs}
+              onChange={updatePrefs}
+              locationCaptured={!!latLng || hadLocation}
+              onCaptureLocation={captureLocation}
+            />
+
+            <View style={{ height: 28 }} />
+
+            <PaperLabel>Things I enjoy</PaperLabel>
+            <Text style={{ color: INK_SOFT, fontSize: 13, lineHeight: 18, marginBottom: 14 }}>
+              The good stuff — what a better day looks like. Helps the coach point you back towards it.
+            </Text>
+            <HobbiesStep prefs={prefs} onChange={updatePrefs} />
+          </ScrollView>
+
+          <View style={{ paddingHorizontal: 28, paddingTop: 8 }}>
+            <PaperButton title="Save changes" loading={saving} onPress={handleSave} />
+          </View>
         </View>
-
-        <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text className="text-text-secondary text-sm leading-relaxed mb-6">
-            Life changes — new baby, new job, new town. Keep this current and
-            the app keeps up with you.
-          </Text>
-
-          <CircleStep prefs={prefs} onChange={updatePrefs} />
-
-          <View style={{ height: 28 }} />
-
-          <RhythmStep
-            prefs={prefs}
-            onChange={updatePrefs}
-            locationCaptured={!!latLng || hadLocation}
-            onCaptureLocation={captureLocation}
-          />
-
-          <View style={{ height: 28 }} />
-
-          <Text className="text-text-primary text-base font-semibold mb-1">Things I enjoy</Text>
-          <Text className="text-text-secondary text-sm leading-relaxed mb-4">
-            The good stuff — what a better day looks like. Helps the coach point you
-            back towards it.
-          </Text>
-          <HobbiesStep prefs={prefs} onChange={updatePrefs} />
-        </ScrollView>
-
-        <View className="px-6 pt-3">
-          <Button
-            title="Save changes"
-            variant="primary"
-            size="lg"
-            fullWidth
-            loading={saving}
-            onPress={handleSave}
-          />
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </PaperBackground>
   );
 }

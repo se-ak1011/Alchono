@@ -3,6 +3,15 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import type { UserPreferences } from '@/types';
+import {
+  PaperLabel,
+  PaperInput,
+  PaperTickRow,
+  PaperSwitchRow,
+  PaperChips,
+  PaperCount,
+  INK_SOFT as PINK_SOFT,
+} from '@/components/paper/PaperForm';
 
 export const FAMILY_OPTIONS = [
   { key: 'partner',  label: 'Partner' },
@@ -206,7 +215,6 @@ export function CircleStep({
   onChange: (p: Partial<UserPreferences>) => void;
 }) {
   const toggleFamily = (key: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const current = prefs.familyMembers;
     const next = current.includes(key)
       ? current.filter((k) => k !== key)
@@ -215,122 +223,77 @@ export function CircleStep({
   };
 
   return (
-    <View style={{ gap: 20 }}>
+    <View style={{ gap: 24 }}>
       <View>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-          Who's at home
-        </Text>
-        <View style={{ gap: 8 }}>
-          {FAMILY_OPTIONS.map(({ key, label }) => {
-            const selected = prefs.familyMembers.includes(key);
-            return (
-              <View key={key}>
-                <Pressable
-                  onPress={() => toggleFamily(key)}
-                  className={`flex-row items-center gap-3 rounded-lg px-4 py-3.5 border ${
-                    selected
-                      ? 'bg-surface border-white/25'
-                      : 'bg-surface border-white/8'
-                  }`}
-                >
-                  <Text className="text-text-muted text-xs w-3">{selected ? '◆' : '◇'}</Text>
-                  <Text
-                    className={`text-sm font-medium ${
-                      selected ? 'text-text-primary' : 'text-text-secondary'
-                    }`}
-                  >
-                    {label}
-                  </Text>
-                </Pressable>
+        <PaperLabel>Who's at home</PaperLabel>
+        {FAMILY_OPTIONS.map(({ key, label }) => {
+          const selected = prefs.familyMembers.includes(key);
+          return (
+            <View key={key}>
+              <PaperTickRow label={label} selected={selected} onPress={() => toggleFamily(key)} />
 
-                {selected && key === 'partner' && (
-                  <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6 }}>
-                    <TextInput
-                      value={prefs.partnerName}
-                      onChangeText={(t) => onChange({ partnerName: t })}
-                      placeholder="Their name?"
-                      placeholderTextColor="#817B91"
-                      style={nameInputStyle}
-                    />
-                  </Animated.View>
-                )}
+              {selected && key === 'partner' && (
+                <Animated.View entering={FadeIn.duration(300)} style={{ marginLeft: 32, marginBottom: 6 }}>
+                  <PaperInput
+                    value={prefs.partnerName}
+                    onChangeText={(t) => onChange({ partnerName: t })}
+                    placeholder="Their name?"
+                  />
+                </Animated.View>
+              )}
 
-                {selected && key === 'children' && (
-                  <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 6, gap: 8 }}>
-                    <CountPicker
-                      label="How many?"
-                      options={CHILDREN_COUNTS}
-                      value={prefs.childrenCount}
-                      onChange={(v) => onChange({ childrenCount: v })}
-                    />
-                    <TextInput
-                      value={prefs.childrenNames}
-                      onChangeText={(t) => onChange({ childrenNames: t })}
-                      placeholder={
-                        prefs.childrenCount === 1
-                          ? "Their name?"
-                          : "Their names? (e.g. Emma, Jake)"
-                      }
-                      placeholderTextColor="#817B91"
-                      style={[nameInputStyle, { marginTop: 4 }]}
-                    />
-                  </Animated.View>
-                )}
-              </View>
-            );
-          })}
-        </View>
+              {selected && key === 'children' && (
+                <Animated.View entering={FadeIn.duration(300)} style={{ marginLeft: 32, marginBottom: 6, gap: 8 }}>
+                  <PaperCount
+                    label="How many?"
+                    options={CHILDREN_COUNTS}
+                    value={prefs.childrenCount}
+                    onChange={(v) => onChange({ childrenCount: v })}
+                  />
+                  <PaperInput
+                    value={prefs.childrenNames}
+                    onChangeText={(t) => onChange({ childrenNames: t })}
+                    placeholder={prefs.childrenCount === 1 ? 'Their name?' : 'Their names? (e.g. Emma, Jake)'}
+                  />
+                </Animated.View>
+              )}
+            </View>
+          );
+        })}
       </View>
 
       <View>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-          Pets
-        </Text>
-        <ToggleRow
+        <PaperLabel>Pets</PaperLabel>
+        <PaperSwitchRow
           label="I have a pet"
           value={prefs.hasPets}
-          onToggle={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onChange({ hasPets: !prefs.hasPets, petName: '', petCount: 1 });
-          }}
+          onToggle={() => onChange({ hasPets: !prefs.hasPets, petName: '', petCount: 1 })}
         />
         {prefs.hasPets && (
-          <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 8, gap: 8 }}>
-            <CountPicker
+          <Animated.View entering={FadeIn.duration(300)} style={{ marginTop: 10, gap: 10 }}>
+            <PaperCount
               label="How many?"
               options={PET_COUNTS}
               value={prefs.petCount}
               onChange={(v) => onChange({ petCount: v })}
             />
-            <TextInput
+            <PaperInput
               value={prefs.petName}
               onChangeText={(t) => onChange({ petName: t })}
-              placeholder={
-                prefs.petCount === 1 ? "What's their name?" : "What are their names?"
-              }
-              placeholderTextColor="#817B91"
-              style={[nameInputStyle, { borderRadius: 12, marginTop: 4 }]}
+              placeholder={prefs.petCount === 1 ? "What's their name?" : 'What are their names?'}
             />
           </Animated.View>
         )}
       </View>
 
       <View>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-          Curious about
-        </Text>
-        <ToggleRow
-          label="Alcohol-free alternatives (0.0 beers, spirits…)"
+        <PaperLabel>Curious about</PaperLabel>
+        <PaperSwitchRow
+          label="Alcohol-free alternatives"
+          sublabel="0.0 beers, spirits… If they're a trigger for you, leave this off — you know yourself best."
           value={prefs.interestedInAlternatives}
-          onToggle={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onChange({ interestedInAlternatives: !prefs.interestedInAlternatives });
-          }}
+          onToggle={() => onChange({ interestedInAlternatives: !prefs.interestedInAlternatives })}
         />
-        <Text className="text-text-muted text-xs mt-2 leading-relaxed">
-          If zero-alcohol drinks are a trigger for you, leave this off — you
-          know yourself best.
-        </Text>
       </View>
     </View>
   );
@@ -496,106 +459,51 @@ export function RhythmStep({
   onCaptureLocation: () => void;
 }) {
   return (
-    <View style={{ gap: 20 }}>
+    <View style={{ gap: 24 }}>
       <View>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-          Work
-        </Text>
-        <View style={{ gap: 8 }}>
-          <ToggleRow
-            label="I have a job"
-            value={prefs.hasJob}
-            onToggle={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              onChange({ hasJob: !prefs.hasJob, workShift: null, drinksAtWork: false });
-            }}
-          />
-          {prefs.hasJob && (
-            <Animated.View entering={FadeIn.duration(300)} style={{ gap: 8 }}>
-              <View className="flex-row flex-wrap gap-2">
-                {SHIFT_OPTIONS.map(({ key, label }) => {
-                  const selected = prefs.workShift === key;
-                  return (
-                    <Pressable
-                      key={key}
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        onChange({ workShift: selected ? null : key });
-                      }}
-                      className={`px-4 py-2 rounded-lg border ${
-                        selected
-                          ? 'bg-surface border-white/25'
-                          : 'bg-surface border-white/8'
-                      }`}
-                    >
-                      <Text
-                        className={`text-sm font-medium ${
-                          selected ? 'text-text-primary' : 'text-text-muted'
-                        }`}
-                      >
-                        {label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-              <ToggleRow
-                label="I sometimes drink during work"
-                value={prefs.drinksAtWork}
-                onToggle={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  onChange({ drinksAtWork: !prefs.drinksAtWork });
-                }}
-              />
-            </Animated.View>
-          )}
-        </View>
+        <PaperLabel>Work</PaperLabel>
+        <PaperSwitchRow
+          label="I have a job"
+          value={prefs.hasJob}
+          onToggle={() => onChange({ hasJob: !prefs.hasJob, workShift: null, drinksAtWork: false })}
+        />
+        {prefs.hasJob && (
+          <Animated.View entering={FadeIn.duration(300)} style={{ gap: 12, marginTop: 12 }}>
+            <PaperChips
+              options={SHIFT_OPTIONS}
+              isSelected={(k) => prefs.workShift === k}
+              onToggle={(k) => onChange({ workShift: prefs.workShift === k ? null : (k as UserPreferences['workShift']) })}
+            />
+            <PaperSwitchRow
+              label="I sometimes drink during work"
+              value={prefs.drinksAtWork}
+              onToggle={() => onChange({ drinksAtWork: !prefs.drinksAtWork })}
+            />
+          </Animated.View>
+        )}
       </View>
 
       <View>
-        <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-          Location
-        </Text>
-        <TextInput
+        <PaperLabel>Location</PaperLabel>
+        <PaperInput
           value={prefs.city}
           onChangeText={(t) => onChange({ city: t })}
           placeholder="City or area (optional — for local resources)"
-          placeholderTextColor="#817B91"
-          style={nameInputStyle}
         />
-
-        <View style={{ marginTop: 8 }}>
-          <ToggleRow
-            label="I live somewhere isolated (rural, remote)"
+        <View style={{ marginTop: 12 }}>
+          <PaperSwitchRow
+            label="I live somewhere isolated"
+            sublabel="Rural, remote."
             value={prefs.livesIsolated}
-            onToggle={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              onChange({ livesIsolated: !prefs.livesIsolated });
-            }}
+            onToggle={() => onChange({ livesIsolated: !prefs.livesIsolated })}
           />
         </View>
-
-        <Pressable
-          onPress={onCaptureLocation}
-          className={`flex-row items-center justify-between rounded-xl px-4 py-3.5 border mt-2 ${
-            locationCaptured
-              ? 'bg-surface border-white/25'
-              : 'bg-surface border-white/8 active:border-white/20'
-          }`}
-        >
-          <View className="flex-1 pr-3">
-            <Text className="text-text-primary text-sm font-medium">
-              {locationCaptured
-                ? 'Approximate location saved'
-                : 'Show me people near me (optional)'}
-            </Text>
-            <Text className="text-text-muted text-xs mt-0.5 leading-relaxed">
-              Community posts from nearby people appear first. Your location is
-              rounded to ~10 km and never shown to anyone.
-            </Text>
-          </View>
-          <Text className="text-text-muted text-sm">{locationCaptured ? '◆' : '◇'}</Text>
-        </Pressable>
+        <PaperSwitchRow
+          label={locationCaptured ? 'Approximate location saved' : 'Show me people near me'}
+          sublabel="Nearby community posts appear first. Rounded to ~10 km, never shown to anyone."
+          value={locationCaptured}
+          onToggle={onCaptureLocation}
+        />
       </View>
     </View>
   );
@@ -640,38 +548,26 @@ export function HobbiesStep({
 
   return (
     <View>
-      <View className="flex-row flex-wrap gap-2 mb-4">
-        {allChips.map((hobby) => {
-          const isOn = selected.includes(hobby);
-          return (
-            <Pressable
-              key={hobby}
-              onPress={() => toggle(hobby)}
-              className={`px-4 py-2.5 rounded-xl border ${isOn ? 'bg-surface border-white/25' : 'bg-surface border-white/8'}`}
-            >
-              <Text className={`text-sm font-medium ${isOn ? 'text-text-primary' : 'text-text-muted'}`}>{hobby}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      <View className="flex-row gap-2">
-        <TextInput
-          value={custom}
-          onChangeText={setCustom}
-          onSubmitEditing={addCustom}
-          returnKeyType="done"
-          placeholder="Add your own"
-          placeholderTextColor="#817B91"
-          maxLength={40}
-          className="flex-1 bg-surface rounded-xl px-4 py-3 text-text-primary text-base border border-white/8"
-          selectionColor="#B2ACC0"
+      <View style={{ marginBottom: 16 }}>
+        <PaperChips
+          options={allChips.map((h) => ({ key: h, label: h }))}
+          isSelected={(k) => selected.includes(k)}
+          onToggle={(k) => toggle(k)}
         />
-        <Pressable
-          onPress={addCustom}
-          disabled={!custom.trim()}
-          className={`px-4 rounded-xl border items-center justify-center ${custom.trim() ? 'bg-accent border-transparent' : 'bg-surface border-white/8'}`}
-        >
-          <Text className={`text-base font-semibold ${custom.trim() ? 'text-bg' : 'text-text-muted'}`}>Add</Text>
+      </View>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 12 }}>
+        <View style={{ flex: 1 }}>
+          <PaperInput
+            value={custom}
+            onChangeText={setCustom}
+            onSubmitEditing={addCustom}
+            returnKeyType="done"
+            placeholder="Add your own"
+            maxLength={40}
+          />
+        </View>
+        <Pressable onPress={addCustom} disabled={!custom.trim()} hitSlop={8} style={{ paddingBottom: 6 }}>
+          <Text style={{ fontFamily: 'PatrickHand', fontSize: 19, color: custom.trim() ? '#6b4f9e' : PINK_SOFT }}>+ Add</Text>
         </Pressable>
       </View>
     </View>
