@@ -31,10 +31,10 @@ type EnvPos = { x: number; y: number; rot: number };
 // top-left as a fraction of the screen; rot is degrees. Placed roughly — use the
 // in-app editor (pencil) to drag + rotate onto the drawn envelopes, then Export.
 const ENVELOPES: { key: DeliveryChoice; label: string; init: EnvPos }[] = [
-  { key: '30d', label: '30 days', init: { x: 0.06, y: 0.46, rot: 0 } },
-  { key: '90d', label: '90 days', init: { x: 0.30, y: 0.45, rot: 0 } },
-  { key: '6m', label: '6 months', init: { x: 0.54, y: 0.45, rot: 0 } },
-  { key: '1y', label: '1 year', init: { x: 0.80, y: 0.46, rot: 0 } },
+  { key: '30d', label: '30 days', init: { x: 0.047, y: 0.464, rot: -9 } },
+  { key: '90d', label: '90 days', init: { x: 0.303, y: 0.443, rot: -3 } },
+  { key: '6m', label: '6 months', init: { x: 0.553, y: 0.439, rot: 6 } },
+  { key: '1y', label: '1 year', init: { x: 0.814, y: 0.464, rot: 9 } },
 ];
 
 type PaperZone = { left: number; top: number; width: number; height: number };
