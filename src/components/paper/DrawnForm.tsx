@@ -126,6 +126,7 @@ export function FieldZone({
   rect,
   value,
   onChangeText,
+  onEndEditing,
   placeholder,
   multiline,
   fontSize = 18,
@@ -135,6 +136,7 @@ export function FieldZone({
   rect: Rect;
   value: string;
   onChangeText: (t: string) => void;
+  onEndEditing?: () => void;
   placeholder?: string;
   multiline?: boolean;
   fontSize?: number;
@@ -147,6 +149,8 @@ export function FieldZone({
       <TextInput
         value={value}
         onChangeText={onChangeText}
+        onEndEditing={onEndEditing}
+        onBlur={onEndEditing}
         editable={!editing}
         placeholder={placeholder}
         placeholderTextColor={INK_SOFT}

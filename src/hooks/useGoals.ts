@@ -37,6 +37,21 @@ export function useAddGoal() {
   });
 }
 
+export function useUpdateGoal() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, text, targetDate }: { id: string; text?: string; targetDate?: string | null }) => {
+      const patch: Record<string, unknown> = {};
+      if (text !== undefined) patch.text = text;
+      if (targetDate !== undefined) patch.target_date = targetDate;
+      const { error } = await (supabase.from('goals') as any).update(patch).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
+
 export function useCompleteGoal() {
   const userId = useAuthStore((s) => s.user?.id);
   const qc = useQueryClient();
