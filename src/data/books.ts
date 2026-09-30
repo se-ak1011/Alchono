@@ -28,14 +28,20 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   understand: {
     cover: require("../../assets/books/understand-cover.png"),
     open: require("../../assets/books/understand-open.png"),
+    page: { left: 0.132, top: 0.37, width: 0.76, height: 0.205 },
+    fontScale: 0.7,
   },
   triggers: {
     cover: require("../../assets/books/triggers-cover.png"),
     open: require("../../assets/books/triggers-open.png"),
+    page: { left: 0.126, top: 0.375, width: 0.76, height: 0.241 },
+    fontScale: 0.6,
   },
   "planning-ahead": {
     cover: require("../../assets/books/planning-ahead-cover.png"),
     open: require("../../assets/books/planning-ahead-open.png"),
+    page: { left: 0.131, top: 0.385, width: 0.747, height: 0.191 },
+    fontScale: 0.8,
   },
   stress: {
     cover: require("../../assets/books/stress-cover.png"),
