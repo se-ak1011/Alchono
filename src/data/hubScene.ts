@@ -410,8 +410,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "me_right",
     back: "front",
     hotspots: [
-      // My Sky — the window full of stars. The label itself is the tap target
-      // (covering the window), so no glow blob spoils the sky.
+      // My Sky — the window shows a live preview of your real constellation
+      // (SkyInlay), and tapping it opens the full sky. No glow blob; the inlay is
+      // the whole point of the big window. The label sits on top.
+      { id: "mf_sky", caption: "My Sky", kind: "board", inlay: "sky", interaction: "destination", haptic: "light", x: 0.16, y: 0.13, w: 0.68, h: 0.4, action: { kind: "route", route: "/constellation" } },
       { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.203, y: 0.229, w: 0.597, h: 0.269, action: { kind: "route", route: "/constellation" } },
       // AI Coach — the armchair (same coach as Support).
       { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: -0.062, y: 0.548, w: 0.272, h: 0.136, action: { kind: "route", route: "/support/coach" } },
