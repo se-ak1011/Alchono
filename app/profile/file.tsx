@@ -37,9 +37,9 @@ type NotifKey =
 // Rough default rects — she'll drag + Export exact positions in the editor.
 const R = {
   // cover
-  cover_name: { x: 0.2, y: 0.28, w: 0.6, h: 0.08 } as Rect,
+  cover_name: { x: 0.163, y: 0.214, w: 0.655, h: 0.073 } as Rect,
   // details paper
-  d_username: { x: 0.38, y: 0.3, w: 0.5, h: 0.045 } as Rect,
+  d_username: { x: 0.215, y: 0.193, w: 0.5, h: 0.045 } as Rect,
   d_family: { x: 0.34, y: 0.42, w: 0.55, h: 0.045 } as Rect,
   d_pets: { x: 0.3, y: 0.48, w: 0.58, h: 0.045 } as Rect,
   d_job: { x: 0.28, y: 0.54, w: 0.6, h: 0.045 } as Rect,

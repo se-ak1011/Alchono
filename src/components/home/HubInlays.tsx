@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Platform, type LayoutChangeEvent } from "react-native";
 import Svg, { Circle, Line as SvgLine, Defs, LinearGradient, RadialGradient, Stop, Rect } from "react-native-svg";
-import { useCommunityMoments } from "@/hooks/useMoments";
+import { useCommunityMoments, useMyMoments } from "@/hooks/useMoments";
 import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
@@ -113,6 +113,49 @@ export function CommunityBoardInlay() {
             <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 11, color: "rgba(198,222,208,0.62)" }}>
               — @{p.username ?? "anon"}
             </Text>
+          </View>
+        ))
+      )}
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
+// Your moments — your latest photos, pinned to the Me-room corkboard like real
+// snaps. Little white frames at a jaunty angle with a pin; the cork shows
+// through. Tapping the board opens the full moments room.
+// ————————————————————————————————————————————————————————————————
+export function MomentsBoardInlay() {
+  const { data } = useMyMoments();
+  const items = ((data ?? []) as any[]).filter((m) => m.url).slice(0, 3);
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: "8%", paddingVertical: "14%", gap: 6 }]}>
+      {items.length === 0 ? (
+        <Text style={{ fontFamily: "PatrickHand", fontSize: 13, color: "rgba(51,42,36,0.5)", textAlign: "center" }}>
+          pin your moments here
+        </Text>
+      ) : (
+        items.map((m, i) => (
+          <View
+            key={m.id ?? i}
+            style={{
+              flex: 1,
+              maxWidth: "33%",
+              aspectRatio: 0.82,
+              backgroundColor: "#fdfaf3",
+              padding: 3,
+              borderRadius: 2,
+              transform: [{ rotate: `${(i - 1) * 4}deg` }],
+              shadowColor: "#000",
+              shadowOpacity: 0.28,
+              shadowRadius: 2,
+              shadowOffset: { width: 0, height: 1 },
+              elevation: 2,
+            }}
+          >
+            <Image source={{ uri: m.url }} style={{ flex: 1, borderRadius: 1 }} resizeMode="cover" />
+            {/* pin */}
+            <View style={{ position: "absolute", top: -3, alignSelf: "center", width: 6, height: 6, borderRadius: 3, backgroundColor: "#b23b3b" }} />
           </View>
         ))
       )}
@@ -337,6 +380,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   arcade_word: WordInlay,
   community: CommunityInlay, // video thumbnails
   community_board: CommunityBoardInlay, // written posts, chalked on the board
+  moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
   sky: SkyInlay,
   zine: ZineInlay, // a zine cover pinned to the café-right corkboard
 };

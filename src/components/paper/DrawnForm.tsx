@@ -100,7 +100,12 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
       {...(ctx.editing ? move.panHandlers : {})}
       style={{ position: 'absolute', left: rect.x * ctx.W, top: rect.y * ctx.H, width: rect.w * ctx.W, height: rect.h * ctx.H }}
     >
-      {children}
+      {/* In edit mode the content must not intercept touches, or the field's
+          TextInput / tick Pressable steals the drag and only the pointer-none
+          username zone moves. Selection still happens via the pan grant below. */}
+      <View pointerEvents={ctx.editing ? 'none' : 'auto'} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+        {children}
+      </View>
       {ctx.editing ? (
         <>
           <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderWidth: 1, borderColor: sel ? EDIT_UI : 'rgba(164,137,222,0.4)', borderStyle: 'dashed', backgroundColor: sel ? 'rgba(164,137,222,0.10)' : 'transparent' }} />
