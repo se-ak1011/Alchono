@@ -17,7 +17,6 @@ type Row = { title: string; subtitle: string; route: string; icon: keyof typeof 
 // this slot is the proactive, plan-ahead corner.
 const ROWS: Row[] = [
   { title: 'My plan', subtitle: 'Your reasons, people and go-to moves — written calmly, for a harder moment later.', route: '/plan', icon: 'clipboard', accent: '#7b5fc0' },
-  { title: 'After a slip', subtitle: 'Get back up, no shame. A gentle way through the day after.', route: '/toolkit/c/after-a-slip', icon: 'refresh-ccw', accent: '#5a8a4e' },
   { title: 'Share with your GP', subtitle: 'A clean summary and drinks diary to print or email to a professional.', route: '/summary', icon: 'file-text', accent: '#8a7440' },
   { title: 'Resources', subtitle: 'Helplines, meetings, and support services.', route: '/support/resources', icon: 'life-buoy', accent: '#6b4f8f' },
 ];
