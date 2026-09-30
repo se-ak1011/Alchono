@@ -58,13 +58,19 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   relationships: {
     cover: require("../../assets/books/relationships-cover.png"),
     open: require("../../assets/books/relationships-open.png"),
+    page: { left: 0.125, top: 0.369, width: 0.763, height: 0.223 },
+    fontScale: 0.65,
   },
   identity: {
     cover: require("../../assets/books/identity-cover.png"),
     open: require("../../assets/books/identity-open.png"),
+    page: { left: 0.112, top: 0.327, width: 0.785, height: 0.274 },
+    fontScale: 0.65,
   },
   "after-a-slip": {
     cover: require("../../assets/books/after-a-slip-cover.png"),
     open: require("../../assets/books/after-a-slip-open.png"),
+    page: { left: 0.074, top: 0.345, width: 0.85, height: 0.197 },
+    fontScale: 0.8,
   },
 };
