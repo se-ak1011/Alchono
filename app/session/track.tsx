@@ -27,18 +27,18 @@ export default function TrackScreen() {
             <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
               <Feather name="chevron-left" size={26} color={INK} />
             </Pressable>
-            <Placeable id="title">
+            <Placeable id="title" def={{ dx: 0.226, dy: 0.029 }}>
               <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK }}>Tonight</Text>
             </Placeable>
           </View>
-          <Placeable id="subtitle">
+          <Placeable id="subtitle" def={{ dx: 0.184, dy: 0.028 }}>
             <Text style={{ color: INK_SOFT, fontSize: 14, paddingHorizontal: 24, marginTop: 1 }}>
               Awareness, not judgement.
             </Text>
           </Placeable>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
-            <Placeable id="today">
+            <Placeable id="today" def={{ dx: 0.061, dy: 0.015, scale: 0.9 }}>
               <DrinkingSession />
             </Placeable>
           </ScrollView>

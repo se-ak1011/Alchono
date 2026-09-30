@@ -456,16 +456,16 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Tonight — the bedside lamp (drink tracking).
-      { id: "mr_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.16, y: 0.36, w: 0.16, h: 0.14, action: { kind: "route", route: "/session/track" } },
-      { id: "mr_lbl_tonight", caption: "Tonight", kind: "label", label: "Tonight", labelSize: 13, x: 0.13, y: 0.5, w: 0.22, h: 0.05 },
+      { id: "mr_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.276, y: 0.475, w: 0.225, h: 0.083, action: { kind: "route", route: "/session/track" } },
+      { id: "mr_lbl_tonight", caption: "Tonight", kind: "label", label: "Tonight", labelSize: 14, x: 0.27, y: 0.479, w: 0.22, h: 0.05 },
       // Care team + Trusted person — the bed (your human safety net).
-      { id: "mr_care", caption: "Care team", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.5, y: 0.5, w: 0.3, h: 0.13, action: { kind: "route", route: "/profile/care-team" } },
-      { id: "mr_lbl_care", caption: "Care team", kind: "label", label: "Care team", labelSize: 13, x: 0.52, y: 0.55, w: 0.26, h: 0.05 },
-      { id: "mr_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.44, y: 0.66, w: 0.42, h: 0.16, action: { kind: "route", route: "/profile/trusted" } },
-      { id: "mr_lbl_trusted", caption: "Trusted person", kind: "label", label: "Trusted person", labelSize: 12, x: 0.5, y: 0.72, w: 0.32, h: 0.05 },
+      { id: "mr_care", caption: "Care team", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.537, y: 0.22, w: 0.456, h: 0.208, action: { kind: "route", route: "/profile/care-team" } },
+      { id: "mr_lbl_care", caption: "Care team", kind: "label", label: "Care team", labelSize: 17, rotate: -12, rotateY: -18, x: 0.635, y: 0.219, w: 0.26, h: 0.05 },
+      { id: "mr_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.619, y: 0.504, w: 0.287, h: 0.071, action: { kind: "route", route: "/profile/trusted" } },
+      { id: "mr_lbl_trusted", caption: "Trusted person", kind: "label", label: "Trusted person", labelSize: 14, x: 0.624, y: 0.517, w: 0.32, h: 0.05 },
       // Saved — the bedside drawers (your favourites stash).
-      { id: "mr_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.05, y: 0.52, w: 0.28, h: 0.2, action: { kind: "route", route: "/saved" } },
-      { id: "mr_lbl_saved", caption: "Saved", kind: "label", label: "Saved", labelSize: 14, x: 0.06, y: 0.48, w: 0.2, h: 0.05 },
+      { id: "mr_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.026, y: 0.558, w: 0.33, h: 0.041, action: { kind: "route", route: "/saved" } },
+      { id: "mr_lbl_saved", caption: "Saved", kind: "label", label: "Saved", labelSize: 14, rotate: 16, x: 0.078, y: 0.568, w: 0.2, h: 0.05 },
     ],
   },
 
@@ -484,11 +484,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // The board = the bar menu. Each drink name opens its recipe popup; the
       // fridge is now just scenery. (Drinks 1–3 here, 4–6 on the left view.)
-      { id: "cb_d1", caption: "Sunrise Fizz", kind: "sign", label: "Sunrise Fizz", labelSize: 20, x: 0.28, y: 0.16, w: 0.44, h: 0.06, action: { kind: "route", route: "/recipe/sunrise-fizz" } },
-      { id: "cb_d2", caption: "Honey & Lemon Warmer", kind: "sign", label: "Honey & Lemon Warmer", labelSize: 20, x: 0.24, y: 0.24, w: 0.52, h: 0.06, action: { kind: "route", route: "/recipe/honey-lemon" } },
-      { id: "cb_d3", caption: "Slow Iced Tea", kind: "sign", label: "Slow Iced Tea", labelSize: 20, x: 0.28, y: 0.32, w: 0.44, h: 0.06, action: { kind: "route", route: "/recipe/slow-iced-tea" } },
-      // 0.0 recommendations — a text prompt on the board (reposition/relabel in-app).
-      { id: "cb_recs", caption: "0.0 recommendations", kind: "sign", label: "Ask the barista for 0.0 recommendations!", labelSize: 13, x: 0.2, y: 0.42, w: 0.6, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "cb_d1", caption: "Sunrise Fizz", kind: "sign", label: "Sunrise Fizz", labelSize: 16, rotate: -3, rotateY: -4, x: 0.24, y: 0.14, w: 0.493, h: 0.027, action: { kind: "route", route: "/recipe/sunrise-fizz" } },
+      { id: "cb_d2", caption: "Honey & Lemon Warmer", kind: "sign", label: "Honey & Lemon Warmer", labelSize: 16, rotate: -2, rotateY: -4, x: 0.261, y: 0.166, w: 0.518, h: 0.035, action: { kind: "route", route: "/recipe/honey-lemon" } },
+      { id: "cb_d3", caption: "Slow Iced Tea", kind: "sign", label: "Slow Iced Tea", labelSize: 16, rotate: -2, rotateY: -4, x: 0.24, y: 0.203, w: 0.532, h: 0.036, action: { kind: "route", route: "/recipe/slow-iced-tea" } },
+      // 0.0 recommendations — a text prompt on the board.
+      { id: "cb_recs", caption: "0.0 recommendations", kind: "sign", label: "Ask the barista for 0.0 recommendations!", labelSize: 12, x: 0.198, y: 0.242, w: 0.62, h: 0.04, action: { kind: "route", route: "/support/recommendations" } },
     ],
   },
   cafebar_left: {
@@ -502,9 +502,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The board = the bar menu, continued (drinks 4–6). Each opens its recipe.
-      { id: "cbl_d1", caption: "Cinnamon Milk Steamer", kind: "sign", label: "Cinnamon Milk Steamer", labelSize: 19, x: 0.3, y: 0.14, w: 0.5, h: 0.06, action: { kind: "route", route: "/recipe/cinnamon-steamer" } },
-      { id: "cbl_d2", caption: "Mock Mojito", kind: "sign", label: "Mock Mojito", labelSize: 20, x: 0.35, y: 0.22, w: 0.4, h: 0.06, action: { kind: "route", route: "/recipe/mock-mojito" } },
-      { id: "cbl_d3", caption: "Golden Milk", kind: "sign", label: "Golden Milk", labelSize: 20, x: 0.35, y: 0.3, w: 0.4, h: 0.06, action: { kind: "route", route: "/recipe/golden-milk" } },
+      { id: "cbl_d1", caption: "Cinnamon Milk Steamer", kind: "sign", label: "Cinnamon Milk Steamer", labelSize: 16, rotate: -11, rotateY: -12, x: 0.341, y: 0.155, w: 0.576, h: 0.033, action: { kind: "route", route: "/recipe/cinnamon-steamer" } },
+      { id: "cbl_d2", caption: "Mock Mojito", kind: "sign", label: "Mock Mojito", labelSize: 16, rotate: -11, rotateY: -12, x: 0.389, y: 0.192, w: 0.413, h: 0.045, action: { kind: "route", route: "/recipe/mock-mojito" } },
+      { id: "cbl_d3", caption: "Golden Milk", kind: "sign", label: "Golden Milk", labelSize: 16, rotate: -10, rotateY: -10, x: 0.385, y: 0.243, w: 0.459, h: 0.036, action: { kind: "route", route: "/recipe/golden-milk" } },
       // The door on the left → the Support room (a building connection). Locked in.
       { id: "cbl_door", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: -0.014, y: 0.334, w: 0.144, h: 0.073, action: { kind: "node", node: "support" } },
       { id: "cbl_lbl_door", caption: "Support", kind: "label", label: "Support", labelSize: 13, rotate: 4, x: 0.02, y: 0.232, w: 0.18, h: 0.05 },
@@ -527,8 +527,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The chalkboard → Community. The vending machine is now just scenery.
-      { id: "br_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community_board", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.44, y: 0.33, w: 0.42, h: 0.28, action: { kind: "route", route: "/community" } },
-      { id: "br_lbl_board", caption: "Community", kind: "label", label: "Community", labelSize: 18, x: 0.452, y: 0.283, w: 0.355, h: 0.078 },
+      { id: "br_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community_board", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.463, y: 0.309, w: 0.359, h: 0.131, action: { kind: "route", route: "/community" } },
+      { id: "br_lbl_board", caption: "Community", kind: "label", label: "Community", labelSize: 18, x: 0.525, y: 0.246, w: 0.355, h: 0.078 },
     ],
   },
   breakroom_right: {
