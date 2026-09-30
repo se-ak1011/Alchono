@@ -38,7 +38,7 @@ const ENVELOPES: { key: DeliveryChoice; label: string; init: EnvPos }[] = [
 ];
 
 type PaperZone = { left: number; top: number; width: number; height: number };
-const PAPER_INIT: PaperZone = { left: 0.13, top: 0.575, width: 0.72, height: 0.25 };
+const PAPER_INIT: PaperZone = { left: 0.233, top: 0.59, width: 0.72, height: 0.25 };
 
 /** One envelope label. Self-contained so its drag reads live props via refs. */
 function EnvelopeLabel({
