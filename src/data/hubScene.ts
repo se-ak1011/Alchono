@@ -431,8 +431,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // Profile — the tall locker.
-      { id: "ml_profile", caption: "Profile", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.35, glowMax: 0.45, x: -0.058, y: 0.246, w: 0.24, h: 0.48, action: { kind: "route", route: "/account" } },
-      { id: "ml_lbl_profile", caption: "Profile", kind: "label", label: "Profile", labelSize: 16, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
+      { id: "ml_profile", caption: "Personal file", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.35, glowMax: 0.45, x: -0.058, y: 0.246, w: 0.24, h: 0.48, action: { kind: "route", route: "/profile/file" } },
+      { id: "ml_lbl_profile", caption: "Personal file", kind: "label", label: "Personal file", labelSize: 16, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
       // Your moments — the corkboard.
       { id: "ml_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.28, y: 0.24, w: 0.334, h: 0.177, action: { kind: "route", route: "/moments" } },
       { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, rotate: 7, x: 0.315, y: 0.238, w: 0.28, h: 0.05 },

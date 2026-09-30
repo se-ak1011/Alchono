@@ -92,6 +92,7 @@ function RootLayoutNav() {
         <Stack.Screen name="evidence" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="profile/file" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="saved" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
