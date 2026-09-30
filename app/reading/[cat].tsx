@@ -102,17 +102,22 @@ export default function BookReaderScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
-      {/* The book. Cover first; tap it to open to the spread. */}
-      <Pressable
-        style={{ flex: 1 }}
-        onPress={phase === "cover" ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setPhase("contents"); } : undefined}
-      >
-        <ImageBackground source={phase === "cover" ? art.cover : art.open} style={{ flex: 1 }} resizeMode="cover">
-          {phase === "cover" ? (
+      {/* Cover — tap to open. Wrapped in a Pressable only here; once the book is
+          open the wrapper is gone so the tuner box can be dragged (a full-screen
+          Pressable was swallowing the drag in edit mode). */}
+      {phase === "cover" ? (
+        <Pressable
+          style={{ flex: 1 }}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setPhase("contents"); }}
+        >
+          <ImageBackground source={art.cover} style={{ flex: 1 }} resizeMode="cover">
             <Animated.View entering={FadeIn.duration(400).delay(200)} style={{ position: "absolute", bottom: height * 0.2, left: 0, right: 0, alignItems: "center" }} pointerEvents="none">
               <Text style={{ color: "rgba(236,233,241,0.7)", fontSize: 13, fontFamily: "PatrickHand" }}>tap to open</Text>
             </Animated.View>
-          ) : (
+          </ImageBackground>
+        </Pressable>
+      ) : (
+        <ImageBackground source={art.open} style={{ flex: 1 }} resizeMode="cover">
             <PageTuner
               label={`reading (${category})`}
               defaultZone={art.page ?? PAGE}
@@ -166,9 +171,8 @@ export default function BookReaderScreen() {
                 )
               }
             </PageTuner>
-          )}
         </ImageBackground>
-      </Pressable>
+      )}
 
       {/* Back — article→contents, otherwise out to the shelf. */}
       <Pressable
