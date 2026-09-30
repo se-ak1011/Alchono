@@ -70,7 +70,7 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   "after-a-slip": {
     cover: require("../../assets/books/after-a-slip-cover.png"),
     open: require("../../assets/books/after-a-slip-open.png"),
-    page: { left: 0.074, top: 0.345, width: 0.85, height: 0.197 },
-    fontScale: 0.8,
+    page: { left: 0.08, top: 0.341, width: 0.847, height: 0.238 },
+    fontScale: 0.7,
   },
 };
