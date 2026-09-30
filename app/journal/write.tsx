@@ -55,7 +55,7 @@ export default function WriteNoteScreen() {
               <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
                 <Feather name="chevron-left" size={26} color={INK} />
               </Pressable>
-              <Placeable id="title">
+              <Placeable id="title" def={{ dx: 0.245, dy: 0.042 }}>
                 <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>A note</Text>
               </Placeable>
             </View>
@@ -72,7 +72,7 @@ export default function WriteNoteScreen() {
             </Pressable>
           </View>
 
-          <Placeable id="body">
+          <Placeable id="body" def={{ dx: 0.115, dy: 0.054 }}>
             <TextInput
               value={draft}
               onChangeText={setDraft}
