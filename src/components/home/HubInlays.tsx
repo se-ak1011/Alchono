@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Platform, type LayoutChangeEvent } from "react-native";
 import Svg, { Circle, Line as SvgLine, Defs, LinearGradient, RadialGradient, Stop, Rect } from "react-native-svg";
 import { useCommunityMoments, useMyMoments } from "@/hooks/useMoments";
+import { SWAP_CATEGORIES } from "@/data/swaps";
 import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
@@ -159,6 +160,49 @@ export function MomentsBoardInlay() {
           </View>
         ))
       )}
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
+// 0.0 recommendations — the support-room corkboard. Four postits, each a swap
+// category with a couple of names, so the board previews the alcohol-free list.
+// Cream notes pinned over the cork; tap the board to open the full list.
+// ————————————————————————————————————————————————————————————————
+export function RecommendationsBoardInlay() {
+  const cats = SWAP_CATEGORIES.slice(0, 4);
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", flexDirection: "row", flexWrap: "wrap", padding: "3%" }]}>
+      {cats.map((c, i) => (
+        <View key={c.heading} style={{ width: "50%", height: "50%", padding: "2.5%" }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "#fdf6e3",
+              borderRadius: 2,
+              paddingHorizontal: "7%",
+              paddingVertical: "6%",
+              transform: [{ rotate: `${(i % 2 === 0 ? -1 : 1) * 2.2}deg` }],
+              shadowColor: "#000",
+              shadowOpacity: 0.25,
+              shadowRadius: 1.5,
+              shadowOffset: { width: 0, height: 1 },
+              elevation: 2,
+              overflow: "hidden",
+            }}
+          >
+            <View style={{ position: "absolute", top: -2, alignSelf: "center", width: 5, height: 5, borderRadius: 2.5, backgroundColor: "#b23b3b" }} />
+            <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 9.5, color: "#2b2320", fontWeight: "700", marginBottom: 1 }}>
+              {c.heading}
+            </Text>
+            {c.items.slice(0, 3).map((it) => (
+              <Text key={it.name} numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 8.5, lineHeight: 11, color: "#4a4038" }}>
+                {it.name}
+              </Text>
+            ))}
+          </View>
+        </View>
+      ))}
     </View>
   );
 }
@@ -381,6 +425,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   community: CommunityInlay, // video thumbnails
   community_board: CommunityBoardInlay, // written posts, chalked on the board
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
+  recommendations: RecommendationsBoardInlay, // 0.0 swaps on the support corkboard
   sky: SkyInlay,
   zine: ZineInlay, // a zine cover pinned to the café-right corkboard
 };

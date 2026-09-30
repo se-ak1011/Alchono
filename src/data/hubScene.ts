@@ -387,8 +387,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Messages — on the computer screen.
       { id: "s_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 11, interaction: "destination", haptic: "medium", x: 0.309, y: 0.332, w: 0.22, h: 0.08, action: { kind: "route", route: "/messages" } },
-      // Recommendations — the 4-card corkboard (0.0 alcohol-free swaps).
-      { id: "s_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.6, glowMax: 0.6, x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
+      // Recommendations — the 4-card corkboard (0.0 alcohol-free swaps), now a
+      // live preview: four postits, each a swap category with a couple of names.
+      { id: "s_recommendations", caption: "Recommendations", kind: "board", tint: "purple", interaction: "destination", inlay: "recommendations", x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
       // The right-view door → the Bar (labelled "Break Room").
       { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "node", node: "breakroom" } },
       // "BREAK ROOM" chalked on the door (added in-app).
