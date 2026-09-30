@@ -115,8 +115,8 @@ export default function BookReaderScreen() {
           ) : (
             <PageTuner
               label={`reading (${category})`}
-              defaultZone={PAGE}
-              defaultFontScale={0.8}
+              defaultZone={art.page ?? PAGE}
+              defaultFontScale={art.fontScale ?? 0.8}
               contentKey={`${phase}-${idx}`}
               scroll={phase === "contents"}
             >

@@ -6,8 +6,19 @@ import type { ToolkitCategory } from "@/lib/toolkit";
  * Added in pairs as Marta draws them. A category with no entry here falls back
  * to the plain toolkit list (the reader redirects), so half-drawn shelves still
  * work: every book opens something, the drawn ones just open the real book.
+ *
+ * Each open spread is a DIFFERENT drawing, so the page area sits in a slightly
+ * different spot per book. `page`/`fontScale` let each book carry its own text
+ * zone (fractions of the screen + font multiplier); left off, the reader's shared
+ * default is used. Bake per book from the in-app editor Export.
  */
-export type BookArt = { cover: ImageSourcePropType; open: ImageSourcePropType };
+export type BookZone = { left: number; top: number; width: number; height: number };
+export type BookArt = {
+  cover: ImageSourcePropType;
+  open: ImageSourcePropType;
+  page?: BookZone;
+  fontScale?: number;
+};
 
 export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   "in-the-moment": {
