@@ -16,9 +16,12 @@
       "ios": {
         "simulator": false
       },
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
-        "EXPO_PUBLIC_SUPABASE_URL": "https://your-project.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "your-anon-key"
+        "EXPO_PUBLIC_SUPABASE_URL": "https://kvvzygcndijxboyslirt.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv"
       }
     },
     "production": {
@@ -27,8 +30,8 @@
         "resourceClass": "m1-medium"
       },
       "env": {
-        "EXPO_PUBLIC_SUPABASE_URL": "https://your-project.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "your-anon-key"
+        "EXPO_PUBLIC_SUPABASE_URL": "https://kvvzygcndijxboyslirt.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv"
       }
     }
   },

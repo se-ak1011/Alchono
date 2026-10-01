@@ -131,3 +131,41 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+
+  # Android APK for direct install (sideloading) — no Play Store, no review.
+  # Produces a standalone, installable .apk you download from the build
+  # artifacts and tap to install on an Android phone (e.g. the Samsung).
+  expo-android:
+    name: Expo Android (APK)
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      node: latest
+      java: 17
+      vars:
+        # Keep the new architecture consistent with app.json (SDK 52 / RN 0.76).
+        RCT_NEW_ARCH_ENABLED: "1"
+        EXPO_PUBLIC_SUPABASE_URL: https://kvvzygcndijxboyslirt.supabase.co
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install --legacy-peer-deps
+
+      - name: Expo prebuild Android
+        script: |
+          npx expo prebuild --platform android --clean
+
+      - name: Build installable APK
+        script: |
+          # assembleRelease on an Expo-generated project is signed with the
+          # debug keystore by default, so the APK is standalone (JS bundle
+          # embedded) AND installable by sideloading — no Play Store and no
+          # signing setup needed. Ideal for testing on your own device.
+          cd android
+          ./gradlew assembleRelease
+
+    artifacts:
+      - android/app/build/outputs/apk/release/*.apk
