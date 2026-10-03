@@ -146,6 +146,9 @@ workflows:
       vars:
         # Keep the new architecture consistent with app.json (SDK 52 / RN 0.76).
         RCT_NEW_ARCH_ENABLED: "1"
+        # Tells app.config.js to drop the iOS-only @bacons/apple-targets plugin
+        # for this Android prebuild so it can't break the build. iOS never sets it.
+        ALCHONO_SKIP_APPLE_TARGETS: "1"
         EXPO_PUBLIC_SUPABASE_URL: https://kvvzygcndijxboyslirt.supabase.co
         EXPO_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv
 
