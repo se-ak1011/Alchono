@@ -1,0 +1,68 @@
+name: Android APK (free)
+
+# Builds a standalone, sideloadable Alchono APK on GitHub's free runners — no
+# Codemagic, no bill. Trigger it manually from the Actions tab ("Run workflow"),
+# or it gets kicked off for you. When it finishes, the APK is both a downloadable
+# build artifact AND attached to the "android-latest" release for easy phone
+# download. Signed with the Expo debug keystore, so it installs by sideloading.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Match app.json's new architecture (SDK 52 / RN 0.76).
+      RCT_NEW_ARCH_ENABLED: "1"
+      # Drop the iOS-only @bacons/apple-targets plugin for this Android prebuild.
+      ALCHONO_SKIP_APPLE_TARGETS: "1"
+      EXPO_PUBLIC_SUPABASE_URL: https://kvvzygcndijxboyslirt.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Expo prebuild (Android)
+        run: npx expo prebuild --platform android --clean
+
+      - name: Build release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+
+      - name: Upload APK as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alchono-android-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Publish APK to the android-latest release (easy phone download)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK="$(ls android/app/build/outputs/apk/release/*.apk | head -n1)"
+          cp "$APK" alchono.apk
+          # Fresh release each run so the latest APK is always at the same place.
+          gh release delete android-latest --yes --cleanup-tag || true
+          gh release create android-latest alchono.apk \
+            --title "Alchono Android (latest)" \
+            --notes "Sideload build of Alchono. Tap alchono.apk below to install on Android." \
+            --prerelease
