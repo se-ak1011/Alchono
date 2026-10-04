@@ -210,10 +210,10 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "node", node: "cafebar" } },
       { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/resources/home" } },
       { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", x: 0.396, y: 0.209, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
+      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", rotate: -4, rotateY: -32, rotateX: 2, opacity: 0.2, x: 0.395, y: 0.213, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
       // The Zine — a cover pinned to the corkboard (a live preview; tap to read).
-      { id: "r_zine", caption: "The Zine", kind: "glow", tint: "warm", interaction: "destination", inlay: "zine", haptic: "light", glowScale: 0.8, glowMax: 0.5, rotateY: -42, rotateX: 12, x: 0.63, y: 0.161, w: 0.165, h: 0.114, action: { kind: "route", route: "/newsletter" } },
+      { id: "r_zine", caption: "The Zine", kind: "glow", tint: "warm", interaction: "destination", inlay: "zine", haptic: "light", glowScale: 0.8, glowMax: 0.5, rotateY: -48, rotateX: 12, x: 0.63, y: 0.161, w: 0.165, h: 0.114, action: { kind: "route", route: "/newsletter" } },
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
@@ -392,11 +392,11 @@ export const HUB_NODES: Record<string, HubNode> = {
       // postits (type per postit) plus a "bar line" call to action. Positioned
       // in the editor onto the base art.
       { id: "s_recommendations", caption: "Recommendations", kind: "plain", interaction: "destination", x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_beer", caption: "Beer", kind: "label", label: "Beer", labelSize: 14, interaction: "destination", x: 0.19, y: 0.235, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_wine", caption: "Wine", kind: "label", label: "Wine", labelSize: 14, interaction: "destination", x: 0.35, y: 0.235, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_spirits", caption: "Spirits", kind: "label", label: "Spirits", labelSize: 14, interaction: "destination", x: 0.19, y: 0.285, w: 0.15, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_cider", caption: "Cider", kind: "label", label: "Cider", labelSize: 14, interaction: "destination", x: 0.35, y: 0.285, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_ask", caption: "Ask for recommendations", kind: "label", label: "Ask for Recommendations!", labelSize: 12, interaction: "destination", x: 0.17, y: 0.335, w: 0.34, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_beer", caption: "Beer", kind: "label", label: "Beer", labelSize: 11, interaction: "destination", rotate: -23, rotateX: 2, x: 0.168, y: 0.224, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_wine", caption: "Wine", kind: "label", label: "Wine", labelSize: 11, interaction: "destination", rotate: -23, rotateY: 2, x: 0.263, y: 0.236, w: 0.162, h: 0.042, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_spirits", caption: "Spirits", kind: "label", label: "Spirits", labelSize: 9, interaction: "destination", rotate: -23, rotateY: 2, x: 0.195, y: 0.282, w: 0.15, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_cider", caption: "Cider", kind: "label", label: "Cider", labelSize: 10, interaction: "destination", rotate: -23, rotateY: 2, x: 0.336, y: 0.291, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "s_rec_ask", caption: "Ask for recommendations", kind: "label", label: "Ask for Recommendations!", labelSize: 10, interaction: "destination", rotate: 4, rotateY: -12, x: 0.151, y: 0.179, w: 0.34, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
       // The right-view door → the Bar (labelled "Break Room").
       { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "node", node: "breakroom" } },
       // "BREAK ROOM" chalked on the door (added in-app).
