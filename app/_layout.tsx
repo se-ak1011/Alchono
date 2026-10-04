@@ -22,6 +22,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useAuthListener } from '@/hooks/useAuth';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { AppSplash } from '@/components/ui/AppSplash';
+import { LockGate } from '@/components/lock/LockGate';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -92,6 +93,7 @@ function RootLayoutNav() {
         <Stack.Screen name="evidence" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="counsellors" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="settings/app-lock" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="profile/file" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="saved" options={{ animation: 'slide_from_right' }} />
@@ -187,6 +189,7 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#201D28' }}>
             <StatusBar style="light" backgroundColor="#201D28" />
             <RootLayoutNav />
+            <LockGate />
             {!splashReady && <AppSplash width={width} height={height} />}
           </GestureHandlerRootView>
         </SafeAreaProvider>

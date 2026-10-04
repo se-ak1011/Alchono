@@ -127,3 +127,35 @@ export function useSignUp() {
     return data;
   };
 }
+
+// --- Passwordless (email OTP) -------------------------------------------------
+// Members sign in with a 6-digit code emailed to them — no password to forget.
+// The same flow creates the account on first use (shouldCreateUser), so "Start
+// here" and "Welcome back" both just ask for an email. Verifying the code both
+// signs them in and confirms the email.
+//
+// NOTE: the code only lands in the email if the Supabase email templates
+// ("Magic Link" and "Confirm signup") include the {{ .Token }} variable — set
+// once in the Supabase dashboard under Authentication → Emails.
+
+export function useSendOtp() {
+  return async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true },
+    });
+    if (error) throw error;
+  };
+}
+
+export function useVerifyOtp() {
+  return async (email: string, token: string) => {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'email',
+    });
+    if (error) throw error;
+    return data;
+  };
+}

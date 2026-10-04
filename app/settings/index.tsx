@@ -152,6 +152,10 @@ export default function SettingsScreen() {
           title="Privacy"
           items={[
             {
+              label: 'App lock (PIN)',
+              onPress: () => router.push('/settings/app-lock'),
+            },
+            {
               label: 'Emergency contacts',
               onPress: () => router.push('/profile/emergency-contacts'),
             },
