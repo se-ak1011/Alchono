@@ -573,10 +573,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "breakroom_right",
     hotspots: [
-      // The Café door (left) → back inside, to the Break Room.
-      { id: "out_cafe", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.83, y: 0.53 }, x: 0.03, y: 0.3, w: 0.23, h: 0.3, action: { kind: "node", node: "breakroom" } },
-      // The Reception door (centre) → the shared reception (the grounds).
-      { id: "out_reception", caption: "Reception", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.8, y: 0.55 }, x: 0.34, y: 0.33, w: 0.25, h: 0.3, action: { kind: "node", node: "reception" } },
+      // The Café door (left) → back inside, to the Break Room. (editor-tuned)
+      { id: "out_cafe", caption: "Café", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.83, y: 0.53 }, x: 0.011, y: 0.264, w: 0.23, h: 0.3, action: { kind: "node", node: "breakroom" } },
+      // The Reception door (centre) → the shared reception (the grounds). (editor-tuned)
+      { id: "out_reception", caption: "Reception", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.8, y: 0.55 }, x: 0.365, y: 0.273, w: 0.25, h: 0.3, action: { kind: "node", node: "reception" } },
     ],
   },
 
@@ -598,14 +598,17 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "outside",
     hotspots: [
-      { id: "rc_cannabis", caption: "Cannabis · Cannano — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.72, y: 0.55 }, x: 0.0, y: 0.28, w: 0.12, h: 0.26, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_cocaine", caption: "Cocaine — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.65, y: 0.55 }, x: 0.14, y: 0.29, w: 0.12, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_nicotine", caption: "Nicotine — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.6, y: 0.55 }, x: 0.34, y: 0.3, w: 0.12, h: 0.22, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_gambling", caption: "Gambling — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.4, y: 0.55 }, x: 0.52, y: 0.3, w: 0.12, h: 0.22, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_porn", caption: "Pornography — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.35, y: 0.55 }, x: 0.66, y: 0.3, w: 0.12, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_prescription", caption: "Prescription medication — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.28, y: 0.55 }, x: 0.86, y: 0.27, w: 0.14, h: 0.27, action: { kind: "route", route: "/ecosystem" } },
-      // The central reception desk board → "The Grounds" directory.
-      { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.27, y: 0.49, w: 0.37, h: 0.14, action: { kind: "route", route: "/ecosystem" } },
+      // Door glows — editor-tuned. The four Marta is building (cannabis,
+      // cocaine, nicotine, prescription) glow purple + brighter; the two not on
+      // the roadmap (gambling, porn) are a fainter, warmer "maybe someday".
+      { id: "rc_cannabis", caption: "Cannabis · Cannano — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.72, y: 0.55 }, x: -0.028, y: 0.129, w: 0.12, h: 0.26, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_cocaine", caption: "Cocaine · Cocano — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.65, y: 0.55 }, x: 0.134, y: 0.146, w: 0.107, h: 0.209, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_nicotine", caption: "Nicotine — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.6, y: 0.55 }, x: 0.359, y: 0.203, w: 0.092, h: 0.121, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_gambling", caption: "Gambling — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.3, anchor: { x: 0.4, y: 0.55 }, x: 0.546, y: 0.212, w: 0.101, h: 0.101, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_porn", caption: "Pornography — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.3, anchor: { x: 0.35, y: 0.55 }, x: 0.758, y: 0.203, w: 0.098, h: 0.147, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_prescription", caption: "Prescription medication · Medano — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.28, y: 0.55 }, x: 0.913, y: 0.208, w: 0.099, h: 0.123, action: { kind: "route", route: "/ecosystem" } },
+      // The central reception desk board → "The Grounds" directory. (editor-tuned)
+      { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.347, y: 0.355, w: 0.306, h: 0.051, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 };

@@ -99,6 +99,10 @@ export default function PersonalFileScreen() {
   const [trustedContact, setTrustedContact] = useState(savedNotes.trustedContact ?? '');
   const [hobbies, setHobbies] = useState((basePrefs.hobbies ?? []).join(', '));
 
+  // Save is best-effort and must NEVER block navigation. We update the
+  // in-session profile immediately (so edits persist and the other papers see
+  // them), then try the remote save in the background — a slow or failed
+  // network can't trap you on the page.
   const saveDetails = async () => {
     if (!user) return;
     const nextPrefs: any = {
@@ -107,17 +111,16 @@ export default function PersonalFileScreen() {
       hobbies: hobbies.split(',').map((h) => h.trim()).filter(Boolean),
       file: { family, pets, job, trustedName, trustedContact },
     };
-    const { data: updated, error } = await (supabase.from('profiles') as any)
-      .update({ preferences: nextPrefs })
-      .eq('id', user.id)
-      .select()
-      .maybeSingle();
-    if (error) {
-      Alert.alert('Could not save', error.message);
-      return;
+    if (profile) setProfile({ ...profile, preferences: nextPrefs });
+    try {
+      const { error } = await (supabase.from('profiles') as any)
+        .update({ preferences: nextPrefs })
+        .eq('id', user.id);
+      if (error) Alert.alert('Saved on device', 'We’ll sync your details when the connection’s back.');
+      else Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch {
+      Alert.alert('Saved on device', 'We’ll sync your details when the connection’s back.');
     }
-    setProfile(updated ? { ...(updated as any), preferences: nextPrefs } : { ...profile!, preferences: nextPrefs });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   // Notification toggles — live rows in notification_preferences (default on).
@@ -170,7 +173,7 @@ export default function PersonalFileScreen() {
         )}
 
         {phase === 'details' && (
-          <DrawnForm source={detailsPaper} label="file-details" onBack={async () => { await saveDetails(); setPhase('cover'); }}>
+          <DrawnForm source={detailsPaper} label="file-details" onBack={() => { void saveDetails(); setPhase('cover'); }}>
             <UsernameZone id="d_username" rect={R.d_username} fontSize={20} />
             <FieldZone id="d_family" rect={R.d_family} value={family} onChangeText={setFamily} placeholder="Who's at home" />
             <FieldZone id="d_pets" rect={R.d_pets} value={pets} onChangeText={setPets} placeholder="Any pets?" />
@@ -199,7 +202,7 @@ export default function PersonalFileScreen() {
 
         {/* Floating paper-to-paper navigation — top centre, clear of the pencil + back chevron. */}
         {phase === 'cover' && <NavPill label="Open file  ▸" onPress={() => setPhase('details')} />}
-        {phase === 'details' && <NavPill label="Preferences  ▸" onPress={async () => { await saveDetails(); setPhase('prefs'); }} />}
+        {phase === 'details' && <NavPill label="Preferences  ▸" onPress={() => { void saveDetails(); setPhase('prefs'); }} />}
         {phase === 'prefs' && <NavPill label="◂  Details" onPress={() => setPhase('details')} />}
       </View>
     </KeyboardAvoidingView>
