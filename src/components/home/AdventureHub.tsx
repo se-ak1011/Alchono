@@ -605,7 +605,7 @@ export function AdventureHub() {
         {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 1, -180, 180)), () => setProp("rotate", clampI(rot + 1, -180, 180))) : null}
         {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
         {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
-        {isText || hasInlay ? row("Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
+        {isText || hasInlay ? row(hasInlay ? "Brightness" : "Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
         {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
         {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
         {isGlow ? (

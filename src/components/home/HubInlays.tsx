@@ -6,6 +6,7 @@ import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
+import { ConstellationSky } from "@/components/constellation/ConstellationSky";
 
 /**
  * "Inlays" — live content painted straight onto an object in the scene, so the
@@ -164,88 +165,20 @@ export function MomentsBoardInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
-// Sky — the real constellation, drawn small on the board/window. No gestures:
-// it's a picture of your sky, and tapping the object opens the full room.
+// Sky — the REAL My Sky, rendered from the same ConstellationSky component the
+// full room uses, so the window preview IS your actual sky (one source of
+// truth, no separate re-draw that could drift from it). The inlay wrapper is
+// pointerEvents="none", so the sky's own gestures never fire here — tapping the
+// object opens the full room. Dim/brighten it per scene with the hotspot's
+// opacity (the editor's "Brightness" control).
 // ————————————————————————————————————————————————————————————————
-// A stable ambient starfield so the window always reads as a real night sky,
-// even before many days are earned. Deterministic (seeded) so stars don't jump.
-const AMBIENT_STARS = (() => {
-  const out: { x: number; y: number; r: number; o: number }[] = [];
-  let s = 987654321;
-  const rnd = () => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
-  for (let i = 0; i < 110; i++) {
-    out.push({ x: rnd(), y: rnd(), r: 0.4 + rnd() * 1.2, o: 0.12 + rnd() * 0.55 });
-  }
-  return out;
-})();
-
 export function SkyInlay() {
-  const [layout, setLayout] = useState({ w: 0, h: 0 });
   const { data: dates = [] } = useAfDays();
   const userId = useAuthStore((s) => s.user?.id) ?? "anon";
   const sky = useMemo(() => buildSky(dates, userId), [dates, userId]);
-
-  const onLayout = (e: LayoutChangeEvent) => {
-    const { width, height } = e.nativeEvent.layout;
-    setLayout({ w: width, h: height });
-  };
-
-  const size = Math.min(layout.w, layout.h);
-  const span = (sky.radius + 20) * 2;
-  const k = size > 0 ? size / span : 0;
-  const cx = layout.w / 2;
-  const cy = layout.h * 0.46;
-  const moonX = layout.w * 0.76;
-  const moonY = layout.h * 0.2;
-  const moonR = Math.max(9, size * 0.12);
-  const lit = sky.stars.filter((s) => s.lit);
-  const latent = sky.stars.filter((s) => !s.lit);
-
   return (
-    <View onLayout={onLayout} style={[StyleSheet.absoluteFill, { backgroundColor: "#0b0e2a", overflow: "hidden" }]}>
-      {layout.w > 0 ? (
-        <Svg width={layout.w} height={layout.h}>
-          <Defs>
-            {/* Deep night at the top warming to a faint purple horizon glow. */}
-            <LinearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor="#0a0c26" />
-              <Stop offset="0.55" stopColor="#181535" />
-              <Stop offset="1" stopColor="#2c2050" />
-            </LinearGradient>
-            <RadialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor="#fbf4e9" stopOpacity="0.9" />
-              <Stop offset="0.55" stopColor="#e6ddf5" stopOpacity="0.4" />
-              <Stop offset="1" stopColor="#e6ddf5" stopOpacity="0" />
-            </RadialGradient>
-          </Defs>
-          <Rect x="0" y="0" width={layout.w} height={layout.h} fill="url(#skyGrad)" />
-
-          {/* Moon — soft halo + a brighter core, top-right. */}
-          <Circle cx={moonX} cy={moonY} r={moonR * 2.1} fill="url(#moonGlow)" />
-          <Circle cx={moonX} cy={moonY} r={moonR} fill="#fbf4e9" fillOpacity={0.92} />
-          <Circle cx={moonX + moonR * 0.35} cy={moonY - moonR * 0.15} r={moonR} fill="#0e1130" fillOpacity={0.35} />
-
-          {/* Ambient starfield — always full, so the sky never looks empty. */}
-          {AMBIENT_STARS.map((a, i) => (
-            <Circle key={`amb${i}`} cx={a.x * layout.w} cy={a.y * layout.h} r={a.r} fill="#dfe3ff" fillOpacity={a.o} />
-          ))}
-
-          {/* Your personal constellation, brighter on top. */}
-          {k > 0 ? (
-            <>
-              {sky.lines.map((l, i) => (
-                <SvgLine key={`l${i}`} x1={cx + l.x1 * k} y1={cy + l.y1 * k} x2={cx + l.x2 * k} y2={cy + l.y2 * k} stroke="#A489DE" strokeOpacity={l.opacity} strokeWidth={0.7} />
-              ))}
-              {latent.map((s, i) => (
-                <Circle key={`u${i}`} cx={cx + s.x * k} cy={cy + s.y * k} r={Math.max(0.6, s.r * k * 0.7)} fill="#C7C0DE" fillOpacity={0.3 + s.twinkle * 0.3} />
-              ))}
-              {lit.map((s, i) => (
-                <Circle key={`s${i}`} cx={cx + s.x * k} cy={cy + s.y * k} r={Math.max(0.9, (s.r + 0.5) * k)} fill="#FFF7E9" fillOpacity={0.85 + s.twinkle * 0.15} />
-              ))}
-            </>
-          ) : null}
-        </Svg>
-      ) : null}
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}>
+      <ConstellationSky sky={sky} onSelectStar={() => {}} />
     </View>
   );
 }
