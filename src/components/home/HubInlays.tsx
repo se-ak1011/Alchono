@@ -303,6 +303,23 @@ export function ZineInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
+// Sibling-app logos — transparent crests to hang on the reception doors.
+// Rendered as a contained image filling the hotspot box, so the engine's
+// rotate / tilt (depth) / size / brightness controls all apply, same as any
+// inlay. Positioned + tuned in the editor, then exported.
+// ————————————————————————————————————————————————————————————————
+const CANNANO_LOGO = require("../../../assets/logos/cannano.webp");
+const COCANO_LOGO = require("../../../assets/logos/cocano.webp");
+const MEDANO_LOGO = require("../../../assets/logos/medano.webp");
+
+function LogoInlay({ source }: { source: number }) {
+  return <Image source={source} style={StyleSheet.absoluteFill} resizeMode="contain" />;
+}
+export function CannanoLogoInlay() { return <LogoInlay source={CANNANO_LOGO} />; }
+export function CocanoLogoInlay() { return <LogoInlay source={COCANO_LOGO} />; }
+export function MedanoLogoInlay() { return <LogoInlay source={MEDANO_LOGO} />; }
+
+// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 export const INLAYS: Record<string, React.ComponentType> = {
@@ -316,4 +333,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
   sky: SkyInlay,
   zine: ZineInlay, // a zine cover pinned to the café-right corkboard
+  cannano_logo: CannanoLogoInlay, // sibling-app crests on the reception doors
+  cocano_logo: CocanoLogoInlay,
+  medano_logo: MedanoLogoInlay,
 };

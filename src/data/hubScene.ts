@@ -613,6 +613,12 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "rc_prescription", caption: "Prescription medication · Medano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.28, y: 0.55 }, x: 0.913, y: 0.208, w: 0.099, h: 0.123, action: { kind: "node", node: "medano_preview" } },
       // The central reception desk board → "The Grounds" directory. (editor-tuned)
       { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.347, y: 0.355, w: 0.306, h: 0.051, action: { kind: "route", route: "/ecosystem" } },
+      // Sibling-app crests hung on their doors — transparent logo inlays, fully
+      // editable (drag / rotate / tilt-depth / size / brightness) then export.
+      // Rough starting boxes; tapping a crest also steps into that preview.
+      { id: "rc_cannano_logo", caption: "Cannano", kind: "board", interaction: "destination", inlay: "cannano_logo", haptic: "light", x: -0.02, y: 0.14, w: 0.15, h: 0.15, action: { kind: "node", node: "cannano_preview" } },
+      { id: "rc_cocano_logo", caption: "Cocano", kind: "board", interaction: "destination", inlay: "cocano_logo", haptic: "light", x: 0.12, y: 0.15, w: 0.14, h: 0.16, action: { kind: "node", node: "cocano_preview" } },
+      { id: "rc_medano_logo", caption: "Medano", kind: "board", interaction: "destination", inlay: "medano_logo", haptic: "light", x: 0.89, y: 0.18, w: 0.14, h: 0.17, action: { kind: "node", node: "medano_preview" } },
     ],
   },
 
