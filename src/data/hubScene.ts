@@ -576,7 +576,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "out_board", caption: "Something else", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.33, y: 0.27, w: 0.35, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
       { id: "out_lbl_board", caption: "Something else", kind: "label", label: "Struggling with something else too?", labelSize: 11, rotate: 12, x: 0.377, y: 0.282, w: 0.318, h: 0.076 },
       // The door → the café counter (Home right view).
-      { id: "out_door", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.02, y: 0.2, w: 0.24, h: 0.5, action: { kind: "node", node: "right" } },
+      { id: "out_door", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.5, x: 0.144, y: 0.434, w: 0.126, h: 0.056, action: { kind: "node", node: "right" } },
       { id: "out_lbl_door", caption: "Café", kind: "label", label: "Café", labelSize: 18, rotate: 13, rotateY: 2, opacity: 0.95, x: 0.035, y: 0.231, w: 0.2, h: 0.05 },
     ],
   },

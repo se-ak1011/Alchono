@@ -39,25 +39,27 @@ const R = {
   // cover
   cover_name: { x: 0.163, y: 0.214, w: 0.655, h: 0.073 } as Rect,
   // details paper
-  d_username: { x: 0.215, y: 0.193, w: 0.5, h: 0.045 } as Rect,
-  d_family: { x: 0.34, y: 0.42, w: 0.55, h: 0.045 } as Rect,
-  d_pets: { x: 0.3, y: 0.48, w: 0.58, h: 0.045 } as Rect,
-  d_job: { x: 0.28, y: 0.54, w: 0.6, h: 0.045 } as Rect,
-  d_location: { x: 0.35, y: 0.6, w: 0.53, h: 0.045 } as Rect,
-  d_trustedName: { x: 0.33, y: 0.7, w: 0.55, h: 0.045 } as Rect,
-  d_trustedContact: { x: 0.34, y: 0.76, w: 0.54, h: 0.045 } as Rect,
-  d_hobbies: { x: 0.12, y: 0.84, w: 0.76, h: 0.08 } as Rect,
+  d_username: { x: 0.213, y: 0.176, w: 0.5, h: 0.045 } as Rect,
+  d_family: { x: 0.219, y: 0.293, w: 0.55, h: 0.045 } as Rect,
+  d_pets: { x: 0.218, y: 0.366, w: 0.58, h: 0.045 } as Rect,
+  d_job: { x: 0.207, y: 0.439, w: 0.6, h: 0.045 } as Rect,
+  d_location: { x: 0.208, y: 0.513, w: 0.53, h: 0.045 } as Rect,
+  d_trustedName: { x: 0.126, y: 0.633, w: 0.55, h: 0.045 } as Rect,
+  d_trustedContact: { x: 0.111, y: 0.707, w: 0.54, h: 0.045 } as Rect,
+  d_hobbies: { x: 0.116, y: 0.814, w: 0.76, h: 0.08 } as Rect,
   // preferences paper — tick boxes down the right edge
-  p_daily_checkin: { x: 0.8, y: 0.34, w: 0.1, h: 0.04 } as Rect,
-  p_morning_reflection: { x: 0.8, y: 0.41, w: 0.1, h: 0.04 } as Rect,
-  p_drinking_reminders: { x: 0.8, y: 0.48, w: 0.1, h: 0.04 } as Rect,
-  p_session_nudges: { x: 0.8, y: 0.55, w: 0.1, h: 0.04 } as Rect,
-  p_milestone_alerts: { x: 0.8, y: 0.62, w: 0.1, h: 0.04 } as Rect,
-  p_community_updates: { x: 0.8, y: 0.69, w: 0.1, h: 0.04 } as Rect,
+  p_daily_checkin: { x: 0.788, y: 0.226, w: 0.12, h: 0.064 } as Rect,
+  p_morning_reflection: { x: 0.789, y: 0.29, w: 0.128, h: 0.065 } as Rect,
+  p_drinking_reminders: { x: 0.794, y: 0.356, w: 0.117, h: 0.065 } as Rect,
+  p_session_nudges: { x: 0.794, y: 0.423, w: 0.119, h: 0.063 } as Rect,
+  p_milestone_alerts: { x: 0.798, y: 0.49, w: 0.112, h: 0.065 } as Rect,
+  p_community_updates: { x: 0.794, y: 0.558, w: 0.127, h: 0.067 } as Rect,
   // preferences paper — privacy rows (whole row tappable)
-  p_emergency: { x: 0.12, y: 0.8, w: 0.76, h: 0.045 } as Rect,
-  p_export: { x: 0.12, y: 0.855, w: 0.76, h: 0.045 } as Rect,
-  p_privacy: { x: 0.12, y: 0.91, w: 0.76, h: 0.045 } as Rect,
+  p_emergency: { x: 0.126, y: 0.688, w: 0.76, h: 0.045 } as Rect,
+  p_export: { x: 0.122, y: 0.741, w: 0.76, h: 0.045 } as Rect,
+  // Lifted from the exported y:0.91 (floated below the page) up onto the
+  // actual "Privacy policy" row, matching the emergency/export row spacing.
+  p_privacy: { x: 0.12, y: 0.794, w: 0.76, h: 0.045 } as Rect,
 } as const;
 
 const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
