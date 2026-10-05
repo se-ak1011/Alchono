@@ -311,6 +311,7 @@ export function ZineInlay() {
 const CANNANO_LOGO = require("../../../assets/logos/cannano.webp");
 const COCANO_LOGO = require("../../../assets/logos/cocano.webp");
 const MEDANO_LOGO = require("../../../assets/logos/medano.webp");
+const NICONO_LOGO = require("../../../assets/logos/nicono.webp");
 
 function LogoInlay({ source }: { source: number }) {
   return <Image source={source} style={StyleSheet.absoluteFill} resizeMode="contain" />;
@@ -318,6 +319,7 @@ function LogoInlay({ source }: { source: number }) {
 export function CannanoLogoInlay() { return <LogoInlay source={CANNANO_LOGO} />; }
 export function CocanoLogoInlay() { return <LogoInlay source={COCANO_LOGO} />; }
 export function MedanoLogoInlay() { return <LogoInlay source={MEDANO_LOGO} />; }
+export function NiconoLogoInlay() { return <LogoInlay source={NICONO_LOGO} />; }
 
 // ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
@@ -336,4 +338,5 @@ export const INLAYS: Record<string, React.ComponentType> = {
   cannano_logo: CannanoLogoInlay, // sibling-app crests on the reception doors
   cocano_logo: CocanoLogoInlay,
   medano_logo: MedanoLogoInlay,
+  nicono_logo: NiconoLogoInlay,
 };
