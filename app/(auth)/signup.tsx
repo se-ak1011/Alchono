@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -16,16 +16,16 @@ import { SoulIcon } from '@/components/icons/SoulIcon';
 import { headingShadow } from '@/styles';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { useSendOtp } from '@/hooks/useAuth';
+import { useSignUp } from '@/hooks/useAuth';
 
 type FormValues = {
   email: string;
+  password: string;
 };
 
 export default function SignupScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const sendOtp = useSendOtp();
+  const signUp = useSignUp();
   const [loading, setLoading] = useState(false);
 
   const {
@@ -34,14 +34,16 @@ export default function SignupScreen() {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const onSubmit = async ({ email }: FormValues) => {
-    const clean = email.trim().toLowerCase();
+  const onSubmit = async ({ email, password }: FormValues) => {
     setLoading(true);
     try {
-      await sendOtp(clean);
-      router.push({ pathname: '/(auth)/verify', params: { email: clean } });
+      await signUp(email.trim().toLowerCase(), password);
+      Alert.alert(
+        'Check your email',
+        'We sent a confirmation link. Click it to activate your account.',
+      );
     } catch (err: any) {
-      Alert.alert('Could not send your code', err?.message ?? 'Please try again.');
+      Alert.alert('Could not create account', err?.message ?? 'Please try again.');
     } finally {
       setLoading(false);
     }
@@ -93,7 +95,25 @@ export default function SignupScreen() {
                   onBlur={onBlur}
                   value={value}
                   error={errors.email?.message}
-                  hint="We'll email you a 6-digit code to get started — no password to remember."
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              rules={{
+                required: 'Password is required',
+                minLength: { value: 8, message: 'At least 8 characters' },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="8+ characters"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  error={errors.password?.message}
                 />
               )}
             />
@@ -101,7 +121,7 @@ export default function SignupScreen() {
 
           <Animated.View entering={FadeInDown.duration(500).delay(300)} className="mb-4">
             <Button
-              title="Email me a code"
+              title="Create account"
               variant="primary"
               size="lg"
               fullWidth

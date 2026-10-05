@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
+  TextInput,
   Pressable,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Alert,
 } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -16,16 +17,16 @@ import { SoulIcon } from '@/components/icons/SoulIcon';
 import { headingShadow } from '@/styles';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { useSendOtp } from '@/hooks/useAuth';
+import { useSignIn } from '@/hooks/useAuth';
 
 type FormValues = {
   email: string;
+  password: string;
 };
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const sendOtp = useSendOtp();
+  const signIn = useSignIn();
   const [loading, setLoading] = useState(false);
 
   const {
@@ -34,16 +35,14 @@ export default function LoginScreen() {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const onSubmit = async ({ email }: FormValues) => {
-    const clean = email.trim().toLowerCase();
+  const onSubmit = async ({ email, password }: FormValues) => {
     setLoading(true);
     try {
-      await sendOtp(clean);
-      router.push({ pathname: '/(auth)/verify', params: { email: clean } });
+      await signIn(email.trim().toLowerCase(), password);
     } catch (err: any) {
       Alert.alert(
-        'Could not send your code',
-        err?.message ?? 'Check your email and try again.',
+        'Sign in failed',
+        err?.message ?? 'Check your email and password.',
       );
     } finally {
       setLoading(false);
@@ -81,10 +80,7 @@ export default function LoginScreen() {
             <Controller
               control={control}
               name="email"
-              rules={{
-                required: 'Email is required',
-                pattern: { value: /^\S+@\S+\.\S+$/, message: 'Enter a valid email' },
-              }}
+              rules={{ required: 'Email is required' }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   label="Email"
@@ -96,7 +92,22 @@ export default function LoginScreen() {
                   onBlur={onBlur}
                   value={value}
                   error={errors.email?.message}
-                  hint="We'll email you a 6-digit code — no password needed."
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              rules={{ required: 'Password is required' }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="Your password"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  error={errors.password?.message}
                 />
               )}
             />
@@ -104,7 +115,7 @@ export default function LoginScreen() {
 
           <Animated.View entering={FadeInDown.duration(500).delay(300)}>
             <Button
-              title="Email me a code"
+              title="Sign in"
               variant="primary"
               size="lg"
               fullWidth
