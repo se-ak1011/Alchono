@@ -558,25 +558,27 @@ export const HUB_NODES: Record<string, HubNode> = {
     ],
   },
 
-  // The outdoor space — "outside" from the Break Room, for the wider-life stuff.
-  // A single view for now, but drawn to open up further to the right later (an
-  // interactive outdoors). The board carries the "struggling with something else"
-  // content; the door is a shortcut to the café counter; back → the Break Room.
+  // The outdoor space — "outside" from the Break Room, now redrawn as the
+  // threshold of the grounds. Two doors under the lamp: the Café door leads back
+  // inside (the Break Room), and the Reception door is the gate to the shared
+  // reception — where the other apps (Cannano and the rest) will live. All the
+  // signage ("Café", "Reception", "Struggling with something else too?") is
+  // baked into the art, so the only hotspots are the two door glows.
   outside: {
     id: "outside",
     title: "Outside",
-    image: require("../../assets/scenes/outside.png"),
-    imgW: 851,
-    imgH: 1847,
+    image: require("../../assets/scenes/outside.webp"),
+    imgW: 840,
+    imgH: 1872,
     fit: "screen",
     back: "breakroom_right",
     hotspots: [
-      // The board → "struggling with something else" content.
-      { id: "out_board", caption: "Something else", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.33, y: 0.27, w: 0.35, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
-      { id: "out_lbl_board", caption: "Something else", kind: "label", label: "Struggling with something else too?", labelSize: 11, rotate: 12, x: 0.377, y: 0.282, w: 0.318, h: 0.076 },
-      // The door → the café counter (Home right view).
-      { id: "out_door", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.5, x: 0.144, y: 0.434, w: 0.126, h: 0.056, action: { kind: "node", node: "right" } },
-      { id: "out_lbl_door", caption: "Café", kind: "label", label: "Café", labelSize: 18, rotate: 13, rotateY: 2, opacity: 0.95, x: 0.035, y: 0.231, w: 0.2, h: 0.05 },
+      // The Café door (left) → back inside, to the Break Room.
+      { id: "out_cafe", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.83, y: 0.53 }, x: 0.03, y: 0.3, w: 0.23, h: 0.3, action: { kind: "node", node: "breakroom" } },
+      // The Reception door (centre) → the shared reception (the grounds).
+      // DESTINATION PENDING — a live glow, but it routes nowhere until the
+      // reception scene art lands; wire its action then.
+      { id: "out_reception", caption: "Reception", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.8, y: 0.55 }, x: 0.34, y: 0.33, w: 0.25, h: 0.3 },
     ],
   },
 };
