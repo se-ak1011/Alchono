@@ -601,14 +601,64 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Door glows — editor-tuned. The four Marta is building (cannabis,
       // cocaine, nicotine, prescription) glow purple + brighter; the two not on
       // the roadmap (gambling, porn) are a fainter, warmer "maybe someday".
-      { id: "rc_cannabis", caption: "Cannabis · Cannano — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.72, y: 0.55 }, x: -0.028, y: 0.129, w: 0.12, h: 0.26, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_cocaine", caption: "Cocaine · Cocano — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.65, y: 0.55 }, x: 0.134, y: 0.146, w: 0.107, h: 0.209, action: { kind: "route", route: "/ecosystem" } },
+      // The three built apps' doors walk INTO a preview of that app's home —
+      // scenery you can look around, with only the front counter live (→ get
+      // the app). Nicotine has no preview yet; it + gambling + porn still open
+      // the directory.
+      { id: "rc_cannabis", caption: "Cannabis · Cannano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.72, y: 0.55 }, x: -0.028, y: 0.129, w: 0.12, h: 0.26, action: { kind: "node", node: "cannano_preview" } },
+      { id: "rc_cocaine", caption: "Cocaine · Cocano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.65, y: 0.55 }, x: 0.134, y: 0.146, w: 0.107, h: 0.209, action: { kind: "node", node: "cocano_preview" } },
       { id: "rc_nicotine", caption: "Nicotine — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.6, y: 0.55 }, x: 0.359, y: 0.203, w: 0.092, h: 0.121, action: { kind: "route", route: "/ecosystem" } },
       { id: "rc_gambling", caption: "Gambling — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.3, anchor: { x: 0.4, y: 0.55 }, x: 0.546, y: 0.212, w: 0.101, h: 0.101, action: { kind: "route", route: "/ecosystem" } },
       { id: "rc_porn", caption: "Pornography — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.3, anchor: { x: 0.35, y: 0.55 }, x: 0.758, y: 0.203, w: 0.098, h: 0.147, action: { kind: "route", route: "/ecosystem" } },
-      { id: "rc_prescription", caption: "Prescription medication · Medano — coming soon", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.28, y: 0.55 }, x: 0.913, y: 0.208, w: 0.099, h: 0.123, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_prescription", caption: "Prescription medication · Medano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.28, y: 0.55 }, x: 0.913, y: 0.208, w: 0.099, h: 0.123, action: { kind: "node", node: "medano_preview" } },
       // The central reception desk board → "The Grounds" directory. (editor-tuned)
       { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.347, y: 0.355, w: 0.306, h: 0.051, action: { kind: "route", route: "/ecosystem" } },
+    ],
+  },
+
+  // Sibling-app previews — walk through a reception door into a feel of that
+  // app's home. Everything is scenery (the boards and shelves are dressed in
+  // the art, not wired); only the front counter is live — the "get this app"
+  // CTA. It points at /ecosystem ("The Grounds") for now; swap it for the
+  // app's store link once it ships. back → reception. Counter boxes are rough
+  // — drag onto the desk in the editor and export. Each is the other app's
+  // viewpoint, so its own purple/green/etc. is baked into the art.
+  cannano_preview: {
+    id: "cannano_preview",
+    title: "Cannano",
+    image: require("../../assets/scenes/cannano_preview.webp"),
+    imgW: 851,
+    imgH: 1848,
+    fit: "screen",
+    back: "reception",
+    hotspots: [
+      { id: "cn_counter", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.56, y: 0.5, w: 0.44, h: 0.27, action: { kind: "route", route: "/ecosystem" } },
+    ],
+  },
+
+  cocano_preview: {
+    id: "cocano_preview",
+    title: "Cocano",
+    image: require("../../assets/scenes/cocano_preview.webp"),
+    imgW: 853,
+    imgH: 1844,
+    fit: "screen",
+    back: "reception",
+    hotspots: [
+      { id: "co_counter", caption: "Get Cocano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.0, y: 0.62, w: 0.4, h: 0.3, action: { kind: "route", route: "/ecosystem" } },
+    ],
+  },
+
+  medano_preview: {
+    id: "medano_preview",
+    title: "Medano",
+    image: require("../../assets/scenes/medano_preview.webp"),
+    imgW: 853,
+    imgH: 1844,
+    fit: "screen",
+    back: "reception",
+    hotspots: [
+      { id: "md_counter", caption: "Get Medano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.0, y: 0.58, w: 0.46, h: 0.3, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 };
