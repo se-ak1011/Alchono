@@ -188,8 +188,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Added in-app: signage labels (non-tappable).
       { id: "l_lbl_writing", caption: "Writing Space", kind: "label", label: "Writing Space", labelSize: 23, rotate: 2, x: 0.084, y: 0.089, w: 0.285, h: 0.243 },
       { id: "l_lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading Corner", labelSize: 11, rotate: 6, x: 0.629, y: 0.123, w: 0.146, h: 0.127 },
-      // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
-      { id: "l_glow_1", caption: "New spot", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.65, x: 0.483, y: 0.326, w: 0.16, h: 0.16 },
+      // Added in-app: new glow — DESTINATION PENDING (inert until wired).
       { id: "l_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.45, x: 0.869, y: 0.309, w: 0.084, h: 0.049 },
     ],
   },
