@@ -134,7 +134,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // — environmental signage (text only, NOT tappable) — placed + tuned in-app —
       { id: "lbl_community", caption: "Community", kind: "label", label: "Community", labelSize: 11, rotate: 8, x: 0.0, y: 0.207, w: 0.144, h: 0.058 },
-      { id: "lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading\nCorner", labelSize: 9, rotate: 6, x: 0.105, y: 0.208, w: 0.17, h: 0.113 },
+      { id: "lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading\nCorner", labelSize: 10, rotate: 6, x: 0.105, y: 0.208, w: 0.17, h: 0.113 },
       { id: "lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 11, x: 0.329, y: 0.275, w: 0.122, h: 0.094 },
       { id: "lbl_support", caption: "Support", kind: "label", label: "Support", rotate: -4, x: 0.4, y: 0.199, w: 0.197, h: 0.059 },
       { id: "lbl_resources", caption: "Resources", kind: "label", label: "Resources", labelSize: 18, rotate: 8, x: 0.633, y: 0.486, w: 0.223, h: 0.033 },
@@ -145,7 +145,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 1.05, glowMax: 0.65, x: 0.437, y: 0.374, w: 0.148, h: 0.097, action: { kind: "node", node: "support" } },
 
       // — live objects: content painted on, tap enters the room directly —
-      { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 1, rotateY: 40, x: 0.018, y: 0.249, w: 0.112, h: 0.123, action: { kind: "route", route: "/community" } },
+      { id: "community", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 2, rotateY: 44, x: 0.015, y: 0.253, w: 0.11, h: 0.118, action: { kind: "route", route: "/community" } },
       { id: "reading", caption: "Reading Corner", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.102, y: 0.431, w: 0.192, h: 0.09, action: { kind: "node", node: "reading_shelf" } },
       { id: "mysky", caption: "My Sky", kind: "glow", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, opacity: 0.2, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
 
@@ -172,7 +172,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "front",
     back: "front",
     hotspots: [
-      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.65, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "node", node: "writing_desk" } },
+      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.45, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "node", node: "writing_desk" } },
       // The rack: tiny routing glows (paper previews removed — real newspapers
       // will be drawn into the baskets, with name-sticker labels added in-app).
       // Reposition onto the baskets in the editor.
@@ -183,14 +183,14 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
       // Live videos on the board face below the "Community" sign, tilted into
       // the wall — same inlay as the front.
-      { id: "l_community_board", caption: "Community", kind: "glow", tint: "purple", interaction: "destination", inlay: "community", rotate: 1, rotateY: 44, x: 0.445, y: 0.172, w: 0.112, h: 0.134, action: { kind: "route", route: "/community" } },
+      { id: "l_community_board", caption: "Community", kind: "board", tint: "purple", interaction: "destination", inlay: "community", rotate: 1, rotateY: 44, x: 0.445, y: 0.172, w: 0.112, h: 0.134, action: { kind: "route", route: "/community" } },
       { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "node", node: "me_front" } },
       // Added in-app: signage labels (non-tappable).
       { id: "l_lbl_writing", caption: "Writing Space", kind: "label", label: "Writing Space", labelSize: 23, rotate: 2, x: 0.084, y: 0.089, w: 0.285, h: 0.243 },
-      { id: "l_lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading Corner", labelSize: 12, rotate: 6, x: 0.629, y: 0.123, w: 0.146, h: 0.127 },
+      { id: "l_lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading Corner", labelSize: 11, rotate: 6, x: 0.629, y: 0.123, w: 0.146, h: 0.127 },
       // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
-      { id: "l_glow_1", caption: "New spot", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.65, x: 0.422, y: 0.159, w: 0.16, h: 0.16 },
-      { id: "l_glow_2", caption: "New spot", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.65, x: 0.758, y: 0.136, w: 0.16, h: 0.16 },
+      { id: "l_glow_1", caption: "New spot", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.65, x: 0.483, y: 0.326, w: 0.16, h: 0.16 },
+      { id: "l_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.45, x: 0.869, y: 0.309, w: 0.084, h: 0.049 },
     ],
   },
   right: {
@@ -217,7 +217,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
-      { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 44, rotateY: -30, opacity: 0.5, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
+      { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 40, rotateY: -30, opacity: 0.5, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
     ],
   },
 
@@ -440,7 +440,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Profile — the tall locker.
       { id: "ml_profile", caption: "Personal file", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.35, glowMax: 0.45, x: -0.058, y: 0.246, w: 0.24, h: 0.48, action: { kind: "route", route: "/profile/file" } },
-      { id: "ml_lbl_profile", caption: "Personal file", kind: "label", label: "Personal file", labelSize: 16, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
+      { id: "ml_lbl_profile", caption: "Personal file", kind: "label", label: "Personal file", labelSize: 11, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
       // Your moments — the corkboard.
       { id: "ml_moments", caption: "Your moments", kind: "board", tint: "purple", interaction: "destination", haptic: "light", inlay: "moments", rotate: 4, rotateY: 36, x: 0.315, y: 0.266, w: 0.302, h: 0.137, action: { kind: "route", route: "/moments" } },
       { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, rotate: 7, x: 0.315, y: 0.238, w: 0.28, h: 0.05 },
