@@ -132,9 +132,7 @@ export default function UrgeScreen() {
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [survivedCount, setSurvivedCount] = useState(0);
   const [input, setInput] = useState('');
-  const [whisper, setWhisper] = useState<string | null>(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
-  const whisperTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { messages, isTyping, sendMessage } = useAiCoach('urge', 'I’m here.\n\nWhat would help right now?');
 
@@ -163,15 +161,6 @@ export default function UrgeScreen() {
   }, []);
   const groundsStyle = useAnimatedStyle(() => ({ opacity: groundsPulse.value }));
 
-  useEffect(() => () => { if (whisperTimer.current) clearTimeout(whisperTimer.current); }, []);
-
-  const say = (text: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setWhisper(text);
-    if (whisperTimer.current) clearTimeout(whisperTimer.current);
-    whisperTimer.current = setTimeout(() => setWhisper(null), 2800);
-  };
-
   // Cover-fit geometry so fractional hotspots land on the real objects.
   const scale = box.w > 0 ? Math.max(box.w / IMG_W, box.h / IMG_H) : 1;
   const dispW = IMG_W * scale;
@@ -192,6 +181,12 @@ export default function UrgeScreen() {
   const goCourtyard = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     useHubStore.getState().setPendingNode('outside');
+    router.replace('/(tabs)');
+  };
+
+  const goGrounds = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    useHubStore.getState().setPendingNode('reception');
     router.replace('/(tabs)');
   };
 
@@ -260,12 +255,12 @@ export default function UrgeScreen() {
             <ScenePill label="Play a game" />
           </Pressable>
 
-          {/* Future grounds — the right path. Alive, but not open yet. */}
-          <Pressable style={place(SPOTS.grounds)} onPress={() => say('The grounds aren’t open yet 🤍')}>
+          {/* The grounds — the right path out to the shared reception. */}
+          <Pressable style={place(SPOTS.grounds)} onPress={goGrounds}>
             <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: '28%', top: '34%', width: '44%', height: '32%', borderRadius: 999, backgroundColor: '#A489DE' }, groundsStyle]} />
             <View style={{ position: 'absolute', left: 0, right: 0, bottom: 2, alignItems: 'center' }}>
               <View style={{ backgroundColor: 'rgba(13,11,18,0.72)', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: 'rgba(236,233,241,0.14)' }}>
-                <Text style={{ color: '#CFC7DE', fontSize: 11, textAlign: 'center' }} numberOfLines={2}>Future grounds</Text>
+                <Text style={{ color: '#CFC7DE', fontSize: 11, textAlign: 'center' }} numberOfLines={2}>The grounds</Text>
               </View>
             </View>
           </Pressable>
@@ -300,15 +295,6 @@ export default function UrgeScreen() {
             <Text style={{ color: '#ECE9F1', fontSize: 14, fontWeight: '600' }}>Café courtyard</Text>
           </ChromePill>
         </View>
-      )}
-
-      {/* ---- Whisper toast ------------------------------------------------- */}
-      {whisper && (
-        <Animated.View entering={FadeIn.duration(200)} pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: '42%', alignItems: 'center' }}>
-          <View style={{ backgroundColor: 'rgba(13,11,18,0.9)', borderRadius: 18, paddingHorizontal: 18, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(236,233,241,0.16)' }}>
-            <Text style={{ color: '#ECE9F1', fontSize: 15 }}>{whisper}</Text>
-          </View>
-        </Animated.View>
       )}
 
       {/* ---- Docked AI coach (bottom) ------------------------------------- */}

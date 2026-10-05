@@ -576,9 +576,36 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The Café door (left) → back inside, to the Break Room.
       { id: "out_cafe", caption: "Café", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.83, y: 0.53 }, x: 0.03, y: 0.3, w: 0.23, h: 0.3, action: { kind: "node", node: "breakroom" } },
       // The Reception door (centre) → the shared reception (the grounds).
-      // DESTINATION PENDING — a live glow, but it routes nowhere until the
-      // reception scene art lands; wire its action then.
-      { id: "out_reception", caption: "Reception", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.8, y: 0.55 }, x: 0.34, y: 0.33, w: 0.25, h: 0.3 },
+      { id: "out_reception", caption: "Reception", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.8, y: 0.55 }, x: 0.34, y: 0.33, w: 0.25, h: 0.3, action: { kind: "node", node: "reception" } },
+    ],
+  },
+
+  // The shared reception — the civic heart of the grounds, drawn from the
+  // Alchono viewpoint (you're standing on the purple Alchono mat; your own door
+  // is behind you). Each coloured door is a sibling app, its name on a baked-in
+  // brass plate. None are built yet, so every door — and the central desk board
+  // — opens "The Grounds" directory, which carries the ethos, each room's
+  // open/coming-soon status, and (later) the real download/open links. When an
+  // app ships, wire its door straight to its store link. The directory lives at
+  // /ecosystem ("The Grounds"). Door boxes are rough — drag each onto its door
+  // in the editor and export. back → outside.
+  reception: {
+    id: "reception",
+    title: "Reception",
+    image: require("../../assets/scenes/reception.webp"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    back: "outside",
+    hotspots: [
+      { id: "rc_cannabis", caption: "Cannabis · Cannano — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.72, y: 0.55 }, x: 0.0, y: 0.28, w: 0.12, h: 0.26, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_cocaine", caption: "Cocaine — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.65, y: 0.55 }, x: 0.14, y: 0.29, w: 0.12, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_nicotine", caption: "Nicotine — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.6, y: 0.55 }, x: 0.34, y: 0.3, w: 0.12, h: 0.22, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_gambling", caption: "Gambling — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.4, y: 0.55 }, x: 0.52, y: 0.3, w: 0.12, h: 0.22, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_porn", caption: "Pornography — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.35, y: 0.55 }, x: 0.66, y: 0.3, w: 0.12, h: 0.24, action: { kind: "route", route: "/ecosystem" } },
+      { id: "rc_prescription", caption: "Prescription medication — coming soon", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.5, anchor: { x: 0.28, y: 0.55 }, x: 0.86, y: 0.27, w: 0.14, h: 0.27, action: { kind: "route", route: "/ecosystem" } },
+      // The central reception desk board → "The Grounds" directory.
+      { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.27, y: 0.49, w: 0.37, h: 0.14, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 };
