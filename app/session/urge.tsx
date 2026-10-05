@@ -1,54 +1,111 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, FadeIn, FadeInDown } from 'react-native-reanimated';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  type LayoutChangeEvent,
+} from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { SafeArea } from '@/components/ui/SafeArea';
-import { ZoneGlow } from '@/components/ui/ZoneGlow';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/Button';
-import { CompanionArt } from '@/components/ui/CompanionArt';
 import { useStartSession } from '@/hooks/useDrinkingSession';
 import { useLogUrgeOutcome, useUrgeStats, useTypicalUrgeMinutes } from '@/hooks/useVictories';
 import { useAuthStore } from '@/store/authStore';
+import { useHubStore } from '@/store/hubStore';
 import { headingShadow, celebrationGlow } from '@/styles';
 import { useAiCoach } from '@/hooks/useAiCoach';
-import { useCompanion } from '@/hooks/useCompanion';
 import type { ChatMessage, UserPreferences } from '@/types';
+
+/**
+ * The urge flow — redrawn as a place. However you got here (any "I need a
+ * drink" button), the flow takes you OUT: out of whatever room you were in and
+ * onto a covered porch at night, looking into a quiet garden. Stepping away is
+ * the oldest urge advice there is, so the flow IS the intervention — you don't
+ * read "change your space", you change it.
+ *
+ * Everything is a thing in the scene:
+ *   · the skull-flowers  → Grounding (outward first; breath is one optional card)
+ *   · the phone          → your own people (message/check-in nudges)
+ *   · the handheld       → the arcade
+ *   · the left path      → the café courtyard (the existing `outside` hub scene)
+ *   · the right path     → the "grounds" — other recovery worlds, not open yet
+ *   · the armchair/dock  → the AI coach, right there with you
+ * Top chrome: Back, "It passed" (the win), and the crisis-lines escape hatch.
+ *
+ * Scene-object hotspot boxes are fractional (0..1) over the art, placed from the
+ * annotated mock and easy to nudge from in-build feedback. Positioning mirrors
+ * the hub's cover-fit geometry so the pills land right on every screen.
+ */
+
+const SCENE = require('../../assets/scenes/urge_outside.webp');
+const IMG_W = 851;
+const IMG_H = 1847;
 
 const BREATH_MS = 4000;
 const TOTAL_HALF_CYCLES = 4; // two full breaths — short on purpose; skippable anytime
 
-type Action = { id: string; label: string; subtitle: string; navigate?: string; mode?: 'breathing' | 'decision' };
+type Overlay = null | 'grounding' | 'breath' | 'people' | 'drink';
 
-function buildActions(prefs: UserPreferences | null): Action[] {
-  const list: Action[] = [
-    { id: 'breathing', label: 'Breathing', subtitle: 'A slow rhythm if your body wants one.', mode: 'breathing' },
-    { id: 'game', label: 'Play a game', subtitle: 'Give your mind something else to do.', navigate: '/session/games?from=urge' },
-    { id: 'barista', label: 'Make a drink', subtitle: 'Something to pour, hold and sip. Hands and time, no alcohol.', navigate: '/barista' },
-    { id: 'reasons', label: 'Reasons', subtitle: 'Remember who and what you are protecting.', navigate: '/(tabs)/insights' },
-    { id: 'journal', label: 'Journal', subtitle: 'Put the urge somewhere outside your body.', navigate: '/(tabs)/journal' },
-    { id: 'grounding', label: 'Grounding', subtitle: 'Name what is real in the room right now.', navigate: '/toolkit/c/urge' },
+type SpotId = 'grounding' | 'people' | 'game' | 'grounds';
+const SPOTS: Record<SpotId, { label: string; x: number; y: number; w: number; h: number }> = {
+  grounding: { label: 'Grounding', x: 0.17, y: 0.43, w: 0.26, h: 0.12 },
+  people: { label: 'Talk to a person', x: 0.0, y: 0.55, w: 0.3, h: 0.12 },
+  game: { label: 'Play a game', x: 0.22, y: 0.585, w: 0.28, h: 0.1 },
+  grounds: { label: 'Future grounds', x: 0.8, y: 0.3, w: 0.2, h: 0.22 },
+};
+
+type GroundingCard = { id: string; title: string; body: string };
+
+function groundingCards(prefs: UserPreferences | null): GroundingCard[] {
+  const petName = prefs?.hasPets ? prefs.petName?.trim() : null;
+  const heavy = petName
+    ? `Pick up something with real weight — ${petName}, a full kettle, a heavy book. Let your arms feel it.`
+    : 'Pick up something with real weight — a full kettle, a heavy book. Let your arms feel it.';
+  return [
+    { id: 'cold', title: 'Cold water', body: 'Run your wrists under the cold tap. Splash your face. Hold something from the freezer.' },
+    { id: 'feet', title: 'Feet on the floor', body: 'Press both feet down, hard. Feel the ground take your weight.' },
+    { id: 'heavy', title: 'Something heavy', body: heavy },
+    { id: 'five', title: 'Five things', body: 'Name five things you can see. Four you can hear. Three you can touch.' },
+    { id: 'move', title: 'Move', body: 'Stand up. Walk to another room and back. Movement shifts the state.' },
   ];
+}
 
+type PersonAction = { id: string; label: string; sub: string };
+
+function peopleActions(prefs: UserPreferences | null): PersonAction[] {
+  const list: PersonAction[] = [];
   if (prefs?.familyMembers?.includes('partner')) {
     const name = prefs.partnerName?.trim();
-    list.push({ id: 'partner', label: name ? `Message ${name}` : 'Message your partner', subtitle: 'They want to hear from you.', mode: 'decision' });
+    list.push({ id: 'partner', label: name ? `Message ${name}` : 'Message your partner', sub: 'One honest line. Just tell them where you’re at.' });
   }
   if (prefs?.familyMembers?.includes('children')) {
     const names = prefs.childrenNames?.trim();
     const count = prefs.childrenCount ?? 1;
-    list.push({ id: 'kids', label: `Check in with ${names || (count === 1 ? 'your child' : 'your kids')}`, subtitle: 'Be present for a moment.', mode: 'decision' });
+    list.push({ id: 'kids', label: `Check on ${names || (count === 1 ? 'your little one' : 'your kids')}`, sub: 'Go into the room. Be with them for a minute.' });
   }
   if (prefs?.hasPets) {
-    const petCount = prefs.petCount ?? 1;
-    const name = prefs.petName?.trim() || (petCount === 1 ? 'your pet' : 'your pets');
-    list.push({ id: 'pet', label: `Take ${name} outside`, subtitle: 'Fresh air. Movement. Shift the state.', mode: 'decision' });
+    const count = prefs.petCount ?? 1;
+    const name = prefs.petName?.trim() || (count === 1 ? 'your dog' : 'your pets');
+    list.push({ id: 'pet', label: `Take ${name} out`, sub: 'Fresh air, both of you. Shift the moment.' });
   }
-  list.push(
-    { id: 'good', label: 'Watch something good', subtitle: "Ninety seconds of the internet at its best.", navigate: '/session/good-feed' },
-    { id: 'water', label: 'Drink a glass of water', subtitle: 'Just that. Nothing else.', mode: 'decision' },
-    { id: 'walk', label: 'Step outside for 5 minutes', subtitle: 'Movement breaks the moment.', mode: 'decision' },
-  );
+  list.push({ id: 'anyone', label: 'Text one person who gets it', sub: 'They don’t need the whole story — just “today’s hard.”' });
   return list;
 }
 
@@ -60,26 +117,9 @@ function buildReasonNames(prefs: UserPreferences | null): string | null {
   return parts.length > 0 ? parts.join(' & ') : null;
 }
 
-function PressScale({ children, onPress, className, style }: { children: React.ReactNode; onPress?: () => void; className?: string; style?: any }) {
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-  return (
-    <Animated.View style={[animatedStyle, style]}>
-      <Pressable
-        onPressIn={() => { scale.value = withSpring(0.975, { damping: 18, stiffness: 360 }); }}
-        onPressOut={() => { scale.value = withSpring(1, { damping: 18, stiffness: 360 }); }}
-        onPress={onPress}
-        className={className}
-      >
-        {children}
-      </Pressable>
-    </Animated.View>
-  );
-}
-
 export default function UrgeScreen() {
   const router = useRouter();
-  const { pose } = useCompanion();
+  const insets = useSafeAreaInsets();
   const { profile } = useAuthStore();
   const { mutate: startSession } = useStartSession();
   const { mutate: logUrge } = useLogUrgeOutcome();
@@ -88,35 +128,71 @@ export default function UrgeScreen() {
   const urgeStartRef = useRef(Date.now());
   const prefs = (profile as any)?.preferences as UserPreferences | null;
 
-  const [phase, setPhase] = useState<'choice' | 'breathing' | 'decision' | 'passed'>('choice');
-  const [halfCycle, setHalfCycle] = useState(0);
+  const [passed, setPassed] = useState(false);
+  const [overlay, setOverlay] = useState<Overlay>(null);
   const [survivedCount, setSurvivedCount] = useState(0);
   const [input, setInput] = useState('');
-  const { messages, isTyping, sendMessage } = useAiCoach('urge', "Hey.\n\nI’m here.\n\nWhat happened?");
+  const [whisper, setWhisper] = useState<string | null>(null);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const whisperTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { messages, isTyping, sendMessage } = useAiCoach('urge', 'I’m here.\n\nWhat would help right now?');
+
+  // Breath circle — only used inside the (optional) breath card.
+  const [halfCycle, setHalfCycle] = useState(0);
   const circleScale = useSharedValue(0.6);
   const circleOpacity = useSharedValue(0.35);
   const circleStyle = useAnimatedStyle(() => ({ transform: [{ scale: circleScale.value }], opacity: circleOpacity.value }));
   const isIn = halfCycle % 2 === 0;
+  const breathsLeft = Math.ceil((TOTAL_HALF_CYCLES - halfCycle) / 2);
 
   useEffect(() => {
-    if (phase !== 'breathing') return;
-    if (halfCycle >= TOTAL_HALF_CYCLES) { setPhase('decision'); return; }
+    if (overlay !== 'breath') return;
+    if (halfCycle >= TOTAL_HALF_CYCLES) { setOverlay('grounding'); return; }
     Haptics.impactAsync(isIn ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light);
     circleScale.value = withTiming(isIn ? 1.4 : 0.6, { duration: BREATH_MS });
     circleOpacity.value = withTiming(isIn ? 0.75 : 0.35, { duration: BREATH_MS });
     const t = setTimeout(() => setHalfCycle((h) => h + 1), BREATH_MS);
     return () => clearTimeout(t);
-  }, [phase, halfCycle]);
+  }, [overlay, halfCycle]);
 
-  const actions = buildActions(prefs);
+  // The "grounds" path glows faintly — alive, but not open yet.
+  const groundsPulse = useSharedValue(0.25);
+  useEffect(() => {
+    groundsPulse.value = withRepeat(withSequence(withTiming(0.6, { duration: 1800 }), withTiming(0.22, { duration: 1800 })), -1, false);
+  }, []);
+  const groundsStyle = useAnimatedStyle(() => ({ opacity: groundsPulse.value }));
+
+  useEffect(() => () => { if (whisperTimer.current) clearTimeout(whisperTimer.current); }, []);
+
+  const say = (text: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setWhisper(text);
+    if (whisperTimer.current) clearTimeout(whisperTimer.current);
+    whisperTimer.current = setTimeout(() => setWhisper(null), 2800);
+  };
+
+  // Cover-fit geometry so fractional hotspots land on the real objects.
+  const scale = box.w > 0 ? Math.max(box.w / IMG_W, box.h / IMG_H) : 1;
+  const dispW = IMG_W * scale;
+  const dispH = IMG_H * scale;
+  const offX = (box.w - dispW) / 2;
+  const offY = (box.h - dispH) / 2;
+  const place = (s: { x: number; y: number; w: number; h: number }) => ({
+    position: 'absolute' as const,
+    left: offX + s.x * dispW,
+    top: offY + s.y * dispH,
+    width: s.w * dispW,
+    height: s.h * dispH,
+  });
+  const onLayout = (e: LayoutChangeEvent) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height });
+
   const reasonNames = buildReasonNames(prefs);
-  const breathsLeft = Math.ceil((TOTAL_HALF_CYCLES - halfCycle) / 2);
 
-  const doAction = (action: Action) => {
-    if (action.mode === 'breathing') { setHalfCycle(0); setPhase('breathing'); return; }
-    if (action.navigate) { router.navigate(action.navigate as any); return; }
-    setPhase('decision');
+  const goCourtyard = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    useHubStore.getState().setPendingNode('outside');
+    router.replace('/(tabs)');
   };
 
   const handleSend = async () => {
@@ -130,7 +206,8 @@ export default function UrgeScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSurvivedCount((urgeStats?.allTimePassed ?? 0) + 1);
     logUrge({ outcome: 'passed', durationSeconds: (Date.now() - urgeStartRef.current) / 1000 });
-    setPhase('passed');
+    setOverlay(null);
+    setPassed(true);
   };
 
   const handleDrinkAnyway = () => {
@@ -140,98 +217,279 @@ export default function UrgeScreen() {
     router.back();
   };
 
+  const startBreath = () => { setHalfCycle(0); circleScale.value = 0.6; circleOpacity.value = 0.35; setOverlay('breath'); };
+
+  // ---- The win screen takes over everything. --------------------------------
+  if (passed) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
+        <Image source={SCENE} style={{ position: 'absolute', left: offX, top: offY, width: dispW, height: dispH, opacity: 0.5 }} onLayout={onLayout} />
+        <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(13,11,18,0.62)' }} />
+        <Animated.View entering={FadeIn.duration(500)} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+          <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">Logged</Text>
+          <Text className="text-text-primary text-4xl font-semibold tracking-tight mb-4" style={celebrationGlow}>It passed.</Text>
+          <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12">
+            {survivedCount <= 1 ? 'You got through your first one.' : `That’s ${survivedCount} times you’ve got through it.`}
+            {'\n'}Proof this works.
+          </Text>
+          <Button title="Done" variant="primary" size="lg" fullWidth onPress={() => router.back()} />
+        </Animated.View>
+      </View>
+    );
+  }
+
   return (
-    <SafeArea bottom={false}>
-      <ZoneGlow zone="urge" />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
-        <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
-          <Pressable onPress={() => router.back()} hitSlop={12}><Text className="text-text-muted text-base">Close</Text></Pressable>
-          {phase === 'choice' ? <Pressable onPress={() => setPhase('decision')} hitSlop={12}><Text className="text-text-muted text-base">It passed</Text></Pressable> : null}
+    <View style={{ flex: 1, backgroundColor: '#0d0b12' }} onLayout={onLayout}>
+      <Image source={SCENE} style={{ position: 'absolute', left: offX, top: offY, width: dispW, height: dispH }} />
+
+      {/* ---- Scene-object hotspots (hidden while an overlay is open) -------- */}
+      {box.w > 0 && !overlay && (
+        <>
+          {/* Grounding — the skull-flowers */}
+          <Pressable style={place(SPOTS.grounding)} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setOverlay('grounding'); }}>
+            <ScenePill label="Grounding" />
+          </Pressable>
+
+          {/* Talk to a person — the phone */}
+          <Pressable style={place(SPOTS.people)} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setOverlay('people'); }}>
+            <ScenePill label="Talk to a person" />
+          </Pressable>
+
+          {/* Play a game — the handheld */}
+          <Pressable style={place(SPOTS.game)} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/session/games?from=urge' as any); }}>
+            <ScenePill label="Play a game" />
+          </Pressable>
+
+          {/* Future grounds — the right path. Alive, but not open yet. */}
+          <Pressable style={place(SPOTS.grounds)} onPress={() => say('The grounds aren’t open yet 🤍')}>
+            <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: '28%', top: '34%', width: '44%', height: '32%', borderRadius: 999, backgroundColor: '#A489DE' }, groundsStyle]} />
+            <View style={{ position: 'absolute', left: 0, right: 0, bottom: 2, alignItems: 'center' }}>
+              <View style={{ backgroundColor: 'rgba(13,11,18,0.72)', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: 'rgba(236,233,241,0.14)' }}>
+                <Text style={{ color: '#CFC7DE', fontSize: 11, textAlign: 'center' }} numberOfLines={2}>Future grounds</Text>
+              </View>
+            </View>
+          </Pressable>
+        </>
+      )}
+
+      {/* ---- Top chrome ---------------------------------------------------- */}
+      <View pointerEvents="box-none" style={{ position: 'absolute', top: insets.top + 8, left: 0, right: 0 }}>
+        <View className="flex-row items-start justify-between px-4">
+          <ChromePill onPress={() => router.back()}>
+            <Feather name="chevron-left" size={16} color="#ECE9F1" />
+            <Text style={{ color: '#ECE9F1', fontSize: 15, fontWeight: '600' }}>Back</Text>
+          </ChromePill>
+          <ChromePill onPress={handleUrgePassed}>
+            <Feather name="flag" size={14} color="#ECE9F1" />
+            <Text style={{ color: '#ECE9F1', fontSize: 15, fontWeight: '600' }}>It passed</Text>
+          </ChromePill>
         </View>
+        <View className="items-center mt-2 px-4">
+          <ChromePill onPress={() => router.navigate('/support/resources' as any)}>
+            <Feather name="life-buoy" size={14} color="#F0C987" />
+            <Text style={{ color: '#F3EEDB', fontSize: 14, fontWeight: '600' }}>Need a person? · Help &amp; crisis lines</Text>
+          </ChromePill>
+        </View>
+      </View>
 
-        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-          {phase === 'choice' && (
-            <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1, paddingTop: 12 }}>
-              <View className="items-center mb-3"><CompanionArt source={pose('elbows')} width={104} height={156} /></View>
-              {/* Crisis escape hatch — always reachable in a hard moment. */}
-              <Pressable
-                onPress={() => router.navigate('/support/resources')}
-                hitSlop={8}
-                className="self-center mb-5 flex-row items-center gap-1.5 rounded-full px-4 py-2 border border-white/10 active:opacity-70"
-                style={{ backgroundColor: 'rgba(236,233,241,0.05)' }}
-              >
-                <Text className="text-text-secondary text-xs font-semibold">In crisis or need a person? Emergency help & crisis lines →</Text>
-              </Pressable>
-              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">Take action</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingRight: 24 }} className="-mx-1 px-1 mb-5">
-                {actions.map((action) => (
-                  <PressScale key={action.id} onPress={() => doAction(action)} className="bg-urge-surface rounded-3xl px-5 py-6 border border-white/12" style={{ width: 238, shadowColor: '#120D17', shadowOpacity: 0.85, shadowRadius: 14, shadowOffset: { width: 0, height: 7 } }}>
-                    <Text className="text-text-primary text-2xl font-semibold leading-tight mb-2" style={headingShadow}>{action.label}</Text>
-                    <Text className="text-text-secondary text-base leading-relaxed">{action.subtitle}</Text>
-                  </PressScale>
-                ))}
+      {/* ---- Left nav: the courtyard --------------------------------------- */}
+      {!overlay && (
+        <View pointerEvents="box-none" style={{ position: 'absolute', left: 8, top: insets.top + 96 }}>
+          <ChromePill onPress={goCourtyard}>
+            <Feather name="chevron-left" size={16} color="#ECE9F1" />
+            <Text style={{ color: '#ECE9F1', fontSize: 14, fontWeight: '600' }}>Café courtyard</Text>
+          </ChromePill>
+        </View>
+      )}
+
+      {/* ---- Whisper toast ------------------------------------------------- */}
+      {whisper && (
+        <Animated.View entering={FadeIn.duration(200)} pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: '42%', alignItems: 'center' }}>
+          <View style={{ backgroundColor: 'rgba(13,11,18,0.9)', borderRadius: 18, paddingHorizontal: 18, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(236,233,241,0.16)' }}>
+            <Text style={{ color: '#ECE9F1', fontSize: 15 }}>{whisper}</Text>
+          </View>
+        </Animated.View>
+      )}
+
+      {/* ---- Docked AI coach (bottom) ------------------------------------- */}
+      {!overlay && (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+          <View style={{ margin: 12, marginBottom: insets.bottom + 10, borderRadius: 24, backgroundColor: 'rgba(16,13,22,0.9)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.12)', padding: 14, shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 16, shadowOffset: { width: 0, height: 8 } }}>
+            <View className="flex-row items-center gap-2 mb-2">
+              <Feather name="message-circle" size={15} color="#A489DE" />
+              <Text style={{ color: '#CFC7DE', fontSize: 12, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>AI coach</Text>
+            </View>
+            {messages.length > 0 && (
+              <ScrollView style={{ maxHeight: 168 }} contentContainerStyle={{ paddingBottom: 4 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+                {messages.map((m) => <ChatBubble key={m.id} message={m} />)}
+                {isTyping ? <Text className="text-text-secondary text-lg px-2 py-1">···</Text> : null}
               </ScrollView>
-              {typicalMinutes ? <Text className="text-text-muted text-sm leading-relaxed mb-5">These usually pass in ~{typicalMinutes} minute{typicalMinutes === 1 ? '' : 's'}. You can do something, talk, or both.</Text> : null}
-
-              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-3">Or talk</Text>
-              <View className="bg-surface rounded-3xl border border-white/10 p-4" style={{ minHeight: 292, shadowColor: '#120D17', shadowOpacity: 0.72, shadowRadius: 14, shadowOffset: { width: 0, height: 7 } }}>
-                <ScrollView style={{ maxHeight: 206 }} contentContainerStyle={{ paddingBottom: 4 }} keyboardShouldPersistTaps="handled">
-                  {messages.map((message) => <ChatBubble key={message.id} message={message} />)}
-                  {isTyping ? <Text className="text-text-secondary text-lg px-4 py-2">···</Text> : null}
-                </ScrollView>
-                <View className="flex-row items-end gap-3 pt-3 border-t border-white/5">
-                  <TextInput value={input} onChangeText={setInput} placeholder="Type if you want to…" placeholderTextColor="#817B91" multiline maxLength={500} onSubmitEditing={handleSend} returnKeyType="send" blurOnSubmit className="flex-1 bg-surface-2 rounded-2xl px-4 py-3 text-text-primary text-base max-h-24" selectionColor="#9CA3AF" />
-                  <PressScale onPress={handleSend} className={`w-11 h-11 rounded-full items-center justify-center ${input.trim() && !isTyping ? 'bg-accent' : 'bg-surface-2'}`}><Text className="text-white text-lg">↑</Text></PressScale>
-                </View>
-              </View>
-            </Animated.View>
-          )}
-
-          {phase === 'breathing' && (
-            <Animated.View entering={FadeIn.duration(400)} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 520 }}>
-              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-12">Breathing</Text>
-              <View style={{ width: 280, height: 280, alignItems: 'center', justifyContent: 'center', marginBottom: 48 }}><Animated.View style={[{ width: 200, height: 200, borderRadius: 100, backgroundColor: '#9CA3AF', position: 'absolute' }, circleStyle]} /></View>
-              <Text className="text-text-primary text-3xl font-semibold mb-2" style={headingShadow}>{isIn ? 'Breathe in…' : 'Breathe out…'}</Text>
-              <Text className="text-text-muted text-base mb-10">{breathsLeft} {breathsLeft === 1 ? 'breath' : 'breaths'} left</Text>
-              <Pressable onPress={() => setPhase('choice')} hitSlop={12} className="px-5 py-2.5 rounded-full bg-surface-2 border border-white/10 active:opacity-70">
-                <Text className="text-text-secondary text-base font-medium">That’s enough — other options</Text>
+            )}
+            <View className="flex-row items-end gap-3 pt-1">
+              <TextInput
+                value={input}
+                onChangeText={setInput}
+                placeholder="Type if you want to…"
+                placeholderTextColor="#817B91"
+                multiline
+                maxLength={500}
+                onSubmitEditing={handleSend}
+                returnKeyType="send"
+                blurOnSubmit
+                className="flex-1 rounded-2xl px-4 py-3 text-text-primary text-base max-h-24"
+                style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}
+                selectionColor="#A489DE"
+              />
+              <Pressable onPress={handleSend} className="w-11 h-11 rounded-full items-center justify-center" style={{ backgroundColor: input.trim() && !isTyping ? '#A489DE' : 'rgba(255,255,255,0.08)' }}>
+                <Feather name="arrow-up" size={18} color={input.trim() && !isTyping ? '#1a1622' : '#817B91'} />
               </Pressable>
-            </Animated.View>
-          )}
+            </View>
+            {typicalMinutes && messages.length === 0 ? (
+              <Text className="text-text-muted text-xs leading-relaxed mt-2">These usually pass in ~{typicalMinutes} minute{typicalMinutes === 1 ? '' : 's'}. Pick something above, talk, or just sit out here a while.</Text>
+            ) : null}
+            <Pressable onPress={() => setOverlay('drink')} hitSlop={8} className="self-center mt-3">
+              <Text className="text-text-muted text-xs">I’m going to drink anyway →</Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      )}
 
-          {phase === 'decision' && (
-            <Animated.View entering={FadeIn.duration(400)} style={{ paddingTop: 16 }}>
-              <Text className="text-text-primary text-3xl font-semibold tracking-tight mb-1" style={headingShadow}>Did it pass?</Text>
-              <Text className="text-text-secondary text-base mb-6">Honest answer.</Text>
-              {reasonNames && <View className="mb-8"><Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-1">Remember</Text><Text className="text-text-primary text-2xl font-semibold">{reasonNames}.</Text></View>}
-              <View style={{ gap: 12 }}>
-                <PressScale onPress={handleUrgePassed} className="bg-urge-surface rounded-2xl border border-white/20" style={{ paddingHorizontal: 20, paddingVertical: 22, shadowColor: '#120D17', shadowOpacity: 0.8, shadowRadius: 10, shadowOffset: { width: 0, height: 5 } }}><Text className="text-text-primary text-lg font-semibold mb-1">It passed.</Text><Text className="text-text-muted text-base">Good. Keep going.</Text></PressScale>
-                <PressScale onPress={handleDrinkAnyway} className="bg-urge-surface rounded-2xl border border-white/8" style={{ paddingHorizontal: 20, paddingVertical: 22, shadowColor: '#120D17', shadowOpacity: 0.8, shadowRadius: 10, shadowOffset: { width: 0, height: 5 } }}><Text className="text-text-primary text-lg font-semibold mb-1">I'm going to drink anyway.</Text><Text className="text-text-muted text-base">We'll be here. Session logged.</Text></PressScale>
+      {/* ===== Overlays ==================================================== */}
+
+      {overlay === 'grounding' && (
+        <OverlaySheet title="Grounding" subtitle="Get out of your head and into your body. Pick one." onClose={() => setOverlay(null)} insets={insets}>
+          {groundingCards(prefs).map((c) => (
+            <View key={c.id} className="rounded-2xl px-5 py-4 mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.1)' }}>
+              <Text className="text-text-primary text-lg font-semibold mb-1" style={headingShadow}>{c.title}</Text>
+              <Text className="text-text-secondary text-base leading-relaxed">{c.body}</Text>
+            </View>
+          ))}
+          {/* Breath is one option among many — never the headline. */}
+          <Pressable onPress={startBreath} className="rounded-2xl px-5 py-4 mb-1" style={{ backgroundColor: 'rgba(164,137,222,0.08)', borderWidth: 1, borderColor: 'rgba(164,137,222,0.28)' }}>
+            <View className="flex-row items-center justify-between">
+              <View style={{ flex: 1, paddingRight: 10 }}>
+                <Text className="text-text-primary text-lg font-semibold mb-1">Breathing <Text className="text-text-muted text-sm font-normal">· optional</Text></Text>
+                <Text className="text-text-secondary text-base leading-relaxed">A slow rhythm, if it helps you. If breathwork winds you up instead, skip it — one of the above will do more.</Text>
               </View>
-            </Animated.View>
-          )}
+              <Feather name="chevron-right" size={18} color="#A489DE" />
+            </View>
+          </Pressable>
+        </OverlaySheet>
+      )}
 
-          {phase === 'passed' && (
-            <Animated.View entering={FadeIn.duration(500)} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 480 }}>
-              <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-4">Logged</Text>
-              <Text className="text-text-primary text-4xl font-semibold tracking-tight mb-3" style={celebrationGlow}>It passed.</Text>
-              <CompanionArt source={pose('elbows')} width={96} height={144} />
-              <Text className="text-text-secondary text-lg text-center leading-relaxed mb-12 mt-4 px-4">{survivedCount <= 1 ? 'You got through your first one.' : `That's ${survivedCount} times you've got through it.`}{'\n'}Proof this works.</Text>
-              <Button title="Done" variant="primary" size="lg" fullWidth onPress={() => router.back()} />
-            </Animated.View>
+      {overlay === 'people' && (
+        <OverlaySheet title="Talk to a person" subtitle="Reach one of your people. Put the phone down after and come back." onClose={() => setOverlay(null)} insets={insets}>
+          {reasonNames && (
+            <View className="mb-4">
+              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-1">Who you’re protecting</Text>
+              <Text className="text-text-primary text-xl font-semibold">{reasonNames}.</Text>
+            </View>
           )}
+          {peopleActions(prefs).map((p) => (
+            <View key={p.id} className="rounded-2xl px-5 py-4 mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.1)' }}>
+              <Text className="text-text-primary text-lg font-semibold mb-1" style={headingShadow}>{p.label}</Text>
+              <Text className="text-text-secondary text-base leading-relaxed">{p.sub}</Text>
+            </View>
+          ))}
+        </OverlaySheet>
+      )}
+
+      {overlay === 'breath' && (
+        <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(13,11,18,0.94)', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+          <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: 'center' }}>
+            <Text className="text-text-muted text-sm font-semibold tracking-widest uppercase mb-12">Breathing</Text>
+            <View style={{ width: 260, height: 260, alignItems: 'center', justifyContent: 'center', marginBottom: 44 }}>
+              <Animated.View style={[{ width: 190, height: 190, borderRadius: 95, backgroundColor: '#A489DE', position: 'absolute' }, circleStyle]} />
+            </View>
+            <Text className="text-text-primary text-3xl font-semibold mb-2" style={headingShadow}>{isIn ? 'In…' : 'Out…'}</Text>
+            <Text className="text-text-muted text-base mb-10">{breathsLeft} {breathsLeft === 1 ? 'breath' : 'breaths'} left</Text>
+            <Pressable onPress={() => setOverlay('grounding')} hitSlop={12} className="px-5 py-2.5 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.14)' }}>
+              <Text className="text-text-secondary text-base font-medium">That’s enough — back to grounding</Text>
+            </Pressable>
+          </Animated.View>
+        </View>
+      )}
+
+      {overlay === 'drink' && (
+        <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(13,11,18,0.92)', justifyContent: 'center', paddingHorizontal: 28 }}>
+          <Animated.View entering={FadeInUp.duration(300)}>
+            <Text className="text-text-primary text-2xl font-semibold mb-2" style={headingShadow}>Honest answer.</Text>
+            <Text className="text-text-secondary text-base leading-relaxed mb-8">No shame either way — logging it is how we learn your pattern. You can still change your mind.</Text>
+            <Pressable onPress={handleDrinkAnyway} className="rounded-2xl px-5 py-5 mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.12)' }}>
+              <Text className="text-text-primary text-lg font-semibold mb-1">Yes — log it and start the session</Text>
+              <Text className="text-text-muted text-base">We’ll be right here.</Text>
+            </Pressable>
+            <Pressable onPress={() => setOverlay(null)} className="rounded-2xl px-5 py-5" style={{ backgroundColor: 'rgba(164,137,222,0.1)', borderWidth: 1, borderColor: 'rgba(164,137,222,0.3)' }}>
+              <Text className="text-text-primary text-lg font-semibold mb-1">Not yet — give it a few more minutes</Text>
+              <Text className="text-text-muted text-base">Back to the porch.</Text>
+            </Pressable>
+          </Animated.View>
+        </View>
+      )}
+    </View>
+  );
+}
+
+function ScenePill({ label }: { label: string }) {
+  return (
+    <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ backgroundColor: 'rgba(13,11,18,0.72)', borderRadius: 18, paddingHorizontal: 14, paddingVertical: 7, borderWidth: 1, borderColor: 'rgba(236,233,241,0.18)', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }}>
+        <Text style={{ color: '#ECE9F1', fontSize: 14, fontWeight: '600', textAlign: 'center' }} numberOfLines={1}>{label}</Text>
+      </View>
+    </View>
+  );
+}
+
+function ChromePill({ children, onPress }: { children: React.ReactNode; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      className="active:opacity-80"
+      style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(13,11,18,0.78)', borderRadius: 22, paddingHorizontal: 14, paddingVertical: 9, borderWidth: 1, borderColor: 'rgba(236,233,241,0.16)' }}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
+function OverlaySheet({
+  title,
+  subtitle,
+  children,
+  onClose,
+  insets,
+}: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+  onClose: () => void;
+  insets: { top: number; bottom: number };
+}) {
+  return (
+    <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(13,11,18,0.95)' }}>
+      <View style={{ flex: 1, paddingTop: insets.top + 12, paddingHorizontal: 20, paddingBottom: insets.bottom + 12 }}>
+        <View className="flex-row items-center justify-between mb-1">
+          <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>{title}</Text>
+          <Pressable onPress={onClose} hitSlop={12} className="w-9 h-9 rounded-full items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+            <Feather name="x" size={18} color="#ECE9F1" />
+          </Pressable>
+        </View>
+        <Text className="text-text-secondary text-base leading-relaxed mb-5">{subtitle}</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 12 }}>
+          {children}
         </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeArea>
+      </View>
+    </View>
   );
 }
 
 function ChatBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user';
   return (
-    <Animated.View entering={FadeInDown.duration(300).springify()} className={`flex-row mb-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <View className={`max-w-[86%] px-4 py-3 rounded-2xl ${isUser ? 'bg-accent rounded-tr-sm' : 'bg-surface-2 rounded-tl-sm'}`}>
-        <Text className={`text-base leading-relaxed ${isUser ? 'text-white' : 'text-text-primary'}`}>{message.content}</Text>
+    <Animated.View entering={FadeInDown.duration(300).springify()} className={`flex-row mb-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      <View className={`max-w-[86%] px-4 py-3 rounded-2xl ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm'}`} style={{ backgroundColor: isUser ? '#A489DE' : 'rgba(255,255,255,0.07)' }}>
+        <Text className="text-base leading-relaxed" style={{ color: isUser ? '#1a1622' : '#ECE9F1' }}>{message.content}</Text>
       </View>
     </Animated.View>
   );
