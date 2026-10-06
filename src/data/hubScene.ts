@@ -656,7 +656,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "md_counter", caption: "Get Medano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.09, y: 0.166, w: 0.244, h: 0.059, action: { kind: "route", route: "/ecosystem" } },
+      // 2018-22 two-storey wellbeing-library art; Medano snake crest framed on
+      // the left wall. Glow over it → get the app. Rough box — re-tune.
+      { id: "md_emblem", caption: "Get Medano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.0, y: 0.29, w: 0.17, h: 0.17, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
