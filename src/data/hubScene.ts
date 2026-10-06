@@ -217,6 +217,10 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
       // Vertical "24/7" sign (stacked characters), tilted onto the board.
       { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 40, rotateY: -30, opacity: 0.5, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
+      // Key holder → straight outside. A shortcut from the Counter to the yard
+      // so the grounds/Reception aren't buried in the Break Room. No drawn key
+      // holder yet — invisible glow for now; drag onto the hook when art lands.
+      { id: "r_keys", caption: "Step outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.82, y: 0.42, w: 0.12, h: 0.1, action: { kind: "node", node: "outside" } },
     ],
   },
 
@@ -571,7 +575,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 840,
     imgH: 1872,
     fit: "screen",
-    back: "breakroom_right",
+    // Back → the Counter (the key holder's home), so Outside is a clean
+    // there-and-back from the Counter shortcut. The Break Room door
+    // (brr_door → outside) stays as a second, scenic way in.
+    back: "right",
     hotspots: [
       // The Café door (left) → back inside, to the Break Room. (editor-tuned)
       { id: "out_cafe", caption: "Café", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.83, y: 0.53 }, x: 0.011, y: 0.264, w: 0.23, h: 0.3, action: { kind: "node", node: "breakroom" } },
