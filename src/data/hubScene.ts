@@ -626,8 +626,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      // New 2008–2012 art — counter is foreground-left now; rough box, re-tune.
-      { id: "cn_counter", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.0, y: 0.42, w: 0.3, h: 0.16, action: { kind: "route", route: "/ecosystem" } },
+      // 2008-12 media-club art; Cannano crest framed on the corkboard (top-
+      // left). Glow over it → get the app. Rough box — re-tune.
+      { id: "cn_emblem", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.0, y: 0.18, w: 0.17, h: 0.16, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
