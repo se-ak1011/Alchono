@@ -102,8 +102,8 @@ export default function ProfileScreen() {
             icon="smile"
             accent="#E6C56A"
             title="Things I enjoy"
-            subtitle="Hobbies and interests — helps personalise your experience over time."
-            onPress={() => router.push('/profile/hobbies')}
+            subtitle="Hobbies and interests — kept in your Personal File."
+            onPress={() => router.push('/profile/file')}
           />
           <ZoneChip
             icon="compass"
