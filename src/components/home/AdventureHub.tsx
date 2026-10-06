@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, TextInput, useWindowDimensions, Animated, PanResponder, type ImageStyle } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -9,8 +9,6 @@ import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
 
-const SCREEN_W = Dimensions.get("window").width;
-const SCREEN_H = Dimensions.get("window").height;
 
 type Coords = { x: number; y: number; w: number; h: number };
 // The full set of things the in-app editor can override per hotspot.
@@ -101,6 +99,10 @@ function Bloom({
  */
 export function AdventureHub() {
   const router = useRouter();
+  // The live window size (reactive — updates on rotation / insets settling).
+  // The scene is drawn to exactly this, same as the rest of the app, so the
+  // art fills the screen without the zoom a measured-container size caused.
+  const { width: W, height: H } = useWindowDimensions();
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -113,11 +115,6 @@ export function AdventureHub() {
   // Base hotspots the editor has removed from a view (ids, per node). Exported
   // as a REMOVED list so the deletions get baked back into hubScene.ts.
   const [removed, setRemoved] = useState<Record<string, string[]>>({});
-  // The scene container's REAL measured size (via onLayout). All cover-fit and
-  // hotspot geometry uses this — never a window dimension read at import, which
-  // on Android can be shorter than the actual view and left a dark strip under
-  // the art. Falls back to the window size until the first layout pass.
-  const [size, setSize] = useState({ w: SCREEN_W, h: SCREEN_H });
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
@@ -209,8 +206,6 @@ export function AdventureHub() {
     router.push(action.route as any);
   };
 
-  const W = size.w;
-  const H = size.h;
   const isScreenFit = node.fit === "screen";
   const scale = Math.max(W / node.imgW, H / node.imgH);
   const dispW = isScreenFit ? node.imgW * scale : W;
@@ -736,11 +731,11 @@ export function AdventureHub() {
     .join("\n") +
     (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "");
 
-  // Screen-fit: fill the container edge-to-edge (so there's never a gap under
-  // the art, whatever the real height) and let resizeMode="cover" crop. The
-  // hotspot geometry above uses the same measured size, so they stay aligned.
+  // Screen-fit: draw the image at exactly the window size and let cover crop.
+  // Same sizing the rest of the app uses, so it's a clean full-screen swap and
+  // the hotspot geometry (built from the same W/H) stays aligned.
   const imgStyle: ImageStyle = isScreenFit
-    ? { position: "absolute", left: 0, top: 0, right: 0, bottom: 0 }
+    ? { position: "absolute", left: 0, top: 0, width: W, height: H }
     : { width: W, height: dispH };
 
   const sceneInner = (
@@ -763,15 +758,7 @@ export function AdventureHub() {
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
       <Animated.View style={{ flex: 1, opacity: fade }}>
         {isScreenFit ? (
-          <View
-            style={{ flex: 1 }}
-            onLayout={(e) => {
-              const { width, height } = e.nativeEvent.layout;
-              setSize((s) => (s.w === width && s.h === height ? s : { w: width, h: height }));
-            }}
-          >
-            {sceneInner}
-          </View>
+          <View style={{ flex: 1 }}>{sceneInner}</View>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
             <View style={{ width: W, height: dispH, position: "relative" }}>{sceneInner}</View>
