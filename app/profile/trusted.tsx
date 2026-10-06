@@ -8,12 +8,13 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import {
   useMyTrustedPeople,
@@ -25,25 +26,34 @@ import {
   type TrustedLink,
 } from '@/hooks/useTrustedPerson';
 
-function SignalChip({ on, onLabel, offLabel, tone }: {
-  on: boolean;
-  onLabel: string;
-  offLabel: string;
-  tone: 'good' | 'warn' | 'alert';
-}) {
-  const colors =
-    !on
-      ? 'bg-surface-2 border-white/5'
-      : tone === 'good'
-        ? 'bg-accent/15 border-accent/40'
-        : tone === 'warn'
-          ? 'bg-[#3B3352] border-[#C8A878]'
-          : 'bg-[#3B3352] border-[#C98282]';
+/**
+ * The Sponsor closeup — the wax-sealed invitation slip from the chest. Someone
+ * you nominate to look out for you; they see four simple daily signals, never
+ * your private content. Same logic as before, mounted on the drawn slip in ink.
+ */
+const SLIP = require('../../assets/scenes/sponsor_slip.webp');
+const INK = '#332a24';
+const INK_SOFT = 'rgba(51,42,36,0.55)';
+const HAND = 'PatrickHand';
+
+function Label({ children }: { children: React.ReactNode }) {
+  return <Text style={{ color: INK_SOFT, fontSize: 12, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>{children}</Text>;
+}
+
+function InkButton({ title, onPress, loading, muted }: { title: string; onPress: () => void; loading?: boolean; muted?: boolean }) {
   return (
-    <View className={`px-3 py-2 rounded-lg border ${colors}`}>
-      <Text className={`text-xs font-medium ${on ? 'text-text-primary' : 'text-text-muted'}`}>
-        {on ? onLabel : offLabel}
-      </Text>
+    <Pressable onPress={onPress} disabled={loading} style={{ borderRadius: 10, paddingVertical: 11, alignItems: 'center', backgroundColor: muted ? 'transparent' : '#4a2545', borderWidth: 1, borderColor: muted ? 'rgba(51,42,36,0.3)' : '#4a2545' }}>
+      <Text style={{ color: muted ? INK : '#f3ead6', fontSize: 15, fontWeight: '700', fontFamily: HAND }}>{loading ? 'Inviting…' : title}</Text>
+    </Pressable>
+  );
+}
+
+function SignalChip({ on, label, tone }: { on: boolean; label: string; tone: 'good' | 'warn' | 'alert' }) {
+  const bg = !on ? 'rgba(51,42,36,0.06)' : tone === 'good' ? 'rgba(74,120,80,0.16)' : tone === 'warn' ? 'rgba(200,160,70,0.18)' : 'rgba(180,70,70,0.18)';
+  const bd = !on ? 'rgba(51,42,36,0.18)' : tone === 'good' ? 'rgba(74,120,80,0.5)' : tone === 'warn' ? 'rgba(200,160,70,0.6)' : 'rgba(180,70,70,0.6)';
+  return (
+    <View style={{ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, backgroundColor: bg, borderColor: bd }}>
+      <Text style={{ color: on ? INK : INK_SOFT, fontSize: 13, fontFamily: HAND }}>{label}</Text>
     </View>
   );
 }
@@ -51,38 +61,30 @@ function SignalChip({ on, onLabel, offLabel, tone }: {
 function SignalsCard({ link }: { link: TrustedLink }) {
   const { data: signals } = useTrustedSignals(link.id);
   return (
-    <View className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/8">
-      <View className="flex-row items-center gap-3 mb-3">
+    <View style={{ backgroundColor: 'rgba(51,42,36,0.05)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 14, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(51,42,36,0.14)' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 }}>
         <Avatar username={link.otherUsername} size="sm" />
-        <Text className="text-text-primary text-base font-semibold flex-1">
-          {link.otherUsername}
-        </Text>
-        <Text className="text-text-muted text-xs">today</Text>
+        <Text style={{ color: INK, fontSize: 15, fontWeight: '700', flex: 1, fontFamily: HAND }}>{link.otherUsername}</Text>
+        <Text style={{ color: INK_SOFT, fontSize: 12 }}>today</Text>
       </View>
       {signals ? (
-        <View className="flex-row flex-wrap gap-2">
-          <SignalChip on={signals.checked_in_today} tone="good"
-            onLabel="✅ Checked in" offLabel="— No check-in yet" />
-          <SignalChip on={signals.urge_beaten_today} tone="good"
-            onLabel="✅ Got through a hard moment" offLabel="— None logged yet" />
-          <SignalChip on={signals.rough_day} tone="warn"
-            onLabel="🟡 Rough day" offLabel="— Mood steady" />
-          <SignalChip on={signals.asked_for_support} tone="alert"
-            onLabel="🔴 Reached for support" offLabel="— No SOS" />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <SignalChip on={signals.checked_in_today} tone="good" label={signals.checked_in_today ? '✅ Checked in' : '— No check-in yet'} />
+          <SignalChip on={signals.urge_beaten_today} tone="good" label={signals.urge_beaten_today ? '✅ Got through a hard moment' : '— None logged yet'} />
+          <SignalChip on={signals.rough_day} tone="warn" label={signals.rough_day ? '🟡 Rough day' : '— Mood steady'} />
+          <SignalChip on={signals.asked_for_support} tone="alert" label={signals.asked_for_support ? '🔴 Reached for support' : '— No SOS'} />
         </View>
       ) : (
-        <Text className="text-text-muted text-sm">Loading…</Text>
+        <Text style={{ color: INK_SOFT, fontSize: 14 }}>Loading…</Text>
       )}
       {signals?.asked_for_support && (
-        <Text className="text-text-secondary text-sm mt-3 leading-relaxed">
-          Now's a good moment for a call or a knock on the door.
-        </Text>
+        <Text style={{ color: INK, fontSize: 14, marginTop: 10, lineHeight: 20, fontFamily: HAND }}>Now's a good moment for a call or a knock on the door.</Text>
       )}
     </View>
   );
 }
 
-export default function TrustedScreen() {
+export default function SponsorScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { data: mine } = useMyTrustedPeople();
@@ -101,145 +103,82 @@ export default function TrustedScreen() {
       onSuccess: () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setUsername('');
-        Alert.alert('Invited', 'They can accept from their profile.');
+        Alert.alert('Invited', 'They can accept from their own chest.');
       },
-      onError: (e) =>
-        Alert.alert('Could not invite', e instanceof Error ? e.message : 'Try again.'),
+      onError: (e) => Alert.alert('Could not invite', e instanceof Error ? e.message : 'Try again.'),
     });
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-bg"
-    >
-      <View
-        className="flex-1"
-        style={{ paddingTop: insets.top + 16, paddingBottom: insets.bottom }}
-      >
-        <View className="flex-row items-center px-6 mb-4">
-          <Pressable onPress={() => router.back()} className="mr-4" hitSlop={12}>
-            <Text className="text-text-secondary text-lg">←</Text>
-          </Pressable>
-          <Text className="text-text-primary text-lg font-semibold">Trusted person</Text>
-        </View>
+    <ImageBackground source={SLIP} style={{ flex: 1, backgroundColor: '#2a1430' }} resizeMode="cover">
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <Pressable onPress={() => router.back()} hitSlop={12} style={{ position: 'absolute', top: insets.top + 8, left: 16, zIndex: 10, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(51,42,36,0.08)' }}>
+          <Feather name="chevron-left" size={24} color={INK} />
+        </Pressable>
 
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
+          contentContainerStyle={{ paddingHorizontal: '10%', paddingTop: insets.top + 110, paddingBottom: insets.bottom + 40 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-          <Text className="text-text-secondary text-sm leading-relaxed mb-6">
-            Nominate someone who looks out for you — a partner, sponsor, or
-            friend with the app. They see four simple signals about your day,
-            never your journals, messages, or conversations. End it any time.
+          <Text style={{ color: INK, fontSize: 30, fontFamily: HAND, marginBottom: 6 }}>Sponsor</Text>
+          <Text style={{ color: INK, fontSize: 15, lineHeight: 22, marginBottom: 22, fontFamily: HAND }}>
+            Nominate someone who looks out for you — a partner, sponsor, or friend with the app. They see four simple signals about your day, never your journals, messages, or conversations. End it any time.
           </Text>
 
-          {/* Invite */}
-          <View className="bg-surface rounded-2xl p-4 mb-6 border border-white/8">
-            <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-              Nominate someone
-            </Text>
-            <TextInput
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Their exact username"
-              placeholderTextColor="#817B91"
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={{
-                backgroundColor: '#383243',
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                color: '#ECE9F1',
-                fontSize: 15,
-                borderWidth: 1,
-                borderColor: 'rgba(243, 240, 244, 0.10)',
-                marginBottom: 10,
-              }}
-            />
-            <Button
-              title={inviting ? 'Inviting…' : 'Invite'}
-              variant="primary"
-              size="md"
-              fullWidth
-              loading={inviting}
-              onPress={handleInvite}
-            />
-          </View>
+          <Label>Nominate someone</Label>
+          <TextInput
+            value={username}
+            onChangeText={setUsername}
+            placeholder="Their exact username"
+            placeholderTextColor={INK_SOFT}
+            autoCapitalize="none"
+            autoCorrect={false}
+            style={{ borderBottomWidth: 1.5, borderColor: 'rgba(51,42,36,0.35)', paddingVertical: 8, color: INK, fontSize: 17, fontFamily: HAND, marginBottom: 14 }}
+          />
+          <InkButton title="Invite" onPress={handleInvite} loading={inviting} />
 
-          {/* My trusted people */}
           {!!mine?.length && (
-            <View className="mb-6">
-              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-                Looking out for you
-              </Text>
+            <View style={{ marginTop: 26 }}>
+              <Label>Looking out for you</Label>
               {mine.map((l) => (
-                <View
-                  key={l.id}
-                  className="flex-row items-center gap-3 bg-surface rounded-xl px-4 py-3 mb-2 border border-white/5"
-                >
+                <View key={l.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(51,42,36,0.05)', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 11, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(51,42,36,0.12)' }}>
                   <Avatar username={l.otherUsername} size="sm" />
-                  <View className="flex-1">
-                    <Text className="text-text-primary text-sm font-medium">
-                      {l.otherUsername}
-                    </Text>
-                    <Text className="text-text-muted text-xs capitalize">{l.status}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: INK, fontSize: 15, fontFamily: HAND }}>{l.otherUsername}</Text>
+                    <Text style={{ color: INK_SOFT, fontSize: 12, textTransform: 'capitalize' }}>{l.status}</Text>
                   </View>
                   <Pressable
-                    onPress={() =>
-                      Alert.alert('Remove?', `${l.otherUsername} will stop seeing your signals.`, [
-                        { text: 'Cancel', style: 'cancel' },
-                        { text: 'Remove', style: 'destructive', onPress: () => remove(l.id) },
-                      ])
-                    }
+                    onPress={() => Alert.alert('Remove?', `${l.otherUsername} will stop seeing your signals.`, [{ text: 'Cancel', style: 'cancel' }, { text: 'Remove', style: 'destructive', onPress: () => remove(l.id) }])}
                     hitSlop={12}
                   >
-                    <Text className="text-text-muted text-base">×</Text>
+                    <Feather name="x" size={18} color={INK_SOFT} />
                   </Pressable>
                 </View>
               ))}
             </View>
           )}
 
-          {/* Invites for me to accept */}
           {pendingForMe.map((l) => (
-            <Animated.View
-              key={l.id}
-              entering={FadeInDown.duration(300)}
-              className="bg-surface rounded-2xl px-5 py-4 mb-3 border border-white/10"
-            >
-              <Text className="text-text-primary text-base font-semibold mb-1">
-                {l.otherUsername} trusts you.
-              </Text>
-              <Text className="text-text-muted text-sm mb-4 leading-relaxed">
-                They'd like you to see simple daily wellbeing signals — never
-                their private content.
-              </Text>
-              <View className="flex-row gap-2">
-                <Button title="Decline" variant="secondary" size="sm" className="flex-1"
-                  onPress={() => respond({ linkId: l.id, accept: false })} />
-                <Button title="Accept" variant="primary" size="sm" className="flex-1"
-                  onPress={() => respond({ linkId: l.id, accept: true })} />
+            <Animated.View key={l.id} entering={FadeInDown.duration(300)} style={{ backgroundColor: 'rgba(51,42,36,0.05)', borderRadius: 14, paddingHorizontal: 18, paddingVertical: 16, marginTop: 14, borderWidth: 1, borderColor: 'rgba(51,42,36,0.16)' }}>
+              <Text style={{ color: INK, fontSize: 16, fontWeight: '700', marginBottom: 4, fontFamily: HAND }}>{l.otherUsername} trusts you.</Text>
+              <Text style={{ color: INK, fontSize: 14, marginBottom: 14, lineHeight: 20, fontFamily: HAND }}>They'd like you to see simple daily wellbeing signals — never their private content.</Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flex: 1 }}><InkButton title="Decline" muted onPress={() => respond({ linkId: l.id, accept: false })} /></View>
+                <View style={{ flex: 1 }}><InkButton title="Accept" onPress={() => respond({ linkId: l.id, accept: true })} /></View>
               </View>
             </Animated.View>
           ))}
 
-          {/* People I watch over */}
           {!!acceptedForMe.length && (
-            <View className="mt-2">
-              <Text className="text-text-muted text-xs font-semibold tracking-widest uppercase mb-3">
-                People you look out for
-              </Text>
-              {acceptedForMe.map((l) => (
-                <SignalsCard key={l.id} link={l} />
-              ))}
+            <View style={{ marginTop: 22 }}>
+              <Label>People you look out for</Label>
+              {acceptedForMe.map((l) => <SignalsCard key={l.id} link={l} />)}
             </View>
           )}
         </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }

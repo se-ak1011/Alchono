@@ -550,7 +550,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "brr_table", caption: "Mentors", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.16, y: 0.394, w: 0.654, h: 0.098, action: { kind: "route", route: "/support/mentors" } },
       { id: "brr_lbl_mentors", caption: "Mentors", kind: "label", label: "Mentors", labelSize: 18, x: 0.386, y: 0.421, w: 0.2, h: 0.08 },
       // The wall → Care team + Trusted person (the human safety net, together).
-      { id: "brr_wall", caption: "Care team & trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.3, y: 0.19, w: 0.34, h: 0.16, action: { kind: "route", route: "/profile/people" } },
+      { id: "brr_wall", caption: "Care team & sponsor", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.3, y: 0.19, w: 0.34, h: 0.16, action: { kind: "route", route: "/profile/connections" } },
       { id: "brr_lbl_wall", caption: "Care team & trusted person", kind: "label", label: "Care Team & Trusted Person", labelSize: 14, rotateY: -10, x: 0.336, y: 0.218, w: 0.26, h: 0.05 },
       // The door → "outside": the wider-life stuff (struggling with something else).
       { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.866, y: 0.32, w: 0.104, h: 0.047, action: { kind: "node", node: "outside" } },

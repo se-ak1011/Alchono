@@ -73,7 +73,7 @@ export default function ProfileScreen() {
           <ZoneChip
             icon="shield"
             accent="#B9A4EC"
-            title="Trusted person"
+            title="Sponsor"
             subtitle="Someone who gets a quiet heads-up on a hard day."
             onPress={() => router.push('/profile/trusted')}
           />
