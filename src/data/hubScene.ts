@@ -598,12 +598,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "outside",
     hotspots: [
-      // New art — the sibling crests are baked onto the doors now, so no logo
-      // inlays; just the four door glows (relocated) + the central board. Rough
-      // boxes for the new layout — relocate onto the doors in the editor and
-      // export, then I bake the finals.
-      { id: "rc_cannabis", caption: "Cannabis · Cannano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.03, y: 0.17, w: 0.14, h: 0.23, action: { kind: "node", node: "cannano_preview" } },
-      { id: "rc_cocaine", caption: "Cocaine · Cocano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.26, y: 0.17, w: 0.14, h: 0.22, action: { kind: "node", node: "cocano_preview" } },
+      // New art, doors reordered chronologically L→R: Cocaine, Cannabis,
+      // Nicotine, Prescription. Crests baked onto the doors, so just the four
+      // glows + the board. Rough boxes — relocate in the editor and export.
+      { id: "rc_cocaine", caption: "Cocaine · Cocano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.03, y: 0.17, w: 0.14, h: 0.23, action: { kind: "node", node: "cocano_preview" } },
+      { id: "rc_cannabis", caption: "Cannabis · Cannano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.26, y: 0.17, w: 0.14, h: 0.22, action: { kind: "node", node: "cannano_preview" } },
       { id: "rc_nicotine", caption: "Nicotine · Nicono — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.61, y: 0.16, w: 0.14, h: 0.23, action: { kind: "node", node: "nicono_preview" } },
       { id: "rc_prescription", caption: "Prescription medication · Medano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.83, y: 0.16, w: 0.15, h: 0.25, action: { kind: "node", node: "medano_preview" } },
       // The central corkboard → "The Grounds" directory.
