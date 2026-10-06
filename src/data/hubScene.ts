@@ -593,27 +593,21 @@ export const HUB_NODES: Record<string, HubNode> = {
     id: "reception",
     title: "Reception",
     image: require("../../assets/scenes/reception.webp"),
-    imgW: 851,
-    imgH: 1847,
+    imgW: 941,
+    imgH: 1672,
     fit: "screen",
     back: "outside",
     hotspots: [
-      // New art, four doors only — gambling + porn removed entirely. Each door
-      // walks INTO that app's home preview (front counter live → get the app).
-      // Boxes are rough for the new layout — drag onto the doors in the editor.
-      { id: "rc_cannabis", caption: "Cannabis · Cannano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.6, y: 0.5 }, x: 0.024, y: 0.166, w: 0.07, h: 0.222, action: { kind: "node", node: "cannano_preview" } },
-      { id: "rc_cocaine", caption: "Cocaine · Cocano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.55, y: 0.5 }, x: 0.176, y: 0.206, w: 0.066, h: 0.145, action: { kind: "node", node: "cocano_preview" } },
-      { id: "rc_nicotine", caption: "Nicotine · Nicono — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.755, y: 0.204, w: 0.072, h: 0.139, action: { kind: "node", node: "nicono_preview" } },
-      { id: "rc_prescription", caption: "Prescription medication · Medano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.4, y: 0.5 }, x: 0.893, y: 0.183, w: 0.1, h: 0.201, action: { kind: "node", node: "medano_preview" } },
-      // The central reception desk board → "The Grounds" directory. (editor-tuned)
-      { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.341, y: 0.365, w: 0.319, h: 0.06, action: { kind: "route", route: "/ecosystem" } },
-      // Sibling-app crests hung on their doors — transparent logo inlays (PNG),
-      // fully editable (drag / rotate / tilt-depth / size / brightness) then
-      // export. Rough starting boxes; tapping a crest also steps into the preview.
-      { id: "rc_cannano_logo", caption: "Cannano", kind: "board", interaction: "destination", inlay: "cannano_logo", haptic: "light", x: 0.0, y: 0.18, w: 0.11, h: 0.12, action: { kind: "node", node: "cannano_preview" } },
-      { id: "rc_cocano_logo", caption: "Cocano", kind: "board", interaction: "destination", inlay: "cocano_logo", haptic: "light", x: 0.095, y: 0.19, w: 0.12, h: 0.13, action: { kind: "node", node: "cocano_preview" } },
-      { id: "rc_nicono_logo", caption: "Nicono", kind: "board", interaction: "destination", inlay: "nicono_logo", haptic: "light", x: 0.71, y: 0.19, w: 0.12, h: 0.13, action: { kind: "node", node: "nicono_preview" } },
-      { id: "rc_medano_logo", caption: "Medano", kind: "board", interaction: "destination", inlay: "medano_logo", haptic: "light", x: 0.86, y: 0.17, w: 0.13, h: 0.14, action: { kind: "node", node: "medano_preview" } },
+      // New art — the sibling crests are baked onto the doors now, so no logo
+      // inlays; just the four door glows (relocated) + the central board. Rough
+      // boxes for the new layout — relocate onto the doors in the editor and
+      // export, then I bake the finals.
+      { id: "rc_cannabis", caption: "Cannabis · Cannano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.03, y: 0.17, w: 0.14, h: 0.23, action: { kind: "node", node: "cannano_preview" } },
+      { id: "rc_cocaine", caption: "Cocaine · Cocano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.26, y: 0.17, w: 0.14, h: 0.22, action: { kind: "node", node: "cocano_preview" } },
+      { id: "rc_nicotine", caption: "Nicotine · Nicono — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.61, y: 0.16, w: 0.14, h: 0.23, action: { kind: "node", node: "nicono_preview" } },
+      { id: "rc_prescription", caption: "Prescription medication · Medano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.83, y: 0.16, w: 0.15, h: 0.25, action: { kind: "node", node: "medano_preview" } },
+      // The central corkboard → "The Grounds" directory.
+      { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.44, y: 0.19, w: 0.17, h: 0.15, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
