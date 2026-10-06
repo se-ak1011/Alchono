@@ -308,10 +308,11 @@ export function ZineInlay() {
 // rotate / tilt (depth) / size / brightness controls all apply, same as any
 // inlay. Positioned + tuned in the editor, then exported.
 // ————————————————————————————————————————————————————————————————
-const CANNANO_LOGO = require("../../../assets/logos/cannano.webp");
-const COCANO_LOGO = require("../../../assets/logos/cocano.webp");
-const MEDANO_LOGO = require("../../../assets/logos/medano.webp");
-const NICONO_LOGO = require("../../../assets/logos/nicono.webp");
+// PNG (not webp): transparent/alpha webp can silently fail to render on Android.
+const CANNANO_LOGO = require("../../../assets/logos/cannano.png");
+const COCANO_LOGO = require("../../../assets/logos/cocano.png");
+const MEDANO_LOGO = require("../../../assets/logos/medano.png");
+const NICONO_LOGO = require("../../../assets/logos/nicono.png");
 
 function LogoInlay({ source }: { source: number }) {
   return <Image source={source} style={StyleSheet.absoluteFill} resizeMode="contain" />;

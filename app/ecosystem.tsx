@@ -19,10 +19,8 @@ type Room = { name: string; color: string; note: string };
 const ROOMS: Room[] = [
   { name: 'Cannabis', color: '#5FA463', note: 'Cannano · in the works' },
   { name: 'Nicotine', color: '#D08A4E', note: 'Nicono · in the works' },
-  { name: 'Cocaine', color: '#E8E0CF', note: 'coming soon' },
-  { name: 'Gambling', color: '#5A78C4', note: 'coming soon' },
-  { name: 'Pornography', color: '#C45A8A', note: 'coming soon' },
-  { name: 'Prescription medication', color: '#4FA0A8', note: 'coming soon' },
+  { name: 'Cocaine', color: '#E8E0CF', note: 'Cocano · in the works' },
+  { name: 'Prescription medication', color: '#4FA0A8', note: 'Medano · in the works' },
 ];
 
 export default function EcosystemScreen() {
