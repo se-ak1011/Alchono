@@ -1,29 +1,29 @@
 # Worldification Plan
 
 Pulling every remaining administrative screen into the drawn world. The trick:
-**a handful of reusable illustrated surfaces + the zone-overlay engine** (the
-same system behind the Personal File). One illustration serves 6–10 screens;
-the per-screen work is laying out zones in code, not new art.
+**7 reusable illustrated surfaces + the zone-overlay engine** (the same system
+behind the Personal File). One illustration serves 6–12 screens; the per-screen
+work is laying out zones in code, not new art.
 
-Status key: ⬜ not started · 🟡 art in, wiring to do · ✅ done
+Status key: ⬜ not started · 🟡 art in, wiring to do · ⏳ art pending · ✅ done
 
-## Art assets (Marta's, 1998–2003 community-centre era)
+## Surfaces (Marta's art, 1998–2003 community-centre era)
 
-1. **binder** — paperwork / forms
-2. **journal** — spiral exercise book
-3. **corkboard** — pinned cards / lists
-4. **message pigeonhole** — inbox / message slots
-5. **information sheets** — leaflets / reference
-6. **wall chart** — progress / stats / calendar
-
-(Later, if wanted: CRT AV trolley for feeds, arcade cabinet frame for games,
-ledger for logs — not required for the first pass.)
+| # | Asset | File | In repo |
+|---|-------|------|---------|
+| 1 | Membership binder | `assets/surfaces/binder.webp` | ✅ |
+| 2 | Spiral notebook + voice recorder | `assets/surfaces/notebook.webp` | ✅ |
+| 3 | Corkboard | `assets/surfaces/corkboard.webp` | ✅ |
+| 4 | Paper wall chart | `assets/surfaces/wallchart.webp` | ✅ |
+| 5 | Information sheet + leaflet rack | `assets/surfaces/infosheet.webp` | ✅ |
+| 6 | Pigeonholes + answering machine | `assets/surfaces/pigeonholes.webp` | ⏳ resend |
+| 7 | CRT television + VHS trolley | `assets/surfaces/crt.webp` | ⏳ resend |
 
 ## Clusters
 
-### 1. Paperwork → **binder** 🟡
-Engine: DrawnForm (exists). Each screen is a different zone layout on the binder.
-- ⬜ profile/identity
+### 1. Membership binder → forms 🟡
+Engine: DrawnForm (exists). Each screen = a different zone layout on the binder.
+- ⬜ profile/identity (personal details)
 - ⬜ profile/trusted
 - ⬜ profile/people
 - ⬜ profile/care-team
@@ -36,36 +36,23 @@ Engine: DrawnForm (exists). Each screen is a different zone layout on the binder
 - ⬜ settings/app-lock
 - ⬜ checkin
 
-### 2. Journal → **journal** 🟡
-Engine: DrawnForm. One notebook, three screens.
+### 2. Spiral notebook + recorder → journal & message replies 🟡
+Engine: DrawnForm / zones.
 - ⬜ journal/notes
 - ⬜ journal/write
-- ⬜ journal/voice
+- ⬜ journal/voice (recorder = record + playback)
+- ⬜ messages/[requestId] (opened thread + reply)
 
-### 3. Noticeboard → **corkboard** 🟡
+### 3. Corkboard → pinned lists 🟡
 Engine: zone overlay (Me-room corkboard inlay proves it).
 - ⬜ moments (index/new/play)
 - ⬜ saved
 - ⬜ support/community
-- ⬜ support/mentors
-- ⬜ support/recommendations
-- ⬜ counsellors
+- ⬜ support/mentors (mentor directory)
+- ⬜ support/recommendations (listings)
+- ⬜ counsellors (listings)
 
-### 4. Messages → **message pigeonhole** 🟡
-- ⬜ messages/index
-- ⬜ messages/[requestId]
-
-### 5. Leaflets / reference → **information sheets** 🟡
-Engine: can reuse the Book engine for multi-page content.
-- ⬜ support/help-now
-- ⬜ support/sos
-- ⬜ support/recovery
-- ⬜ toolkit/[id]
-- ⬜ toolkit/c/[cat]
-- ⬜ recipe/[id]
-- ⬜ newsletter
-
-### 6. Progress / stats → **wall chart** 🟡
+### 4. Paper wall chart → progress & stats 🟡
 - ⬜ timeline
 - ⬜ today
 - ⬜ summary
@@ -73,13 +60,33 @@ Engine: can reuse the Book engine for multi-page content.
 - ⬜ plan
 - ⬜ evidence
 
+### 5. Information sheet + leaflet rack → reference ⏳🟡
+Engine: can reuse the Book engine for multi-page content.
+- ⬜ support/help-now
+- ⬜ support/sos
+- ⬜ support/recovery
+- ⬜ toolkit/[id] (articles)
+- ⬜ toolkit/c/[cat]
+- ⬜ recommendation details (per-item)
+- ⬜ recipe/[id]
+- ⬜ newsletter
+
+### 6. Pigeonholes + answering machine → messages ⏳
+Art pending resend.
+- ⬜ messages/index (inbox + conversation selection)
+
+### 7. CRT + VHS trolley → watch-something ⏳
+Art pending resend.
+- ⬜ session/good-feed
+- ⬜ giggles
+
 ### Already in the world ✅
 hub, Profile & Support tabs, urge porch, Personal File, Resources book, toolkit
 books, AI Coach room, Looking-Forward map, Letters desk, Barista, My Sky.
 
 ### Reuse (no new art)
-- **Phone list** (resources, counsellors) → the Resources book, already done.
-- **Letters** (letters/[id]) → the existing Letters desk/stationery.
+- Phone list (resources, counsellors) → the Resources book, already done.
+- Letters (letters/[id]) → the existing Letters desk/stationery.
 
 ### Left plain (by design)
 login, signup, onboarding, admin/*, pro/*, companion/choose, not-found, games
