@@ -627,7 +627,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "cn_counter", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.56, y: 0.5, w: 0.44, h: 0.27, action: { kind: "route", route: "/ecosystem" } },
+      { id: "cn_counter", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.343, y: 0.224, w: 0.175, h: 0.081, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
@@ -640,7 +640,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "co_counter", caption: "Get Cocano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.0, y: 0.62, w: 0.4, h: 0.3, action: { kind: "route", route: "/ecosystem" } },
+      { id: "co_counter", caption: "Get Cocano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.073, y: 0.225, w: 0.178, h: 0.088, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
@@ -653,7 +653,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "md_counter", caption: "Get Medano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.0, y: 0.58, w: 0.46, h: 0.3, action: { kind: "route", route: "/ecosystem" } },
+      { id: "md_counter", caption: "Get Medano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.09, y: 0.166, w: 0.244, h: 0.059, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
@@ -666,7 +666,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "ni_counter", caption: "Get Nicono", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.5, x: 0.0, y: 0.45, w: 0.42, h: 0.3, action: { kind: "route", route: "/ecosystem" } },
+      { id: "ni_counter", caption: "Get Nicono", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.132, y: 0.419, w: 0.143, h: 0.11, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 };
