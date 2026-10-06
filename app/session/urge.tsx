@@ -280,7 +280,7 @@ export default function UrgeScreen() {
           </ChromePill>
         </View>
         <View className="items-center mt-2 px-4">
-          <ChromePill onPress={() => router.navigate('/support/resources' as any)}>
+          <ChromePill onPress={() => router.navigate('/resources/home' as any)}>
             <Feather name="life-buoy" size={14} color="#F0C987" />
             <Text style={{ color: '#F3EEDB', fontSize: 14, fontWeight: '600' }}>Need a person? · Help &amp; crisis lines</Text>
           </ChromePill>

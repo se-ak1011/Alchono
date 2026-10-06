@@ -315,7 +315,13 @@ const MEDANO_LOGO = require("../../../assets/logos/medano.png");
 const NICONO_LOGO = require("../../../assets/logos/nicono.png");
 
 function LogoInlay({ source }: { source: number }) {
-  return <Image source={source} style={StyleSheet.absoluteFill} resizeMode="contain" />;
+  // Wrap in a sized View and give the Image explicit 100% dims (more reliable
+  // than absoluteFill inside a transformed/flex parent on Android).
+  return (
+    <View style={{ flex: 1, width: "100%", height: "100%" }}>
+      <Image source={source} style={{ width: "100%", height: "100%" }} resizeMode="contain" />
+    </View>
+  );
 }
 export function CannanoLogoInlay() { return <LogoInlay source={CANNANO_LOGO} />; }
 export function CocanoLogoInlay() { return <LogoInlay source={COCANO_LOGO} />; }
