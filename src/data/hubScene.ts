@@ -668,7 +668,9 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "ni_counter", caption: "Get Nicono", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.132, y: 0.419, w: 0.143, h: 0.11, action: { kind: "route", route: "/ecosystem" } },
+      // 2013-17 workshop art; Nicono moth crest framed as wall art (centre,
+      // under the sign). Glow over it → get the app. Rough box — re-tune.
+      { id: "ni_emblem", caption: "Get Nicono", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.4, y: 0.21, w: 0.2, h: 0.14, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 };
