@@ -113,6 +113,11 @@ export function AdventureHub() {
   // Base hotspots the editor has removed from a view (ids, per node). Exported
   // as a REMOVED list so the deletions get baked back into hubScene.ts.
   const [removed, setRemoved] = useState<Record<string, string[]>>({});
+  // The scene container's REAL measured size (via onLayout). All cover-fit and
+  // hotspot geometry uses this — never a window dimension read at import, which
+  // on Android can be shorter than the actual view and left a dark strip under
+  // the art. Falls back to the window size until the first layout pass.
+  const [size, setSize] = useState({ w: SCREEN_W, h: SCREEN_H });
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
@@ -204,12 +209,14 @@ export function AdventureHub() {
     router.push(action.route as any);
   };
 
+  const W = size.w;
+  const H = size.h;
   const isScreenFit = node.fit === "screen";
-  const scale = Math.max(SCREEN_W / node.imgW, SCREEN_H / node.imgH);
-  const dispW = isScreenFit ? node.imgW * scale : SCREEN_W;
-  const dispH = isScreenFit ? node.imgH * scale : SCREEN_W * (node.imgH / node.imgW);
-  const offX = isScreenFit ? (SCREEN_W - dispW) / 2 : 0;
-  const offY = isScreenFit ? (SCREEN_H - dispH) / 2 : 0;
+  const scale = Math.max(W / node.imgW, H / node.imgH);
+  const dispW = isScreenFit ? node.imgW * scale : W;
+  const dispH = isScreenFit ? node.imgH * scale : W * (node.imgH / node.imgW);
+  const offX = isScreenFit ? (W - dispW) / 2 : 0;
+  const offY = isScreenFit ? (H - dispH) / 2 : 0;
   geomRef.current = { dispW, dispH, offX, offY };
 
   const coordsOf = (h: Hotspot): Coords => overrides[h.id] ?? { x: h.x, y: h.y, w: h.w, h: h.h };
@@ -667,8 +674,8 @@ export function AdventureHub() {
       dir === "back"
         ? { top: 52, left: 16 }
         : dir === "left"
-        ? { top: SCREEN_H / 2 - 26, left: 8 }
-        : { top: SCREEN_H / 2 - 26, right: 8 };
+        ? { top: H / 2 - 26, left: 8 }
+        : { top: H / 2 - 26, right: 8 };
     return (
       <Pressable
         accessibilityRole="button"
@@ -729,9 +736,12 @@ export function AdventureHub() {
     .join("\n") +
     (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "");
 
+  // Screen-fit: fill the container edge-to-edge (so there's never a gap under
+  // the art, whatever the real height) and let resizeMode="cover" crop. The
+  // hotspot geometry above uses the same measured size, so they stay aligned.
   const imgStyle: ImageStyle = isScreenFit
-    ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
-    : { width: SCREEN_W, height: dispH };
+    ? { position: "absolute", left: 0, top: 0, right: 0, bottom: 0 }
+    : { width: W, height: dispH };
 
   const sceneInner = (
     <>
@@ -753,10 +763,18 @@ export function AdventureHub() {
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
       <Animated.View style={{ flex: 1, opacity: fade }}>
         {isScreenFit ? (
-          <View style={{ flex: 1 }}>{sceneInner}</View>
+          <View
+            style={{ flex: 1 }}
+            onLayout={(e) => {
+              const { width, height } = e.nativeEvent.layout;
+              setSize((s) => (s.w === width && s.h === height ? s : { w: width, h: height }));
+            }}
+          >
+            {sceneInner}
+          </View>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-            <View style={{ width: SCREEN_W, height: dispH, position: "relative" }}>{sceneInner}</View>
+            <View style={{ width: W, height: dispH, position: "relative" }}>{sceneInner}</View>
           </ScrollView>
         )}
       </Animated.View>
