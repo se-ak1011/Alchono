@@ -110,6 +110,9 @@ export function AdventureHub() {
   // Hotspots created in-app with the editor, keyed by node id. They're exported
   // with a NEW tag so their destinations can be wired when baked into hubScene.
   const [added, setAdded] = useState<Record<string, Hotspot[]>>({});
+  // Base hotspots the editor has removed from a view (ids, per node). Exported
+  // as a REMOVED list so the deletions get baked back into hubScene.ts.
+  const [removed, setRemoved] = useState<Record<string, string[]>>({});
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
@@ -122,8 +125,9 @@ export function AdventureHub() {
   const respondersRef = useRef<Record<string, ReturnType<typeof PanResponder.create>>>({});
 
   const node = HUB_NODES[nodeId];
-  // Base hotspots from the scene map, plus any added in-app for this node.
-  const hotspots = [...node.hotspots, ...(added[nodeId] ?? [])];
+  const removedHere = removed[nodeId] ?? [];
+  // Base hotspots from the scene map (minus any removed in-app), plus any added.
+  const hotspots = [...node.hotspots.filter((h) => !removedHere.includes(h.id)), ...(added[nodeId] ?? [])];
   const isAdded = (id: string) => (added[nodeId] ?? []).some((h) => h.id === id);
   const hotspotsRef = useRef(hotspots);
   hotspotsRef.current = hotspots;
@@ -261,13 +265,34 @@ export function AdventureHub() {
     setSelected(id);
   };
 
+  // Delete any hotspot. Ones added in-app just vanish; base ones (baked into
+  // hubScene.ts) are recorded in `removed` so the export can tell me to delete
+  // them too. "Reset view" (below) brings everything back if you bin one by
+  // mistake.
   const deleteSelected = () => {
     if (!selected) return;
     const id = selected;
-    setAdded((a) => ({ ...a, [nodeId]: (a[nodeId] ?? []).filter((h) => h.id !== id) }));
+    if (isAdded(id)) {
+      setAdded((a) => ({ ...a, [nodeId]: (a[nodeId] ?? []).filter((h) => h.id !== id) }));
+    } else {
+      setRemoved((r) => ({ ...r, [nodeId]: [...(r[nodeId] ?? []), id] }));
+    }
     setOverrides((o) => {
       const next = { ...o };
       delete next[id];
+      return next;
+    });
+    setSelected(null);
+  };
+
+  // Undo all edits for the current view — restores deleted base hotspots, drops
+  // added ones, clears position/style overrides. A safety net, not a save.
+  const resetView = () => {
+    setRemoved((r) => ({ ...r, [nodeId]: [] }));
+    setAdded((a) => ({ ...a, [nodeId]: [] }));
+    setOverrides((o) => {
+      const next = { ...o };
+      for (const h of node.hotspots) delete next[h.id];
       return next;
     });
     setSelected(null);
@@ -568,11 +593,9 @@ export function AdventureHub() {
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "700" }}>Editing: {sel.id}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            {isAdded(sel.id) ? (
-              <Pressable onPress={deleteSelected} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.22)", borderWidth: 1, borderColor: "rgba(220,120,130,0.5)" }}>
-                <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "600" }}>Delete</Text>
-              </Pressable>
-            ) : null}
+            <Pressable onPress={deleteSelected} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.22)", borderWidth: 1, borderColor: "rgba(220,120,130,0.5)" }}>
+              <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "600" }}>Delete</Text>
+            </Pressable>
             <Pressable onPress={() => setSelected(null)} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)" }}>
               <Text style={{ color: "#CFC8DE", fontSize: 12, fontWeight: "600" }}>Done</Text>
             </Pressable>
@@ -638,7 +661,7 @@ export function AdventureHub() {
   };
 
   const turnArrow = (dir: "left" | "right" | "back", target: string) => {
-    const cap = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
+    const cap = dir === "back" ? "Back" : dir === "left" ? "Turn left" : "Turn right";
     const icon = dir === "back" ? "corner-up-left" : dir === "left" ? "chevron-left" : "chevron-right";
     const pos =
       dir === "back"
@@ -703,7 +726,8 @@ export function AdventureHub() {
       const base = `${prefix}${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
       return extra.length ? `${base}, ${extra.join(", ")}` : base;
     })
-    .join("\n");
+    .join("\n") +
+    (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "");
 
   const imgStyle: ImageStyle = isScreenFit
     ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
@@ -796,6 +820,29 @@ export function AdventureHub() {
           className="active:opacity-80"
         >
           <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>Export coordinates</Text>
+        </Pressable>
+      ) : null}
+
+      {/* Undo everything on this view — restores deleted spots, drops added ones,
+          clears position/style tweaks. Safety net if you bin one by mistake. */}
+      {editMode ? (
+        <Pressable
+          onPress={resetView}
+          hitSlop={8}
+          style={{
+            position: "absolute",
+            bottom: 104,
+            left: 14,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "rgba(20,17,28,0.92)",
+            borderWidth: 1,
+            borderColor: "rgba(190,160,210,0.4)",
+          }}
+          className="active:opacity-80"
+        >
+          <Text style={{ color: "#CFC8DE", fontSize: 12.5, fontWeight: "600" }}>Reset view</Text>
         </Pressable>
       ) : null}
 
