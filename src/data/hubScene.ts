@@ -115,112 +115,85 @@ export const HUB_START = "front";
 export const HUB_NODES: Record<string, HubNode> = {
   front: {
     id: "front",
-    title: "The Café",
-    image: require("../../assets/scenes/cafe_front.png"),
-    // Painted glow layer is parked until it can be drawn as a pixel-true overlay
-    // on the exact base (a re-generated version drifts and shimmers). Until then
-    // the engine draws the soft breathing blooms per glow hotspot.
-    // glowImage: require("../../assets/scenes/cafe_front_glow.png"),
+    title: "Alchono",
+    image: require("../../assets/scenes/home_front.webp"),
     imgW: 851,
-    imgH: 1848,
+    imgH: 1847,
     fit: "screen",
     left: "left",
     right: "right",
-    // NOTE: after the interaction redesign, labels and tap targets are separate.
-    // The lbl_* entries are non-tappable signage kept at the old (good) board
-    // positions; the interactive entries below them need dragging onto their
-    // real objects in the editor (desk, armchair, door, curtain, phone), then
-    // exported. See docs/adventure-hub.md.
+    // New Alchono lobby. Three views pan together: front (here), left (reception
+    // + fire exit), right (arcade/bar + fire exit). The signage is painted into
+    // the art, so most labels are gone — the objects just glow. Boxes are rough:
+    // drag each onto its object in the in-app editor and export. See
+    // docs/adventure-hub.md.
     hotspots: [
-      // — environmental signage (text only, NOT tappable) — placed + tuned in-app —
-      { id: "lbl_community", caption: "Community", kind: "label", label: "Community", labelSize: 11, rotate: 8, x: 0.0, y: 0.207, w: 0.144, h: 0.058 },
-      { id: "lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading\nCorner", labelSize: 10, rotate: 6, x: 0.105, y: 0.208, w: 0.17, h: 0.113 },
-      { id: "lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 11, x: 0.329, y: 0.275, w: 0.122, h: 0.094 },
-      { id: "lbl_support", caption: "Support", kind: "label", label: "Support", rotate: -4, x: 0.4, y: 0.199, w: 0.197, h: 0.059 },
-      { id: "lbl_resources", caption: "Resources", kind: "label", label: "Resources", labelSize: 18, rotate: 8, x: 0.633, y: 0.486, w: 0.223, h: 0.033 },
+      // The SOS "Let's Talk" booth on the desk = the urge flow. The one tap that
+      // must never be missed (it also appears in both side views).
+      { id: "f_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.29, y: 0.53, w: 0.19, h: 0.17, action: { kind: "route", route: "/session/urge", warn: true } },
 
-      // — destinations (enter a room); the object glows, not a box —
-      { id: "writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.023, y: 0.534, w: 0.192, h: 0.114, action: { kind: "node", node: "writing_desk" } },
-      { id: "me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", anchor: { x: 0.82, y: 0.55 }, glowScale: 0.5, glowMax: 0.65, x: 0.235, y: 0.37, w: 0.127, h: 0.059, action: { kind: "node", node: "me_front" } },
-      { id: "support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 1.05, glowMax: 0.65, x: 0.437, y: 0.374, w: 0.148, h: 0.097, action: { kind: "node", node: "support" } },
+      // Reception counter objects (phone / bell / ledger).
+      { id: "f_phone", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.0, y: 0.41, w: 0.15, h: 0.06, action: { kind: "route", route: "/messages" } },
+      { id: "f_bell", caption: "Check in", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.6, x: 0.17, y: 0.44, w: 0.08, h: 0.05, action: { kind: "route", route: "/checkin" } },
+      { id: "f_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.0, y: 0.47, w: 0.16, h: 0.06, action: { kind: "route", route: "/session/track" } },
 
-      // — live objects: content painted on, tap enters the room directly —
-      { id: "community", caption: "Community", kind: "board", tint: "purple", interaction: "destination", inlay: "community", haptic: "light", glowScale: 0.9, glowMax: 0.6, rotate: 2, rotateY: 44, x: 0.015, y: 0.253, w: 0.11, h: 0.118, action: { kind: "route", route: "/community" } },
-      { id: "reading", caption: "Reading Corner", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowMax: 0.65, x: 0.102, y: 0.431, w: 0.192, h: 0.09, action: { kind: "node", node: "reading_shelf" } },
-      { id: "mysky", caption: "My Sky", kind: "board", tint: "warm", interaction: "destination", inlay: "sky", haptic: "light", glowScale: 0.9, glowMax: 0.6, opacity: 0.2, rotate: -4, rotateY: -30, x: 0.801, y: 0.259, w: 0.17, h: 0.06, action: { kind: "route", route: "/constellation" } },
+      // Doors & stairs.
+      { id: "f_me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.655, y: 0.05, w: 0.11, h: 0.07, action: { kind: "node", node: "me_front" } },
+      { id: "f_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.6, x: 0.70, y: 0.27, w: 0.11, h: 0.18, action: { kind: "node", node: "support" } },
 
-      // — objects (the object itself communicates its function) —
-      { id: "bar", caption: "The Bar", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.65, x: 0.612, y: 0.338, w: 0.253, h: 0.053, action: { kind: "node", node: "cafebar" } },
-      { id: "games", caption: "Games", kind: "board", tint: "purple", interaction: "object", inlay: "arcade", haptic: "medium", anchor: { x: 0.5, y: 0.4 }, glowScale: 0.5, glowMax: 0.8, rotate: 7, rotateX: 30, x: 0.923, y: 0.395, w: 0.089, h: 0.041, action: { kind: "node", node: "arcade" } },
-      { id: "resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.65, x: 0.744, y: 0.423, w: 0.12, h: 0.081, action: { kind: "route", route: "/resources/home" } },
-
-      // — primary immediate-help action (dominant; distinct heavy haptic) —
-      { id: "urge", caption: "I need a drink", kind: "primary", label: "I need a drink", interaction: "object", haptic: "heavy", labelSize: 20, rotate: 22, x: 0.554, y: 0.67, w: 0.552, h: 0.074, action: { kind: "route", route: "/session/urge", warn: true } },
+      // Directional signs → where they point. Reading/Writing down the left
+      // corridor; Café-Bar/Arcade is the right view (pan right).
+      { id: "f_reading", caption: "Reading & Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.14, h: 0.06, action: { kind: "node", node: "reading_shelf" } },
+      { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.87, y: 0.26, w: 0.13, h: 0.09, action: { kind: "node", node: "right" } },
     ],
   },
 
   left: {
     id: "left",
-    title: "Reading & Writing",
-    image: require("../../assets/scenes/cafe_left_ph.png"),
-    imgW: 941,
-    imgH: 1672,
+    title: "Reception & Exit",
+    image: require("../../assets/scenes/home_left.webp"),
+    imgW: 851,
+    imgH: 1847,
     fit: "screen",
-    // Side arrow panning back toward the counter side, the way the arcade/support
-    // side-views connect back to their room-front. Keeps the "look around" feel
-    // consistent across every room, instead of forcing a trip through Back.
+    // Pan right to return to the front; Back also returns to the lobby.
     right: "front",
     back: "front",
     hotspots: [
-      { id: "l_writing", caption: "Writing Space", kind: "glow", tint: "warm", glowMax: 0.45, x: 0.341, y: 0.474, w: 0.22, h: 0.23, action: { kind: "node", node: "writing_desk" } },
-      // The rack: tiny routing glows (paper previews removed — real newspapers
-      // will be drawn into the baskets, with name-sticker labels added in-app).
-      // Reposition onto the baskets in the editor.
-      { id: "l_papers", caption: "The Good News Gazette", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.074, y: 0.503, w: 0.115, h: 0.068, action: { kind: "route", route: "/soul" } },
-      { id: "l_papers2", caption: "The Funny Pages", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.076, y: 0.583, w: 0.142, h: 0.079, action: { kind: "route", route: "/giggles" } },
-      { id: "l_papers3", caption: "The Letters Page", kind: "glow", tint: "warm", interaction: "destination", glowMax: 0.65, x: 0.065, y: 0.669, w: 0.136, h: 0.076, action: { kind: "route", route: "/thought" } },
-      { id: "l_reading", caption: "Reading Corner", kind: "glow", glowMax: 0.65, x: 0.637, y: 0.326, w: 0.144, h: 0.164, action: { kind: "node", node: "reading_shelf" } },
-      { id: "l_community", caption: "Community", kind: "board", label: "Community", labelSize: 15, rotate: 8, x: 0.356, y: 0.102, w: 0.3, h: 0.089, action: { kind: "route", route: "/community" } },
-      // Live videos on the board face below the "Community" sign, tilted into
-      // the wall — same inlay as the front.
-      { id: "l_community_board", caption: "Community", kind: "board", tint: "purple", interaction: "destination", inlay: "community", rotate: 1, rotateY: 44, x: 0.445, y: 0.172, w: 0.112, h: 0.134, action: { kind: "route", route: "/community" } },
-      { id: "l_me", caption: "Me", kind: "board", label: "Me", labelSize: 17, x: 0.755, y: 0.154, w: 0.169, h: 0.116, action: { kind: "node", node: "me_front" } },
-      // Added in-app: signage labels (non-tappable).
-      { id: "l_lbl_writing", caption: "Writing Space", kind: "label", label: "Writing Space", labelSize: 23, rotate: 2, x: 0.084, y: 0.089, w: 0.285, h: 0.243 },
-      { id: "l_lbl_reading", caption: "Reading Corner", kind: "label", label: "Reading Corner", labelSize: 11, rotate: 6, x: 0.629, y: 0.123, w: 0.146, h: 0.127 },
-      // Added in-app: new glow — DESTINATION PENDING (inert until wired).
-      { id: "l_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.8, glowMax: 0.45, x: 0.869, y: 0.309, w: 0.084, h: 0.049 },
+      // The fire exit = the urge flow (it takes you outside). The SOS booth is
+      // the same reach — help is one tap from every view.
+      { id: "l_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.6, x: 0.06, y: 0.17, w: 0.24, h: 0.46, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.34, y: 0.25, w: 0.13, h: 0.19, action: { kind: "route", route: "/session/urge", warn: true } },
+      // The Reception door → the grounds (the other apps).
+      { id: "l_reception", caption: "Reception — the grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.58, y: 0.19, w: 0.21, h: 0.43, action: { kind: "node", node: "reception" } },
+      // Keys on the hook → DESTINATION TBC. Parked on Settings for now — tell me
+      // where you want the keys to go.
+      { id: "l_keys", caption: "Keys", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.55, x: 0.84, y: 0.27, w: 0.09, h: 0.12, action: { kind: "route", route: "/settings" } },
+      // The counter shows here too (phone / bell / ledger).
+      { id: "l_phone", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.86, y: 0.43, w: 0.14, h: 0.08, action: { kind: "route", route: "/messages" } },
+      { id: "l_bell", caption: "Check in", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.6, x: 0.80, y: 0.47, w: 0.07, h: 0.05, action: { kind: "route", route: "/checkin" } },
+      { id: "l_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.74, y: 0.50, w: 0.20, h: 0.06, action: { kind: "route", route: "/session/track" } },
     ],
   },
   right: {
     id: "right",
-    title: "The Counter",
-    image: require("../../assets/scenes/cafe_right_ph.png"),
-    imgW: 941,
-    imgH: 1672,
+    title: "Arcade & Café-Bar",
+    image: require("../../assets/scenes/home_right.webp"),
+    imgW: 851,
+    imgH: 1847,
     fit: "screen",
-    // Side arrow panning back toward the reading/writing side — mirror of the
-    // left view, matching the arcade/support side-to-side navigation.
+    // Pan left to return to the front; Back also returns to the lobby.
     left: "front",
     back: "front",
     hotspots: [
-      { id: "r_tonight", caption: "Tonight", kind: "sign", label: "Tonight", labelSize: 17, rotate: 14, x: 0.472, y: 0.45, w: 0.248, h: 0.073, action: { kind: "route", route: "/session/track" } },
-      { id: "r_games", caption: "Games Arcade", kind: "board", interaction: "object", inlay: "arcade", glowMax: 0.6, rotate: 9, rotateY: -10, rotateX: 26, x: 0.382, y: 0.347, w: 0.068, h: 0.043, action: { kind: "node", node: "arcade" } },
-      { id: "r_bar", caption: "Café / Bar", kind: "glow", glowMax: 0.65, x: 0.116, y: 0.279, w: 0.234, h: 0.08, action: { kind: "node", node: "cafebar" } },
-      { id: "r_resources", caption: "Resources", kind: "sign", label: "Resources", labelSize: 15, rotate: 8, x: 0.134, y: 0.431, w: 0.16, h: 0.05, action: { kind: "route", route: "/resources/home" } },
-      { id: "r_urge", caption: "I need a drink", kind: "sign", prominent: true, label: "I need a drink", labelSize: 22, rotate: 26, x: 0.075, y: 0.63, w: 0.5, h: 0.09, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "r_mysky", caption: "My Sky", kind: "board", label: "My Sky", labelSize: 10, interaction: "destination", inlay: "sky", rotate: -4, rotateY: -32, rotateX: 2, opacity: 0.2, x: 0.395, y: 0.213, w: 0.063, h: 0.055, action: { kind: "route", route: "/constellation" } },
-      // Added in-app: new glows — DESTINATIONS PENDING (inert until wired).
-      // The Zine — a cover pinned to the corkboard (a live preview; tap to read).
-      { id: "r_zine", caption: "The Zine", kind: "board", tint: "warm", interaction: "destination", inlay: "zine", haptic: "light", glowScale: 0.8, glowMax: 0.5, rotateY: -48, rotateX: 12, x: 0.63, y: 0.161, w: 0.165, h: 0.114, action: { kind: "route", route: "/newsletter" } },
-      { id: "r_glow_2", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.7, glowMax: 0.65, x: 0.209, y: 0.384, w: 0.122, h: 0.079 },
-      { id: "r_glow_3", caption: "New spot", kind: "glow", tint: "warm", glowScale: 0.6, glowMax: 0.65, x: 0.61, y: 0.416, w: 0.127, h: 0.094 },
-      // Vertical "24/7" sign (stacked characters), tilted onto the board.
-      { id: "r_247", caption: "24/7", kind: "label", label: "2\n4\n/\n7", labelSize: 40, rotateY: -30, opacity: 0.5, x: 0.502, y: 0.165, w: 0.076, h: 0.268 },
-      // Key holder → straight outside. A shortcut from the Counter to the yard
-      // so the grounds/Reception aren't buried in the Break Room. No drawn key
-      // holder yet — invisible glow for now; drag onto the hook when art lands.
-      { id: "r_keys", caption: "Step outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.82, y: 0.42, w: 0.12, h: 0.1, action: { kind: "node", node: "outside" } },
+      // Fire exit + SOS booth = the urge flow (reachable from every view).
+      { id: "rt_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.6, x: 0.26, y: 0.19, w: 0.22, h: 0.46, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "rt_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.17, y: 0.26, w: 0.12, h: 0.18, action: { kind: "route", route: "/session/urge", warn: true } },
+      // The Arcade door (machines visible through it).
+      { id: "rt_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.50, y: 0.22, w: 0.23, h: 0.43, action: { kind: "node", node: "arcade" } },
+      // The Café-Bar glass doors.
+      { id: "rt_cafebar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.74, y: 0.16, w: 0.25, h: 0.49, action: { kind: "node", node: "cafebar" } },
+      // The window onto the garden → Outside (that scene's still being redrawn).
+      { id: "rt_window", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.0, y: 0.06, w: 0.17, h: 0.56, action: { kind: "node", node: "outside" } },
     ],
   },
 
@@ -575,9 +548,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 840,
     imgH: 1872,
     fit: "screen",
-    // Back → the Counter (the key holder's home), so Outside is a clean
-    // there-and-back from the Counter shortcut. The Break Room door
-    // (brr_door → outside) stays as a second, scenic way in.
+    // Back → the right view (you came out through its garden window). The Break
+    // Room door (brr_door → outside) stays as a second, scenic way in.
     back: "right",
     hotspots: [
       // The Café door (left) → back inside, to the Break Room. (editor-tuned)

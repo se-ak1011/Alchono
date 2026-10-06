@@ -4,6 +4,18 @@ Two ways to move through Alchono's world. We're on the first now; the second
 is the redraw you're considering. This note holds both so the plan's ready
 when you pick up the pencil.
 
+> **Update (2026-10-06):** the roaming-building redraw started. The Café front
+> was replaced by the new **Alchono lobby** (three views: `front` / `left` /
+> `right`, art in `assets/scenes/home_*.webp`). The grounds and Outside are now
+> one pan/door away, so the old "key holder" shortcut was retired. The sibling
+> rooms (`me_front`, `support`, `reading_shelf`, `cafebar`, `arcade`, …) still
+> use their old café-era art and return to `front` — they're the next to redraw.
+> The home wiring now is:
+> - **front** — SOS booth → urge flow; Me (stairs); Support (door); counter
+>   phone/bell/ledger → people/check-in/track; signs → Reading-Writing / right view.
+> - **left** — EXIT + SOS booth → urge flow; Reception door → the grounds; keys → TBC.
+> - **right** — EXIT + SOS booth → urge flow; Arcade door; Café-Bar doors; window → Outside.
+
 ---
 
 ## Where we are now: the clean wheel
