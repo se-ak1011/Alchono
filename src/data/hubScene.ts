@@ -635,12 +635,14 @@ export const HUB_NODES: Record<string, HubNode> = {
     id: "cocano_preview",
     title: "Cocano",
     image: require("../../assets/scenes/cocano_preview.webp"),
-    imgW: 853,
-    imgH: 1844,
+    imgW: 851,
+    imgH: 1847,
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "co_counter", caption: "Get Cocano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.073, y: 0.225, w: 0.178, h: 0.088, action: { kind: "route", route: "/ecosystem" } },
+      // New 2003-07 internet-café art; the Cocano crest is framed as wall art
+      // (top-left). Glow sits over it → get the app. Rough box — re-tune.
+      { id: "co_emblem", caption: "Get Cocano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.19, y: 0.17, w: 0.18, h: 0.15, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
