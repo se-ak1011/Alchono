@@ -627,7 +627,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     back: "reception",
     hotspots: [
-      { id: "cn_counter", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.343, y: 0.224, w: 0.175, h: 0.081, action: { kind: "route", route: "/ecosystem" } },
+      // New 2008–2012 art — counter is foreground-left now; rough box, re-tune.
+      { id: "cn_counter", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.0, y: 0.42, w: 0.3, h: 0.16, action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 
