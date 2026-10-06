@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Linking,
   type LayoutChangeEvent,
 } from 'react-native';
 import Animated, {
@@ -87,10 +88,23 @@ function groundingCards(prefs: UserPreferences | null): GroundingCard[] {
   ];
 }
 
-type PersonAction = { id: string; label: string; sub: string };
+type PersonAction = { id: string; label: string; sub: string; contact?: string };
 
 function peopleActions(prefs: UserPreferences | null): PersonAction[] {
   const list: PersonAction[] = [];
+  // Your private "who to call" from the Personal File — the one real, tappable
+  // contact, surfaced first. Tapping it dials/emails them.
+  const file = (prefs as any)?.file as { trustedName?: string; trustedContact?: string } | undefined;
+  const trustedName = file?.trustedName?.trim();
+  const trustedContact = file?.trustedContact?.trim();
+  if (trustedContact) {
+    list.push({
+      id: 'trusted',
+      label: trustedName ? `Call ${trustedName}` : 'Call your person',
+      sub: 'The one you wrote in your file. Let them know where you’re at.',
+      contact: trustedContact,
+    });
+  }
   if (prefs?.familyMembers?.includes('partner')) {
     const name = prefs.partnerName?.trim();
     list.push({ id: 'partner', label: name ? `Message ${name}` : 'Message your partner', sub: 'One honest line. Just tell them where you’re at.' });
@@ -371,12 +385,29 @@ export default function UrgeScreen() {
               <Text className="text-text-primary text-xl font-semibold">{reasonNames}.</Text>
             </View>
           )}
-          {peopleActions(prefs).map((p) => (
-            <View key={p.id} className="rounded-2xl px-5 py-4 mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.1)' }}>
-              <Text className="text-text-primary text-lg font-semibold mb-1" style={headingShadow}>{p.label}</Text>
-              <Text className="text-text-secondary text-base leading-relaxed">{p.sub}</Text>
-            </View>
-          ))}
+          {peopleActions(prefs).map((p) => {
+            if (p.contact) {
+              // The real, tappable contact from the File — dial or email them.
+              const open = () => {
+                const c = p.contact!.trim();
+                const url = c.includes('@') ? `mailto:${c}` : `tel:${c.replace(/[^+\d]/g, '')}`;
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                Linking.openURL(url).catch(() => {});
+              };
+              return (
+                <Pressable key={p.id} onPress={open} className="rounded-2xl px-5 py-4 mb-3" style={{ backgroundColor: 'rgba(164,137,222,0.12)', borderWidth: 1, borderColor: 'rgba(164,137,222,0.4)' }}>
+                  <Text className="text-text-primary text-lg font-semibold mb-1" style={headingShadow}>{p.label}</Text>
+                  <Text className="text-text-secondary text-base leading-relaxed">{p.sub}</Text>
+                </Pressable>
+              );
+            }
+            return (
+              <View key={p.id} className="rounded-2xl px-5 py-4 mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(236,233,241,0.1)' }}>
+                <Text className="text-text-primary text-lg font-semibold mb-1" style={headingShadow}>{p.label}</Text>
+                <Text className="text-text-secondary text-base leading-relaxed">{p.sub}</Text>
+              </View>
+            );
+          })}
         </OverlaySheet>
       )}
 
