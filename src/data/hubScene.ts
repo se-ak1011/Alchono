@@ -463,14 +463,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The board — drinks (Cinnamon / Mojito / Golden). Each opens its recipe.
-      { id: "cb_d1", caption: "Cinnamon Milk Steamer", kind: "sign", label: "Cinnamon Milk Steamer", labelSize: 15, x: 0.58, y: 0.225, w: 0.27, h: 0.03, action: { kind: "route", route: "/recipe/cinnamon-steamer" } },
-      { id: "cb_d2", caption: "Mock Mojito", kind: "sign", label: "Mock Mojito", labelSize: 15, x: 0.60, y: 0.26, w: 0.2, h: 0.03, action: { kind: "route", route: "/recipe/mock-mojito" } },
-      { id: "cb_d3", caption: "Golden Milk", kind: "sign", label: "Golden Milk", labelSize: 15, x: 0.60, y: 0.293, w: 0.17, h: 0.03, action: { kind: "route", route: "/recipe/golden-milk" } },
-      // The Arcade door (left).
-      { id: "cb_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.0, y: 0.28, w: 0.12, h: 0.24, action: { kind: "node", node: "arcade" } },
+      // Coordinates placed in-app and exported. Drink labels (cb_d1–3) removed —
+      // the menu board will become one tap (pending the menu screen).
+      { id: "cb_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.017, y: 0.216, w: 0.104, h: 0.312, action: { kind: "node", node: "arcade" } },
       // SOS booth + fire exit = the urge flow.
-      { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.13, y: 0.29, w: 0.11, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "cb_urge_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.55, x: 0.23, y: 0.25, w: 0.14, h: 0.28, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.32, x: 0.13, y: 0.265, w: 0.11, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cb_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.244, y: 0.252, w: 0.124, h: 0.236, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
   cafebar_right: {
@@ -483,18 +481,15 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "cafebar",
     back: "front",
     hotspots: [
-      // The board — drinks (Sunrise / Honey / Slow Tea) + the 0.0 rec prompt.
-      { id: "cbr_d1", caption: "Sunrise Fizz", kind: "sign", label: "Sunrise Fizz", labelSize: 15, x: 0.03, y: 0.19, w: 0.27, h: 0.03, action: { kind: "route", route: "/recipe/sunrise-fizz" } },
-      { id: "cbr_d2", caption: "Honey & Lemon Warmer", kind: "sign", label: "Honey & Lemon Warmer", labelSize: 15, x: 0.03, y: 0.225, w: 0.3, h: 0.03, action: { kind: "route", route: "/recipe/honey-lemon" } },
-      { id: "cbr_d3", caption: "Slow Iced Tea", kind: "sign", label: "Slow Iced Tea", labelSize: 15, x: 0.03, y: 0.26, w: 0.22, h: 0.03, action: { kind: "route", route: "/recipe/slow-iced-tea" } },
-      { id: "cbr_recs", caption: "0.0 recommendations", kind: "sign", label: "Ask the barista for 0.0 recommendations!", labelSize: 12, x: 0.02, y: 0.293, w: 0.33, h: 0.03, action: { kind: "route", route: "/support/recommendations" } },
-      // The "Alcohol-free 0.0%" sign on the counter → also the recommendations.
+      // Coordinates placed in-app and exported. Drink + recs labels removed —
+      // the menu board will become one tap (pending the menu screen).
+      // The "Alcohol-free 0.0%" sign on the counter → the 0.0 recommendations.
       { id: "cbr_free", caption: "0.0 recommendations", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.28, y: 0.37, w: 0.13, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
       // SOS booth + fire exit = the urge flow.
-      { id: "cbr_urge_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.55, x: 0.45, y: 0.22, w: 0.18, h: 0.3, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "cbr_urge_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.66, y: 0.28, w: 0.13, h: 0.14, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cbr_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.525, y: 0.245, w: 0.135, h: 0.241, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cbr_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.671, y: 0.267, w: 0.121, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
       // The French doors → the garden (Outside), which opens onto the grounds.
-      { id: "cbr_doors", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.55, x: 0.80, y: 0.18, w: 0.2, h: 0.45, action: { kind: "node", node: "outside" } },
+      { id: "cbr_doors", caption: "The garden", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.8, y: 0.18, w: 0.2, h: 0.45, action: { kind: "node", node: "outside" } },
     ],
   },
 
