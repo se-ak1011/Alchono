@@ -116,7 +116,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   front: {
     id: "front",
     title: "Alchono",
-    image: require("../../assets/scenes/home_front.webp"),
+    image: require("../../assets/scenes/home_front.png"),
     imgW: 851,
     imgH: 1847,
     fit: "screen",
@@ -151,7 +151,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   left: {
     id: "left",
     title: "Reception & Exit",
-    image: require("../../assets/scenes/home_left.webp"),
+    image: require("../../assets/scenes/home_left.png"),
     imgW: 851,
     imgH: 1847,
     fit: "screen",
@@ -177,7 +177,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   right: {
     id: "right",
     title: "Arcade & Café-Bar",
-    image: require("../../assets/scenes/home_right.webp"),
+    image: require("../../assets/scenes/home_right.png"),
     imgW: 851,
     imgH: 1847,
     fit: "screen",

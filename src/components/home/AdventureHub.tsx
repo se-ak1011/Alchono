@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, TextInput, useWindowDimensions, Animated, PanResponder, type ImageStyle } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -9,6 +9,12 @@ import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
 
+// Captured at module load — on Android this reads the FULL screen height
+// (before the nav-bar inset is applied post-layout), which is what lets the
+// scene cover the whole display. Reading it later via useWindowDimensions gave
+// the shorter post-inset window, which clipped the art — so we keep this.
+const SCREEN_W = Dimensions.get("window").width;
+const SCREEN_H = Dimensions.get("window").height;
 
 type Coords = { x: number; y: number; w: number; h: number };
 // The full set of things the in-app editor can override per hotspot.
@@ -99,16 +105,6 @@ function Bloom({
  */
 export function AdventureHub() {
   const router = useRouter();
-  // The live window size — the fallback until the scene container is measured.
-  const { width: winW, height: winH } = useWindowDimensions();
-  // The scene container's REAL size (onLayout). With edge-to-edge the home root
-  // spans the full screen (behind the nav bar) but the window size excludes it,
-  // so sizing the art to the window left it short — black strip at the bottom and
-  // a cover-crop that clipped the ceiling. We size the art to this container and
-  // build the hotspot geometry from the same number, so both match the real area.
-  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
-  const W = size?.w ?? winW;
-  const H = size?.h ?? winH;
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -213,11 +209,11 @@ export function AdventureHub() {
   };
 
   const isScreenFit = node.fit === "screen";
-  const scale = Math.max(W / node.imgW, H / node.imgH);
-  const dispW = isScreenFit ? node.imgW * scale : W;
-  const dispH = isScreenFit ? node.imgH * scale : W * (node.imgH / node.imgW);
-  const offX = isScreenFit ? (W - dispW) / 2 : 0;
-  const offY = isScreenFit ? (H - dispH) / 2 : 0;
+  const scale = Math.max(SCREEN_W / node.imgW, SCREEN_H / node.imgH);
+  const dispW = isScreenFit ? node.imgW * scale : SCREEN_W;
+  const dispH = isScreenFit ? node.imgH * scale : SCREEN_W * (node.imgH / node.imgW);
+  const offX = isScreenFit ? (SCREEN_W - dispW) / 2 : 0;
+  const offY = isScreenFit ? (SCREEN_H - dispH) / 2 : 0;
   geomRef.current = { dispW, dispH, offX, offY };
 
   const coordsOf = (h: Hotspot): Coords => overrides[h.id] ?? { x: h.x, y: h.y, w: h.w, h: h.h };
@@ -675,8 +671,8 @@ export function AdventureHub() {
       dir === "back"
         ? { top: 52, left: 16 }
         : dir === "left"
-        ? { top: H / 2 - 26, left: 8 }
-        : { top: H / 2 - 26, right: 8 };
+        ? { top: SCREEN_H / 2 - 26, left: 8 }
+        : { top: SCREEN_H / 2 - 26, right: 8 };
     return (
       <Pressable
         accessibilityRole="button"
@@ -737,13 +733,12 @@ export function AdventureHub() {
     .join("\n") +
     (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "");
 
-  // Screen-fit: fill the container 100% (NOT right/bottom:0 — that left the
-  // Image without a resolved size and made it zoom). Explicit 100%/100% sizes
-  // it to the real drawn area, so it reaches every edge with no black strip,
-  // and cover-fit's crop is tiny because the art matches the screen aspect.
+  // Screen-fit: the image fills the full screen (captured SCREEN_W × SCREEN_H)
+  // and cover-fit crops the overflow. This is the sizing that rendered the old
+  // café art correctly — full height, no clip.
   const imgStyle: ImageStyle = isScreenFit
-    ? { position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }
-    : { width: W, height: dispH };
+    ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
+    : { width: SCREEN_W, height: dispH };
 
   const sceneInner = (
     <>
@@ -765,18 +760,10 @@ export function AdventureHub() {
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
       <Animated.View style={{ flex: 1, opacity: fade }}>
         {isScreenFit ? (
-          <View
-            style={{ flex: 1 }}
-            onLayout={(e) => {
-              const { width, height } = e.nativeEvent.layout;
-              setSize((s) => (s && s.w === width && s.h === height ? s : { w: width, h: height }));
-            }}
-          >
-            {sceneInner}
-          </View>
+          <View style={{ flex: 1 }}>{sceneInner}</View>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-            <View style={{ width: W, height: dispH, position: "relative" }}>{sceneInner}</View>
+            <View style={{ width: SCREEN_W, height: dispH, position: "relative" }}>{sceneInner}</View>
           </ScrollView>
         )}
       </Animated.View>
