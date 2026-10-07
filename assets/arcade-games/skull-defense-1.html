@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Skull Grove — Shooter</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Courier New',monospace;}
+body{background:#2a1b3d;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+canvas{background:linear-gradient(180deg,#3d2a5c,#1f1430);border-radius:16px;box-shadow:0 0 60px rgba(168,85,247,0.25), inset 0 0 40px rgba(0,0,0,0.5);border:4px solid #9333ea;max-width:100%;max-height:90vh;image-rendering:pixelated;}
+.ui{position:absolute;text-align:center;pointer-events:none;}
+.score{top:1rem;left:50%;transform:translateX(-50%);color:#e9d5ff;font-size:1.1rem;font-weight:bold;text-shadow:0 0 10px #a855f7;}
+.msg{bottom:9rem;left:50%;transform:translateX(-50%);color:#86efac;font-size:0.9rem;opacity:0;transition:opacity 0.5s;min-height:1.5rem;text-shadow:0 0 8px #22c55e;}
+.health{top:1rem;right:1rem;display:flex;gap:6px;}
+.heart{font-size:1.3rem;filter:drop-shadow(0 0 4px #22c55e);}
+.ctrl{position:absolute;bottom:1rem;width:100%;display:flex;justify-content:space-between;padding:0 1.5rem;pointer-events:auto;}
+.btn{width:75px;height:75px;border-radius:50%;background:linear-gradient(145deg,#7e22ce,#5b21b6);border:3px solid #c084fc;color:#e9d5ff;font-size:1.5rem;touch-action:manipulation;box-shadow:0 4px 15px rgba(124,58,237,0.4);}
+.btn-fire{background:linear-gradient(145deg,#f59e0b,#d97706);border-color:#fcd34d;box-shadow:0 4px 15px rgba(245,158,11,0.4);}
+</style>
+</head>
+<body>
+<canvas id="c" width="420" height="720"></canvas>
+<div class="ui score" id="score">GROWTH: 0 🌱💀</div>
+<div class="ui health" id="health"><span class="heart">💚</span><span class="heart">💚</span><span class="heart">💚</span></div>
+<div class="ui msg" id="msg">Rooted. Growing. Stronger.</div>
+<div class="ctrl">
+  <button class="btn" id="left">◀</button>
+  <button class="btn btn-fire" id="fire">🌿</button>
+  <button class="btn" id="right">▶</button>
+</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),S=document.getElementById('score'),M=document.getElementById('msg'),H=document.getElementById('health');
+let p={x:210,y:630,size:32,growth:0,speed:5.5},buds=[],threats=[],score=0,lives=3,keys={l:0,r:0},frame=0;
+document.getElementById('left').onpointerdown=()=>keys.l=1;document.getElementById('left').onpointerup=()=>keys.l=0;
+document.getElementById('right').onpointerdown=()=>keys.r=1;document.getElementById('right').onpointerup=()=>keys.r=0;
+document.getElementById('fire').onpointerdown=shoot;
+document.onkeydown=e=>{if(e.key==='ArrowLeft')keys.l=1;if(e.key==='ArrowRight')keys.r=1;if(e.key===' ')shoot();};
+document.onkeyup=e=>{if(e.key==='ArrowLeft')keys.l=0;if(e.key==='ArrowRight')keys.r=0;};
+function shoot(){buds.push({x:p.x,y:p.y-22,size:6+Math.random()*4,speed:-9,hue:110+Math.random()*30,wobble:Math.random()*Math.PI*2});}
+function spawnThreat(){const t=['blight','shadow','thorns'];threats.push({x:35+Math.random()*350,y:-35,w:28+Math.random()*22,h:28+Math.random()*22,speed:1.4+Math.random()*2.4,type:t[Math.floor(Math.random()*t.length)],rot:Math.random()*Math.PI*2,rotSp:(Math.random()-0.5)*0.06});}
+function msg(t){M.textContent=t;M.style.opacity='1';clearTimeout(window._mt);window._mt=setTimeout(()=>M.style.opacity='0',2500);}
+function updateHearts(){H.innerHTML='';for(let i=0;i<3;i++)H.innerHTML+=`<span class="heart">${i<lives?'💚':'🖤'}</span>`;}
+function drawSkullPlant(px,py,sz,gr){x.save();x.translate(px,py);x.shadowColor='#22c55e';x.shadowBlur=15+gr*2;x.strokeStyle='#4ade80';x.lineWidth=4;x.beginPath();x.moveTo(0,sz*0.55);x.quadraticCurveTo(-5,sz*0.15,0,-sz*0.05);x.stroke();x.fillStyle='#22c55e';x.beginPath();x.ellipse(-11,sz*0.35,12+gr,6,-0.6,0,Math.PI*2);x.fill();x.beginPath();x.ellipse(13,sz*0.28,10+gr,5,0.5,0,Math.PI*2);x.fill();x.fillStyle='#e8e5e0';x.beginPath();x.ellipse(0,0,sz*0.48,sz*0.52,0,0,Math.PI*2);x.fill();x.fillStyle='#1f1430';x.beginPath();x.ellipse(-sz*0.18,-sz*0.05,sz*0.12,sz*0.15,-0.1,0,Math.PI*2);x.fill();x.beginPath();x.ellipse(sz*0.18,-sz*0.05,sz*0.12,sz*0.15,0.1,0,Math.PI*2);x.fill();x.beginPath();x.moveTo(0,sz*0.1);x.lineTo(-sz*0.06,sz*0.18);x.lineTo(sz*0.06,sz*0.18);x.closePath();x.fill();x.fillStyle='#d4cfc8';for(let i=-2;i<=2;i++)x.fillRect(i*7-2,sz*0.22,4,5);x.fillStyle='#86efac';x.beginPath();x.moveTo(0,-sz*0.42);x.lineTo(-4,-sz*0.3);x.lineTo(4,-sz*0.3);x.closePath();x.fill();x.restore();}
+function loop(){frame++;keys.l&&(p.x-=p.speed);keys.r&&(p.x+=p.speed);p.x=Math.max(45,Math.min(375,p.x));buds=buds.filter(b=>{b.y+=b.speed;b.wobble+=0.1;return b.y>-20;});frame%28===0&&spawnThreat();threats=threats.filter(t=>{t.y+=t.speed;t.rot+=t.rotSp;for(let i=buds.length-1;i>=0;i--){const d=Math.hypot(buds[i].x-t.x,buds[i].y-t.y);if(d<(buds[i].size+t.w)/2){buds.splice(i,1);score+=15;S.textContent=`GROWTH: ${score} 🌱💀`;p.growth=Math.min(12,p.growth+0.3);const m=['Rooted. Growing.','Stronger every day.','This too shall pass.','You are resilient.','Growth > perfection.','Deep roots remain.'];msg(m[Math.floor(Math.random()*m.length)]);return false;}}const pd=Math.hypot(p.x-t.x,p.y-t.y);if(pd<(p.size+t.w)/2.2){lives--;updateHearts();if(lives<=0){setTimeout(()=>{alert(`GROWTH: ${score}\n\nRest doesn't mean failure.\nYou grow back stronger. 🌱💀`);lives=3;score=0;p.growth=0;buds=[];threats=[];updateHearts();S.textContent='GROWTH: 0 🌱💀';},300);}return false;}return t.y<780;});x.fillStyle='rgba(255,255,255,0.02)';x.fillRect(0,0,420,720);drawSkullPlant(p.x,p.y,p.size,p.growth);buds.forEach(b=>{x.save();x.translate(b.x+Math.sin(b.wobble)*1.5,b.y);x.fillStyle=`hsl(${b.hue},85%,60%)`;x.shadowColor=`hsl(${b.hue},90%,70%)`;x.shadowBlur=10;x.beginPath();x.ellipse(0,0,b.size*0.6,b.size,0,0,Math.PI*2);x.fill();x.restore();});const c={blight:'rgba(139,69,69,0.65)',shadow:'rgba(60,20,80,0.6)',thorns:'rgba(101,67,33,0.65)'};threats.forEach(t=>{x.save();x.translate(t.x,t.y);x.rotate(t.rot);x.fillStyle=c[t.type];x.shadowColor=t.type==='shadow'?'#4b0082':'#8b4513';x.shadowBlur=8;x.beginPath();const s=5+Math.floor(Math.random()*3);for(let i=0;i<s;i++){const a=(i/s)*Math.PI*2,r=t.w/2*(0.65+Math.sin(i*2.5+t.rot)*0.35);i===0?x.moveTo(Math.cos(a)*r,Math.sin(a)*r):x.lineTo(Math.cos(a)*r,Math.sin(a)*r);}x.closePath();x.fill();x.restore();});requestAnimationFrame(loop);}loop();
+</script>
+</body>
+</html>
