@@ -137,8 +137,10 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Doors & stairs.
       { id: "f_me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.687, y: 0.053, w: 0.085, h: 0.092, action: { kind: "node", node: "me_front" } },
       { id: "f_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.6, x: 0.728, y: 0.278, w: 0.096, h: 0.115, action: { kind: "node", node: "support" } },
-      // Directional signs → where they point.
-      { id: "f_reading", caption: "Reading & Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_shelf" } },
+      // Directional signs → where they point. The "← Reading / Writing →" sign
+      // is two targets now: Reading (top line) and Writing (bottom line).
+      { id: "f_reading", caption: "Reading", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_shelf" } },
+      { id: "f_writing", caption: "Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.295, w: 0.19, h: 0.048, action: { kind: "node", node: "writing_desk" } },
       { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.891, y: 0.256, w: 0.131, h: 0.049, action: { kind: "node", node: "right" } },
     ],
   },
@@ -463,8 +465,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "front",
     hotspots: [
       // The board — drinks (Cinnamon / Mojito / Golden). Each opens its recipe.
+      // The whole menu board = one tap → the drinks menu (rough box, re-tune).
+      { id: "cb_menu", caption: "The bar menu", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.4, x: 0.56, y: 0.21, w: 0.3, h: 0.11, action: { kind: "route", route: "/bar/menu" } },
       // Coordinates placed in-app and exported. Drink labels (cb_d1–3) removed —
-      // the menu board will become one tap (pending the menu screen).
+      // the menu board is now one tap (above).
       { id: "cb_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.017, y: 0.216, w: 0.104, h: 0.312, action: { kind: "node", node: "arcade" } },
       // SOS booth + fire exit = the urge flow.
       { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.32, x: 0.13, y: 0.265, w: 0.11, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
@@ -481,8 +485,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "cafebar",
     back: "front",
     hotspots: [
+      // The whole menu board = one tap → the drinks menu (rough box, re-tune).
+      { id: "cbr_menu", caption: "The bar menu", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.4, x: 0.0, y: 0.17, w: 0.36, h: 0.16, action: { kind: "route", route: "/bar/menu" } },
       // Coordinates placed in-app and exported. Drink + recs labels removed —
-      // the menu board will become one tap (pending the menu screen).
+      // the menu board is now one tap (above). The 0.0 menu also carries the
+      // recommendations, so the alcohol-free sign below is a second way to it.
       // The "Alcohol-free 0.0%" sign on the counter → the 0.0 recommendations.
       { id: "cbr_free", caption: "0.0 recommendations", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.28, y: 0.37, w: 0.13, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
       // SOS booth + fire exit = the urge flow.

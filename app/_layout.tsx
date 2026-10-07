@@ -107,6 +107,7 @@ function RootLayoutNav() {
         />
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="recipe/[id]" options={{ presentation: 'transparentModal', animation: 'fade' }} />
+        <Stack.Screen name="bar/menu" options={{ presentation: 'transparentModal', animation: 'fade' }} />
         <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="toolkit/c/[cat]" options={{ animation: 'slide_from_right' }} />
