@@ -139,7 +139,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "f_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.6, x: 0.728, y: 0.278, w: 0.096, h: 0.115, action: { kind: "node", node: "support" } },
       // Directional signs → where they point. The "← Reading / Writing →" sign
       // is two targets now: Reading (top line) and Writing (bottom line).
-      { id: "f_reading", caption: "Reading", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_shelf" } },
+      { id: "f_reading", caption: "Reading", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_room" } },
       { id: "f_writing", caption: "Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.295, w: 0.19, h: 0.048, action: { kind: "node", node: "writing_room" } },
       { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.891, y: 0.256, w: 0.131, h: 0.049, action: { kind: "node", node: "right" } },
     ],
@@ -191,11 +191,31 @@ export const HUB_NODES: Record<string, HubNode> = {
     ],
   },
 
-  // Reading close-up — zoom into the bookshelf from the café Reading Corner.
-  // Each pre-drawn book (title + emblem baked into the art) is an invisible tap
+  // The Reading Room — a cosy nook you walk into: armchair, lamp, bay window.
+  // The bookshelf opens the books close-up (the 9 categories). Fire exit + SOS
+  // box = the urge flow. No other door — back → the lobby. Rough boxes, tune.
+  reading_room: {
+    id: "reading_room",
+    title: "Reading Room",
+    image: require("../../assets/scenes/reading_room.png"),
+    imgW: 1024,
+    imgH: 1536,
+    fit: "screen",
+    back: "front",
+    hotspots: [
+      // The bookshelf → the books close-up.
+      { id: "re_shelf", caption: "The books", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.78, y: 0.13, w: 0.22, h: 0.52, action: { kind: "node", node: "reading_shelf" } },
+      // Fire exit + SOS box = the urge flow.
+      { id: "re_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.0, y: 0.19, w: 0.17, h: 0.44, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "re_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.17, y: 0.33, w: 0.1, h: 0.14, action: { kind: "route", route: "/session/urge", warn: true } },
+    ],
+  },
+
+  // Reading close-up — zoom into the bookshelf from the Reading Room. Each
+  // pre-drawn book (title + emblem baked into the art) is an invisible tap
   // target that opens its toolkit category. Books read left→right, top→bottom in
-  // the same order as the Reading Corner grid. Rough boxes — drag each onto its
-  // spine in the editor and export; the back arrow exits to the café.
+  // the same order as the shelf grid. Rough boxes — drag each onto its spine in
+  // the editor and export; the back arrow returns to the Reading Room.
   reading_shelf: {
     id: "reading_shelf",
     title: "Reading Corner",
@@ -203,7 +223,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    back: "front",
+    back: "reading_room",
     hotspots: [
       // Top shelf.
       { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.121, y: 0.101, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/in-the-moment" } },
