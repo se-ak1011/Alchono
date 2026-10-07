@@ -18,6 +18,14 @@ import { useHubStore } from "@/store/hubStore";
 const SCREEN_W = Dimensions.get("screen").width;
 const SCREEN_H = Dimensions.get("screen").height;
 
+// The world mirrors the real time of day: night art loads from 7pm to 7am, day
+// art the rest. A craving at 2am shouldn't land you on a sunlit porch — the
+// scene should be the one you're actually living in.
+const isNight = () => {
+  const h = new Date().getHours();
+  return h < 7 || h >= 19;
+};
+
 type Coords = { x: number; y: number; w: number; h: number };
 // The full set of things the in-app editor can override per hotspot.
 type Edits = Coords & {
@@ -766,7 +774,7 @@ export function AdventureHub() {
 
   const sceneInner = (
     <>
-      <Image source={node.image} style={imgStyle} resizeMode="cover" />
+      <Image source={isNight() && node.nightImage ? node.nightImage : node.image} style={imgStyle} resizeMode="cover" />
       {/* The painted glow layer, breathing 0→1→0 over the base so every object's
           glow pulses together. When present, glow hotspots draw no engine bloom.
           It sits below the hotspots (rendered next), so taps still reach them. */}

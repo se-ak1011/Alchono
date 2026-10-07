@@ -100,6 +100,10 @@ export type HubNode = {
    *  glows "breathe" together. When set, glow hotspots draw no engine bloom —
    *  the art carries the affordance. */
   glowImage?: ImageSourcePropType;
+  /** Optional night version of `image`, same composition + size (so hotspot
+   *  coordinates are shared). The engine loads it from 7pm–7am; falls back to
+   *  the day `image` when there's no night frame yet. */
+  nightImage?: ImageSourcePropType;
   imgW: number;
   imgH: number;
   fit: "tall" | "screen";
@@ -171,6 +175,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     id: "right",
     title: "Arcade & Café-Bar",
     image: require("../../assets/scenes/home_right.png"),
+    nightImage: require("../../assets/scenes/home_right_night.png"),
     imgW: 851,
     imgH: 1847,
     fit: "screen",
