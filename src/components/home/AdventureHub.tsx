@@ -108,6 +108,11 @@ function Bloom({
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
+  // Smart back: the trail of rooms you came through (via doors, not pans). Back
+  // pops it, so you always return to wherever you actually came from — even for
+  // a room with several doors. Falls back to the node's static `back` when the
+  // trail is empty (e.g. a fresh cross-scene jump).
+  const [history, setHistory] = useState<string[]>([]);
   const [caption, setCaption] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [overrides, setOverrides] = useState<Record<string, Edits>>({});
@@ -175,12 +180,17 @@ export function AdventureHub() {
       if (pending && HUB_NODES[pending]) {
         setNodeId(pending);
         setCaption(null);
+        // A deliberate cross-scene jump starts a fresh back-trail.
+        setHistory([]);
       }
       useHubStore.getState().setPendingNode(null);
     }, []),
   );
 
-  const navigateNode = (next: string) => {
+  // `push` records the current room on the back-trail (true for doors, false for
+  // pans and for Back itself, which is unwinding the trail).
+  const navigateNode = (next: string, push = false) => {
+    if (push) setHistory((h) => [...h, nodeId]);
     Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
       setNodeId(next);
       setCaption(null);
@@ -188,9 +198,20 @@ export function AdventureHub() {
     });
   };
 
+  // Back: unwind the trail to the room you came from; fall back to static `back`.
+  const goBack = () => {
+    if (history.length) {
+      const prev = history[history.length - 1];
+      setHistory((h) => h.slice(0, -1));
+      navigateNode(prev, false);
+    } else if (node.back) {
+      navigateNode(node.back, false);
+    }
+  };
+
   const runAction = (action: HubAction, haptic?: Haptic) => {
     if (action.kind === "node") {
-      navigateNode(action.node);
+      navigateNode(action.node, true);
       return;
     }
     if (action.warn) {
@@ -683,7 +704,8 @@ export function AdventureHub() {
         onPressOut={clearCaptionSoon}
         onPress={() => {
           showCaption(cap);
-          navigateNode(target);
+          if (dir === "back") goBack();
+          else navigateNode(target);
         }}
         hitSlop={12}
         style={{
@@ -754,7 +776,7 @@ export function AdventureHub() {
       {editMode ? renderEditBoxes() : renderHotspots()}
       {!editMode && node.left ? turnArrow("left", node.left) : null}
       {!editMode && node.right ? turnArrow("right", node.right) : null}
-      {!editMode && node.back ? turnArrow("back", node.back) : null}
+      {!editMode && (history.length > 0 || node.back) ? turnArrow("back", node.back ?? "") : null}
     </>
   );
 

@@ -265,10 +265,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Fire exit + SOS box = the urge flow.
       { id: "wr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.19, h: 0.4, action: { kind: "route", route: "/session/urge", warn: true } },
       { id: "wr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.44, y: 0.28, w: 0.1, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
-      // The Support door → the support room.
+      // The Support door → the support room. (The window is just a window.)
       { id: "wr_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.87, y: 0.3, w: 0.13, h: 0.4, action: { kind: "node", node: "support" } },
-      // The window onto the garden → Outside.
-      { id: "wr_window", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.4, x: 0.22, y: 0.17, w: 0.22, h: 0.26, action: { kind: "node", node: "outside" } },
     ],
   },
 
