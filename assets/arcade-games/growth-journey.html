@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Skull Path</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;image-rendering:pixelated;font-family:monospace;}
+body{background:#1f1430;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+canvas{background:#3d2a5c;border:4px solid #7e22ce;border-radius:8px;box-shadow:0 0 30px rgba(168,85,247,0.25);max-width:100%;max-height:90vh;}
+.ui{position:absolute;color:#e9d5ff;font-size:14px;pointer-events:none;}
+.txt{bottom:70px;left:10px;right:10px;background:rgba(31,20,48,0.85);border:2px solid #9333ea;padding:8px;border-radius:4px;min-height:40px;opacity:0;transition:opacity 0.3s;}
+.ctrl{position:absolute;bottom:8px;width:100%;display:flex;justify-content:space-between;padding:0 8px;pointer-events:auto;}
+.dpad{display:grid;grid-template:"ul ur" 1fr "bl br" 1fr;gap:4px;}
+.dpad button{width:50px;height:50px;background:#5b21b6;border:2px solid #c084fc;color:#e9d5ff;font-size:18px;border-radius:4px;}
+.btns{display:flex;gap:8px;}
+.btns button{width:50px;height:50px;border-radius:50%;border:none;font-weight:bold;}
+.a{background:#22c55e;color:#0f1a0f;border:2px solid #86efac;}
+.b{background:#f59e0b;color:#1f1430;border:2px solid #fcd34d;}
+</style>
+</head>
+<body>
+<canvas id="c" width="320" height="480"></canvas>
+<div class="ui txt" id="txt"></div>
+<div class="ctrl">
+  <div class="dpad">
+    <button id="ul" style="grid-area:ul">◀</button>
+    <button id="ur" style="grid-area:ur">▶</button>
+    <button id="ud" style="grid-area:bl">▼</button>
+    <button id="uu" style="grid-area:br">▲</button>
+  </div>
+  <div class="btns">
+    <button class="b" id="btnb">B</button>
+    <button class="a" id="btna">A</button>
+  </div>
+</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),T=document.getElementById('txt');
+
+let p={x:160,y:240,spd:2},energy=100,msgTimer=0;
+
+// Map: 0=path, 1=marker, 2=wall/tree
+const map=[
+  [2,2,2,2,2,2,2,2],
+  [2,0,0,1,0,0,1,2],
+  [2,0,0,0,0,0,0,2],
+  [2,1,0,0,0,0,0,2],
+  [2,0,0,0,0,1,0,2],
+  [2,0,0,0,0,0,0,2],
+  [2,1,0,0,0,0,1,2],
+  [2,2,2,2,2,2,2,2]
+];
+
+const tx=px=>Math.floor(px/40), ty=py=>Math.floor(py/40);
+const msgs=[
+  'You are still growing. 🌱',
+  'Rest is part of healing. 💤',
+  'Progress > perfection. 💀',
+  'Every step counts. ✨',
+  'Deep roots take time. 🌿',
+  'You are worth the effort. 💜'
+];
+
+function show(m){
+  T.textContent=m;T.style.opacity='1';msgTimer=100;
+}
+function hide(){T.style.opacity='0';}
+
+// Movement
+function move(dx,dy){
+  const nx=p.x+dx*p.spd, ny=p.y+dy*p.spd;
+  if(map[ty(ny)][tx(nx)]!==2){
+    p.x=nx; p.y=ny; energy-=0.05;
+  }
+  if(map[ty(p.y)][tx(p.x)]===1){
+    map[ty(p.y)][tx(p.x)]=0;
+    show(msgs[Math.floor(Math.random()*msgs.length)]);
+    energy=Math.min(100,energy+15);
+  }
+}
+
+// Keyboard
+document.onkeydown=e=>{
+  if(e.key==='ArrowUp')move(0,-1);
+  if(e.key==='ArrowDown')move(0,1);
+  if(e.key==='ArrowLeft')move(-1,0);
+  if(e.key==='ArrowRight')move(1,0);
+  if(e.key===' '||e.key==='z')show('Breathe deep. You are here.');
+  if(e.key==='x')energy=Math.min(100,energy+8);
+};
+
+// Touch controls
+const btn=(id,dx,dy)=>{
+  const b=document.getElementById(id);
+  b.onpointerdown=()=>move(dx,dy);
+};
+btn('uu',0,-1);btn('ud',0,1);btn('ul',-1,0);btn('ur',1,0);
+document.getElementById('btna').onpointerdown=()=>show('You are enough exactly as you are. 💜');
+document.getElementById('btnb').onpointerdown=()=>energy=Math.min(100,energy+10);
+
+// Draw skull player
+function drawPlayer(){
+  x.save();x.translate(p.x,p.y);
+  x.fillStyle='#e8e5e0';x.shadowColor='#a855f7';x.shadowBlur=6;
+  x.beginPath();x.ellipse(0,0,12,14,0,0,Math.PI*2);x.fill();
+  x.fillStyle='#1f1430';
+  x.beginPath();x.ellipse(-5,-3,3,4,0,0,Math.PI*2);x.fill();
+  x.beginPath();x.ellipse(5,-3,3,4,0,0,Math.PI*2);x.fill();
+  x.fillStyle='#4ade80';
+  x.beginPath();x.ellipse(-8,6,6,3,-0.5,0,Math.PI*2);x.fill();
+  x.beginPath();x.ellipse(9,4,5,2.5,0.4,0,Math.PI*2);x.fill();
+  x.restore();
+}
+
+function loop(){
+  msgTimer-->0||hide();
+
+  // Background
+  x.fillStyle='#3d2a5c';x.fillRect(0,0,320,480);
+
+  // Map tiles
+  for(let y=0;y<8;y++){
+    for(let cx=0;cx<8;cx++){
+      const t=map[y][cx];
+      if(t===2){
+        x.fillStyle='#2a1b3d';
+        x.fillRect(cx*40,y*40,40,40);
+        x.fillStyle='#5b21b6';
+        x.fillRect(cx*40+2,y*40+2,36,36);
+      }
+      if(t===1){
+        x.fillStyle='#fcd34d';x.shadowColor='#fbbf24';x.shadowBlur=4;
+        x.beginPath();x.arc(cx*40+20,y*40+20,10,0,Math.PI*2);x.fill();
+        x.shadowBlur=0;
+      }
+    }
+  }
+
+  // Player
+  drawPlayer();
+
+  // Energy bar
+  x.fillStyle='#2a1b3d';x.fillRect(10,455,300,10);
+  x.fillStyle='#22c55e';
+  x.fillRect(10,455,Math.max(0,energy)/100*300,10);
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
