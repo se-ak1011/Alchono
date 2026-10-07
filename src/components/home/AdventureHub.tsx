@@ -9,12 +9,14 @@ import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
 
-// Captured at module load — on Android this reads the FULL screen height
-// (before the nav-bar inset is applied post-layout), which is what lets the
-// scene cover the whole display. Reading it later via useWindowDimensions gave
-// the shorter post-inset window, which clipped the art — so we keep this.
-const SCREEN_W = Dimensions.get("window").width;
-const SCREEN_H = Dimensions.get("window").height;
+// Full PHYSICAL display size — "screen", NOT "window". The window can shrink to
+// exclude the Android nav bar (and when edge-to-edge gets switched on by a newer
+// Android / a display setting, it does). A short window makes cover-fit draw
+// every scene into a box shorter than the display and clip the top. "screen" is
+// the whole display, so the art always covers it ceiling-to-floor; cover then
+// shaves a sliver off the sides (invisible) instead of clipping the ceiling.
+const SCREEN_W = Dimensions.get("screen").width;
+const SCREEN_H = Dimensions.get("screen").height;
 
 type Coords = { x: number; y: number; w: number; h: number };
 // The full set of things the in-app editor can override per hotspot.

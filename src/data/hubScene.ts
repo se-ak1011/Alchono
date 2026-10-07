@@ -128,23 +128,18 @@ export const HUB_NODES: Record<string, HubNode> = {
     // drag each onto its object in the in-app editor and export. See
     // docs/adventure-hub.md.
     hotspots: [
-      // The SOS "Let's Talk" booth on the desk = the urge flow. The one tap that
-      // must never be missed (it also appears in both side views).
-      { id: "f_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.29, y: 0.53, w: 0.19, h: 0.17, action: { kind: "route", route: "/session/urge", warn: true } },
-
-      // Reception counter objects (phone / bell / ledger).
-      { id: "f_phone", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.0, y: 0.41, w: 0.15, h: 0.06, action: { kind: "route", route: "/messages" } },
-      { id: "f_bell", caption: "Check in", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.6, x: 0.17, y: 0.44, w: 0.08, h: 0.05, action: { kind: "route", route: "/checkin" } },
-      { id: "f_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.0, y: 0.47, w: 0.16, h: 0.06, action: { kind: "route", route: "/session/track" } },
-
+      // Coordinates placed in-app and exported. (f_bell removed in the editor.)
+      // The SOS "Let's Talk" booth = the urge flow.
+      { id: "f_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.47, x: 0.302, y: 0.528, w: 0.155, h: 0.176, action: { kind: "route", route: "/session/urge", warn: true } },
+      // Reception counter objects (phone / ledger).
+      { id: "f_phone", caption: "Your people", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.6, x: 0.103, y: 0.405, w: 0.082, h: 0.04, action: { kind: "route", route: "/messages" } },
+      { id: "f_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: -0.006, y: 0.466, w: 0.211, h: 0.031, action: { kind: "route", route: "/session/track" } },
       // Doors & stairs.
-      { id: "f_me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.655, y: 0.05, w: 0.11, h: 0.07, action: { kind: "node", node: "me_front" } },
-      { id: "f_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.6, x: 0.70, y: 0.27, w: 0.11, h: 0.18, action: { kind: "node", node: "support" } },
-
-      // Directional signs → where they point. Reading/Writing down the left
-      // corridor; Café-Bar/Arcade is the right view (pan right).
-      { id: "f_reading", caption: "Reading & Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.14, h: 0.06, action: { kind: "node", node: "reading_shelf" } },
-      { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.87, y: 0.26, w: 0.13, h: 0.09, action: { kind: "node", node: "right" } },
+      { id: "f_me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.687, y: 0.053, w: 0.085, h: 0.092, action: { kind: "node", node: "me_front" } },
+      { id: "f_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.6, x: 0.728, y: 0.278, w: 0.096, h: 0.115, action: { kind: "node", node: "support" } },
+      // Directional signs → where they point.
+      { id: "f_reading", caption: "Reading & Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_shelf" } },
+      { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.891, y: 0.256, w: 0.131, h: 0.049, action: { kind: "node", node: "right" } },
     ],
   },
 
@@ -159,19 +154,15 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "front",
     back: "front",
     hotspots: [
-      // The fire exit = the urge flow (it takes you outside). The SOS booth is
-      // the same reach — help is one tap from every view.
-      { id: "l_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.6, x: 0.06, y: 0.17, w: 0.24, h: 0.46, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.34, y: 0.25, w: 0.13, h: 0.19, action: { kind: "route", route: "/session/urge", warn: true } },
+      // Coordinates placed in-app and exported. (l_keys + l_bell removed.)
+      // Fire exit + SOS booth = the urge flow.
+      { id: "l_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.3, x: 0.091, y: 0.187, w: 0.208, h: 0.318, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.342, y: 0.21, w: 0.13, h: 0.19, action: { kind: "route", route: "/session/urge", warn: true } },
       // The Reception door → the grounds (the other apps).
-      { id: "l_reception", caption: "Reception — the grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.58, y: 0.19, w: 0.21, h: 0.43, action: { kind: "node", node: "reception" } },
-      // Keys on the hook → DESTINATION TBC. Parked on Settings for now — tell me
-      // where you want the keys to go.
-      { id: "l_keys", caption: "Keys", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.55, x: 0.84, y: 0.27, w: 0.09, h: 0.12, action: { kind: "route", route: "/settings" } },
-      // The counter shows here too (phone / bell / ledger).
-      { id: "l_phone", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.86, y: 0.43, w: 0.14, h: 0.08, action: { kind: "route", route: "/messages" } },
-      { id: "l_bell", caption: "Check in", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.6, x: 0.80, y: 0.47, w: 0.07, h: 0.05, action: { kind: "route", route: "/checkin" } },
-      { id: "l_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.74, y: 0.50, w: 0.20, h: 0.06, action: { kind: "route", route: "/session/track" } },
+      { id: "l_reception", caption: "Reception — the grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.625, y: 0.221, w: 0.16, h: 0.203, action: { kind: "node", node: "reception" } },
+      // The counter shows here too (phone / ledger).
+      { id: "l_phone", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.879, y: 0.419, w: 0.138, h: 0.045, action: { kind: "route", route: "/messages" } },
+      { id: "l_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.813, y: 0.491, w: 0.249, h: 0.04, action: { kind: "route", route: "/session/track" } },
     ],
   },
   right: {
@@ -185,15 +176,16 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "front",
     back: "front",
     hotspots: [
+      // Coordinates placed in-app and exported.
       // Fire exit + SOS booth = the urge flow (reachable from every view).
-      { id: "rt_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.6, x: 0.26, y: 0.19, w: 0.22, h: 0.46, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "rt_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.17, y: 0.26, w: 0.12, h: 0.18, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "rt_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.295, y: 0.202, w: 0.156, h: 0.254, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "rt_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.27, x: 0.189, y: 0.206, w: 0.213, h: 0.261, action: { kind: "route", route: "/session/urge", warn: true } },
       // The Arcade door (machines visible through it).
-      { id: "rt_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.50, y: 0.22, w: 0.23, h: 0.43, action: { kind: "node", node: "arcade" } },
+      { id: "rt_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.574, y: 0.217, w: 0.168, h: 0.235, action: { kind: "node", node: "arcade" } },
       // The Café-Bar glass doors.
-      { id: "rt_cafebar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.74, y: 0.16, w: 0.25, h: 0.49, action: { kind: "node", node: "cafebar" } },
+      { id: "rt_cafebar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.811, y: 0.203, w: 0.172, h: 0.263, action: { kind: "node", node: "cafebar" } },
       // The window onto the garden → Outside (that scene's still being redrawn).
-      { id: "rt_window", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.5, x: 0.0, y: 0.06, w: 0.17, h: 0.56, action: { kind: "node", node: "outside" } },
+      { id: "rt_window", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.45, x: 0.011, y: 0.151, w: 0.15, h: 0.356, action: { kind: "node", node: "outside" } },
     ],
   },
 
