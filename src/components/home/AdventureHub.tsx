@@ -99,10 +99,16 @@ function Bloom({
  */
 export function AdventureHub() {
   const router = useRouter();
-  // The live window size (reactive — updates on rotation / insets settling).
-  // The scene is drawn to exactly this, same as the rest of the app, so the
-  // art fills the screen without the zoom a measured-container size caused.
-  const { width: W, height: H } = useWindowDimensions();
+  // The live window size — the fallback until the scene container is measured.
+  const { width: winW, height: winH } = useWindowDimensions();
+  // The scene container's REAL size (onLayout). With edge-to-edge the home root
+  // spans the full screen (behind the nav bar) but the window size excludes it,
+  // so sizing the art to the window left it short — black strip at the bottom and
+  // a cover-crop that clipped the ceiling. We size the art to this container and
+  // build the hotspot geometry from the same number, so both match the real area.
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  const W = size?.w ?? winW;
+  const H = size?.h ?? winH;
   const [nodeId, setNodeId] = useState(HUB_START);
   const [caption, setCaption] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -731,11 +737,12 @@ export function AdventureHub() {
     .join("\n") +
     (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "");
 
-  // Screen-fit: draw the image at exactly the window size and let cover crop.
-  // Same sizing the rest of the app uses, so it's a clean full-screen swap and
-  // the hotspot geometry (built from the same W/H) stays aligned.
+  // Screen-fit: fill the container 100% (NOT right/bottom:0 — that left the
+  // Image without a resolved size and made it zoom). Explicit 100%/100% sizes
+  // it to the real drawn area, so it reaches every edge with no black strip,
+  // and cover-fit's crop is tiny because the art matches the screen aspect.
   const imgStyle: ImageStyle = isScreenFit
-    ? { position: "absolute", left: 0, top: 0, width: W, height: H }
+    ? { position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }
     : { width: W, height: dispH };
 
   const sceneInner = (
@@ -758,7 +765,15 @@ export function AdventureHub() {
     <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
       <Animated.View style={{ flex: 1, opacity: fade }}>
         {isScreenFit ? (
-          <View style={{ flex: 1 }}>{sceneInner}</View>
+          <View
+            style={{ flex: 1 }}
+            onLayout={(e) => {
+              const { width, height } = e.nativeEvent.layout;
+              setSize((s) => (s && s.w === width && s.h === height ? s : { w: width, h: height }));
+            }}
+          >
+            {sceneInner}
+          </View>
         ) : (
           <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
             <View style={{ width: W, height: dispH, position: "relative" }}>{sceneInner}</View>
