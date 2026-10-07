@@ -290,63 +290,50 @@ export const HUB_NODES: Record<string, HubNode> = {
     ],
   },
 
-  // The Arcade — its own little room, entered from the café's arcade cabinet.
-  // Each cabinet screen plays its game (a live inlay) and a tap launches it.
-  // Turn arrows look around; the back arrow exits to the café.
+  // The Arcade — a front + right room, entered from the home-right "Arcade" door
+  // (and from the Café-Bar). Each device runs one of Marta's purpose-built games
+  // in a WebView cabinet (/arcade/<slug>). Fire exit + SOS = the urge flow; the
+  // Bar door (right view) connects straight to the Café-Bar. Rough boxes — drag
+  // each onto its device/door in the editor and export.
   arcade: {
     id: "arcade",
     title: "The Arcade",
     image: require("../../assets/scenes/arcade_front.png"),
-    imgW: 941,
-    imgH: 1671,
+    imgW: 851,
+    imgH: 1847,
     fit: "screen",
-    left: "arcade_left",
     right: "arcade_right",
-    // Back → the right corridor you entered from (home-right), not the lobby.
     back: "right",
     hotspots: [
-      // Rough boxes — drag each onto its cabinet screen in the editor, export.
-      { id: "a_memory", caption: "Memory Match", kind: "board", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.19, y: 0.301, w: 0.119, h: 0.068, action: { kind: "route", route: "/session/memory-match", returnNode: "arcade" } },
-      { id: "a_pattern", caption: "Pattern", kind: "board", interaction: "object", inlay: "arcade_pattern", glowMax: 0.6, x: 0.39, y: 0.3, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/simon", returnNode: "arcade" } },
-      { id: "a_odd", caption: "Odd One Out", kind: "board", interaction: "object", inlay: "arcade", glowMax: 0.6, x: 0.587, y: 0.299, w: 0.117, h: 0.066, action: { kind: "route", route: "/session/odd-one-out", returnNode: "arcade" } },
-      { id: "a_colour", caption: "Colour Match", kind: "board", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 12, rotateY: -36, rotateX: 14, x: 0.858, y: 0.315, w: 0.118, h: 0.066, action: { kind: "route", route: "/session/stroop", returnNode: "arcade" } },
-      // Word Search runs on the retro computer on the desk.
-      { id: "a_word", caption: "Word Search", kind: "board", interaction: "object", inlay: "arcade_word", glowMax: 0.6, rotate: 3, x: 0.346, y: 0.428, w: 0.083, h: 0.033, action: { kind: "route", route: "/session/word-search", returnNode: "arcade" } },
-    ],
-  },
-  arcade_left: {
-    id: "arcade_left",
-    title: "The Arcade",
-    image: require("../../assets/scenes/arcade_left.png"),
-    imgW: 941,
-    imgH: 1670,
-    fit: "screen",
-    right: "arcade",
-    back: "right",
-    hotspots: [
-      // The left door → the Bar (the arcade sits by the bar on the café view).
-      // Destination changed from Support; the chalk sign is relabelled on screen.
-      { id: "al_bar", caption: "The Bar", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.65, x: 0.132, y: 0.334, w: 0.254, h: 0.21, action: { kind: "node", node: "cafebar" } },
-      // Chalk sign on the door (added in-app) — relabel to "Bar" in the editor.
-      { id: "al_lbl_support", caption: "Cafe Bar", kind: "label", label: "CAFE-BAR", labelSize: 24, rotate: 14, rotateY: 18, rotateX: 12, x: 0.074, y: 0.181, w: 0.2, h: 0.08 },
+      // The two cabinets → the shooters.
+      { id: "a_cab1", caption: "Skull Grove", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.26, w: 0.16, h: 0.17, action: { kind: "route", route: "/arcade/skull-grove" } },
+      { id: "a_cab2", caption: "Growth Shield", kind: "glow", tint: "purple", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.28, y: 0.26, w: 0.16, h: 0.17, action: { kind: "route", route: "/arcade/growth-shield" } },
+      // The Game Boy on the table (far left) → Skull Path.
+      { id: "a_gameboy", caption: "Skull Path", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.0, y: 0.4, w: 0.1, h: 0.08, action: { kind: "route", route: "/arcade/skull-path" } },
+      // The CRT + console (far right) → Skull Haven (also reachable in the right view).
+      { id: "a_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.87, y: 0.37, w: 0.13, h: 0.1, action: { kind: "route", route: "/arcade/skull-haven" } },
+      // Fire exit + SOS booth = the urge flow.
+      { id: "a_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.16, h: 0.4, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "a_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.78, y: 0.23, w: 0.12, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
   arcade_right: {
     id: "arcade_right",
     title: "The Arcade",
     image: require("../../assets/scenes/arcade_right.png"),
-    imgW: 941,
-    imgH: 1672,
+    imgW: 851,
+    imgH: 1847,
     fit: "screen",
     left: "arcade",
     back: "right",
     hotspots: [
-      // Colour Match seen from the side, tilted onto the angled cabinet.
-      { id: "ar_colour", caption: "Colour Match", kind: "board", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 25, rotateY: -22, rotateX: 44, x: 0.174, y: 0.412, w: 0.088, h: 0.05, action: { kind: "route", route: "/session/stroop", returnNode: "arcade" } },
-      // The door → Tonight (drink-tracking): the right-side "way out".
-      { id: "ar_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowMax: 0.6, x: 0.771, y: 0.433, w: 0.109, h: 0.087, action: { kind: "route", route: "/session/track" } },
-      // The retro phone → Resources (same as the café landline).
-      { id: "ar_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.7, x: 0.424, y: 0.41, w: 0.13, h: 0.083, action: { kind: "route", route: "/resources/arcade" } },
+      // The CRT + PS2 (centre) → Skull Haven.
+      { id: "ar_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.43, y: 0.36, w: 0.19, h: 0.12, action: { kind: "route", route: "/arcade/skull-haven" } },
+      // Fire exit + SOS booth = the urge flow.
+      { id: "ar_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.08, y: 0.18, w: 0.16, h: 0.42, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "ar_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.28, y: 0.24, w: 0.12, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
+      // The Bar door (right) → the Café-Bar (arcade ↔ bar connection).
+      { id: "ar_bar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.78, y: 0.18, w: 0.2, h: 0.5, action: { kind: "node", node: "cafebar" } },
     ],
   },
 
