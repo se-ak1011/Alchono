@@ -140,7 +140,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Directional signs → where they point. The "← Reading / Writing →" sign
       // is two targets now: Reading (top line) and Writing (bottom line).
       { id: "f_reading", caption: "Reading", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_shelf" } },
-      { id: "f_writing", caption: "Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.295, w: 0.19, h: 0.048, action: { kind: "node", node: "writing_desk" } },
+      { id: "f_writing", caption: "Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.295, w: 0.19, h: 0.048, action: { kind: "node", node: "writing_room" } },
       { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.891, y: 0.256, w: 0.131, h: 0.049, action: { kind: "node", node: "right" } },
     ],
   },
@@ -230,7 +230,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1848,
     fit: "screen",
-    back: "front",
+    // Back → the Writing Room you're sitting in (not all the way home).
+    back: "writing_room",
     hotspots: [
       // The open notebook → write a note.
       { id: "wd_note", caption: "A note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.144, y: 0.607, w: 0.62, h: 0.17, action: { kind: "route", route: "/journal/write" } },
@@ -242,6 +243,32 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.658, y: 0.375, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
       // Drink safety-valve, present in every room (easy to move or delete in-app).
       { id: "wd_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 20, interaction: "object", haptic: "heavy", x: 0.28, y: 0.8, w: 0.44, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+    ],
+  },
+
+  // The Writing Room — you walk in and sit to write. The desk opens the writing
+  // close-up (note / voice / letters / your notes). Fire exit + SOS box = the
+  // urge flow; the Support door and the garden window stitch it into the
+  // building. Entered from the home-front "Writing" sign; back → the lobby.
+  // Rough boxes — tune in the editor and export.
+  writing_room: {
+    id: "writing_room",
+    title: "Writing Room",
+    image: require("../../assets/scenes/writing_room.png"),
+    imgW: 1024,
+    imgH: 1536,
+    fit: "screen",
+    back: "front",
+    hotspots: [
+      // The desk → the writing close-up.
+      { id: "wr_desk", caption: "Sit and write", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.0, y: 0.52, w: 0.5, h: 0.3, action: { kind: "node", node: "writing_desk" } },
+      // Fire exit + SOS box = the urge flow.
+      { id: "wr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.19, h: 0.4, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "wr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.44, y: 0.28, w: 0.1, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
+      // The Support door → the support room.
+      { id: "wr_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.87, y: 0.3, w: 0.13, h: 0.4, action: { kind: "node", node: "support" } },
+      // The window onto the garden → Outside.
+      { id: "wr_window", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.4, x: 0.22, y: 0.17, w: 0.22, h: 0.26, action: { kind: "node", node: "outside" } },
     ],
   },
 
@@ -257,7 +284,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     left: "arcade_left",
     right: "arcade_right",
-    back: "front",
+    // Back → the right corridor you entered from (home-right), not the lobby.
+    back: "right",
     hotspots: [
       // Rough boxes — drag each onto its cabinet screen in the editor, export.
       { id: "a_memory", caption: "Memory Match", kind: "board", interaction: "object", inlay: "arcade_memory", glowMax: 0.6, x: 0.19, y: 0.301, w: 0.119, h: 0.068, action: { kind: "route", route: "/session/memory-match", returnNode: "arcade" } },
@@ -276,7 +304,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgH: 1670,
     fit: "screen",
     right: "arcade",
-    back: "front",
+    back: "right",
     hotspots: [
       // The left door → the Bar (the arcade sits by the bar on the café view).
       // Destination changed from Support; the chalk sign is relabelled on screen.
@@ -293,7 +321,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgH: 1672,
     fit: "screen",
     left: "arcade",
-    back: "front",
+    back: "right",
     hotspots: [
       // Colour Match seen from the side, tilted onto the angled cabinet.
       { id: "ar_colour", caption: "Colour Match", kind: "board", interaction: "object", inlay: "arcade_colour", glowMax: 0.6, rotate: 25, rotateY: -22, rotateX: 44, x: 0.174, y: 0.412, w: 0.088, h: 0.05, action: { kind: "route", route: "/session/stroop", returnNode: "arcade" } },
@@ -462,7 +490,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgH: 1875,
     fit: "screen",
     right: "cafebar_right",
-    back: "front",
+    // Back → the right corridor you entered from (home-right), not the lobby.
+    back: "right",
     hotspots: [
       // The board — drinks (Cinnamon / Mojito / Golden). Each opens its recipe.
       // The whole menu board = one tap → the drinks menu (rough box, re-tune).
@@ -483,7 +512,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgH: 1847,
     fit: "screen",
     left: "cafebar",
-    back: "front",
+    back: "right",
     hotspots: [
       // The whole menu board = one tap → the drinks menu (rough box, re-tune).
       { id: "cbr_menu", caption: "The bar menu", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.4, x: 0.0, y: 0.17, w: 0.36, h: 0.16, action: { kind: "route", route: "/bar/menu" } },
