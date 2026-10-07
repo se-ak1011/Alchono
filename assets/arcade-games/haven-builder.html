@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Skull Haven</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1f1430;overflow:hidden;}
+canvas{width:100vw;height:100vh;display:block;}
+.ui{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#e9d5ff;text-align:center;pointer-events:none;font-family:'Courier New',monospace;text-shadow:0 0 8px #a855f7;}
+.ctrl{position:absolute;bottom:80px;width:100%;display:flex;justify-content:space-between;padding:0 20px;pointer-events:auto;}
+.btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#5b21b6,#3b0764);border:3px solid #c084fc;color:#e9d5ff;font-size:20px;touch-action:manipulation;box-shadow:0 4px 15px rgba(124,58,237,0.3);}
+.act{width:110px;height:55px;border-radius:30px;background:linear-gradient(145deg,#22c55e,#15803d);border:2px solid #86efac;color:#e9d5ff;font-size:14px;font-weight:bold;touch-action:manipulation;box-shadow:0 4px 15px rgba(34,197,94,0.3);}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="ui">
+  <div id="state">Build your quiet place 💀🌱</div>
+</div>
+<div class="ctrl">
+  <button class="btn" id="l">◀</button>
+  <button class="act" id="plant">🌱 Grow</button>
+  <button class="btn" id="r">▶</button>
+</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),S=document.getElementById('state');
+function resize(){c.width=c.clientWidth*2;c.height=c.clientHeight*2;}
+resize();window.onresize=resize;
+
+let p={x:c.width/2,y:c.height/2+80,angle:0},garden=[],keys={l:0,r:0};
+
+function addPlant(){
+  garden.push({
+    x:p.x+(Math.random()-0.5)*80,
+    y:p.y+(Math.random()-0.5)*50,
+    size:0,
+    maxSize:0.6+Math.random()*0.6,
+    growth:0.004+Math.random()*0.004,
+    type:Math.random()<0.3?'skull':'leaf'
+  });
+  S.textContent='Growing... take your time 💀🌿';
+}
+
+// Input
+document.getElementById('l').onpointerdown=()=>keys.l=1;
+document.getElementById('l').onpointerup=document.getElementById('l').onpointerleave=()=>keys.l=0;
+document.getElementById('r').onpointerdown=()=>keys.r=1;
+document.getElementById('r').onpointerup=document.getElementById('r').onpointerleave=()=>keys.r=0;
+document.getElementById('plant').onpointerdown=addPlant;
+document.onkeydown=e=>{
+  if(e.key==='ArrowLeft')keys.l=1;
+  if(e.key==='ArrowRight')keys.r=1;
+  if(e.key===' '||e.key==='Enter')addPlant();
+};
+document.onkeyup=e=>{
+  if(e.key==='ArrowLeft')keys.l=0;
+  if(e.key==='ArrowRight')keys.r=0;
+};
+
+function drawSkullFlower(px,py,scale){
+  x.save();x.translate(px,py);x.scale(scale,scale);
+  x.shadowColor='#a855f7';x.shadowBlur=12;
+
+  // Stem
+  x.strokeStyle='#4ade80';x.lineWidth=5;
+  x.beginPath();
+  x.moveTo(0,35);
+  x.quadraticCurveTo(-6,15,0,-5);
+  x.stroke();
+
+  // Leaves
+  x.fillStyle='#22c55e';
+  x.beginPath();
+  x.ellipse(-14,25,16,8,-0.6,0,Math.PI*2);x.fill();
+  x.beginPath();
+  x.ellipse(16,20,14,7,0.5,0,Math.PI*2);x.fill();
+
+  // Skull bloom
+  x.fillStyle='#e8e5e0';
+  x.beginPath();
+  x.ellipse(0,-15,22,25,0,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#1f1430';
+  x.beginPath();
+  x.ellipse(-10,-18,6,9,-0.1,0,Math.PI*2);x.fill();
+  x.beginPath();
+  x.ellipse(10,-18,6,9,0.1,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#fbbf24';
+  x.beginPath();
+  x.arc(0,-10,3,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#d4cfc8';
+  for(let i=-2;i<=2;i++)x.fillRect(i*6-2,2,4,5);
+
+  x.restore();
+}
+
+function loop(){
+  // Move
+  keys.l&&(p.angle-=0.04);
+  keys.r&&(p.angle+=0.04);
+  p.x+=Math.sin(p.angle)*2.2;
+  p.y+=Math.cos(p.angle)*1.2;
+  p.x=Math.max(100,Math.min(c.width-100,p.x));
+  p.y=Math.max(120,Math.min(c.height-80,p.y));
+
+  // Grow plants
+  garden.forEach(g=>{if(g.size<g.maxSize)g.size+=g.growth;});
+
+  // Sky gradient
+  const sky=x.createLinearGradient(0,0,0,c.height/2);
+  sky.addColorStop(0,'#2a1b3d');
+  sky.addColorStop(1,'#3d2a5c');
+  x.fillStyle=sky;x.fillRect(0,0,c.width,c.height);
+
+  // Ground
+  const ground=x.createLinearGradient(0,c.height/2,0,c.height);
+  ground.addColorStop(0,'#3d2a4a');
+  ground.addColorStop(1,'#2a1b3d');
+  x.fillStyle=ground;x.fillRect(0,c.height/2,c.width,c.height/2);
+
+  // Sun
+  x.fillStyle='#fef3c7';x.shadowColor='#fcd34d';x.shadowBlur=40;
+  x.beginPath();x.arc(c.width-140,140,50,0,Math.PI*2);x.fill();
+  x.shadowBlur=0;
+
+  // Plants
+  garden.forEach(g=>{
+    if(g.type==='skull')drawSkullFlower(g.x,g.y,g.size);
+    else {
+      x.fillStyle='#4ade80';x.shadowColor='#22c55e';x.shadowBlur=6;
+      x.beginPath();
+      x.moveTo(g.x,g.y-35*g.size);
+      x.lineTo(g.x-10*g.size,g.y);
+      x.lineTo(g.x+10*g.size,g.y);
+      x.closePath();x.fill();
+    }
+  });
+
+  // Player
+  x.save();x.translate(p.x,p.y-10);
+  x.fillStyle='#9333ea';x.shadowColor='#a855f7';x.shadowBlur=15;
+  x.beginPath();x.arc(0,0,20,0,Math.PI*2);x.fill();
+  x.fillStyle='#e9d5ff';
+  x.beginPath();x.arc(-6,-4,4,0,Math.PI*2);x.fill();
+  x.beginPath();x.arc(6,-4,4,0,Math.PI*2);x.fill();
+  x.restore();
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
