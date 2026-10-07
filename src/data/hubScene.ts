@@ -454,42 +454,55 @@ export const HUB_NODES: Record<string, HubNode> = {
   // The Café-Bar — mocktails you can make at home. A 2-view room, entered from
   // the café's right counter (and the arcade's CAFE-BAR door); turn left for the
   // mixing station. The back arrow exits to the café.
+  // The Café-Bar — now a front + RIGHT room, entered from the lobby's right
+  // view (rt_cafebar → here). Front = the old left view's menu (Cinnamon /
+  // Mojito / Golden); pan right for the old front's menu (Sunrise / Honey /
+  // Slow Tea) + the 0.0 recommendations and the French doors to the garden.
+  // SOS booth + fire exit = the urge flow in both views. All boxes rough —
+  // drag onto their objects in the editor and export.
   cafebar: {
     id: "cafebar",
     title: "Café-Bar",
     image: require("../../assets/scenes/cafebar_front.png"),
-    imgW: 851,
-    imgH: 1848,
+    imgW: 839,
+    imgH: 1875,
     fit: "screen",
-    left: "cafebar_left",
+    right: "cafebar_right",
     back: "front",
     hotspots: [
-      // The board = the bar menu. Each drink name opens its recipe popup; the
-      // fridge is now just scenery. (Drinks 1–3 here, 4–6 on the left view.)
-      { id: "cb_d1", caption: "Sunrise Fizz", kind: "sign", label: "Sunrise Fizz", labelSize: 16, rotate: -3, rotateY: -4, x: 0.24, y: 0.14, w: 0.493, h: 0.027, action: { kind: "route", route: "/recipe/sunrise-fizz" } },
-      { id: "cb_d2", caption: "Honey & Lemon Warmer", kind: "sign", label: "Honey & Lemon Warmer", labelSize: 16, rotate: -2, rotateY: -4, x: 0.261, y: 0.166, w: 0.518, h: 0.035, action: { kind: "route", route: "/recipe/honey-lemon" } },
-      { id: "cb_d3", caption: "Slow Iced Tea", kind: "sign", label: "Slow Iced Tea", labelSize: 16, rotate: -2, rotateY: -4, x: 0.24, y: 0.203, w: 0.532, h: 0.036, action: { kind: "route", route: "/recipe/slow-iced-tea" } },
-      // 0.0 recommendations — a text prompt on the board.
-      { id: "cb_recs", caption: "0.0 recommendations", kind: "sign", label: "Ask the barista for 0.0 recommendations!", labelSize: 12, x: 0.198, y: 0.242, w: 0.62, h: 0.04, action: { kind: "route", route: "/support/recommendations" } },
+      // The board — drinks (Cinnamon / Mojito / Golden). Each opens its recipe.
+      { id: "cb_d1", caption: "Cinnamon Milk Steamer", kind: "sign", label: "Cinnamon Milk Steamer", labelSize: 15, x: 0.58, y: 0.225, w: 0.27, h: 0.03, action: { kind: "route", route: "/recipe/cinnamon-steamer" } },
+      { id: "cb_d2", caption: "Mock Mojito", kind: "sign", label: "Mock Mojito", labelSize: 15, x: 0.60, y: 0.26, w: 0.2, h: 0.03, action: { kind: "route", route: "/recipe/mock-mojito" } },
+      { id: "cb_d3", caption: "Golden Milk", kind: "sign", label: "Golden Milk", labelSize: 15, x: 0.60, y: 0.293, w: 0.17, h: 0.03, action: { kind: "route", route: "/recipe/golden-milk" } },
+      // The Arcade door (left).
+      { id: "cb_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.0, y: 0.28, w: 0.12, h: 0.24, action: { kind: "node", node: "arcade" } },
+      // SOS booth + fire exit = the urge flow.
+      { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.13, y: 0.29, w: 0.11, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cb_urge_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.55, x: 0.23, y: 0.25, w: 0.14, h: 0.28, action: { kind: "route", route: "/session/urge", warn: true } },
     ],
   },
-  cafebar_left: {
-    id: "cafebar_left",
+  cafebar_right: {
+    id: "cafebar_right",
     title: "Café-Bar",
-    image: require("../../assets/scenes/cafebar_left.png"),
+    image: require("../../assets/scenes/cafebar_right.png"),
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    right: "cafebar",
+    left: "cafebar",
     back: "front",
     hotspots: [
-      // The board = the bar menu, continued (drinks 4–6). Each opens its recipe.
-      { id: "cbl_d1", caption: "Cinnamon Milk Steamer", kind: "sign", label: "Cinnamon Milk Steamer", labelSize: 16, rotate: -11, rotateY: -12, x: 0.341, y: 0.155, w: 0.576, h: 0.033, action: { kind: "route", route: "/recipe/cinnamon-steamer" } },
-      { id: "cbl_d2", caption: "Mock Mojito", kind: "sign", label: "Mock Mojito", labelSize: 16, rotate: -11, rotateY: -12, x: 0.389, y: 0.192, w: 0.413, h: 0.045, action: { kind: "route", route: "/recipe/mock-mojito" } },
-      { id: "cbl_d3", caption: "Golden Milk", kind: "sign", label: "Golden Milk", labelSize: 16, rotate: -10, rotateY: -10, x: 0.385, y: 0.243, w: 0.459, h: 0.036, action: { kind: "route", route: "/recipe/golden-milk" } },
-      // The door on the left → the Support room (a building connection). Locked in.
-      { id: "cbl_door", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: -0.014, y: 0.334, w: 0.144, h: 0.073, action: { kind: "node", node: "support" } },
-      { id: "cbl_lbl_door", caption: "Support", kind: "label", label: "Support", labelSize: 13, rotate: 4, x: 0.02, y: 0.232, w: 0.18, h: 0.05 },
+      // The board — drinks (Sunrise / Honey / Slow Tea) + the 0.0 rec prompt.
+      { id: "cbr_d1", caption: "Sunrise Fizz", kind: "sign", label: "Sunrise Fizz", labelSize: 15, x: 0.03, y: 0.19, w: 0.27, h: 0.03, action: { kind: "route", route: "/recipe/sunrise-fizz" } },
+      { id: "cbr_d2", caption: "Honey & Lemon Warmer", kind: "sign", label: "Honey & Lemon Warmer", labelSize: 15, x: 0.03, y: 0.225, w: 0.3, h: 0.03, action: { kind: "route", route: "/recipe/honey-lemon" } },
+      { id: "cbr_d3", caption: "Slow Iced Tea", kind: "sign", label: "Slow Iced Tea", labelSize: 15, x: 0.03, y: 0.26, w: 0.22, h: 0.03, action: { kind: "route", route: "/recipe/slow-iced-tea" } },
+      { id: "cbr_recs", caption: "0.0 recommendations", kind: "sign", label: "Ask the barista for 0.0 recommendations!", labelSize: 12, x: 0.02, y: 0.293, w: 0.33, h: 0.03, action: { kind: "route", route: "/support/recommendations" } },
+      // The "Alcohol-free 0.0%" sign on the counter → also the recommendations.
+      { id: "cbr_free", caption: "0.0 recommendations", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.28, y: 0.37, w: 0.13, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
+      // SOS booth + fire exit = the urge flow.
+      { id: "cbr_urge_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.55, x: 0.45, y: 0.22, w: 0.18, h: 0.3, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cbr_urge_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.72, x: 0.66, y: 0.28, w: 0.13, h: 0.14, action: { kind: "route", route: "/session/urge", warn: true } },
+      // The French doors → the garden (Outside), which opens onto the grounds.
+      { id: "cbr_doors", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.55, x: 0.80, y: 0.18, w: 0.2, h: 0.45, action: { kind: "node", node: "outside" } },
     ],
   },
 
