@@ -420,74 +420,74 @@ export const HUB_NODES: Record<string, HubNode> = {
     ],
   },
 
-  // The Me room — your private space, entered from the café/support "Me".
-  // Deliberately NO doors to other rooms: the one place you close the door and
-  // you're just here. Only L↔F↔R and the back arrow out to the café.
+  // The Me room — your private space, redrawn as a corridor you walk DOWN the
+  // top of the lobby: front → left → left-again (the old me_right retired).
+  // Entered from the lobby/support "Me". The fire-exit + SOS booth sit on the
+  // front wall, so the urge sanctuary (the forest) is reachable from here too.
+  // All boxes are a rough first pass on the new art — drag each onto its object
+  // in the in-app editor and export; I'll bake the exact coordinates.
   me_front: {
     id: "me_front",
     title: "Me",
     image: require("../../assets/scenes/me_front.png"),
-    imgW: 851,
-    imgH: 1848,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
+    // Corridor: only turn LEFT to walk deeper; back → the lobby.
     left: "me_left",
-    right: "me_right",
     back: "front",
     hotspots: [
-      // My Sky — the window shows a live preview of your real constellation
-      // (SkyInlay), and tapping it opens the full sky. No glow blob; the inlay is
-      // the whole point of the big window. The label sits on top.
-      { id: "mf_sky", caption: "My Sky", kind: "board", inlay: "sky", interaction: "destination", haptic: "light", opacity: 0.2, x: 0.107, y: 0.12, w: 0.802, h: 0.483, action: { kind: "route", route: "/constellation" } },
-      { id: "mf_lbl_sky", caption: "My Sky", kind: "label", label: "My Sky", labelSize: 16, opacity: 0.9, x: 0.212, y: 0.273, w: 0.597, h: 0.269, action: { kind: "route", route: "/constellation" } },
-      // AI Coach — the armchair (same coach as Support).
-      { id: "mf_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.6, x: 0.008, y: 0.582, w: 0.134, h: 0.071, action: { kind: "route", route: "/support/coach" } },
-      { id: "mf_lbl_coach", caption: "AI Coach", kind: "label", label: "AI Coach", labelSize: 14, rotate: -9, x: 0.022, y: 0.653, w: 0.24, h: 0.05 },
+      // Personal File — the desk cabinet / drawers.
+      { id: "mf_file", caption: "Personal file", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.55, y: 0.62, w: 0.2, h: 0.18, action: { kind: "route", route: "/profile/file" } },
+      // Your Moments — the corkboard on the right wall (live preview inlay).
+      { id: "mf_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", inlay: "moments", glowScale: 0.7, glowMax: 0.45, x: 0.6, y: 0.23, w: 0.18, h: 0.2, action: { kind: "route", route: "/moments" } },
+      // Looking Forward To — the open notebook on the desk.
+      { id: "mf_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.6, x: 0.42, y: 0.52, w: 0.16, h: 0.08, action: { kind: "route", route: "/goals" } },
+      // Fire exit + SOS booth = the urge sanctuary (walk / jump into the forest).
+      { id: "mf_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.82, y: 0.1, w: 0.18, h: 0.55, action: { kind: "forest", mode: "walk" } },
+      { id: "mf_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.4, x: 0.74, y: 0.27, w: 0.13, h: 0.17, action: { kind: "forest", mode: "jump" } },
     ],
   },
+  // Left 1 — the sleeping end of the corridor: the human safety net + your
+  // quiet logs. Turn left again for the coach + hobbies; turn right back to
+  // the front; back → the lobby.
   me_left: {
     id: "me_left",
     title: "Me",
     image: require("../../assets/scenes/me_left.png"),
-    imgW: 851,
-    imgH: 1848,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
+    left: "me_left2",
     right: "me_front",
     back: "front",
     hotspots: [
-      // Profile — the tall locker.
-      { id: "ml_profile", caption: "Personal file", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.35, glowMax: 0.45, x: -0.058, y: 0.246, w: 0.24, h: 0.48, action: { kind: "route", route: "/profile/file" } },
-      { id: "ml_lbl_profile", caption: "Personal file", kind: "label", label: "Personal file", labelSize: 11, rotate: 3, x: 0.002, y: 0.311, w: 0.2, h: 0.05 },
-      // Your moments — the corkboard.
-      { id: "ml_moments", caption: "Your moments", kind: "board", tint: "purple", interaction: "destination", haptic: "light", inlay: "moments", rotate: 4, rotateY: 36, x: 0.315, y: 0.266, w: 0.302, h: 0.137, action: { kind: "route", route: "/moments" } },
-      { id: "ml_lbl_moments", caption: "Your moments", kind: "label", label: "Your moments", labelSize: 13, rotate: 7, x: 0.315, y: 0.238, w: 0.28, h: 0.05 },
-      // Looking forward to — the purple notebook on the desk.
-      { id: "ml_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.5, glowMax: 0.75, x: 0.283, y: 0.48, w: 0.14, h: 0.05, action: { kind: "route", route: "/goals" } },
-      { id: "ml_lbl_goals", caption: "Looking forward to", kind: "label", label: "Looking forward to", labelSize: 12, x: 0.214, y: 0.423, w: 0.305, h: 0.071 },
-      // Circumstances now lives inside the Personal File folder (the locker),
-      // so the desk-drawer duplicate is removed.
+      // Tonight — the bedside lamp (drink tracking).
+      { id: "ml_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.55, y: 0.28, w: 0.12, h: 0.12, action: { kind: "route", route: "/session/track" } },
+      // Care Team — the bed (your human safety net).
+      { id: "ml_care", caption: "Care team", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.68, y: 0.44, w: 0.3, h: 0.2, action: { kind: "route", route: "/profile/care-team" } },
+      // Trusted Person — the pillows.
+      { id: "ml_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.78, y: 0.38, w: 0.2, h: 0.12, action: { kind: "route", route: "/profile/trusted" } },
+      // Saved — the under-bed drawers (your favourites stash).
+      { id: "ml_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.78, y: 0.62, w: 0.22, h: 0.15, action: { kind: "route", route: "/saved" } },
     ],
   },
-  me_right: {
-    id: "me_right",
+  // Left 2 — the far end: the AI coach, and (coming) the Hobbies system. Turn
+  // right back to Left 1; back → the lobby.
+  me_left2: {
+    id: "me_left2",
     title: "Me",
-    image: require("../../assets/scenes/me_right.png"),
-    imgW: 851,
-    imgH: 1847,
+    image: require("../../assets/scenes/me_left2.png"),
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
-    left: "me_front",
+    right: "me_left",
     back: "front",
     hotspots: [
-      // Tonight — the bedside lamp (drink tracking).
-      { id: "mr_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.276, y: 0.475, w: 0.225, h: 0.083, action: { kind: "route", route: "/session/track" } },
-      { id: "mr_lbl_tonight", caption: "Tonight", kind: "label", label: "Tonight", labelSize: 14, x: 0.27, y: 0.479, w: 0.22, h: 0.05 },
-      // Care team + Trusted person — the bed (your human safety net).
-      { id: "mr_care", caption: "Care team", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.537, y: 0.22, w: 0.456, h: 0.208, action: { kind: "route", route: "/profile/care-team" } },
-      { id: "mr_lbl_care", caption: "Care team", kind: "label", label: "Care team", labelSize: 17, rotate: -12, rotateY: -18, x: 0.635, y: 0.219, w: 0.26, h: 0.05 },
-      { id: "mr_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.619, y: 0.504, w: 0.287, h: 0.071, action: { kind: "route", route: "/profile/trusted" } },
-      { id: "mr_lbl_trusted", caption: "Trusted person", kind: "label", label: "Trusted person", labelSize: 14, x: 0.624, y: 0.517, w: 0.32, h: 0.05 },
-      // Saved — the bedside drawers (your favourites stash).
-      { id: "mr_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.026, y: 0.558, w: 0.33, h: 0.041, action: { kind: "route", route: "/saved" } },
-      { id: "mr_lbl_saved", caption: "Saved", kind: "label", label: "Saved", labelSize: 14, rotate: 16, x: 0.078, y: 0.568, w: 0.2, h: 0.05 },
+      // AI Coach — the stool + desk nook (sit and talk).
+      { id: "ml2_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.08, y: 0.5, w: 0.2, h: 0.2, action: { kind: "route", route: "/support/coach" } },
+      // Hobbies — the new Hobbies system lands here (lockers / boxes). Awaiting
+      // Marta's design; not wired yet.
     ],
   },
 
