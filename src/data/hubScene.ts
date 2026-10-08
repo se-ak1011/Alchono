@@ -350,73 +350,68 @@ export const HUB_NODES: Record<string, HubNode> = {
     ],
   },
 
-  // The Support room — entered from the café's Support curtain. A warm lounge:
-  // sit with a mentor, talk to the coach, read recovery, check messages. Every
-  // known feature is pre-placed at a rough box; position/tilt in the editor and
-  // export in one pass. The two doors are building connections — inert until you
-  // tell me where each goes.
+  // The Support room — redrawn in the new (Spanish-posh social-centre) style, a
+  // 3-view lounge. Front: the coach armchairs + the urge doors. Left: Recovery,
+  // Mentors and a door through to the Writing room, + the fire exit. Right:
+  // Messages (the computer), Recommendations (the board), + the urge doors. The
+  // fire-exit (walk) and SOS booth (jump) lead to the forest. All boxes are a
+  // rough first pass on the new art — drag each onto its object in the in-app
+  // editor and export; I'll bake the exact coordinates.
   support: {
     id: "support",
     title: "Support",
     image: require("../../assets/scenes/support_front.png"),
-    imgW: 853,
-    imgH: 1843,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
     left: "support_left",
     right: "support_right",
     back: "front",
     hotspots: [
-      // AI Coach — the armchairs + table (a big, only-thing-here tap zone).
-      { id: "s_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 23, rotate: 1, rotateY: 14, interaction: "destination", haptic: "medium", x: 0.125, y: 0.173, w: 0.72, h: 0.3, action: { kind: "route", route: "/support/coach" } },
-      { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.82, w: 0.4, h: 0.08, action: { kind: "forest", mode: "jump" } },
+      // AI Coach — the two armchairs + coffee table (sit and talk).
+      { id: "s_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.18, y: 0.46, w: 0.56, h: 0.3, action: { kind: "route", route: "/support/coach" } },
+      // Fire exit + SOS booth = the urge sanctuary (walk / jump into the forest).
+      { id: "s_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.83, y: 0.17, w: 0.17, h: 0.52, action: { kind: "forest", mode: "walk" } },
+      { id: "s_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.4, x: 0.72, y: 0.3, w: 0.12, h: 0.17, action: { kind: "forest", mode: "jump" } },
     ],
   },
   support_left: {
     id: "support_left",
     title: "Support",
     image: require("../../assets/scenes/support_left.png"),
-    imgW: 853,
-    imgH: 1844,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
     right: "support",
     back: "front",
     hotspots: [
-      // Recovery — the writing desk + chair.
-      { id: "s_recovery", caption: "Recovery", kind: "sign", label: "Recovery", labelSize: 15, rotateY: 34, rotateX: -4, interaction: "destination", haptic: "medium", x: 0.242, y: 0.38, w: 0.3, h: 0.1, action: { kind: "route", route: "/support/recovery" } },
-      // Mentors — the empty corkboard above the desk.
-      { id: "s_mentors", caption: "Mentors", kind: "sign", label: "Mentors", labelSize: 18, rotate: 10, rotateY: 42, interaction: "destination", haptic: "medium", x: 0.284, y: 0.18, w: 0.3, h: 0.12, action: { kind: "route", route: "/support/mentors" } },
-      // The left-view door → Me (profile).
-      { id: "sl_door", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: -0.037, y: 0.371, w: 0.218, h: 0.104, action: { kind: "node", node: "me_front" } },
-      // "Me" chalked on the door (added in-app).
-      { id: "sl_lbl_me", caption: "Me", kind: "label", label: "Me", labelSize: 18, rotate: 8, rotateY: 32, x: 0.028, y: 0.169, w: 0.2, h: 0.08 },
+      // The Writing door → the Writing room.
+      { id: "sl_writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.0, y: 0.18, w: 0.2, h: 0.62, action: { kind: "node", node: "writing_room" } },
+      // Recovery — the desk + chair.
+      { id: "sl_recovery", caption: "Recovery", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.42, y: 0.5, w: 0.22, h: 0.28, action: { kind: "route", route: "/support/recovery" } },
+      // Mentors — the corkboard above the desk.
+      { id: "sl_mentors", caption: "Mentors", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.45, x: 0.5, y: 0.28, w: 0.2, h: 0.16, action: { kind: "route", route: "/support/mentors" } },
+      // Fire exit = the urge sanctuary (walk into the forest).
+      { id: "sl_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.78, y: 0.22, w: 0.2, h: 0.5, action: { kind: "forest", mode: "walk" } },
     ],
   },
   support_right: {
     id: "support_right",
     title: "Support",
     image: require("../../assets/scenes/support_right.png"),
-    imgW: 851,
-    imgH: 1847,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
     left: "support",
     back: "front",
     hotspots: [
-      // Messages — on the computer screen.
-      { id: "s_messages", caption: "Messages", kind: "sign", label: "Messages", labelSize: 11, interaction: "destination", haptic: "medium", x: 0.309, y: 0.332, w: 0.22, h: 0.08, action: { kind: "route", route: "/messages" } },
-      // Recommendations — the drawn 4-postit corkboard (0.0 alcohol-free swaps).
-      // The whole board is the tap target; the labels below sit on the drawn
-      // postits (type per postit) plus a "bar line" call to action. Positioned
-      // in the editor onto the base art.
-      { id: "s_recommendations", caption: "Recommendations", kind: "plain", interaction: "destination", x: 0.174, y: 0.213, w: 0.334, h: 0.117, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_beer", caption: "Beer", kind: "label", label: "Beer", labelSize: 11, interaction: "destination", rotate: -23, rotateX: 2, x: 0.168, y: 0.224, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_wine", caption: "Wine", kind: "label", label: "Wine", labelSize: 11, interaction: "destination", rotate: -23, rotateY: 2, x: 0.263, y: 0.236, w: 0.162, h: 0.042, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_spirits", caption: "Spirits", kind: "label", label: "Spirits", labelSize: 9, interaction: "destination", rotate: -23, rotateY: 2, x: 0.195, y: 0.282, w: 0.15, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_cider", caption: "Cider", kind: "label", label: "Cider", labelSize: 10, interaction: "destination", rotate: -23, rotateY: 2, x: 0.336, y: 0.291, w: 0.14, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "s_rec_ask", caption: "Ask for recommendations", kind: "label", label: "Ask for Recommendations!", labelSize: 10, interaction: "destination", rotate: 4, rotateY: -12, x: 0.151, y: 0.179, w: 0.34, h: 0.035, action: { kind: "route", route: "/support/recommendations" } },
-      // The right-view door → the Bar (labelled "Break Room").
-      { id: "sr_door", caption: "Break Room", kind: "glow", tint: "warm", interaction: "destination", glowScale: 0.4, glowMax: 0.6, x: 0.54, y: 0.341, w: 0.158, h: 0.073, action: { kind: "node", node: "breakroom" } },
-      // "BREAK ROOM" chalked on the door (added in-app).
-      { id: "sr_lbl_break", caption: "Break Room", kind: "label", label: "BREAK ROOM", rotate: 3, rotateY: 20, x: 0.599, y: 0.193, w: 0.2, h: 0.08 },
+      // Messages — the computer.
+      { id: "sr_messages", caption: "Messages", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.6, y: 0.42, w: 0.3, h: 0.22, action: { kind: "route", route: "/messages" } },
+      // Recommendations — the corkboard above the desk (0.0 alcohol-free swaps).
+      { id: "sr_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.45, x: 0.6, y: 0.2, w: 0.33, h: 0.19, action: { kind: "route", route: "/support/recommendations" } },
+      // Fire exit + SOS booth = the urge sanctuary (walk / jump into the forest).
+      { id: "sr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.22, y: 0.14, w: 0.22, h: 0.56, action: { kind: "forest", mode: "walk" } },
+      { id: "sr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.4, x: 0.1, y: 0.3, w: 0.13, h: 0.18, action: { kind: "forest", mode: "jump" } },
     ],
   },
 
