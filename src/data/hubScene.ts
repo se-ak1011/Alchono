@@ -26,7 +26,11 @@ import type { ImageSourcePropType } from "react-native";
 
 export type HubAction =
   | { kind: "route"; route: string; warn?: boolean; returnNode?: string }
-  | { kind: "node"; node: string };
+  | { kind: "node"; node: string }
+  // The urge sanctuary. "walk" steps you in through the fire-exit canopy and
+  // lets you stroll the path (a hard day); "jump" fades you straight through
+  // the canopy to the clearing, no decisions (a craving). Both from any screen.
+  | { kind: "forest"; mode: "walk" | "jump" };
 
 export type HotspotKind =
   | "label" // environmental signage — text only, NOT tappable
@@ -135,7 +139,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Coordinates placed in-app and exported. (f_bell removed in the editor.)
       // The SOS "Let's Talk" booth = the urge flow.
-      { id: "f_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.47, x: 0.302, y: 0.528, w: 0.155, h: 0.176, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "f_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.47, x: 0.302, y: 0.528, w: 0.155, h: 0.176, action: { kind: "forest", mode: "jump" } },
       // Reception counter objects (phone / ledger).
       { id: "f_phone", caption: "Your people", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.6, x: 0.103, y: 0.405, w: 0.082, h: 0.04, action: { kind: "route", route: "/messages" } },
       { id: "f_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: -0.006, y: 0.466, w: 0.211, h: 0.031, action: { kind: "route", route: "/session/track" } },
@@ -164,8 +168,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Coordinates placed in-app and exported. (l_keys + l_bell removed.)
       // Fire exit + SOS booth = the urge flow.
-      { id: "l_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.3, x: 0.091, y: 0.187, w: 0.208, h: 0.318, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.342, y: 0.21, w: 0.13, h: 0.19, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "l_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.3, x: 0.091, y: 0.187, w: 0.208, h: 0.318, action: { kind: "forest", mode: "walk" } },
+      { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.342, y: 0.21, w: 0.13, h: 0.19, action: { kind: "forest", mode: "jump" } },
       // The Reception door → the grounds (the other apps).
       { id: "l_reception", caption: "Reception — the grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.625, y: 0.221, w: 0.16, h: 0.203, action: { kind: "node", node: "reception" } },
       // The counter shows here too (phone / ledger).
@@ -187,8 +191,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // Coordinates placed in-app and exported.
       // Fire exit + SOS booth = the urge flow (reachable from every view).
-      { id: "rt_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.295, y: 0.202, w: 0.156, h: 0.254, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "rt_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.27, x: 0.189, y: 0.206, w: 0.213, h: 0.261, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "rt_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.295, y: 0.202, w: 0.156, h: 0.254, action: { kind: "forest", mode: "walk" } },
+      { id: "rt_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.27, x: 0.189, y: 0.206, w: 0.213, h: 0.261, action: { kind: "forest", mode: "jump" } },
       // The Arcade door (machines visible through it).
       { id: "rt_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.574, y: 0.217, w: 0.168, h: 0.235, action: { kind: "node", node: "arcade" } },
       // The Café-Bar glass doors.
@@ -214,8 +218,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The bookshelf → the books close-up.
       { id: "re_shelf", caption: "The books", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.78, y: 0.13, w: 0.22, h: 0.52, action: { kind: "node", node: "reading_shelf" } },
       // Fire exit + SOS box = the urge flow.
-      { id: "re_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.0, y: 0.19, w: 0.17, h: 0.44, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "re_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.17, y: 0.33, w: 0.1, h: 0.14, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "re_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.0, y: 0.19, w: 0.17, h: 0.44, action: { kind: "forest", mode: "walk" } },
+      { id: "re_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.17, y: 0.33, w: 0.1, h: 0.14, action: { kind: "forest", mode: "jump" } },
     ],
   },
 
@@ -270,7 +274,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The paper tray → your saved notes.
       { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.658, y: 0.375, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
       // Drink safety-valve, present in every room (easy to move or delete in-app).
-      { id: "wd_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 20, interaction: "object", haptic: "heavy", x: 0.28, y: 0.8, w: 0.44, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "wd_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 20, interaction: "object", haptic: "heavy", x: 0.28, y: 0.8, w: 0.44, h: 0.08, action: { kind: "forest", mode: "jump" } },
     ],
   },
 
@@ -292,8 +296,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The desk → the writing close-up.
       { id: "wr_desk", caption: "Sit and write", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.0, y: 0.52, w: 0.5, h: 0.3, action: { kind: "node", node: "writing_desk" } },
       // Fire exit + SOS box = the urge flow.
-      { id: "wr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.19, h: 0.4, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "wr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.44, y: 0.28, w: 0.1, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "wr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.19, h: 0.4, action: { kind: "forest", mode: "walk" } },
+      { id: "wr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.44, y: 0.28, w: 0.1, h: 0.15, action: { kind: "forest", mode: "jump" } },
       // The Support door → the support room. (The window is just a window.)
       { id: "wr_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.87, y: 0.3, w: 0.13, h: 0.4, action: { kind: "node", node: "support" } },
     ],
@@ -322,8 +326,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The CRT + console (far right) → Skull Haven (also reachable in the right view).
       { id: "a_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.87, y: 0.37, w: 0.13, h: 0.1, action: { kind: "route", route: "/arcade/skull-haven" } },
       // Fire exit + SOS booth = the urge flow.
-      { id: "a_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.16, h: 0.4, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "a_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.78, y: 0.23, w: 0.12, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "a_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.16, h: 0.4, action: { kind: "forest", mode: "walk" } },
+      { id: "a_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.78, y: 0.23, w: 0.12, h: 0.15, action: { kind: "forest", mode: "jump" } },
     ],
   },
   arcade_right: {
@@ -339,8 +343,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The CRT + PS2 (centre) → Skull Haven.
       { id: "ar_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.43, y: 0.36, w: 0.19, h: 0.12, action: { kind: "route", route: "/arcade/skull-haven" } },
       // Fire exit + SOS booth = the urge flow.
-      { id: "ar_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.08, y: 0.18, w: 0.16, h: 0.42, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "ar_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.28, y: 0.24, w: 0.12, h: 0.15, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "ar_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.08, y: 0.18, w: 0.16, h: 0.42, action: { kind: "forest", mode: "walk" } },
+      { id: "ar_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.28, y: 0.24, w: 0.12, h: 0.15, action: { kind: "forest", mode: "jump" } },
       // The Bar door (right) → the Café-Bar (arcade ↔ bar connection).
       { id: "ar_bar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.78, y: 0.18, w: 0.2, h: 0.5, action: { kind: "node", node: "cafebar" } },
     ],
@@ -364,7 +368,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       // AI Coach — the armchairs + table (a big, only-thing-here tap zone).
       { id: "s_coach", caption: "AI Coach", kind: "sign", label: "AI Coach", labelSize: 23, rotate: 1, rotateY: 14, interaction: "destination", haptic: "medium", x: 0.125, y: 0.173, w: 0.72, h: 0.3, action: { kind: "route", route: "/support/coach" } },
-      { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.82, w: 0.4, h: 0.08, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "s_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 22, interaction: "object", haptic: "heavy", x: 0.3, y: 0.82, w: 0.4, h: 0.08, action: { kind: "forest", mode: "jump" } },
     ],
   },
   support_left: {
@@ -514,8 +518,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // the menu board is now one tap (above).
       { id: "cb_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.017, y: 0.216, w: 0.104, h: 0.312, action: { kind: "node", node: "arcade" } },
       // SOS booth + fire exit = the urge flow.
-      { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.32, x: 0.13, y: 0.265, w: 0.11, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "cb_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.244, y: 0.252, w: 0.124, h: 0.236, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.32, x: 0.13, y: 0.265, w: 0.11, h: 0.13, action: { kind: "forest", mode: "jump" } },
+      { id: "cb_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.244, y: 0.252, w: 0.124, h: 0.236, action: { kind: "forest", mode: "walk" } },
     ],
   },
   cafebar_right: {
@@ -537,8 +541,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       // The "Alcohol-free 0.0%" sign on the counter → the 0.0 recommendations.
       { id: "cbr_free", caption: "0.0 recommendations", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.28, y: 0.37, w: 0.13, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
       // SOS booth + fire exit = the urge flow.
-      { id: "cbr_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.525, y: 0.245, w: 0.135, h: 0.241, action: { kind: "route", route: "/session/urge", warn: true } },
-      { id: "cbr_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.671, y: 0.267, w: 0.121, h: 0.13, action: { kind: "route", route: "/session/urge", warn: true } },
+      { id: "cbr_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.525, y: 0.245, w: 0.135, h: 0.241, action: { kind: "forest", mode: "walk" } },
+      { id: "cbr_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.671, y: 0.267, w: 0.121, h: 0.13, action: { kind: "forest", mode: "jump" } },
       // The French doors → the garden (Outside), which opens onto the grounds.
       { id: "cbr_doors", caption: "The garden", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.8, y: 0.18, w: 0.2, h: 0.45, action: { kind: "node", node: "outside" } },
     ],
@@ -705,5 +709,83 @@ export const HUB_NODES: Record<string, HubNode> = {
       // under the sign). Glow over it → get the app. Rough box — re-tune.
       { id: "ni_emblem", caption: "Get Nicono", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.4, y: 0.21, w: 0.2, h: 0.14, action: { kind: "route", route: "/ecosystem" } },
     ],
+  },
+
+  // ── The Forest — the urge sanctuary ──────────────────────────────────────
+  // Reached ONLY from the fire-exit door (walk) or the SOS booth (jump), which
+  // live on every lobby scene and now lead here instead of the old porch menu.
+  // No decisions on the way in. The SOS "jump" fades straight through the
+  // canopy to the clearing; the fire-exit "walk" drops you at the canopy to
+  // stroll the path yourself. Back unwinds however you came (a walk retraces
+  // the path; a jump drops you back where you were). `back` here is only the
+  // safety fallback — the engine's history trail is what normally drives it.
+  // A resources folder (extra human support) rides along in the engine with a
+  // first-time haptic + hint. Phase 1 is navigable + still; the living water,
+  // particles and build-your-world come in later phases.
+  forest_canopy: {
+    id: "forest_canopy",
+    title: "The Woods",
+    image: require("../../assets/scenes/forest_canopy.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    back: "front",
+    hotspots: [
+      // The lit path up through the trees → deeper in. (Rough box — tune in-app.)
+      { id: "fc_path", caption: "Into the woods", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.4, x: 0.37, y: 0.42, w: 0.26, h: 0.3, action: { kind: "node", node: "forest_hall" } },
+    ],
+  },
+  forest_hall: {
+    id: "forest_hall",
+    title: "The Woods",
+    image: require("../../assets/scenes/forest_hall.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    back: "forest_canopy",
+    hotspots: [
+      // The path toward the opening → the clearing. (Rough box — tune in-app.)
+      { id: "fh_path", caption: "Towards the clearing", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.4, x: 0.4, y: 0.4, w: 0.3, h: 0.34, action: { kind: "node", node: "clearing_front" } },
+    ],
+  },
+
+  // The clearing — a 3-view sanctuary by the river. Front = arrival (camp +
+  // river on the left); turn left for the river/dock (the houseboat berth
+  // later), right for the big trees (treehouse) + the meadow path. Build-your-
+  // world and the "alive" water come in later phases; for now it's a place you
+  // stand in. No urge hotspots here — you're already out.
+  clearing_front: {
+    id: "clearing_front",
+    title: "The Clearing",
+    image: require("../../assets/scenes/clearing_front.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "clearing_left",
+    right: "clearing_right",
+    back: "front",
+    hotspots: [],
+  },
+  clearing_left: {
+    id: "clearing_left",
+    title: "The River",
+    image: require("../../assets/scenes/clearing_left.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    right: "clearing_front",
+    back: "clearing_front",
+    hotspots: [],
+  },
+  clearing_right: {
+    id: "clearing_right",
+    title: "The Clearing",
+    image: require("../../assets/scenes/clearing_right.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "clearing_front",
+    back: "clearing_front",
+    hotspots: [],
   },
 };

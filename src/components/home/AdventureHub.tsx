@@ -3,6 +3,7 @@ import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animat
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { CaptionBar } from "@/components/home/CaptionBar";
@@ -133,9 +134,18 @@ export function AdventureHub() {
   // as a REMOVED list so the deletions get baked back into hubScene.ts.
   const [removed, setRemoved] = useState<Record<string, string[]>>({});
 
+  // Whether the one-time forest intro (haptic + "extra support is here" hint)
+  // has been shown. Persisted so it only ever happens once, not once a launch.
+  const [forestIntroSeen, setForestIntroSeen] = useState<boolean | null>(null);
+  const [forestHint, setForestHint] = useState(false);
+
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
   const captionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The SOS "jump": we show the canopy for a beat, then this timer soft-fades
+  // on to the clearing. Held in a ref so any manual navigation can cancel it.
+  const forestJump = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const forestHintShown = useRef(false);
 
   // Refs the pan responders read at gesture time so they stay current.
   const geomRef = useRef({ dispW: 1, dispH: 1, offX: 0, offY: 0 });
@@ -144,6 +154,9 @@ export function AdventureHub() {
   const respondersRef = useRef<Record<string, ReturnType<typeof PanResponder.create>>>({});
 
   const node = HUB_NODES[nodeId];
+  // In the urge sanctuary (any forest/clearing view): the engine rides a
+  // resources shortcut alongside, and shows a one-time "support is here" hint.
+  const inForest = nodeId.startsWith("forest_") || nodeId.startsWith("clearing_");
   const removedHere = removed[nodeId] ?? [];
   // Base hotspots from the scene map (minus any removed in-app), plus any added.
   const hotspots = [...node.hotspots.filter((h) => !removedHere.includes(h.id)), ...(added[nodeId] ?? [])];
@@ -166,8 +179,29 @@ export function AdventureHub() {
   useEffect(() => {
     return () => {
       if (captionTimer.current) clearTimeout(captionTimer.current);
+      if (forestJump.current) clearTimeout(forestJump.current);
     };
   }, []);
+
+  // Load the once-ever forest-intro flag.
+  useEffect(() => {
+    AsyncStorage.getItem("alchono.forestIntroSeen")
+      .then((v) => setForestIntroSeen(v === "1"))
+      .catch(() => setForestIntroSeen(true));
+  }, []);
+
+  // First time you ever reach the forest: a soft haptic + a hint that extra
+  // support (a real person) is one tap away. Shown once, then persisted off.
+  useEffect(() => {
+    if (!inForest || forestIntroSeen !== false || forestHintShown.current) return;
+    forestHintShown.current = true;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setForestHint(true);
+    setForestIntroSeen(true);
+    AsyncStorage.setItem("alchono.forestIntroSeen", "1").catch(() => {});
+    const t = setTimeout(() => setForestHint(false), 7000);
+    return () => clearTimeout(t);
+  }, [inForest, forestIntroSeen]);
 
   const showCaption = (text: string) => {
     if (captionTimer.current) clearTimeout(captionTimer.current);
@@ -198,6 +232,12 @@ export function AdventureHub() {
   // `push` records the current room on the back-trail (true for doors, false for
   // pans and for Back itself, which is unwinding the trail).
   const navigateNode = (next: string, push = false) => {
+    // Any deliberate move cancels a pending SOS auto-advance, so tapping around
+    // the canopy during the jump never yanks you onward unexpectedly.
+    if (forestJump.current) {
+      clearTimeout(forestJump.current);
+      forestJump.current = null;
+    }
     if (push) setHistory((h) => [...h, nodeId]);
     Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
       setNodeId(next);
@@ -220,6 +260,18 @@ export function AdventureHub() {
   const runAction = (action: HubAction, haptic?: Haptic) => {
     if (action.kind === "node") {
       navigateNode(action.node, true);
+      return;
+    }
+    // The urge sanctuary. Both modes get the strong "I've got you" warning
+    // haptic and push the room you came from, so Back returns you there.
+    if (action.kind === "forest") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      navigateNode("forest_canopy", true);
+      if (action.mode === "jump") {
+        // Hold on the canopy for a beat, then soft-fade straight to the
+        // clearing — no path, no walking, no decisions.
+        forestJump.current = setTimeout(() => navigateNode("clearing_front", false), 1000);
+      }
       return;
     }
     if (action.warn) {
@@ -840,6 +892,39 @@ export function AdventureHub() {
         >
           <Feather name="folder" size={18} color="#EFEAF5" />
         </Pressable>
+      ) : null}
+
+      {/* The urge sanctuary carries a quiet shortcut to real human support —
+          the crisis-lines book — always a tap away while you ride it out. */}
+      {inForest && !editMode ? (
+        <View pointerEvents="box-none" style={{ position: "absolute", left: 0, right: 0, bottom: 40, alignItems: "center" }}>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/resources/home" as any);
+            }}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Extra support — help and crisis lines"
+            className="active:opacity-80"
+            style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 22, backgroundColor: "rgba(13,11,18,0.72)", borderWidth: 1, borderColor: "rgba(240,201,135,0.5)" }}
+          >
+            <Feather name="life-buoy" size={16} color="#F0C987" />
+            <Text style={{ color: "#F3EEDB", fontSize: 13.5, fontWeight: "600" }}>Extra support</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {/* First-ever visit: point out that a real person is one tap away, so the
+          escape hatch is learned here in the calm, before it's ever needed. */}
+      {forestHint && !editMode ? (
+        <View pointerEvents="none" style={{ position: "absolute", left: 24, right: 24, bottom: 96, alignItems: "center" }}>
+          <View style={{ backgroundColor: "rgba(13,11,18,0.88)", borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, borderColor: "rgba(240,201,135,0.45)" }}>
+            <Text style={{ color: "#F3EEDB", fontSize: 13.5, textAlign: "center", lineHeight: 19 }}>
+              If the urge gets too big, extra support is right here ↓{"\n"}You can always reach a real person.
+            </Text>
+          </View>
+        </View>
       ) : null}
 
       {editMode ? (
