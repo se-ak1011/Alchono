@@ -303,50 +303,69 @@ export const HUB_NODES: Record<string, HubNode> = {
     ],
   },
 
-  // The Arcade — a front + right room, entered from the home-right "Arcade" door
-  // (and from the Café-Bar). Each device runs one of Marta's purpose-built games
-  // in a WebView cabinet (/arcade/<slug>). Fire exit + SOS = the urge flow; the
-  // Bar door (right view) connects straight to the Café-Bar. Rough boxes — drag
-  // each onto its device/door in the editor and export.
+  // The Games Room — a 3-view rec room (anti-casino on purpose: windows that
+  // show the real time of day, a clear exit, light, a way out — the opposite of
+  // a casino). Entered from the home-right "Games Room" door (and the Break
+  // Room). Each device runs one of Marta's games in a WebView cabinet
+  // (/arcade/<slug>): FRONT = the two arcade cabinets (Skull Grove + Growth
+  // Shield); LEFT = the PS1 (Skull Haven); RIGHT = the Game Boy (Skull Path) +
+  // the Break Room door. Fire exit + SOS = the forest. Internally still "arcade"
+  // (routes/ids), shown to the user as "Games Room". Rough boxes — tune + export.
   arcade: {
     id: "arcade",
-    title: "The Arcade",
+    title: "Games Room",
     image: require("../../assets/scenes/arcade_front.png"),
-    imgW: 851,
-    imgH: 1847,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
+    left: "arcade_left",
     right: "arcade_right",
     back: "right",
     hotspots: [
       // The two cabinets → the shooters.
-      { id: "a_cab1", caption: "Skull Grove", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.26, w: 0.16, h: 0.17, action: { kind: "route", route: "/arcade/skull-grove" } },
-      { id: "a_cab2", caption: "Growth Shield", kind: "glow", tint: "purple", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.28, y: 0.26, w: 0.16, h: 0.17, action: { kind: "route", route: "/arcade/growth-shield" } },
-      // The Game Boy on the table (far left) → Skull Path.
-      { id: "a_gameboy", caption: "Skull Path", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.0, y: 0.4, w: 0.1, h: 0.08, action: { kind: "route", route: "/arcade/skull-path" } },
-      // The CRT + console (far right) → Skull Haven (also reachable in the right view).
-      { id: "a_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.87, y: 0.37, w: 0.13, h: 0.1, action: { kind: "route", route: "/arcade/skull-haven" } },
-      // Fire exit + SOS booth = the urge flow.
-      { id: "a_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.16, h: 0.4, action: { kind: "forest", mode: "walk" } },
-      { id: "a_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.78, y: 0.23, w: 0.12, h: 0.15, action: { kind: "forest", mode: "jump" } },
+      { id: "a_cab1", caption: "Skull Grove", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.24, w: 0.14, h: 0.22, action: { kind: "route", route: "/arcade/skull-grove" } },
+      { id: "a_cab2", caption: "Growth Shield", kind: "glow", tint: "purple", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.26, y: 0.24, w: 0.14, h: 0.22, action: { kind: "route", route: "/arcade/growth-shield" } },
+      // Fire exit + SOS booth = the forest.
+      { id: "a_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.44, y: 0.17, w: 0.16, h: 0.5, action: { kind: "forest", mode: "walk" } },
+      { id: "a_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.68, y: 0.22, w: 0.12, h: 0.2, action: { kind: "forest", mode: "jump" } },
+    ],
+  },
+  // Games Room — LEFT view: the PS1 nook (Skull Haven). Turn right back to the
+  // cabinets; back out to the lobby. SOS booth here for urge access (no fire
+  // exit painted in this view).
+  arcade_left: {
+    id: "arcade_left",
+    title: "Games Room",
+    image: require("../../assets/scenes/arcade_left.png"),
+    imgW: 1024,
+    imgH: 1536,
+    fit: "screen",
+    right: "arcade",
+    back: "right",
+    hotspots: [
+      // The CRT + PS1 → Skull Haven.
+      { id: "al_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.28, w: 0.3, h: 0.25, action: { kind: "route", route: "/arcade/skull-haven" } },
+      // SOS booth = the forest (jump).
+      { id: "al_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.42, y: 0.2, w: 0.12, h: 0.18, action: { kind: "forest", mode: "jump" } },
     ],
   },
   arcade_right: {
     id: "arcade_right",
-    title: "The Arcade",
+    title: "Games Room",
     image: require("../../assets/scenes/arcade_right.png"),
-    imgW: 851,
-    imgH: 1847,
+    imgW: 1024,
+    imgH: 1536,
     fit: "screen",
     left: "arcade",
     back: "right",
     hotspots: [
-      // The CRT + PS2 (centre) → Skull Haven.
-      { id: "ar_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.43, y: 0.36, w: 0.19, h: 0.12, action: { kind: "route", route: "/arcade/skull-haven" } },
-      // Fire exit + SOS booth = the urge flow.
-      { id: "ar_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.08, y: 0.18, w: 0.16, h: 0.42, action: { kind: "forest", mode: "walk" } },
-      { id: "ar_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.28, y: 0.24, w: 0.12, h: 0.15, action: { kind: "forest", mode: "jump" } },
-      // The Bar door (right) → the Café-Bar (arcade ↔ bar connection).
-      { id: "ar_bar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.78, y: 0.18, w: 0.2, h: 0.5, action: { kind: "node", node: "cafebar" } },
+      // The Game Boy on the table → Skull Path.
+      { id: "ar_gameboy", caption: "Skull Path", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.45, y: 0.45, w: 0.14, h: 0.1, action: { kind: "route", route: "/arcade/skull-path" } },
+      // Fire exit + SOS booth = the forest.
+      { id: "ar_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.0, y: 0.15, w: 0.18, h: 0.55, action: { kind: "forest", mode: "walk" } },
+      { id: "ar_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.2, y: 0.3, w: 0.12, h: 0.2, action: { kind: "forest", mode: "jump" } },
+      // The Break Room door (right) → the Break Room (games ↔ break room).
+      { id: "ar_bar", caption: "Break Room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.72, y: 0.1, w: 0.25, h: 0.7, action: { kind: "node", node: "cafebar" } },
     ],
   },
 
