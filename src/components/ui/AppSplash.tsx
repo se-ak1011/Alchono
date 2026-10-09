@@ -49,7 +49,7 @@ export function AppSplash({ width, height }: { width: number; height: number }) 
   const barWidth = progress.interpolate({ inputRange: [0, 1], outputRange: ["6%", "92%"] });
 
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#201D28" }]}>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#0E0A16" }]}>
       {/* Full-bleed brand image */}
       <Image source={SPLASH} style={{ width, height }} resizeMode="cover" />
 
