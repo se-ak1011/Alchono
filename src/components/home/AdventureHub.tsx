@@ -6,6 +6,7 @@ import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
+import { DESTINATIONS, labelForAction, actionExport } from "@/data/destinations";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
@@ -133,6 +134,13 @@ export function AdventureHub() {
   // Base hotspots the editor has removed from a view (ids, per node). Exported
   // as a REMOVED list so the deletions get baked back into hubScene.ts.
   const [removed, setRemoved] = useState<Record<string, string[]>>({});
+  // In-app wiring: a chosen destination (action) per hotspot id. For an added
+  // hotspot it's its only action; for a baked one it rewires. Lets the whole
+  // interactive layer be authored in the editor, then exported. Reused for the
+  // grounds. Persisted (with the other edits) so a long session survives.
+  const [actions, setActions] = useState<Record<string, HubAction>>({});
+  const [picking, setPicking] = useState(false);
+  const hydrated = useRef(false);
 
   // Whether the one-time forest intro (haptic + "extra support is here" hint)
   // has been shown. Persisted so it only ever happens once, not once a launch.
@@ -189,6 +197,30 @@ export function AdventureHub() {
       .then((v) => setForestIntroSeen(v === "1"))
       .catch(() => setForestIntroSeen(true));
   }, []);
+
+  // Resume the editor working-state (placements, wiring, deletions) so a long
+  // placing session survives an app restart. Loaded once; saved on every change
+  // after hydration so we never clobber stored work with the initial empty.
+  useEffect(() => {
+    AsyncStorage.getItem("alchono.editorState")
+      .then((raw) => {
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        if (s.overrides) setOverrides(s.overrides);
+        if (s.added) setAdded(s.added);
+        if (s.removed) setRemoved(s.removed);
+        if (s.actions) setActions(s.actions);
+      })
+      .catch(() => {})
+      .finally(() => { hydrated.current = true; });
+  }, []);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    AsyncStorage.setItem(
+      "alchono.editorState",
+      JSON.stringify({ overrides, added, removed, actions }),
+    ).catch(() => {});
+  }, [overrides, added, removed, actions]);
 
   // First time you ever reach the forest: a soft haptic + a hint that extra
   // support (a real person) is one tap away. Shown once, then persisted off.
@@ -300,6 +332,8 @@ export function AdventureHub() {
   geomRef.current = { dispW, dispH, offX, offY };
 
   const coordsOf = (h: Hotspot): Coords => overrides[h.id] ?? { x: h.x, y: h.y, w: h.w, h: h.h };
+  // The live destination for a hotspot: the editor-wired one wins, else baked.
+  const actionOf = (h: Hotspot): HubAction | undefined => actions[h.id] ?? h.action;
   const rectOf = (c: Coords) => ({
     position: "absolute" as const,
     left: offX + c.x * dispW,
@@ -382,6 +416,15 @@ export function AdventureHub() {
       for (const h of node.hotspots) delete next[h.id];
       return next;
     });
+    setSelected(null);
+  };
+
+  // Empty this view to a clean slate — removes every baked hotspot (recorded so
+  // the export tells me to delete them) and drops any added ones, so you can
+  // place the room fresh. "Reset view" brings the originals back.
+  const clearView = () => {
+    setRemoved((r) => ({ ...r, [nodeId]: node.hotspots.map((h) => h.id) }));
+    setAdded((a) => ({ ...a, [nodeId]: [] }));
     setSelected(null);
   };
 
@@ -488,14 +531,14 @@ export function AdventureHub() {
       // behaves like a button. A label WITH an action IS tappable, so a text
       // label (e.g. "My Sky" over the window) can be the tap target on its own,
       // with no glow blob needed to catch the press.
-      if (!h.action) {
+      const action = actionOf(h);
+      if (!action) {
         return (
           <View key={h.id} pointerEvents="none" style={rectOf(coordsOf(h))}>
             {affordance(h)}
           </View>
         );
       }
-      const action = h.action;
       return (
         <Pressable
           key={h.id}
@@ -689,6 +732,19 @@ export function AdventureHub() {
           </View>
         </View>
 
+        {/* Wire where this hotspot goes — the whole point of in-app authoring. */}
+        <Pressable
+          onPress={() => setPicking(true)}
+          style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, backgroundColor: "rgba(164,137,222,0.12)", borderWidth: 1, borderColor: "rgba(164,137,222,0.45)" }}
+          className="active:opacity-80"
+        >
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <Text style={{ color: "#8b849b", fontSize: 11 }}>Opens</Text>
+            <Text style={{ color: "#ECE9F1", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>{labelForAction(actionOf(sel))}</Text>
+          </View>
+          <Feather name="link" size={16} color="#C9B8F0" />
+        </Pressable>
+
         {isText ? (
           <View style={{ marginTop: 10 }}>
             <Text style={{ color: "#8b849b", fontSize: 11, marginBottom: 4 }}>Label text</Text>
@@ -811,7 +867,8 @@ export function AdventureHub() {
         extra.push(`text "${e.label}"`);
       }
       const prefix = newItem ? "NEW " : "";
-      const base = `${prefix}${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
+      const wired = actionExport(actionOf(h));
+      const base = `${prefix}${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)} → ${wired}`;
       return extra.length ? `${base}, ${extra.join(", ")}` : base;
     })
     .join("\n") +
@@ -970,6 +1027,28 @@ export function AdventureHub() {
         </Pressable>
       ) : null}
 
+      {/* Empty this view to a clean slate so you can place it fresh. */}
+      {editMode ? (
+        <Pressable
+          onPress={clearView}
+          hitSlop={8}
+          style={{
+            position: "absolute",
+            bottom: 104,
+            right: 14,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "rgba(40,20,28,0.92)",
+            borderWidth: 1,
+            borderColor: "rgba(210,150,160,0.4)",
+          }}
+          className="active:opacity-80"
+        >
+          <Text style={{ color: "#F0C4C8", fontSize: 12.5, fontWeight: "600" }}>Clear view</Text>
+        </Pressable>
+      ) : null}
+
       {editMode && !selected ? (
         <View style={{ position: "absolute", left: 12, right: 12, bottom: 158, flexDirection: "row", gap: 10, justifyContent: "center" }}>
           {(["label", "glow"] as const).map((k) => (
@@ -997,6 +1076,51 @@ export function AdventureHub() {
       ) : null}
 
       {editMode ? renderInspector() : null}
+
+      {editMode && picking ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.97)", paddingTop: 80 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 8 }}>
+            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>Where does “{selected}” open?</Text>
+            <Pressable onPress={() => setPicking(false)} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+              <Feather name="x" size={18} color="#ECE9F1" />
+            </Pressable>
+          </View>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
+            <Pressable
+              onPress={() => {
+                if (selected) setActions((a) => { const n = { ...a }; delete n[selected]; return n; });
+                setPicking(false);
+              }}
+              style={{ paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.05)", borderWidth: 1, borderColor: "rgba(236,233,241,0.12)", marginBottom: 14 }}
+              className="active:opacity-70"
+            >
+              <Text style={{ color: "#CFC8DE", fontSize: 14 }}>— Not linked (clear) —</Text>
+            </Pressable>
+            {DESTINATIONS.map((g) => (
+              <View key={g.group} style={{ marginBottom: 16 }}>
+                <Text style={{ color: "#8b849b", fontSize: 11, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{g.group}</Text>
+                {g.items.map((it) => {
+                  const chosen = selected ? actionExport(actions[selected]) === actionExport(it.action) : false;
+                  return (
+                    <Pressable
+                      key={it.label}
+                      onPress={() => {
+                        if (selected) setActions((a) => ({ ...a, [selected]: it.action }));
+                        setPicking(false);
+                      }}
+                      style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 9, backgroundColor: chosen ? "rgba(164,137,222,0.18)" : "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: chosen ? "rgba(164,137,222,0.5)" : "rgba(236,233,241,0.08)", marginBottom: 6 }}
+                      className="active:opacity-70"
+                    >
+                      <Text style={{ color: "#ECE9F1", fontSize: 14, flex: 1, paddingRight: 8 }}>{it.label}</Text>
+                      {chosen ? <Feather name="check" size={16} color="#C9B8F0" /> : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      ) : null}
 
       {showExport ? (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.96)", paddingTop: 90, paddingHorizontal: 20 }}>

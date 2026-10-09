@@ -49,7 +49,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     ) {
       // Professionals live in their own portal, not the member app.
       router.replace('/pro' as any);
-    } else if (session && !profile?.onboarding_completed && !inOnboarding) {
+    } else if (session && profile && !profile.onboarding_completed && !inOnboarding) {
       router.replace('/onboarding');
     } else if (session && profile?.onboarding_completed && (inAuth || inOnboarding)) {
       router.replace('/(tabs)');
