@@ -958,7 +958,10 @@ export function AdventureHub() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push("/resources/home" as any);
+              // Outdoors version of the resources book — you're in the woods, so
+              // the directory's background matches. Until that art is baked it
+              // falls back to the plain resources screen (same crisis lines).
+              router.push("/resources/outdoors" as any);
             }}
             hitSlop={10}
             accessibilityRole="button"

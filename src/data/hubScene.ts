@@ -139,8 +139,10 @@ export const HUB_NODES: Record<string, HubNode> = {
       // Coordinates placed in-app and exported. (f_bell removed in the editor.)
       // The SOS "Let's Talk" booth = the urge flow.
       { id: "f_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.47, x: 0.302, y: 0.528, w: 0.155, h: 0.176, action: { kind: "forest", mode: "jump" } },
-      // Reception counter objects (phone / ledger).
-      { id: "f_phone", caption: "Your people", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.6, x: 0.103, y: 0.405, w: 0.082, h: 0.04, action: { kind: "route", route: "/messages" } },
+      // Reception counter objects. The landline opens the resources book (the
+      // yellow directory pages: crisis lines / call / text / meetings) — that was
+      // always its design point. Messages + care team live in other rooms.
+      { id: "f_phone", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.6, x: 0.103, y: 0.405, w: 0.082, h: 0.04, action: { kind: "route", route: "/resources/home" } },
       { id: "f_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: -0.006, y: 0.466, w: 0.211, h: 0.031, action: { kind: "route", route: "/session/track" } },
       // Doors & stairs.
       { id: "f_me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.687, y: 0.053, w: 0.085, h: 0.092, action: { kind: "node", node: "me_front" } },
@@ -170,8 +172,8 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.342, y: 0.21, w: 0.13, h: 0.19, action: { kind: "forest", mode: "jump" } },
       // The Reception door → the grounds (the other apps).
       { id: "l_reception", caption: "Reception — the grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.625, y: 0.221, w: 0.16, h: 0.203, action: { kind: "node", node: "reception" } },
-      // The counter shows here too (phone / ledger).
-      { id: "l_phone", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.879, y: 0.419, w: 0.138, h: 0.045, action: { kind: "route", route: "/messages" } },
+      // The counter shows here too — landline opens the resources book.
+      { id: "l_phone", caption: "Extra support", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.879, y: 0.419, w: 0.138, h: 0.045, action: { kind: "route", route: "/resources/home" } },
       { id: "l_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.813, y: 0.491, w: 0.249, h: 0.04, action: { kind: "route", route: "/session/track" } },
     ],
   },
