@@ -25,6 +25,11 @@ export const DESTINATIONS: DestGroup[] = [
   {
     group: "Support & people",
     items: [
+      // The resources book = the crisis-lines directory (999, Samaritans, NHS 111,
+      // Drinkline, AA, Shout…). "home" dims the lobby behind the book; "arcade"
+      // the Games Room. The forest "Extra support" pill already opens /resources/home.
+      { label: "Resources book — crisis lines & meetings", action: { kind: "route", route: "/resources/home" } },
+      { label: "Resources book — Games Room version", action: { kind: "route", route: "/resources/arcade" } },
       { label: "AI Coach", action: { kind: "route", route: "/support/coach" } },
       { label: "Recovery", action: { kind: "route", route: "/support/recovery" } },
       { label: "Mentors", action: { kind: "route", route: "/support/mentors" } },
