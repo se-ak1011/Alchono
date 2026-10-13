@@ -142,6 +142,12 @@ export function AdventureHub() {
   // grounds. Persisted (with the other edits) so a long session survives.
   const [actions, setActions] = useState<Record<string, HubAction>>({});
   const [picking, setPicking] = useState(false);
+  // In-app navigation editing: per-node overrides for the pan arrows (left,
+  // right) and Back. `null` for a direction means "no arrow here". Authored in
+  // edit mode, persisted + exported with the rest so you can wire the whole
+  // floorplan yourself, not just hotspots.
+  const [nav, setNav] = useState<Record<string, { left?: string | null; right?: string | null; back?: string | null }>>({});
+  const [navDir, setNavDir] = useState<null | "left" | "right" | "back">(null);
   const hydrated = useRef(false);
 
   // Whether the one-time forest intro (haptic + "extra support is here" hint)
@@ -174,6 +180,15 @@ export function AdventureHub() {
   const hotspotsRef = useRef(hotspots);
   hotspotsRef.current = hotspots;
   overridesRef.current = overrides;
+
+  // Effective pan/back navigation for the current view, honoring in-app nav
+  // overrides (a set direction wins; `null` hides that arrow; unset falls back
+  // to the baked node).
+  const navTarget = (dir: "left" | "right" | "back"): string | undefined => {
+    const o = nav[nodeId];
+    if (o && dir in o) return o[dir] ?? undefined;
+    return (node as any)[dir] as string | undefined;
+  };
 
   useEffect(() => {
     const loop = Animated.loop(
@@ -212,6 +227,7 @@ export function AdventureHub() {
         if (s.added) setAdded(s.added);
         if (s.removed) setRemoved(s.removed);
         if (s.actions) setActions(s.actions);
+        if (s.nav) setNav(s.nav);
       })
       .catch(() => {})
       .finally(() => { hydrated.current = true; });
@@ -220,9 +236,9 @@ export function AdventureHub() {
     if (!hydrated.current) return;
     AsyncStorage.setItem(
       "alchono.editorState",
-      JSON.stringify({ overrides, added, removed, actions }),
+      JSON.stringify({ overrides, added, removed, actions, nav }),
     ).catch(() => {});
-  }, [overrides, added, removed, actions]);
+  }, [overrides, added, removed, actions, nav]);
 
   // First time you ever reach the forest: a soft haptic + a hint that extra
   // support (a real person) is one tap away. Shown once, then persisted off.
@@ -286,8 +302,9 @@ export function AdventureHub() {
       const prev = history[history.length - 1];
       setHistory((h) => h.slice(0, -1));
       navigateNode(prev, false);
-    } else if (node.back) {
-      navigateNode(node.back, false);
+    } else {
+      const b = navTarget("back");
+      if (b) navigateNode(b, false);
     }
   };
 
@@ -418,6 +435,7 @@ export function AdventureHub() {
       for (const h of node.hotspots) delete next[h.id];
       return next;
     });
+    setNav((n) => { const next = { ...n }; delete next[nodeId]; return next; });
     setSelected(null);
   };
 
@@ -874,7 +892,14 @@ export function AdventureHub() {
       return extra.length ? `${base}, ${extra.join(", ")}` : base;
     })
     .join("\n") +
-    (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "");
+    (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "") +
+    (nav[node.id]
+      ? `\n\nNAV (set these arrows on ${node.id} when baking):\n` +
+        (["left", "right", "back"] as const)
+          .filter((d) => d in nav[node.id]!)
+          .map((d) => `${d} → ${nav[node.id]![d] ?? "(none)"}`)
+          .join("\n")
+      : "");
 
   // Screen-fit: the image fills the full screen (captured SCREEN_W × SCREEN_H)
   // and cover-fit crops the overflow. This is the sizing that rendered the old
@@ -904,9 +929,9 @@ export function AdventureHub() {
         <Animated.Image source={node.glowImage} style={[imgStyle, { opacity: glint }]} resizeMode="cover" />
       ) : null}
       {editMode ? renderEditBoxes() : renderHotspots()}
-      {!editMode && node.left ? turnArrow("left", node.left) : null}
-      {!editMode && node.right ? turnArrow("right", node.right) : null}
-      {!editMode && (history.length > 0 || node.back) ? turnArrow("back", node.back ?? "") : null}
+      {!editMode && navTarget("left") ? turnArrow("left", navTarget("left")!) : null}
+      {!editMode && navTarget("right") ? turnArrow("right", navTarget("right")!) : null}
+      {!editMode && (history.length > 0 || navTarget("back")) ? turnArrow("back", navTarget("back") ?? "") : null}
     </>
   );
 
@@ -1091,38 +1116,71 @@ export function AdventureHub() {
         </View>
       ) : null}
 
+      {/* Edit this view's pan arrows + Back (the structural navigation). Tap a
+          slot to pick where it goes, or hide it. Exports with the hotspots. */}
+      {editMode && !selected && !picking && !navDir ? (
+        <View style={{ position: "absolute", top: 100, left: 12, gap: 6 }}>
+          {(["left", "right", "back"] as const).map((dir) => {
+            const t = navTarget(dir);
+            const lbl = dir === "left" ? "← Left" : dir === "right" ? "Right →" : "↩ Back";
+            return (
+              <Pressable
+                key={dir}
+                onPress={() => { setSelected(null); setPicking(false); setNavDir(dir); }}
+                style={{ flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 8, backgroundColor: "rgba(20,17,28,0.9)", borderWidth: 1, borderColor: "rgba(190,160,210,0.4)", maxWidth: 230 }}
+                className="active:opacity-80"
+              >
+                <Text style={{ color: "#C9B8F0", fontSize: 11, fontWeight: "700", width: 46 }}>{lbl}</Text>
+                <Text style={{ color: "#ECE9F1", fontSize: 11.5, flex: 1 }} numberOfLines={1}>{t ? (HUB_NODES[t]?.title ?? t) : "— none —"}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+
       {editMode ? renderInspector() : null}
 
-      {editMode && picking ? (
+      {editMode && (picking || navDir) ? (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.97)", paddingTop: 80 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 8 }}>
-            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>Where does “{selected}” open?</Text>
-            <Pressable onPress={() => setPicking(false)} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>{navDir ? `Where does ${navDir === "back" ? "Back" : navDir === "left" ? "the ← arrow" : "the → arrow"} go?` : `Where does “${selected}” open?`}</Text>
+            <Pressable onPress={() => { setPicking(false); setNavDir(null); }} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
               <Feather name="x" size={18} color="#ECE9F1" />
             </Pressable>
           </View>
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
             <Pressable
               onPress={() => {
-                if (selected) setActions((a) => { const n = { ...a }; delete n[selected]; return n; });
-                setPicking(false);
+                if (navDir) setNav((n) => ({ ...n, [nodeId]: { ...(n[nodeId] ?? {}), [navDir]: null } }));
+                else if (selected) setActions((a) => { const n = { ...a }; delete n[selected]; return n; });
+                setPicking(false); setNavDir(null);
               }}
               style={{ paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.05)", borderWidth: 1, borderColor: "rgba(236,233,241,0.12)", marginBottom: 14 }}
               className="active:opacity-70"
             >
-              <Text style={{ color: "#CFC8DE", fontSize: 14 }}>— Not linked (clear) —</Text>
+              <Text style={{ color: "#CFC8DE", fontSize: 14 }}>{navDir ? "— No arrow (hide it) —" : "— Not linked (clear) —"}</Text>
             </Pressable>
-            {DESTINATIONS.map((g) => (
+            {DESTINATIONS.map((g) => {
+              const items = navDir ? g.items.filter((it) => it.action.kind === "node") : g.items;
+              if (!items.length) return null;
+              return (
               <View key={g.group} style={{ marginBottom: 16 }}>
                 <Text style={{ color: "#8b849b", fontSize: 11, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{g.group}</Text>
-                {g.items.map((it) => {
-                  const chosen = selected ? actionExport(actions[selected]) === actionExport(it.action) : false;
+                {items.map((it) => {
+                  const chosen = navDir
+                    ? (it.action.kind === "node" && navTarget(navDir) === it.action.node)
+                    : (selected ? actionExport(actions[selected]) === actionExport(it.action) : false);
                   return (
                     <Pressable
                       key={it.label}
                       onPress={() => {
-                        if (selected) setActions((a) => ({ ...a, [selected]: it.action }));
-                        setPicking(false);
+                        if (navDir && it.action.kind === "node") {
+                          const target = it.action.node;
+                          setNav((n) => ({ ...n, [nodeId]: { ...(n[nodeId] ?? {}), [navDir]: target } }));
+                        } else if (!navDir && selected) {
+                          setActions((a) => ({ ...a, [selected]: it.action }));
+                        }
+                        setPicking(false); setNavDir(null);
                       }}
                       style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 9, backgroundColor: chosen ? "rgba(164,137,222,0.18)" : "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: chosen ? "rgba(164,137,222,0.5)" : "rgba(236,233,241,0.08)", marginBottom: 6 }}
                       className="active:opacity-70"
@@ -1133,7 +1191,8 @@ export function AdventureHub() {
                   );
                 })}
               </View>
-            ))}
+              );
+            })}
           </ScrollView>
         </View>
       ) : null}
