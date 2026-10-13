@@ -38,6 +38,7 @@ export type HotspotKind =
   | "primary" // the dominant immediate-help action (the urge sign)
   | "board" // (legacy) interactive chalk label — text + tap
   | "sign" // (legacy) interactive sign — text + tap
+  | "sticker" // a hand-drawn taped paper room-sign (wayfinding doodle)
   | "plain"; // invisible tap target
 
 /** How an interactive hotspot behaves conceptually (see docs/adventure-hub.md).
@@ -93,6 +94,10 @@ export type Hotspot = {
    *  on the rack. Keyed into INLAYS in AdventureHub. It's pointer-transparent, so
    *  a tap still routes via `action` — the object is alive AND takes you in. */
   inlay?: string;
+  /** A taped paper room-sign doodle shown filling this box (keyed into STICKERS).
+   *  Pointer-transparent like an inlay, so a tap still routes via `action`. Used
+   *  for hand-drawn wayfinding near doors/stairs. */
+  sticker?: string;
 };
 
 export type HubNode = {
