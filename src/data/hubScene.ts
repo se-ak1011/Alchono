@@ -121,609 +121,6 @@ export type HubNode = {
 export const HUB_START = "living_room_front";
 
 export const HUB_NODES: Record<string, HubNode> = {
-  front: {
-    id: "front",
-    title: "Alchono",
-    image: require("../../assets/scenes/home_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "left",
-    right: "right",
-    // New Alchono lobby. Three views pan together: front (here), left (reception
-    // + fire exit), right (arcade/bar + fire exit). The signage is painted into
-    // the art, so most labels are gone — the objects just glow. Boxes are rough:
-    // drag each onto its object in the in-app editor and export. See
-    // docs/adventure-hub.md.
-    hotspots: [
-      // Coordinates placed in-app and exported. (f_bell removed in the editor.)
-      // The SOS "Let's Talk" booth = the urge flow.
-      { id: "f_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.47, x: 0.302, y: 0.528, w: 0.155, h: 0.176, action: { kind: "forest", mode: "jump" } },
-      // Reception counter objects. The landline opens the resources book (the
-      // yellow directory pages: crisis lines / call / text / meetings) — that was
-      // always its design point. Messages + care team live in other rooms.
-      { id: "f_phone", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowMax: 0.6, x: 0.103, y: 0.405, w: 0.082, h: 0.04, action: { kind: "route", route: "/resources/home" } },
-      { id: "f_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: -0.006, y: 0.466, w: 0.211, h: 0.031, action: { kind: "route", route: "/session/track" } },
-      // Doors & stairs.
-      { id: "f_me", caption: "Me", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.6, x: 0.687, y: 0.053, w: 0.085, h: 0.092, action: { kind: "node", node: "me_front" } },
-      { id: "f_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.6, x: 0.728, y: 0.278, w: 0.096, h: 0.115, action: { kind: "node", node: "support" } },
-      // Directional signs → where they point. The "← Reading / Writing →" sign
-      // is two targets now: Reading (top line) and Writing (bottom line).
-      { id: "f_reading", caption: "Reading", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.25, w: 0.19, h: 0.048, action: { kind: "node", node: "reading_room" } },
-      { id: "f_writing", caption: "Writing", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.07, y: 0.295, w: 0.19, h: 0.048, action: { kind: "node", node: "writing_room" } },
-      { id: "f_cafebar", caption: "Café-Bar & Arcade", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.8, glowMax: 0.55, x: 0.891, y: 0.256, w: 0.131, h: 0.049, action: { kind: "node", node: "right" } },
-    ],
-  },
-
-  left: {
-    id: "left",
-    title: "Reception & Exit",
-    image: require("../../assets/scenes/home_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    // Pan right to return to the front; Back also returns to the lobby.
-    right: "front",
-    back: "front",
-    hotspots: [
-      // Coordinates placed in-app and exported. (l_keys + l_bell removed.)
-      // Fire exit + SOS booth = the urge flow.
-      { id: "l_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.3, x: 0.091, y: 0.187, w: 0.208, h: 0.318, action: { kind: "forest", mode: "walk" } },
-      { id: "l_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.342, y: 0.21, w: 0.13, h: 0.19, action: { kind: "forest", mode: "jump" } },
-      // The Reception door → the grounds (the other apps).
-      { id: "l_reception", caption: "Reception — the grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.625, y: 0.221, w: 0.16, h: 0.203, action: { kind: "node", node: "reception" } },
-      // The counter shows here too — landline opens the resources book.
-      { id: "l_phone", caption: "Extra support", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.879, y: 0.419, w: 0.138, h: 0.045, action: { kind: "route", route: "/resources/home" } },
-      { id: "l_ledger", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowMax: 0.55, x: 0.813, y: 0.491, w: 0.249, h: 0.04, action: { kind: "route", route: "/session/track" } },
-    ],
-  },
-  right: {
-    id: "right",
-    title: "Arcade & Café-Bar",
-    image: require("../../assets/scenes/home_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    // Pan left to return to the front; Back also returns to the lobby.
-    left: "front",
-    back: "front",
-    hotspots: [
-      // Coordinates placed in-app and exported.
-      // Fire exit + SOS booth = the urge flow (reachable from every view).
-      { id: "rt_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.295, y: 0.202, w: 0.156, h: 0.254, action: { kind: "forest", mode: "walk" } },
-      { id: "rt_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.27, x: 0.189, y: 0.206, w: 0.213, h: 0.261, action: { kind: "forest", mode: "jump" } },
-      // The Arcade door (machines visible through it).
-      { id: "rt_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.574, y: 0.217, w: 0.168, h: 0.235, action: { kind: "node", node: "arcade" } },
-      // The Café-Bar glass doors.
-      { id: "rt_cafebar", caption: "Café-Bar", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.811, y: 0.203, w: 0.172, h: 0.263, action: { kind: "node", node: "cafebar" } },
-      // The window onto the garden → Outside (that scene's still being redrawn).
-      { id: "rt_window", caption: "The garden", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.45, x: 0.011, y: 0.151, w: 0.15, h: 0.356, action: { kind: "node", node: "outside" } },
-    ],
-  },
-
-  // The Reading Room — a cosy nook you walk into: armchair, lamp, bay window.
-  // The bookshelf opens the books close-up (the 9 categories). Fire exit + SOS
-  // box = the urge flow. No other door — back → the lobby. Rough boxes, tune.
-  reading_room: {
-    id: "reading_room",
-    title: "Reading Room",
-    image: require("../../assets/scenes/reading_room.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    back: "front",
-    hotspots: [
-      // The bookshelf → the books close-up.
-      { id: "re_shelf", caption: "The books", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.78, y: 0.13, w: 0.22, h: 0.52, action: { kind: "node", node: "reading_shelf" } },
-      // Fire exit + SOS box = the urge flow.
-      { id: "re_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.0, y: 0.19, w: 0.17, h: 0.44, action: { kind: "forest", mode: "walk" } },
-      { id: "re_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.17, y: 0.33, w: 0.1, h: 0.14, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-
-  // Reading close-up — zoom into the bookshelf from the Reading Room. Each
-  // pre-drawn book (title + emblem baked into the art) is an invisible tap
-  // target that opens its toolkit category. Books read left→right, top→bottom in
-  // the same order as the shelf grid. Rough boxes — drag each onto its spine in
-  // the editor and export; the back arrow returns to the Reading Room.
-  reading_shelf: {
-    id: "reading_shelf",
-    title: "Reading Corner",
-    image: require("../../assets/scenes/reading_shelf.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    back: "reading_room",
-    hotspots: [
-      // Top shelf.
-      { id: "bk_moment", caption: "In the moment", kind: "plain", interaction: "destination", haptic: "light", x: 0.121, y: 0.101, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/in-the-moment" } },
-      { id: "bk_understand", caption: "Understand", kind: "plain", interaction: "destination", haptic: "light", x: 0.221, y: 0.098, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/understand" } },
-      { id: "bk_triggers", caption: "Triggers", kind: "plain", interaction: "destination", haptic: "light", x: 0.317, y: 0.097, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/triggers" } },
-      // Middle shelf.
-      { id: "bk_planning", caption: "Planning ahead", kind: "plain", interaction: "destination", haptic: "light", x: 0.561, y: 0.371, w: 0.095, h: 0.19, action: { kind: "route", route: "/reading/planning-ahead" } },
-      { id: "bk_stress", caption: "Stress", kind: "plain", interaction: "destination", haptic: "light", x: 0.674, y: 0.369, w: 0.085, h: 0.19, action: { kind: "route", route: "/reading/stress" } },
-      { id: "bk_sleep", caption: "Sleep", kind: "plain", interaction: "destination", haptic: "light", x: 0.772, y: 0.368, w: 0.085, h: 0.19, action: { kind: "route", route: "/reading/sleep" } },
-      // Bottom shelf.
-      { id: "bk_relationships", caption: "Relationships", kind: "plain", interaction: "destination", haptic: "light", x: 0.258, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/reading/relationships" } },
-      { id: "bk_identity", caption: "Identity", kind: "plain", interaction: "destination", haptic: "light", x: 0.378, y: 0.629, w: 0.085, h: 0.2, action: { kind: "route", route: "/reading/identity" } },
-      { id: "bk_slip", caption: "After a slip", kind: "plain", interaction: "destination", haptic: "light", x: 0.482, y: 0.626, w: 0.095, h: 0.2, action: { kind: "route", route: "/reading/after-a-slip" } },
-    ],
-  },
-
-  // Writing close-up — zoom into the desk from the café Writing Space. Each
-  // object on the desk is a different way to write. A soft glow hints each is
-  // tappable; drag onto the exact object in the editor and export.
-  writing_desk: {
-    id: "writing_desk",
-    title: "Writing Space",
-    image: require("../../assets/scenes/writing_desk.png"),
-    imgW: 851,
-    imgH: 1848,
-    fit: "screen",
-    // Back → the Writing Room you're sitting in (not all the way home).
-    back: "writing_room",
-    hotspots: [
-      // The open notebook → write a note.
-      { id: "wd_note", caption: "A note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.144, y: 0.607, w: 0.62, h: 0.17, action: { kind: "route", route: "/journal/write" } },
-      // The envelopes → write a letter.
-      { id: "wd_letters", caption: "Letters", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.65, glowMax: 0.6, x: 0.62, y: 0.5, w: 0.36, h: 0.1, action: { kind: "route", route: "/letters/write" } },
-      // The voice recorder → the Voice note screen: a big mic you press to record.
-      { id: "wd_voice", caption: "Voice note", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.65, x: 0.061, y: 0.501, w: 0.2, h: 0.09, action: { kind: "route", route: "/journal/voice" } },
-      // The paper tray → your saved notes.
-      { id: "wd_notes", caption: "Your notes", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.658, y: 0.375, w: 0.32, h: 0.1, action: { kind: "route", route: "/journal/notes" } },
-      // Drink safety-valve, present in every room (easy to move or delete in-app).
-      { id: "wd_urge", caption: "I need a drink", kind: "primary", label: "I need a drink", labelSize: 20, interaction: "object", haptic: "heavy", x: 0.28, y: 0.8, w: 0.44, h: 0.08, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-
-  // The Writing Room — you walk in and sit to write. The desk opens the writing
-  // close-up (note / voice / letters / your notes). Fire exit + SOS box = the
-  // urge flow; the Support door and the garden window stitch it into the
-  // building. Entered from the home-front "Writing" sign; back → the lobby.
-  // Rough boxes — tune in the editor and export.
-  writing_room: {
-    id: "writing_room",
-    title: "Writing Room",
-    image: require("../../assets/scenes/writing_room.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    back: "front",
-    hotspots: [
-      // The desk → the writing close-up.
-      { id: "wr_desk", caption: "Sit and write", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.0, y: 0.52, w: 0.5, h: 0.3, action: { kind: "node", node: "writing_desk" } },
-      // Fire exit + SOS box = the urge flow.
-      { id: "wr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.52, y: 0.21, w: 0.19, h: 0.4, action: { kind: "forest", mode: "walk" } },
-      { id: "wr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.44, y: 0.28, w: 0.1, h: 0.15, action: { kind: "forest", mode: "jump" } },
-      // The Support door → the support room. (The window is just a window.)
-      { id: "wr_support", caption: "Support", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.87, y: 0.3, w: 0.13, h: 0.4, action: { kind: "node", node: "support" } },
-    ],
-  },
-
-  // The Games Room — a 3-view rec room (anti-casino on purpose: windows that
-  // show the real time of day, a clear exit, light, a way out — the opposite of
-  // a casino). Entered from the home-right "Games Room" door (and the Break
-  // Room). Each device runs one of Marta's games in a WebView cabinet
-  // (/arcade/<slug>): FRONT = the two arcade cabinets (Skull Grove + Growth
-  // Shield); LEFT = the PS1 (Skull Haven); RIGHT = the Game Boy (Skull Path) +
-  // the Break Room door. Fire exit + SOS = the forest. Internally still "arcade"
-  // (routes/ids), shown to the user as "Games Room". Rough boxes — tune + export.
-  arcade: {
-    id: "arcade",
-    title: "Games Room",
-    image: require("../../assets/scenes/arcade_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "arcade_left",
-    right: "arcade_right",
-    back: "right",
-    hotspots: [
-      // The two cabinets → the shooters.
-      { id: "a_cab1", caption: "Skull Grove", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.24, w: 0.14, h: 0.22, action: { kind: "route", route: "/arcade/skull-grove" } },
-      { id: "a_cab2", caption: "Growth Shield", kind: "glow", tint: "purple", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.26, y: 0.24, w: 0.14, h: 0.22, action: { kind: "route", route: "/arcade/growth-shield" } },
-      // Fire exit + SOS booth = the forest.
-      { id: "a_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.44, y: 0.17, w: 0.16, h: 0.5, action: { kind: "forest", mode: "walk" } },
-      { id: "a_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.68, y: 0.22, w: 0.12, h: 0.2, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-  // Games Room — LEFT view: the PS1 nook (Skull Haven). Turn right back to the
-  // cabinets; back out to the lobby. SOS booth here for urge access (no fire
-  // exit painted in this view).
-  arcade_left: {
-    id: "arcade_left",
-    title: "Games Room",
-    image: require("../../assets/scenes/arcade_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    right: "arcade",
-    back: "right",
-    hotspots: [
-      // The CRT + PS1 → Skull Haven.
-      { id: "al_console", caption: "Skull Haven", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.1, y: 0.28, w: 0.3, h: 0.25, action: { kind: "route", route: "/arcade/skull-haven" } },
-      // SOS booth = the forest (jump).
-      { id: "al_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.42, y: 0.2, w: 0.12, h: 0.18, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-  arcade_right: {
-    id: "arcade_right",
-    title: "Games Room",
-    image: require("../../assets/scenes/arcade_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "arcade",
-    back: "right",
-    hotspots: [
-      // The Game Boy on the table → Skull Path.
-      { id: "ar_gameboy", caption: "Skull Path", kind: "glow", tint: "warm", interaction: "object", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.45, y: 0.45, w: 0.14, h: 0.1, action: { kind: "route", route: "/arcade/skull-path" } },
-      // Fire exit + SOS booth = the forest.
-      { id: "ar_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.45, x: 0.0, y: 0.15, w: 0.18, h: 0.55, action: { kind: "forest", mode: "walk" } },
-      { id: "ar_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.5, x: 0.2, y: 0.3, w: 0.12, h: 0.2, action: { kind: "forest", mode: "jump" } },
-      // The Break Room door (right) → the Break Room (games ↔ break room).
-      { id: "ar_bar", caption: "Break Room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.72, y: 0.1, w: 0.25, h: 0.7, action: { kind: "node", node: "cafebar" } },
-    ],
-  },
-
-  // The Support room — redrawn in the new (Spanish-posh social-centre) style, a
-  // 3-view lounge. Front: the coach armchairs + the urge doors. Left: Recovery,
-  // Mentors and a door through to the Writing room, + the fire exit. Right:
-  // Messages (the computer), Recommendations (the board), + the urge doors. The
-  // fire-exit (walk) and SOS booth (jump) lead to the forest. All boxes are a
-  // rough first pass on the new art — drag each onto its object in the in-app
-  // editor and export; I'll bake the exact coordinates.
-  support: {
-    id: "support",
-    title: "Support",
-    image: require("../../assets/scenes/support_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "support_left",
-    right: "support_right",
-    back: "front",
-    hotspots: [
-      // AI Coach — the two armchairs + coffee table (sit and talk).
-      { id: "s_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.18, y: 0.46, w: 0.56, h: 0.3, action: { kind: "route", route: "/support/coach" } },
-      // Fire exit + SOS booth = the urge sanctuary (walk / jump into the forest).
-      { id: "s_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.83, y: 0.17, w: 0.17, h: 0.52, action: { kind: "forest", mode: "walk" } },
-      { id: "s_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.4, x: 0.72, y: 0.3, w: 0.12, h: 0.17, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-  support_left: {
-    id: "support_left",
-    title: "Support",
-    image: require("../../assets/scenes/support_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    right: "support",
-    back: "front",
-    hotspots: [
-      // The Writing door → the Writing room.
-      { id: "sl_writing", caption: "Writing", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.0, y: 0.18, w: 0.2, h: 0.62, action: { kind: "node", node: "writing_room" } },
-      // Recovery — the desk + chair.
-      { id: "sl_recovery", caption: "Recovery", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.42, y: 0.5, w: 0.22, h: 0.28, action: { kind: "route", route: "/support/recovery" } },
-      // Mentors — the corkboard above the desk.
-      { id: "sl_mentors", caption: "Mentors", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.45, x: 0.5, y: 0.28, w: 0.2, h: 0.16, action: { kind: "route", route: "/support/mentors" } },
-      // Fire exit = the urge sanctuary (walk into the forest).
-      { id: "sl_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.78, y: 0.22, w: 0.2, h: 0.5, action: { kind: "forest", mode: "walk" } },
-    ],
-  },
-  support_right: {
-    id: "support_right",
-    title: "Support",
-    image: require("../../assets/scenes/support_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "support",
-    back: "front",
-    hotspots: [
-      // Messages — the computer.
-      { id: "sr_messages", caption: "Messages", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.6, y: 0.42, w: 0.3, h: 0.22, action: { kind: "route", route: "/messages" } },
-      // Recommendations — the corkboard above the desk (0.0 alcohol-free swaps).
-      { id: "sr_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.45, x: 0.6, y: 0.2, w: 0.33, h: 0.19, action: { kind: "route", route: "/support/recommendations" } },
-      // Fire exit + SOS booth = the urge sanctuary (walk / jump into the forest).
-      { id: "sr_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.22, y: 0.14, w: 0.22, h: 0.56, action: { kind: "forest", mode: "walk" } },
-      { id: "sr_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.4, x: 0.1, y: 0.3, w: 0.13, h: 0.18, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-
-  // The Me room — your private space, redrawn as a corridor you walk DOWN the
-  // top of the lobby: front → left → left-again (the old me_right retired).
-  // Entered from the lobby/support "Me". The fire-exit + SOS booth sit on the
-  // front wall, so the urge sanctuary (the forest) is reachable from here too.
-  // All boxes are a rough first pass on the new art — drag each onto its object
-  // in the in-app editor and export; I'll bake the exact coordinates.
-  me_front: {
-    id: "me_front",
-    title: "Me",
-    image: require("../../assets/scenes/me_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    // Corridor: only turn LEFT to walk deeper; back → the lobby.
-    left: "me_left",
-    back: "front",
-    hotspots: [
-      // Personal File — the desk cabinet / drawers.
-      { id: "mf_file", caption: "Personal file", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.55, y: 0.62, w: 0.2, h: 0.18, action: { kind: "route", route: "/profile/file" } },
-      // Your Moments — the corkboard on the right wall (live preview inlay).
-      { id: "mf_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", inlay: "moments", glowScale: 0.7, glowMax: 0.45, x: 0.6, y: 0.23, w: 0.18, h: 0.2, action: { kind: "route", route: "/moments" } },
-      // Looking Forward To — the open notebook on the desk.
-      { id: "mf_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "destination", haptic: "light", glowScale: 0.6, glowMax: 0.6, x: 0.42, y: 0.52, w: 0.16, h: 0.08, action: { kind: "route", route: "/goals" } },
-      // Fire exit + SOS booth = the urge sanctuary (walk / jump into the forest).
-      { id: "mf_exit", caption: "I need help now", kind: "glow", tint: "warm", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.82, y: 0.1, w: 0.18, h: 0.55, action: { kind: "forest", mode: "walk" } },
-      { id: "mf_sos", caption: "I need help now", kind: "glow", tint: "warm", interaction: "object", haptic: "heavy", glowMax: 0.4, x: 0.74, y: 0.27, w: 0.13, h: 0.17, action: { kind: "forest", mode: "jump" } },
-    ],
-  },
-  // Left 1 — the sleeping end of the corridor: the human safety net + your
-  // quiet logs. Turn left again for the coach + hobbies; turn right back to
-  // the front; back → the lobby.
-  me_left: {
-    id: "me_left",
-    title: "Me",
-    image: require("../../assets/scenes/me_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "me_left2",
-    right: "me_front",
-    back: "front",
-    hotspots: [
-      // Tonight — the bedside lamp (drink tracking).
-      { id: "ml_tonight", caption: "Tonight", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.55, y: 0.28, w: 0.12, h: 0.12, action: { kind: "route", route: "/session/track" } },
-      // Care Team — the bed (your human safety net).
-      { id: "ml_care", caption: "Care team", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.68, y: 0.44, w: 0.3, h: 0.2, action: { kind: "route", route: "/profile/care-team" } },
-      // Trusted Person — the pillows.
-      { id: "ml_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.5, x: 0.78, y: 0.38, w: 0.2, h: 0.12, action: { kind: "route", route: "/profile/trusted" } },
-      // Saved — the under-bed drawers (your favourites stash).
-      { id: "ml_saved", caption: "Saved", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.78, y: 0.62, w: 0.22, h: 0.15, action: { kind: "route", route: "/saved" } },
-    ],
-  },
-  // Left 2 — the far end: the AI coach, and (coming) the Hobbies system. Turn
-  // right back to Left 1; back → the lobby.
-  me_left2: {
-    id: "me_left2",
-    title: "Me",
-    image: require("../../assets/scenes/me_left2.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    right: "me_left",
-    back: "front",
-    hotspots: [
-      // AI Coach — the stool + desk nook (sit and talk).
-      { id: "ml2_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.6, x: 0.08, y: 0.5, w: 0.2, h: 0.2, action: { kind: "route", route: "/support/coach" } },
-      // Hobbies — the new Hobbies system lands here (lockers / boxes). Awaiting
-      // Marta's design; not wired yet.
-    ],
-  },
-
-  // The Café-Bar — mocktails you can make at home. A 2-view room, entered from
-  // the café's right counter (and the arcade's CAFE-BAR door); turn left for the
-  // mixing station. The back arrow exits to the café.
-  // The Café-Bar — now a front + RIGHT room, entered from the lobby's right
-  // view (rt_cafebar → here). Front = the old left view's menu (Cinnamon /
-  // Mojito / Golden); pan right for the old front's menu (Sunrise / Honey /
-  // Slow Tea) + the 0.0 recommendations and the French doors to the garden.
-  // SOS booth + fire exit = the urge flow in both views. All boxes rough —
-  // drag onto their objects in the editor and export.
-  cafebar: {
-    id: "cafebar",
-    title: "Café-Bar",
-    image: require("../../assets/scenes/cafebar_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    right: "cafebar_right",
-    // Back → the right corridor you entered from (home-right), not the lobby.
-    back: "right",
-    hotspots: [
-      // The board — drinks (Cinnamon / Mojito / Golden). Each opens its recipe.
-      // The whole menu board = one tap → the drinks menu (rough box, re-tune).
-      { id: "cb_menu", caption: "The bar menu", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.4, x: 0.56, y: 0.21, w: 0.3, h: 0.11, action: { kind: "route", route: "/bar/menu" } },
-      // Coordinates placed in-app and exported. Drink labels (cb_d1–3) removed —
-      // the menu board is now one tap (above).
-      { id: "cb_arcade", caption: "Arcade", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.017, y: 0.216, w: 0.104, h: 0.312, action: { kind: "node", node: "arcade" } },
-      // SOS booth + fire exit = the urge flow.
-      { id: "cb_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.32, x: 0.13, y: 0.265, w: 0.11, h: 0.13, action: { kind: "forest", mode: "jump" } },
-      { id: "cb_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.244, y: 0.252, w: 0.124, h: 0.236, action: { kind: "forest", mode: "walk" } },
-    ],
-  },
-  cafebar_right: {
-    id: "cafebar_right",
-    title: "Café-Bar",
-    image: require("../../assets/scenes/cafebar_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "cafebar",
-    back: "right",
-    hotspots: [
-      // The whole menu board = one tap → the drinks menu (rough box, re-tune).
-      { id: "cbr_menu", caption: "The bar menu", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.4, x: 0.0, y: 0.17, w: 0.36, h: 0.16, action: { kind: "route", route: "/bar/menu" } },
-      // Coordinates placed in-app and exported. Drink + recs labels removed —
-      // the menu board is now one tap (above). The 0.0 menu also carries the
-      // recommendations, so the alcohol-free sign below is a second way to it.
-      // The "Alcohol-free 0.0%" sign on the counter → the 0.0 recommendations.
-      { id: "cbr_free", caption: "0.0 recommendations", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.6, glowMax: 0.55, x: 0.28, y: 0.37, w: 0.13, h: 0.07, action: { kind: "route", route: "/support/recommendations" } },
-      // SOS booth + fire exit = the urge flow.
-      { id: "cbr_urge_exit", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.525, y: 0.245, w: 0.135, h: 0.241, action: { kind: "forest", mode: "walk" } },
-      { id: "cbr_urge_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "object", haptic: "heavy", glowMax: 0.37, x: 0.671, y: 0.267, w: 0.121, h: 0.13, action: { kind: "forest", mode: "jump" } },
-      // The French doors → the garden (Outside), which opens onto the grounds.
-      { id: "cbr_doors", caption: "The garden", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.4, x: 0.8, y: 0.18, w: 0.2, h: 0.45, action: { kind: "node", node: "outside" } },
-    ],
-  },
-
-  // The Break Room — the second bar/social room. A 2-view room entered from the
-  // Support-right "Break Room" door: you arrive at the vending machine (front),
-  // turn right for the table + the door out. The right door leads "outside" to
-  // the wider-life stuff (ecosystem) rather than back to Support, so the rooms
-  // don't form a closed loop.
-  breakroom: {
-    id: "breakroom",
-    title: "Break Room",
-    image: require("../../assets/scenes/breakroom_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    right: "breakroom_right",
-    back: "front",
-    hotspots: [
-      // The chalkboard → Community. The vending machine is now just scenery.
-      { id: "br_board", caption: "Community", kind: "board", tint: "purple", interaction: "destination", inlay: "community_board", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.463, y: 0.309, w: 0.359, h: 0.131, action: { kind: "route", route: "/community" } },
-      { id: "br_lbl_board", caption: "Community", kind: "label", label: "Community", labelSize: 18, x: 0.525, y: 0.246, w: 0.355, h: 0.078 },
-    ],
-  },
-  breakroom_right: {
-    id: "breakroom_right",
-    title: "Break Room",
-    image: require("../../assets/scenes/breakroom_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "breakroom",
-    back: "front",
-    hotspots: [
-      // The table → Mentors.
-      { id: "brr_table", caption: "Mentors", kind: "glow", tint: "purple", interaction: "destination", haptic: "light", glowScale: 0.7, glowMax: 0.5, x: 0.16, y: 0.394, w: 0.654, h: 0.098, action: { kind: "route", route: "/support/mentors" } },
-      { id: "brr_lbl_mentors", caption: "Mentors", kind: "label", label: "Mentors", labelSize: 18, x: 0.386, y: 0.421, w: 0.2, h: 0.08 },
-      // The wall → Care team + Trusted person (the human safety net, together).
-      { id: "brr_wall", caption: "Care team & sponsor", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.6, glowMax: 0.5, x: 0.3, y: 0.19, w: 0.34, h: 0.16, action: { kind: "route", route: "/profile/connections" } },
-      { id: "brr_lbl_wall", caption: "Care team & trusted person", kind: "label", label: "Care Team & Trusted Person", labelSize: 14, rotateY: -10, x: 0.336, y: 0.218, w: 0.26, h: 0.05 },
-      // The door → "outside": the wider-life stuff (struggling with something else).
-      { id: "brr_door", caption: "Outside", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.4, glowMax: 0.6, x: 0.866, y: 0.32, w: 0.104, h: 0.047, action: { kind: "node", node: "outside" } },
-      { id: "brr_lbl_door", caption: "Outside", kind: "label", label: "Outside", labelSize: 13, rotate: -3, x: 0.763, y: 0.174, w: 0.22, h: 0.05 },
-    ],
-  },
-
-  // The outdoor space — "outside" from the Break Room, now redrawn as the
-  // threshold of the grounds. Two doors under the lamp: the Café door leads back
-  // inside (the Break Room), and the Reception door is the gate to the shared
-  // reception — where the other apps (Cannano and the rest) will live. All the
-  // signage ("Café", "Reception", "Struggling with something else too?") is
-  // baked into the art, so the only hotspots are the two door glows.
-  outside: {
-    id: "outside",
-    title: "Outside",
-    image: require("../../assets/scenes/outside.webp"),
-    imgW: 840,
-    imgH: 1872,
-    fit: "screen",
-    // Back → the right view (you came out through its garden window). The Break
-    // Room door (brr_door → outside) stays as a second, scenic way in.
-    back: "right",
-    hotspots: [
-      // The Café door (left) → back inside, to the Break Room. (editor-tuned)
-      { id: "out_cafe", caption: "Café", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.83, y: 0.53 }, x: 0.011, y: 0.264, w: 0.23, h: 0.3, action: { kind: "node", node: "breakroom" } },
-      // The Reception door (centre) → the shared reception (the grounds). (editor-tuned)
-      { id: "out_reception", caption: "Reception", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.45, glowMax: 0.55, anchor: { x: 0.8, y: 0.55 }, x: 0.365, y: 0.273, w: 0.25, h: 0.3, action: { kind: "node", node: "reception" } },
-    ],
-  },
-
-  // The shared reception — the civic heart of the grounds, drawn from the
-  // Alchono viewpoint (you're standing on the purple Alchono mat; your own door
-  // is behind you). Each coloured door is a sibling app, its name on a baked-in
-  // brass plate. None are built yet, so every door — and the central desk board
-  // — opens "The Grounds" directory, which carries the ethos, each room's
-  // open/coming-soon status, and (later) the real download/open links. When an
-  // app ships, wire its door straight to its store link. The directory lives at
-  // /ecosystem ("The Grounds"). Door boxes are rough — drag each onto its door
-  // in the editor and export. back → outside.
-  reception: {
-    id: "reception",
-    title: "Reception",
-    image: require("../../assets/scenes/reception.webp"),
-    imgW: 941,
-    imgH: 1672,
-    fit: "screen",
-    back: "outside",
-    hotspots: [
-      // New art, doors reordered chronologically L→R: Cocaine, Cannabis,
-      // Nicotine, Prescription. Crests baked onto the doors, so just the four
-      // glows + the board. Rough boxes — relocate in the editor and export.
-      { id: "rc_cocaine", caption: "Cocaine · Cocano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.03, y: 0.17, w: 0.14, h: 0.23, action: { kind: "node", node: "cocano_preview" } },
-      { id: "rc_cannabis", caption: "Cannabis · Cannano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.26, y: 0.17, w: 0.14, h: 0.22, action: { kind: "node", node: "cannano_preview" } },
-      { id: "rc_nicotine", caption: "Nicotine · Nicono — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.61, y: 0.16, w: 0.14, h: 0.23, action: { kind: "node", node: "nicono_preview" } },
-      { id: "rc_prescription", caption: "Prescription medication · Medano — step inside", kind: "glow", tint: "purple", interaction: "destination", glowScale: 0.4, glowMax: 0.4, anchor: { x: 0.5, y: 0.5 }, x: 0.83, y: 0.16, w: 0.15, h: 0.25, action: { kind: "node", node: "medano_preview" } },
-      // The central corkboard → "The Grounds" directory.
-      { id: "rc_board", caption: "The Grounds", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.55, glowMax: 0.45, x: 0.44, y: 0.19, w: 0.17, h: 0.15, action: { kind: "route", route: "/ecosystem" } },
-    ],
-  },
-
-  // Sibling-app previews — walk through a reception door into a feel of that
-  // app's home. Everything is scenery (the boards and shelves are dressed in
-  // the art, not wired); only the front counter is live — the "get this app"
-  // CTA. It points at /ecosystem ("The Grounds") for now; swap it for the
-  // app's store link once it ships. back → reception. Counter boxes are rough
-  // — drag onto the desk in the editor and export. Each is the other app's
-  // viewpoint, so its own purple/green/etc. is baked into the art.
-  cannano_preview: {
-    id: "cannano_preview",
-    title: "Cannano",
-    image: require("../../assets/scenes/cannano_preview.webp"),
-    imgW: 851,
-    imgH: 1848,
-    fit: "screen",
-    back: "reception",
-    hotspots: [
-      // 2008-12 media-club art; Cannano crest framed on the corkboard (top-
-      // left). Glow over it → get the app. Rough box — re-tune.
-      { id: "cn_emblem", caption: "Get Cannano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.0, y: 0.18, w: 0.17, h: 0.16, action: { kind: "route", route: "/ecosystem" } },
-    ],
-  },
-
-  cocano_preview: {
-    id: "cocano_preview",
-    title: "Cocano",
-    image: require("../../assets/scenes/cocano_preview.webp"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    back: "reception",
-    hotspots: [
-      // New 2003-07 internet-café art; the Cocano crest is framed as wall art
-      // (top-left). Glow sits over it → get the app. Rough box — re-tune.
-      { id: "co_emblem", caption: "Get Cocano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.19, y: 0.17, w: 0.18, h: 0.15, action: { kind: "route", route: "/ecosystem" } },
-    ],
-  },
-
-  medano_preview: {
-    id: "medano_preview",
-    title: "Medano",
-    image: require("../../assets/scenes/medano_preview.webp"),
-    imgW: 853,
-    imgH: 1844,
-    fit: "screen",
-    back: "reception",
-    hotspots: [
-      // 2018-22 two-storey wellbeing-library art; Medano snake crest framed on
-      // the left wall. Glow over it → get the app. Rough box — re-tune.
-      { id: "md_emblem", caption: "Get Medano", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.0, y: 0.29, w: 0.17, h: 0.17, action: { kind: "route", route: "/ecosystem" } },
-    ],
-  },
-
-  nicono_preview: {
-    id: "nicono_preview",
-    title: "Nicono",
-    image: require("../../assets/scenes/nicono_preview.webp"),
-    imgW: 853,
-    imgH: 1844,
-    fit: "screen",
-    back: "reception",
-    hotspots: [
-      // 2013-17 workshop art; Nicono moth crest framed as wall art (centre,
-      // under the sign). Glow over it → get the app. Rough box — re-tune.
-      { id: "ni_emblem", caption: "Get Nicono", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", glowScale: 0.5, glowMax: 0.4, x: 0.4, y: 0.21, w: 0.2, h: 0.14, action: { kind: "route", route: "/ecosystem" } },
-    ],
-  },
-
-  // ── The Forest — the urge sanctuary ──────────────────────────────────────
-  // Reached ONLY from the fire-exit door (walk) or the SOS booth (jump), which
-  // live on every lobby scene and now lead here instead of the old porch menu.
   // No decisions on the way in. The SOS "jump" fades straight through the
   // canopy to the clearing; the fire-exit "walk" drops you at the canopy to
   // stroll the path yourself. Back unwinds however you came (a walk retraces
@@ -740,7 +137,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    back: "front",
+    back: "living_room_front",
     hotspots: [
       // The lit path up through the trees → deeper in. (Rough box — tune in-app.)
       { id: "fc_path", caption: "Into the woods", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.4, x: 0.37, y: 0.42, w: 0.26, h: 0.3, action: { kind: "node", node: "forest_hall" } },
@@ -776,7 +173,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     left: "clearing_left",
     right: "clearing_right",
-    back: "front",
+    back: "living_room_front",
     hotspots: [],
   },
   clearing_left: {
@@ -805,81 +202,19 @@ export const HUB_NODES: Record<string, HubNode> = {
   },
 
   // === THE CABIN (home, not reception) ======================================
-  // 6 rooms x 3 views. Downstairs: living room (arrival), kitchen, entertainment.
-  // Upstairs: study (reading/writing/support-computer), your room, bathroom.
-  // EVERY view is intentionally empty of hotspots — place them yourself in the
-  // in-app editor. For now the whole house is reachable as a temporary PAN LOOP
-  // (swipe left/right walks through all 18 views; Back returns to the living
-  // room). Replace this with real doors/stairs once you've placed things.
-  // The old lobby/room nodes below are left in place but orphaned (unreached).
-
-  living_room_front: {
-    id: "living_room_front",
-    title: "Living Room",
-    image: require("../../assets/scenes/living_room_front.png"),
+  // Two floors wired like a real house. DOWNSTAIRS is one panorama you swipe
+  // through: entertainment <- living room (home/start) -> kitchen. UPSTAIRS the
+  // same: study (where the stairs land) -> your room -> bathroom. The living room
+  // holds the only two navigation hotspots: the stairs (up) and the front door
+  // (out into the woods = urge flow). Back returns home. Every other view is empty,
+  // for you to place feature hotspots in the editor.
+  entertainment_left: {
+    id: "entertainment_left",
+    title: "Entertainment",
+    image: require("../../assets/scenes/entertainment_left.png"),
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "bathroom_right",
-    right: "living_room_left",
-    hotspots: [],
-  },
-  living_room_left: {
-    id: "living_room_left",
-    title: "Living Room",
-    image: require("../../assets/scenes/living_room_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "living_room_front",
-    right: "living_room_right",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  living_room_right: {
-    id: "living_room_right",
-    title: "Living Room",
-    image: require("../../assets/scenes/living_room_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "living_room_left",
-    right: "kitchen_front",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  kitchen_front: {
-    id: "kitchen_front",
-    title: "Kitchen",
-    image: require("../../assets/scenes/kitchen_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "living_room_right",
-    right: "kitchen_left",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  kitchen_left: {
-    id: "kitchen_left",
-    title: "Kitchen",
-    image: require("../../assets/scenes/kitchen_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "kitchen_front",
-    right: "kitchen_right",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  kitchen_right: {
-    id: "kitchen_right",
-    title: "Kitchen",
-    image: require("../../assets/scenes/kitchen_right.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "kitchen_left",
     right: "entertainment_front",
     back: "living_room_front",
     hotspots: [],
@@ -891,19 +226,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "kitchen_right",
-    right: "entertainment_left",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  entertainment_left: {
-    id: "entertainment_left",
-    title: "Entertainment",
-    image: require("../../assets/scenes/entertainment_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "entertainment_front",
+    left: "entertainment_left",
     right: "entertainment_right",
     back: "living_room_front",
     hotspots: [],
@@ -915,7 +238,93 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "entertainment_left",
+    left: "entertainment_front",
+    right: "living_room_left",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  living_room_left: {
+    id: "living_room_left",
+    title: "Living Room",
+    image: require("../../assets/scenes/living_room_left.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "entertainment_right",
+    right: "living_room_front",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  living_room_front: {
+    id: "living_room_front",
+    title: "Living Room",
+    image: require("../../assets/scenes/living_room_front.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "living_room_left",
+    right: "living_room_right",
+    hotspots: [
+      // Stairs up -> upstairs landing (the study). Rough box, nudge in-app.
+      { id: "lr_upstairs", caption: "Upstairs", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.7, glowMax: 0.4, x: 0.8, y: 0.18, w: 0.19, h: 0.35, action: { kind: "node", node: "study_front" } },
+      // Front door / doormat -> out into the woods (the urge flow).
+      { id: "lr_outside", caption: "Outside", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.7, glowMax: 0.4, x: 0.28, y: 0.82, w: 0.44, h: 0.15, action: { kind: "forest", mode: "walk" } },
+    ],
+  },
+  living_room_right: {
+    id: "living_room_right",
+    title: "Living Room",
+    image: require("../../assets/scenes/living_room_right.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "living_room_front",
+    right: "kitchen_left",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  kitchen_left: {
+    id: "kitchen_left",
+    title: "Kitchen",
+    image: require("../../assets/scenes/kitchen_left.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "living_room_right",
+    right: "kitchen_front",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  kitchen_front: {
+    id: "kitchen_front",
+    title: "Kitchen",
+    image: require("../../assets/scenes/kitchen_front.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "kitchen_left",
+    right: "kitchen_right",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  kitchen_right: {
+    id: "kitchen_right",
+    title: "Kitchen",
+    image: require("../../assets/scenes/kitchen_right.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "kitchen_front",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  study_left: {
+    id: "study_left",
+    title: "Study",
+    image: require("../../assets/scenes/study_left.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
     right: "study_front",
     back: "living_room_front",
     hotspots: [],
@@ -927,19 +336,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "entertainment_right",
-    right: "study_left",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  study_left: {
-    id: "study_left",
-    title: "Study",
-    image: require("../../assets/scenes/study_left.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "study_front",
+    left: "study_left",
     right: "study_right",
     back: "living_room_front",
     hotspots: [],
@@ -951,19 +348,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "study_left",
-    right: "me_room_front",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  me_room_front: {
-    id: "me_room_front",
-    title: "Your Room",
-    image: require("../../assets/scenes/me_room_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "study_right",
+    left: "study_front",
     right: "me_room_left",
     back: "living_room_front",
     hotspots: [],
@@ -975,7 +360,19 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "me_room_front",
+    left: "study_right",
+    right: "me_room_front",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  me_room_front: {
+    id: "me_room_front",
+    title: "Your Room",
+    image: require("../../assets/scenes/me_room_front.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "me_room_left",
     right: "me_room_right",
     back: "living_room_front",
     hotspots: [],
@@ -987,19 +384,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "me_room_left",
-    right: "bathroom_front",
-    back: "living_room_front",
-    hotspots: [],
-  },
-  bathroom_front: {
-    id: "bathroom_front",
-    title: "Bathroom",
-    image: require("../../assets/scenes/bathroom_front.png"),
-    imgW: 851,
-    imgH: 1847,
-    fit: "screen",
-    left: "me_room_right",
+    left: "me_room_front",
     right: "bathroom_left",
     back: "living_room_front",
     hotspots: [],
@@ -1011,7 +396,19 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "bathroom_front",
+    left: "me_room_right",
+    right: "bathroom_front",
+    back: "living_room_front",
+    hotspots: [],
+  },
+  bathroom_front: {
+    id: "bathroom_front",
+    title: "Bathroom",
+    image: require("../../assets/scenes/bathroom_front.png"),
+    imgW: 851,
+    imgH: 1847,
+    fit: "screen",
+    left: "bathroom_left",
     right: "bathroom_right",
     back: "living_room_front",
     hotspots: [],
@@ -1023,8 +420,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "bathroom_left",
-    right: "living_room_front",
+    left: "bathroom_front",
     back: "living_room_front",
     hotspots: [],
   },
