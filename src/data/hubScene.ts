@@ -315,10 +315,14 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851,
     imgH: 1847,
     fit: "screen",
-    left: "living_room_right",
     right: "kitchen_front",
     back: "living_room_front",
-    hotspots: [],
+    hotspots: [
+      { id: "kl_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.413, y: 0.26, w: 0.119, h: 0.141, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "kl_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.6, x: 0.352, y: 0.457, w: 0.185, h: 0.068, action: { kind: "route", route: "/resources/home" } },
+      { id: "kl_mentors", caption: "Mentors", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.036, y: 0.262, w: 0.301, h: 0.144, action: { kind: "route", route: "/support/mentors" } },
+      { id: "kl_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.8, glowMax: 0.5, x: 0.755, y: 0.239, w: 0.117, h: 0.066, action: { kind: "forest", mode: "jump" } },
+    ],
   },
   kitchen_front: {
     id: "kitchen_front",
@@ -330,7 +334,13 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "kitchen_left",
     right: "kitchen_right",
     back: "living_room_front",
-    hotspots: [],
+    hotspots: [
+      { id: "kf_woods", caption: "Into the woods", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.904, y: 0.168, w: 0.09, h: 0.3, action: { kind: "node", node: "forest_canopy" } },
+      { id: "kf_connections", caption: "Your people", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.71, y: 0.34, w: 0.162, h: 0.039, action: { kind: "route", route: "/profile/connections" } },
+      { id: "kf_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.117, y: 0.378, w: 0.15, h: 0.075, action: { kind: "route", route: "/resources/home" } },
+      { id: "kf_recommendations", caption: "Recommendations", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.087, y: 0.202, w: 0.115, h: 0.155, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "kf_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.8, glowMax: 0.6, x: 0.758, y: 0.239, w: 0.146, h: 0.063, action: { kind: "forest", mode: "jump" } },
+    ],
   },
   kitchen_right: {
     id: "kitchen_right",
@@ -341,7 +351,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     fit: "screen",
     left: "kitchen_front",
     back: "living_room_front",
-    hotspots: [],
+    hotspots: [
+      { id: "kr_woods", caption: "Into the woods", kind: "glow", tint: "warm", interaction: "destination", haptic: "medium", glowScale: 0.8, glowMax: 0.5, x: 0.393, y: 0.179, w: 0.169, h: 0.273, action: { kind: "node", node: "forest_canopy" } },
+      { id: "kr_sos", caption: "I need help now", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", glowScale: 0.8, glowMax: 0.5, x: 0.771, y: 0.227, w: 0.15, h: 0.085, action: { kind: "forest", mode: "jump" } },
+      { id: "kr_track", caption: "Tonight", kind: "glow", tint: "warm", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.5, x: 0.192, y: 0.337, w: 0.161, h: 0.039, action: { kind: "route", route: "/session/track" } },
+      { id: "kr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", glowScale: 0.8, glowMax: 0.6, x: -0.022, y: 0.474, w: 0.121, h: 0.061, action: { kind: "route", route: "/resources/home" } },
+    ],
   },
   study_left: {
     id: "study_left",
