@@ -7,6 +7,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
 import { DESTINATIONS, labelForAction, actionExport } from "@/data/destinations";
+import { AMBIENT_LIFE } from "@/data/ambientLife";
+import { AmbientLife } from "./AmbientLife";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
@@ -884,6 +886,17 @@ export function AdventureHub() {
   const sceneInner = (
     <>
       <Image source={isNight() && node.nightImage ? node.nightImage : node.image} style={imgStyle} resizeMode="cover" />
+      {/* Quiet bioluminescence — registered night effects (a vein, embers, a
+          water-glimpse) that bloom and vanish one at a time on a random timer.
+          Night only, below the hotspots, ignores taps. */}
+      {AMBIENT_LIFE[node.id]?.length ? (
+        <AmbientLife
+          key={node.id}
+          effects={AMBIENT_LIFE[node.id]}
+          active={isNight() && !editMode}
+          imageStyle={imgStyle}
+        />
+      ) : null}
       {/* The painted glow layer, breathing 0→1→0 over the base so every object's
           glow pulses together. When present, glow hotspots draw no engine bloom.
           It sits below the hotspots (rendered next), so taps still reach them. */}
