@@ -11,7 +11,7 @@ import { AMBIENT_LIFE } from "@/data/ambientLife";
 import { AmbientLife } from "./AmbientLife";
 import { STICKERS, STICKER_BY_ID } from "@/data/stickers";
 import { CaptionBar } from "@/components/home/CaptionBar";
-import { INLAYS } from "@/components/home/HubInlays";
+import { INLAYS, INLAY_OPTIONS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
 
 // Full PHYSICAL display size — "screen", NOT "window". The window can shrink to
@@ -153,6 +153,10 @@ export function AdventureHub() {
   // Overrides a hotspot's baked `sticker`. Persisted + exported with the rest.
   const [stickers, setStickers] = useState<Record<string, string>>({});
   const [stickerPicking, setStickerPicking] = useState(false);
+  // In-app live-preview (inlay) choice per hotspot id. "none" explicitly clears
+  // a baked inlay. Persisted + exported with the rest.
+  const [inlayMap, setInlayMap] = useState<Record<string, string>>({});
+  const [inlayPicking, setInlayPicking] = useState(false);
   const hydrated = useRef(false);
 
   // Whether the one-time forest intro (haptic + "extra support is here" hint)
@@ -234,6 +238,7 @@ export function AdventureHub() {
         if (s.actions) setActions(s.actions);
         if (s.nav) setNav(s.nav);
         if (s.stickers) setStickers(s.stickers);
+        if (s.inlays) setInlayMap(s.inlays);
       })
       .catch(() => {})
       .finally(() => { hydrated.current = true; });
@@ -242,9 +247,9 @@ export function AdventureHub() {
     if (!hydrated.current) return;
     AsyncStorage.setItem(
       "alchono.editorState",
-      JSON.stringify({ overrides, added, removed, actions, nav, stickers }),
+      JSON.stringify({ overrides, added, removed, actions, nav, stickers, inlays: inlayMap }),
     ).catch(() => {});
-  }, [overrides, added, removed, actions, nav, stickers]);
+  }, [overrides, added, removed, actions, nav, stickers, inlayMap]);
 
   // First time you ever reach the forest: a soft haptic + a hint that extra
   // support (a real person) is one tap away. Shown once, then persisted off.
@@ -360,6 +365,10 @@ export function AdventureHub() {
   // The live destination for a hotspot: the editor-wired one wins, else baked.
   const actionOf = (h: Hotspot): HubAction | undefined => actions[h.id] ?? h.action;
   const stickerOf = (h: Hotspot): string | undefined => stickers[h.id] ?? h.sticker;
+  const inlayOf = (h: Hotspot): string | undefined => {
+    const v = inlayMap[h.id] ?? h.inlay;
+    return v === "none" ? undefined : v;
+  };
   const rectOf = (c: Coords) => ({
     position: "absolute" as const,
     left: offX + c.x * dispW,
@@ -489,8 +498,9 @@ export function AdventureHub() {
     // Live inlay: real content painted onto the object (arcade screen, community
     // board, papers on the rack), always on and clipped to the object's box. It's
     // pointer-transparent so the tap still routes via the hotspot's action.
-    if (h.inlay && INLAYS[h.inlay]) {
-      const Inlay = INLAYS[h.inlay];
+    const inlayKey = inlayOf(h);
+    if (inlayKey && INLAYS[inlayKey]) {
+      const Inlay = INLAYS[inlayKey];
       return (
         <View
           pointerEvents="none"
@@ -728,7 +738,7 @@ export function AdventureHub() {
     const sel = selected ? hotspots.find((h) => h.id === selected) : null;
     if (!sel) return null;
     const kind = sel.kind ?? "plain";
-    const hasInlay = !!sel.inlay;
+    const hasInlay = !!inlayOf(sel);
     const isText = kind === "label" || kind === "primary" || kind === "board" || kind === "sign";
     // A glow's colour/size controls are meaningless once an inlay replaces the
     // bloom; inlays get the rotate control instead so they sit on the object.
@@ -813,6 +823,20 @@ export function AdventureHub() {
             <Feather name="map-pin" size={16} color="#F0C987" />
           </Pressable>
         ) : null}
+
+        {/* Live preview (inlay) painted onto this object — a game screen, messages,
+            the community board, your moments. Pointer-transparent; tap still opens. */}
+        <Pressable
+          onPress={() => setInlayPicking(true)}
+          style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, backgroundColor: "rgba(130,200,170,0.1)", borderWidth: 1, borderColor: "rgba(130,200,170,0.4)" }}
+          className="active:opacity-80"
+        >
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <Text style={{ color: "#8b849b", fontSize: 11 }}>Live preview</Text>
+            <Text style={{ color: "#ECE9F1", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>{INLAY_OPTIONS.find((o) => o.id === inlayOf(sel))?.label ?? "— none —"}</Text>
+          </View>
+          <Feather name="monitor" size={16} color="#8fd3b4" />
+        </Pressable>
 
         {isText ? (
           <View style={{ marginTop: 10 }}>
@@ -927,6 +951,7 @@ export function AdventureHub() {
       if (e.tint) extra.push(`tint ${e.tint}`);
       const sidExp = stickerOf(h);
       if (sidExp) extra.push(`sticker ${sidExp}`);
+      if (h.id in inlayMap) extra.push(`inlay ${inlayMap[h.id]}`);
       const newItem = isAdded(h.id);
       // New items carry their kind + text so they can be baked from scratch (and
       // their destination wired), not just matched to an existing hotspot.
@@ -1244,6 +1269,44 @@ export function AdventureHub() {
               </View>
               );
             })}
+          </ScrollView>
+        </View>
+      ) : null}
+
+      {editMode && inlayPicking ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.97)", paddingTop: 80 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 8 }}>
+            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>Live preview on this object</Text>
+            <Pressable onPress={() => setInlayPicking(false)} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+              <Feather name="x" size={18} color="#ECE9F1" />
+            </Pressable>
+          </View>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
+            <Pressable
+              onPress={() => { if (selected) setInlayMap((m) => ({ ...m, [selected]: "none" })); setInlayPicking(false); }}
+              style={{ paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.05)", borderWidth: 1, borderColor: "rgba(236,233,241,0.12)", marginBottom: 14 }}
+              className="active:opacity-70"
+            >
+              <Text style={{ color: "#CFC8DE", fontSize: 14 }}>— None (no preview) —</Text>
+            </Pressable>
+            {(() => {
+              const selHot = selected ? hotspots.find((h) => h.id === selected) : null;
+              const cur = selHot ? inlayOf(selHot) : undefined;
+              return INLAY_OPTIONS.map((o) => {
+                const chosen = cur === o.id;
+                return (
+                  <Pressable
+                    key={o.id}
+                    onPress={() => { if (selected) setInlayMap((m) => ({ ...m, [selected]: o.id })); setInlayPicking(false); }}
+                    style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 9, backgroundColor: chosen ? "rgba(143,211,180,0.16)" : "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: chosen ? "rgba(143,211,180,0.5)" : "rgba(236,233,241,0.08)", marginBottom: 6 }}
+                    className="active:opacity-70"
+                  >
+                    <Text style={{ color: "#ECE9F1", fontSize: 14, flex: 1, paddingRight: 8 }}>{o.label}</Text>
+                    {chosen ? <Feather name="check" size={16} color="#8fd3b4" /> : null}
+                  </Pressable>
+                );
+              });
+            })()}
           </ScrollView>
         </View>
       ) : null}

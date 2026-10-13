@@ -331,6 +331,32 @@ export function NiconoLogoInlay() { return <LogoInlay source={NICONO_LOGO} />; }
 // ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
+// ————————————————————————————————————————————————————————————————
+// Messages — a glimpse of recent threads, as little chat rows, so the computer
+// / mailslot reads as alive. Stylized preview (role-based, not live data yet);
+// tapping opens the full messages room.
+// ————————————————————————————————————————————————————————————————
+export function MessagesInlay() {
+  const rows = [
+    { who: "Care team", msg: "How are you doing today?" },
+    { who: "Trusted person", msg: "Thinking of you x" },
+    { who: "You", msg: "Getting through it." },
+  ];
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", paddingHorizontal: "8%", paddingVertical: "8%", justifyContent: "center", gap: 6 }]}>
+      {rows.map((r, i) => (
+        <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: i === 2 ? "rgba(177,151,228,0.85)" : "rgba(198,222,208,0.75)" }} />
+          <View style={{ flex: 1 }}>
+            <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 11, color: "rgba(244,244,238,0.92)" }}>{r.who}</Text>
+            <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 10, color: "rgba(198,222,208,0.62)" }}>{r.msg}</Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
   arcade_memory: MemoryInlay,
@@ -339,6 +365,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   arcade_word: WordInlay,
   community: CommunityInlay, // video thumbnails
   community_board: CommunityBoardInlay, // written posts, chalked on the board
+  messages: MessagesInlay, // recent threads, on the computer / mailslot
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
   sky: SkyInlay,
   zine: ZineInlay, // a zine cover pinned to the café-right corkboard
@@ -347,3 +374,19 @@ export const INLAYS: Record<string, React.ComponentType> = {
   medano_logo: MedanoLogoInlay,
   nicono_logo: NiconoLogoInlay,
 };
+
+/** The live previews offered in the editor's inlay picker (label + inlay key).
+ *  The sibling-app crests are left out — they're not cabin objects. */
+export const INLAY_OPTIONS: { id: string; label: string }[] = [
+  { id: "arcade", label: "Game — Odd One Out" },
+  { id: "arcade_memory", label: "Game — Memory Match" },
+  { id: "arcade_pattern", label: "Game — Pattern (Simon)" },
+  { id: "arcade_colour", label: "Game — Colour (Stroop)" },
+  { id: "arcade_word", label: "Game — Word Search" },
+  { id: "community", label: "Community — video thumbnails" },
+  { id: "community_board", label: "Community — written posts" },
+  { id: "messages", label: "Messages — recent threads" },
+  { id: "moments", label: "Your moments — photos" },
+  { id: "sky", label: "Your sky (constellation)" },
+  { id: "zine", label: "Zine cover" },
+];
