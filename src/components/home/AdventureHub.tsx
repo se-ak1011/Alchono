@@ -10,7 +10,6 @@ import { DESTINATIONS, labelForAction, actionExport } from "@/data/destinations"
 import { AMBIENT_LIFE } from "@/data/ambientLife";
 import { AmbientLife } from "./AmbientLife";
 import { HotspotRing } from "./HotspotRing";
-import { STICKERS, STICKER_BY_ID } from "@/data/stickers";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS, INLAY_OPTIONS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
@@ -150,10 +149,6 @@ export function AdventureHub() {
   // floorplan yourself, not just hotspots.
   const [nav, setNav] = useState<Record<string, { left?: string | null; right?: string | null; back?: string | null }>>({});
   const [navDir, setNavDir] = useState<null | "left" | "right" | "back">(null);
-  // In-app sticker choice per hotspot id (which paper room-sign doodle it shows).
-  // Overrides a hotspot's baked `sticker`. Persisted + exported with the rest.
-  const [stickers, setStickers] = useState<Record<string, string>>({});
-  const [stickerPicking, setStickerPicking] = useState(false);
   // In-app live-preview (inlay) choice per hotspot id. "none" explicitly clears
   // a baked inlay. Persisted + exported with the rest.
   const [inlayMap, setInlayMap] = useState<Record<string, string>>({});
@@ -300,7 +295,6 @@ export function AdventureHub() {
         if (s.removed) setRemoved(s.removed);
         if (s.actions) setActions(s.actions);
         if (s.nav) setNav(s.nav);
-        if (s.stickers) setStickers(s.stickers);
         if (s.inlays) setInlayMap(s.inlays);
       })
       .catch(() => {})
@@ -310,9 +304,9 @@ export function AdventureHub() {
     if (!hydrated.current) return;
     AsyncStorage.setItem(
       "alchono.editorState",
-      JSON.stringify({ overrides, added, removed, actions, nav, stickers, inlays: inlayMap }),
+      JSON.stringify({ overrides, added, removed, actions, nav, inlays: inlayMap }),
     ).catch(() => {});
-  }, [overrides, added, removed, actions, nav, stickers, inlayMap]);
+  }, [overrides, added, removed, actions, nav, inlayMap]);
 
   // First time you ever reach the forest: a soft haptic + a hint that extra
   // support (a real person) is one tap away. Shown once, then persisted off.
@@ -429,7 +423,6 @@ export function AdventureHub() {
   const coordsOf = (h: Hotspot): Coords => overrides[h.id] ?? { x: h.x, y: h.y, w: h.w, h: h.h };
   // The live destination for a hotspot: the editor-wired one wins, else baked.
   const actionOf = (h: Hotspot): HubAction | undefined => actions[h.id] ?? h.action;
-  const stickerOf = (h: Hotspot): string | undefined => stickers[h.id] ?? h.sticker;
   const inlayOf = (h: Hotspot): string | undefined => {
     const v = inlayMap[h.id] ?? h.inlay;
     return v === "none" ? undefined : v;
@@ -476,18 +469,15 @@ export function AdventureHub() {
 
   // Create a new hotspot in the middle of the screen and select it. Its
   // destination is wired when baked (the export tags it NEW).
-  const addHotspot = (kind: "label" | "glow" | "sticker") => {
-    const prefix = kind === "label" ? "lbl" : kind === "glow" ? "glow" : "sign";
+  const addHotspot = (kind: "label" | "glow") => {
+    const prefix = kind === "label" ? "lbl" : "glow";
     const id = `${prefix}_new_${Date.now().toString().slice(-4)}`;
     const spot: Hotspot =
       kind === "label"
         ? { id, caption: "New label", kind: "label", label: "New label", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
-        : kind === "glow"
-        ? { id, caption: "New glow", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.5, x: 0.42, y: 0.42, w: 0.16, h: 0.16 }
-        : { id, caption: "New sign", kind: "sticker", sticker: STICKERS[0].id, x: 0.4, y: 0.4, w: 0.2, h: 0.2 };
+        : { id, caption: "New spot", kind: "glow", tint: "purple", x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
     setAdded((a) => ({ ...a, [nodeId]: [...(a[nodeId] ?? []), spot] }));
     setSelected(id);
-    if (kind === "sticker") setStickerPicking(true);
   };
 
   // Delete any hotspot. Ones added in-app just vanish; base ones (baked into
@@ -536,29 +526,6 @@ export function AdventureHub() {
   const affordance = (h: Hotspot) => {
     const kind = h.kind ?? "plain";
     const e = editsOf(h);
-
-    // A taped paper room-sign doodle: fills the box, pointer-transparent so the
-    // tap still routes via the hotspot's action. Honors the in-app sticker choice.
-    const sid = stickerOf(h);
-    if (sid && STICKER_BY_ID[sid]) {
-      return (
-        <View
-          pointerEvents="none"
-          style={{
-            flex: 1,
-            opacity: e.opacity ?? 1,
-            transform: [
-              { perspective: 600 },
-              { rotateX: `${e.rotateX ?? 0}deg` },
-              { rotateY: `${e.rotateY ?? 0}deg` },
-              { rotate: `${e.rotate ?? 0}deg` },
-            ],
-          }}
-        >
-          <Image source={STICKER_BY_ID[sid].image} resizeMode="contain" style={{ width: "100%", height: "100%" }} />
-        </View>
-      );
-    }
 
     // Live inlay: real content painted onto the object (arcade screen, community
     // board, papers on the rack), always on and clipped to the object's box. It's
@@ -887,21 +854,6 @@ export function AdventureHub() {
           <Feather name="link" size={16} color="#C9B8F0" />
         </Pressable>
 
-        {/* Sticker / paper room-sign: choose which doodle this sign shows. */}
-        {kind === "sticker" || stickerOf(sel) ? (
-          <Pressable
-            onPress={() => setStickerPicking(true)}
-            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, backgroundColor: "rgba(240,201,135,0.1)", borderWidth: 1, borderColor: "rgba(240,201,135,0.4)" }}
-            className="active:opacity-80"
-          >
-            <View style={{ flex: 1, paddingRight: 8 }}>
-              <Text style={{ color: "#8b849b", fontSize: 11 }}>Sign doodle</Text>
-              <Text style={{ color: "#ECE9F1", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>{STICKER_BY_ID[stickerOf(sel) ?? ""]?.label ?? "— pick one —"}</Text>
-            </View>
-            <Feather name="map-pin" size={16} color="#F0C987" />
-          </Pressable>
-        ) : null}
-
         {/* Live preview (inlay) painted onto this object — a game screen, messages,
             the community board, your moments. Pointer-transparent; tap still opens. */}
         <Pressable
@@ -1027,8 +979,6 @@ export function AdventureHub() {
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
       if (e.tint) extra.push(`tint ${e.tint}`);
-      const sidExp = stickerOf(h);
-      if (sidExp) extra.push(`sticker ${sidExp}`);
       if (h.id in inlayMap) extra.push(`inlay ${inlayMap[h.id]}`);
       const newItem = isAdded(h.id);
       // New items carry their kind + text so they can be baked from scratch (and
@@ -1143,30 +1093,6 @@ export function AdventureHub() {
         </Pressable>
       ) : null}
 
-      {/* The back-door keys. The urge/"need a minute?" hatch, as an object that
-          honestly belongs in every room — not an SOS alarm bolted on. It lives
-          in the SAME reachable spot on every view (muscle memory beats a search
-          when you're in a spike), is always present (an escape hatch must never
-          go missing), and just lets you grab your keys and step out back to the
-          clearing — jump straight there, no path, no decisions. Hidden in the
-          forest (you're already out) and during a design pass. */}
-      {!inForest && !editMode ? (
-        <Pressable
-          onPress={() => {
-            showCaption("Need a minute?");
-            runAction({ kind: "forest", mode: "jump" });
-          }}
-          hitSlop={12}
-          accessibilityRole="button"
-          accessibilityLabel="Need a minute? Step out to the clearing"
-          className="active:opacity-80"
-          style={{ position: "absolute", right: 14, bottom: 40, flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 22, backgroundColor: "rgba(13,11,18,0.72)", borderWidth: 1, borderColor: "rgba(240,201,135,0.5)" }}
-        >
-          <Feather name="key" size={15} color="#F0C987" />
-          <Text style={{ color: "#F3EEDB", fontSize: 13, fontWeight: "600" }}>Need a minute?</Text>
-        </Pressable>
-      ) : null}
-
       {/* The urge sanctuary carries a quiet shortcut to real human support —
           the crisis-lines book — always a tap away while you ride it out. */}
       {inForest && !editMode ? (
@@ -1270,7 +1196,7 @@ export function AdventureHub() {
 
       {editMode && !selected ? (
         <View style={{ position: "absolute", left: 12, right: 12, bottom: 158, flexDirection: "row", gap: 10, justifyContent: "center" }}>
-          {(["label", "glow", "sticker"] as const).map((k) => (
+          {(["label", "glow"] as const).map((k) => (
             <Pressable
               key={k}
               onPress={() => addHotspot(k)}
@@ -1287,8 +1213,8 @@ export function AdventureHub() {
               }}
               className="active:opacity-80"
             >
-              <Feather name={k === "label" ? "type" : k === "glow" ? "sun" : "map-pin"} size={15} color="#EFEAF5" />
-              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add label" : k === "glow" ? "Add glow" : "Add sign"}</Text>
+              <Feather name={k === "label" ? "type" : "target"} size={15} color="#EFEAF5" />
+              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add label" : "Add spot"}</Text>
             </Pressable>
           ))}
         </View>
@@ -1408,42 +1334,6 @@ export function AdventureHub() {
                   </Pressable>
                 );
               });
-            })()}
-          </ScrollView>
-        </View>
-      ) : null}
-
-      {editMode && stickerPicking ? (
-        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.97)", paddingTop: 80 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 8 }}>
-            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>Pick a sign doodle</Text>
-            <Pressable onPress={() => setStickerPicking(false)} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
-              <Feather name="x" size={18} color="#ECE9F1" />
-            </Pressable>
-          </View>
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
-            {(() => {
-              const selHot = selected ? hotspots.find((h) => h.id === selected) : null;
-              const cur = selHot ? stickerOf(selHot) : undefined;
-              return (
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
-                  {STICKERS.map((st) => {
-                    const chosen = cur === st.id;
-                    return (
-                      <Pressable
-                        key={st.id}
-                        onPress={() => { if (selected) setStickers((s) => ({ ...s, [selected]: st.id })); setStickerPicking(false); }}
-                        style={{ width: 150, alignItems: "center", padding: 8, borderRadius: 12, backgroundColor: chosen ? "rgba(240,201,135,0.14)" : "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: chosen ? "rgba(240,201,135,0.5)" : "rgba(236,233,241,0.08)" }}
-                        className="active:opacity-80"
-                      >
-                        <Image source={st.image} resizeMode="contain" style={{ width: 118, height: 118 }} />
-                        <Text style={{ color: "#ECE9F1", fontSize: 12, textAlign: "center", marginTop: 4 }} numberOfLines={2}>{st.label}</Text>
-                        {chosen ? <Feather name="check" size={16} color="#F0C987" style={{ marginTop: 2 }} /> : null}
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              );
             })()}
           </ScrollView>
         </View>
