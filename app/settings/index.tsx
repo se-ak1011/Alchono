@@ -27,13 +27,37 @@ export default function SettingsScreen() {
   // each room, faint after. Off = a clean, dark house, no markers (tapping still
   // works, and still buzzes). "Show me around again" relights the guided tour.
   const [hintsOn, setHintsOn] = useState(true);
+  // Pencil-ring strength levels: tap to cycle. Stored as a multiplier.
+  const RING_LEVELS = [
+    { label: 'Soft', value: 0.7 },
+    { label: 'Medium', value: 1.0 },
+    { label: 'Strong', value: 1.35 },
+    { label: 'Bold', value: 1.7 },
+  ];
+  const [ringStrength, setRingStrength] = useState(1);
   useFocusEffect(
     React.useCallback(() => {
-      AsyncStorage.getItem('alchono.hints.enabled')
-        .then((v) => setHintsOn(v !== '0'))
+      AsyncStorage.multiGet(['alchono.hints.enabled', 'alchono.hints.strength'])
+        .then((pairs) => {
+          const map = Object.fromEntries(pairs) as Record<string, string | null>;
+          setHintsOn(map['alchono.hints.enabled'] !== '0');
+          const s = parseFloat(map['alchono.hints.strength'] ?? '1');
+          setRingStrength(Number.isFinite(s) && s > 0 ? s : 1);
+        })
         .catch(() => {});
     }, []),
   );
+
+  const ringLabel =
+    RING_LEVELS.reduce((best, l) =>
+      Math.abs(l.value - ringStrength) < Math.abs(best.value - ringStrength) ? l : best,
+    ).label;
+  const cycleRingStrength = () => {
+    const idx = RING_LEVELS.findIndex((l) => l.label === ringLabel);
+    const next = RING_LEVELS[(idx + 1) % RING_LEVELS.length];
+    setRingStrength(next.value);
+    AsyncStorage.setItem('alchono.hints.strength', String(next.value)).catch(() => {});
+  };
 
   const toggleHints = () => {
     const next = !hintsOn;
@@ -246,6 +270,11 @@ export default function SettingsScreen() {
               label: 'Hotspot hints',
               value: hintsOn ? 'On' : 'Off',
               onPress: toggleHints,
+            },
+            {
+              label: 'Ring strength',
+              value: ringLabel,
+              onPress: cycleRingStrength,
             },
             {
               label: 'Show me around again',

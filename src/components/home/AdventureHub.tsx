@@ -167,6 +167,7 @@ export function AdventureHub() {
   // settings switch; `visited` is the set of rooms you've already learned. Both
   // persist, and reload on focus so a Settings change takes effect on return.
   const [hintsEnabled, setHintsEnabled] = useState(true);
+  const [ringStrength, setRingStrength] = useState(1);
   const [visited, setVisited] = useState<Set<string>>(new Set());
   // Honour Reduce Motion: a static ring instead of a breathing one.
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -245,11 +246,13 @@ export function AdventureHub() {
   useFocusEffect(
     useCallback(() => {
       let active = true;
-      AsyncStorage.multiGet(["alchono.hints.enabled", "alchono.hints.visited"])
+      AsyncStorage.multiGet(["alchono.hints.enabled", "alchono.hints.visited", "alchono.hints.strength"])
         .then((pairs) => {
           if (!active) return;
           const map = Object.fromEntries(pairs) as Record<string, string | null>;
           setHintsEnabled(map["alchono.hints.enabled"] !== "0");
+          const s = parseFloat(map["alchono.hints.strength"] ?? "1");
+          setRingStrength(Number.isFinite(s) && s > 0 ? s : 1);
           try {
             const arr = JSON.parse(map["alchono.hints.visited"] ?? "[]");
             if (Array.isArray(arr)) setVisited(new Set(arr));
@@ -630,7 +633,7 @@ export function AdventureHub() {
   // its own treatment, so it's never ringed.
   const ringFor = (h: Hotspot) => {
     if (!ringTier || (h.kind ?? "plain") === "primary") return null;
-    return <HotspotRing tier={ringTier} seed={h.id} animate={!reduceMotion} />;
+    return <HotspotRing tier={ringTier} seed={h.id} animate={!reduceMotion} strength={ringStrength} />;
   };
 
   const renderHotspots = () =>

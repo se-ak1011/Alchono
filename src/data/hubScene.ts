@@ -230,8 +230,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "living_room_left",
     right: "living_room_right",
     hotspots: [
-      { id: "lrf_door_entertainment", caption: "Games room", kind: "glow", interaction: "destination", haptic: "medium", x: 0.13, y: 0.23, w: 0.18, h: 0.40, action: { kind: "node", node: "entertainment_front" } },
-      { id: "lrf_door_kitchen", caption: "Kitchen", kind: "glow", interaction: "destination", haptic: "medium", x: 0.70, y: 0.23, w: 0.19, h: 0.40, action: { kind: "node", node: "kitchen_front" } },
+      { id: "lrf_door_entertainment", caption: "Games room", kind: "glow", interaction: "destination", haptic: "medium", x: 0.146, y: 0.254, w: 0.172, h: 0.096, action: { kind: "node", node: "entertainment_front" } },
+      { id: "lrf_door_kitchen", caption: "Kitchen", kind: "glow", interaction: "destination", haptic: "medium", x: 0.771, y: 0.259, w: 0.180, h: 0.091, action: { kind: "node", node: "kitchen_front" } },
+      { id: "lrf_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.150, y: 0.593, w: 0.363, h: 0.154, action: { kind: "route", route: "/goals" } },
+      { id: "lrf_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.340, y: 0.243, w: 0.122, h: 0.140, action: { kind: "forest", mode: "jump" } },
+      { id: "lrf_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "moments", x: 0.461, y: 0.251, w: 0.242, h: 0.121, action: { kind: "route", route: "/moments" } },
     ],
   },
   living_room_left: {
@@ -242,7 +245,11 @@ export const HUB_NODES: Record<string, HubNode> = {
     right: "living_room_front",
     back: "living_room_front",
     hotspots: [
-      { id: "lrl_door_entertainment", caption: "Games room", kind: "glow", interaction: "destination", haptic: "medium", x: 0.85, y: 0.28, w: 0.15, h: 0.42, action: { kind: "node", node: "entertainment_front" } },
+      { id: "lrl_entertainment", caption: "Games room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.882, y: 0.254, w: 0.208, h: 0.123, action: { kind: "node", node: "entertainment_front" } },
+      { id: "lrl_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.702, y: 0.681, w: 0.266, h: 0.121, action: { kind: "route", route: "/goals" } },
+      { id: "lrl_recovery", caption: "Recovery", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.270, y: 0.349, w: 0.534, h: 0.136, action: { kind: "route", route: "/support/recovery" } },
+      { id: "lrl_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.017, y: 0.274, w: 0.117, h: 0.062, action: { kind: "forest", mode: "jump" } },
+      { id: "lrl_keys2", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.015, y: 0.352, w: 0.159, h: 0.140, action: { kind: "forest", mode: "jump" } },
     ],
   },
   living_room_right: {
@@ -253,9 +260,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "living_room_front",
     back: "living_room_front",
     hotspots: [
-      { id: "lrr_door_woods", caption: "Out to the woods", kind: "glow", interaction: "destination", haptic: "medium", x: 0.27, y: 0.19, w: 0.25, h: 0.40, action: { kind: "forest", mode: "walk" } },
-      { id: "lrr_stairs", caption: "Upstairs", kind: "glow", interaction: "destination", haptic: "medium", x: 0.63, y: 0.16, w: 0.35, h: 0.52, action: { kind: "node", node: "landing_front" } },
-      { id: "lrr_door_kitchen", caption: "Kitchen", kind: "glow", interaction: "destination", haptic: "medium", x: 0.0, y: 0.22, w: 0.14, h: 0.42, action: { kind: "node", node: "kitchen_front" } },
+      { id: "lrr_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", x: 0.305, y: 0.142, w: 0.200, h: 0.080 },
+      { id: "lrr_woods", caption: "Out to the woods", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.266, y: 0.110, w: 0.288, h: 0.148, action: { kind: "node", node: "forest_canopy" } },
+      { id: "lrr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.099, y: 0.242, w: 0.160, h: 0.160, action: { kind: "forest", mode: "jump" } },
+      { id: "lrr_stairs", caption: "Upstairs", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.653, y: 0.471, w: 0.213, h: 0.106, action: { kind: "node", node: "landing_front" } },
+      { id: "lrr_room", caption: "Your room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.696, y: 0.057, w: 0.210, h: 0.099, action: { kind: "node", node: "me_room_front" } },
+      { id: "lrr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: -0.038, y: 0.653, w: 0.225, h: 0.113, action: { kind: "route", route: "/resources/home" } },
     ],
   },
 

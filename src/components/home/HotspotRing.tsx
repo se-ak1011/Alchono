@@ -65,10 +65,13 @@ export function HotspotRing({
   tier,
   seed,
   animate = true,
+  strength = 1,
 }: {
   tier: "loud" | "faint";
   seed: string;
   animate?: boolean;
+  /** Global pencil-pressure multiplier (Settings). 1 = default. */
+  strength?: number;
 }) {
   const p = useRef(new Animated.Value(0.5)).current;
   const r = useMemo(() => hashSeed(seed), [seed]);
@@ -92,19 +95,24 @@ export function HotspotRing({
   }, [p, animate, r]);
 
   const loud = tier === "loud";
-  const opacity = p.interpolate({ inputRange: [0, 1], outputRange: loud ? [0.6, 1] : [0.12, 0.3] });
-  const scale = p.interpolate({ inputRange: [0, 1], outputRange: loud ? [0.97, 1.06] : [1.0, 1.04] });
+  // Opacity, scaled by the global strength knob and clamped so it never over-burns.
+  const base = loud ? [0.42, 0.62] : [0.28, 0.46];
+  const opacity = p.interpolate({ inputRange: [0, 1], outputRange: base.map((v) => Math.min(0.95, v * strength)) });
+  const scale = p.interpolate({ inputRange: [0, 1], outputRange: loud ? [0.98, 1.05] : [1.0, 1.035] });
 
   return (
     <Animated.View
       pointerEvents="none"
       style={{ position: "absolute", left: "-10%", top: "-10%", width: "120%", height: "120%", opacity, transform: [{ scale }] }}
     >
+      {/* vectorEffect keeps the stroke a CONSTANT screen width regardless of how
+          the box stretches the viewBox — so a tall door-ring no longer blooms
+          into thick vertical blobs while the thin sides vanish. */}
       <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
         {/* Pale lift underneath so a dark graphite line still reads on dark wood. */}
-        <Path d={d} stroke={LIFT} strokeOpacity={loud ? 0.22 : 0.14} strokeWidth={loud ? 4.4 : 3} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <Path d={d} stroke={LIFT} strokeOpacity={0.16} strokeWidth={loud ? 3.6 : 2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" vectorEffect="non-scaling-stroke" />
         {/* The pencil line itself. */}
-        <Path d={d} stroke={INK} strokeWidth={loud ? 2.6 : 1.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <Path d={d} stroke={INK} strokeWidth={loud ? 2.1 : 1.5} strokeLinecap="round" strokeLinejoin="round" fill="none" vectorEffect="non-scaling-stroke" />
       </Svg>
     </Animated.View>
   );
