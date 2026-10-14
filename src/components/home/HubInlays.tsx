@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Platform, type LayoutChangeEvent } from 
 import Svg, { Circle, Line as SvgLine, Defs, LinearGradient, RadialGradient, Stop, Rect } from "react-native-svg";
 import { useCommunityMoments, useMyMoments } from "@/hooks/useMoments";
 import { useCommunityFeed } from "@/hooks/useCommunity";
+import { useConnections } from "@/hooks/useMessages";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
@@ -332,27 +333,31 @@ export function NiconoLogoInlay() { return <LogoInlay source={NICONO_LOGO} />; }
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 // ————————————————————————————————————————————————————————————————
-// Messages — a glimpse of recent threads, as little chat rows, so the computer
-// / mailslot reads as alive. Stylized preview (role-based, not live data yet);
-// tapping opens the full messages room.
+// Messages — your REAL message threads (same useConnections the Messenger page
+// uses), so the computer screen mirrors the actual inbox: each row is a real
+// contact + their last message, with a purple dot for unread. Empty state
+// echoes the real screen. Transparent; tapping opens the full Messenger.
 // ————————————————————————————————————————————————————————————————
 export function MessagesInlay() {
-  const rows = [
-    { who: "Care team", msg: "How are you doing today?" },
-    { who: "Trusted person", msg: "Thinking of you x" },
-    { who: "You", msg: "Getting through it." },
-  ];
+  const { data } = useConnections();
+  const threads = ((data ?? []) as any[]).slice(0, 3);
   return (
     <View style={[StyleSheet.absoluteFill, { overflow: "hidden", paddingHorizontal: "8%", paddingVertical: "8%", justifyContent: "center", gap: 6 }]}>
-      {rows.map((r, i) => (
-        <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: i === 2 ? "rgba(177,151,228,0.85)" : "rgba(198,222,208,0.75)" }} />
-          <View style={{ flex: 1 }}>
-            <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 11, color: "rgba(244,244,238,0.92)" }}>{r.who}</Text>
-            <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 10, color: "rgba(198,222,208,0.62)" }}>{r.msg}</Text>
+      {threads.length === 0 ? (
+        <Text style={{ fontFamily: MONO, fontSize: 8.5, color: "rgba(214,201,240,0.5)", textAlign: "center", lineHeight: 12 }}>
+          {"// no contacts yet\nconnect with a mentor, or\nmessage from a community post"}
+        </Text>
+      ) : (
+        threads.map((c, i) => (
+          <View key={c.requestId ?? i} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <View style={{ width: 13, height: 13, borderRadius: 7, backgroundColor: (c.unreadCount ?? 0) > 0 ? "rgba(177,151,228,0.9)" : "rgba(198,222,208,0.7)" }} />
+            <View style={{ flex: 1 }}>
+              <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 11, color: "rgba(244,244,238,0.92)" }}>{c.otherUsername ?? "Member"}</Text>
+              <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 10, color: "rgba(198,222,208,0.62)" }}>{c.lastMessage?.content ?? "say hello"}</Text>
+            </View>
           </View>
-        </View>
-      ))}
+        ))
+      )}
     </View>
   );
 }
