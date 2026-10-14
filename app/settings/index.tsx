@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View, Text, Alert, Share, Linking, Pressable } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from 'expo-router';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
@@ -20,6 +22,44 @@ export default function SettingsScreen() {
   const resetApp = useAppStore((s) => s.reset);
   const { data: isAdmin } = useIsAdmin();
   const router = useRouter();
+
+  // Hotspot hints — the pencil rings in the cabin. On = loud the first time in
+  // each room, faint after. Off = a clean, dark house, no markers (tapping still
+  // works, and still buzzes). "Show me around again" relights the guided tour.
+  const [hintsOn, setHintsOn] = useState(true);
+  useFocusEffect(
+    React.useCallback(() => {
+      AsyncStorage.getItem('alchono.hints.enabled')
+        .then((v) => setHintsOn(v !== '0'))
+        .catch(() => {});
+    }, []),
+  );
+
+  const toggleHints = () => {
+    const next = !hintsOn;
+    setHintsOn(next);
+    AsyncStorage.setItem('alchono.hints.enabled', next ? '1' : '0').catch(() => {});
+  };
+
+  const showAroundAgain = () => {
+    Alert.alert(
+      'Show me around again?',
+      'The guided rings will light up the first time you walk into each room again — like when you first arrived.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Show me around',
+          onPress: () => {
+            AsyncStorage.multiSet([
+              ['alchono.hints.visited', '[]'],
+              ['alchono.hints.enabled', '1'],
+            ]).catch(() => {});
+            setHintsOn(true);
+          },
+        },
+      ],
+    );
+  };
 
   const clearAllState = () => {
     queryClient.clear();
@@ -198,6 +238,21 @@ export default function SettingsScreen() {
             ]}
           />
         )}
+
+        <SettingsSection
+          title="Cabin"
+          items={[
+            {
+              label: 'Hotspot hints',
+              value: hintsOn ? 'On' : 'Off',
+              onPress: toggleHints,
+            },
+            {
+              label: 'Show me around again',
+              onPress: showAroundAgain,
+            },
+          ]}
+        />
 
         <SettingsSection
           title="Account"

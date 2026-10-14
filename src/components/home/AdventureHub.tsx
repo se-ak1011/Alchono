@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, AccessibilityInfo, type ImageStyle } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -9,6 +9,7 @@ import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type
 import { DESTINATIONS, labelForAction, actionExport } from "@/data/destinations";
 import { AMBIENT_LIFE } from "@/data/ambientLife";
 import { AmbientLife } from "./AmbientLife";
+import { HotspotRing } from "./HotspotRing";
 import { STICKERS, STICKER_BY_ID } from "@/data/stickers";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS, INLAY_OPTIONS } from "@/components/home/HubInlays";
@@ -164,6 +165,17 @@ export function AdventureHub() {
   const [forestIntroSeen, setForestIntroSeen] = useState<boolean | null>(null);
   const [forestHint, setForestHint] = useState(false);
 
+  // Hotspot hints — the pencil rings that circle tappable objects. The arc:
+  // loud the FIRST time you're in a room (so you learn where everything is),
+  // faint every visit after (a whisper, not a signpost), and off entirely once
+  // you turn them off in Settings ("I know my house now"). `hintsEnabled` is the
+  // settings switch; `visited` is the set of rooms you've already learned. Both
+  // persist, and reload on focus so a Settings change takes effect on return.
+  const [hintsEnabled, setHintsEnabled] = useState(true);
+  const [visited, setVisited] = useState<Set<string>>(new Set());
+  // Honour Reduce Motion: a static ring instead of a breathing one.
+  const [reduceMotion, setReduceMotion] = useState(false);
+
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
   const captionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -223,6 +235,57 @@ export function AdventureHub() {
       .then((v) => setForestIntroSeen(v === "1"))
       .catch(() => setForestIntroSeen(true));
   }, []);
+
+  // Track the OS Reduce Motion setting so the rings hold still for anyone who
+  // asked the system not to animate.
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion).catch(() => {});
+    const sub = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduceMotion);
+    return () => sub.remove();
+  }, []);
+
+  // (Re)load the hint settings whenever the hub regains focus — so toggling
+  // "Hotspot hints" or "Show me around again" in Settings takes effect the
+  // moment you come back, not only on a cold start.
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      AsyncStorage.multiGet(["alchono.hints.enabled", "alchono.hints.visited"])
+        .then((pairs) => {
+          if (!active) return;
+          const map = Object.fromEntries(pairs) as Record<string, string | null>;
+          setHintsEnabled(map["alchono.hints.enabled"] !== "0");
+          try {
+            const arr = JSON.parse(map["alchono.hints.visited"] ?? "[]");
+            if (Array.isArray(arr)) setVisited(new Set(arr));
+          } catch {}
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
+
+  // Mark a room as learned — once seen, its rings drop from loud to faint, and
+  // it stays that way (persisted) until "Show me around again" clears it.
+  const markVisited = useCallback((id: string) => {
+    setVisited((v) => {
+      if (v.has(id)) return v;
+      const nv = new Set(v);
+      nv.add(id);
+      AsyncStorage.setItem("alchono.hints.visited", JSON.stringify([...nv])).catch(() => {});
+      return nv;
+    });
+  }, []);
+
+  // Even if you never leave the first room, count it as learned after a good
+  // long look, so the loud rings don't greet you forever on relaunch.
+  useEffect(() => {
+    if (!hintsEnabled || visited.has(nodeId)) return;
+    const t = setTimeout(() => markVisited(nodeId), 9000);
+    return () => clearTimeout(t);
+  }, [nodeId, hintsEnabled, visited, markVisited]);
 
   // Resume the editor working-state (placements, wiring, deletions) so a long
   // placing session survives an app restart. Loaded once; saved on every change
@@ -299,6 +362,8 @@ export function AdventureHub() {
       clearTimeout(forestJump.current);
       forestJump.current = null;
     }
+    // Leaving a room counts as having learned it — its rings go faint next time.
+    markVisited(nodeId);
     if (push) setHistory((h) => [...h, nodeId]);
     Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
       setNodeId(next);
@@ -523,12 +588,13 @@ export function AdventureHub() {
       );
     }
 
-    // Interactive objects: when the node has a painted glow layer, the art
-    // carries the affordance and the hotspot is just an invisible tap target.
-    // Otherwise fall back to a soft engine-drawn light bloom.
+    // Interactive objects carry NO affordance of their own any more — the
+    // pencil ring (drawn per-hotspot in renderHotspots, tier-controlled) is the
+    // cue. A light bloom read as modern UI stuck on a dark room; a ring is a
+    // drawn line, part of the scene. The legacy painted glow layer still wins
+    // where a node has one.
     if (kind === "glow") {
-      if (node.glowImage) return null;
-      return <Bloom tint={e.tint ?? "purple"} anchor={h.anchor} scale={e.glowScale} glint={glint} max={e.glowMax ?? 0.5} />;
+      return null;
     }
 
     // Text: environmental signage (label) and the dominant urge action (primary),
@@ -589,12 +655,23 @@ export function AdventureHub() {
     return null;
   };
 
+  // The ring tier for the room you're in: loud the first time (learn it), faint
+  // after (a whisper), or nothing at all once hints are switched off.
+  const ringTier: "loud" | "faint" | null = !hintsEnabled ? null : visited.has(nodeId) ? "faint" : "loud";
+
+  // The pencil ring that circles a tappable object. The urge/primary sign keeps
+  // its own treatment, so it's never ringed.
+  const ringFor = (h: Hotspot) => {
+    if (!ringTier || (h.kind ?? "plain") === "primary") return null;
+    return <HotspotRing tier={ringTier} tint={editsOf(h).tint ?? "purple"} seed={h.id} animate={!reduceMotion} />;
+  };
+
   const renderHotspots = () =>
     hotspots.map((h) => {
       // Pure signage (no action) isn't tappable — taps fall through so it never
       // behaves like a button. A label WITH an action IS tappable, so a text
-      // label (e.g. "My Sky" over the window) can be the tap target on its own,
-      // with no glow blob needed to catch the press.
+      // label (e.g. a name over a window) can be the tap target on its own,
+      // with the ring to say it's touchable.
       const action = actionOf(h);
       if (!action) {
         return (
@@ -617,6 +694,7 @@ export function AdventureHub() {
           hitSlop={12}
           style={rectOf(coordsOf(h))}
         >
+          {ringFor(h)}
           {affordance(h)}
         </Pressable>
       );
