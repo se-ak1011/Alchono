@@ -373,22 +373,35 @@ export const HUB_NODES: Record<string, HubNode> = {
     id: "me_room_left", title: "Your Room",
     image: require("../../assets/scenes/me_room_left.png"),
     imgW: 851, imgH: 1847, fit: "screen",
-    right: "me_room_front", back: "landing_front",
-    hotspots: [],
+    right: "me_room_front", back: "me_room_front",
+    hotspots: [
+      { id: "mrl_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.486, y: 0.200, w: 0.185, h: 0.169, action: { kind: "forest", mode: "jump" } },
+      { id: "mrl_file", caption: "Personal file", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.126, y: 0.436, w: 0.492, h: 0.070, action: { kind: "route", route: "/profile/file" } },
+      { id: "mrl_saved", caption: "Saved", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.228, y: 0.554, w: 0.352, h: 0.056, action: { kind: "route", route: "/saved" } },
+    ],
   },
   me_room_front: {
     id: "me_room_front", title: "Your Room",
     image: require("../../assets/scenes/me_room_front.png"),
     imgW: 851, imgH: 1847, fit: "screen",
-    left: "me_room_left", right: "me_room_right", back: "landing_front",
-    hotspots: [],
+    left: "me_room_left", right: "me_room_right", back: "landing_left",
+    hotspots: [
+      { id: "mrf_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.014, y: 0.199, w: 0.184, h: 0.184, action: { kind: "forest", mode: "jump" } },
+      { id: "mrf_connections", caption: "Your people", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.299, y: 0.429, w: 0.320, h: 0.143, action: { kind: "route", route: "/profile/connections" } },
+      { id: "mrf_track", caption: "Tonight", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.769, y: 0.392, w: 0.165, h: 0.093, action: { kind: "route", route: "/session/track" } },
+    ],
   },
   me_room_right: {
     id: "me_room_right", title: "Your Room",
     image: require("../../assets/scenes/me_room_right.png"),
     imgW: 851, imgH: 1847, fit: "screen",
-    left: "me_room_front", back: "landing_front",
-    hotspots: [],
+    left: "me_room_front", back: "me_room_front",
+    hotspots: [
+      { id: "mrr_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", rotate: -6, x: 0.172, y: 0.081, w: 0.200, h: 0.080, action: { kind: "node", node: "forest_canopy" } },
+      { id: "mrr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.469, y: 0.204, w: 0.196, h: 0.183, action: { kind: "forest", mode: "jump" } },
+      { id: "mrr_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "moments", rotate: 4, rotateY: 6, rotateX: 2, x: 0.774, y: 0.380, w: 0.134, h: 0.084, action: { kind: "route", route: "/moments" } },
+      { id: "mrr_notes", caption: "Your notes", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.595, y: 0.477, w: 0.261, h: 0.109, action: { kind: "route", route: "/journal/notes" } },
+    ],
   },
 
   // --- Upstairs: Bathroom (single view) ------------------------------------
