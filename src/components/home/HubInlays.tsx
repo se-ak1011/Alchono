@@ -6,6 +6,8 @@ import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useConnections } from "@/hooks/useMessages";
 import { BOOKS } from "@/data/books";
 import type { ToolkitCategory } from "@/lib/toolkit";
+import { WebView } from "react-native-webview";
+import { ARCADE_GAMES } from "@/data/arcadeGames";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
@@ -397,6 +399,37 @@ export function BookshelfInlay() {
   );
 }
 
+// ————————————————————————————————————————————————————————————————
+// Real arcade games — each actual HTML game (the ones you coded) running in a
+// WebView on its cabinet screen, so the preview IS the real game, not a demo.
+// Pointer-transparent via the wrapper, so a tap still opens the full game.
+// Heavier than the drawn demos — use ONE per screen, sized to the screen.
+// ————————————————————————————————————————————————————————————————
+function GameWebInlay({ slug }: { slug: string }) {
+  const g = ARCADE_GAMES[slug];
+  if (!g) return null;
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#1f1430" }]}>
+      <WebView
+        originWhitelist={["*"]}
+        source={{ html: g.html }}
+        style={{ flex: 1, backgroundColor: "#1f1430" }}
+        pointerEvents="none"
+        scrollEnabled={false}
+        scalesPageToFit
+        javaScriptEnabled
+        domStorageEnabled
+        setSupportMultipleWindows={false}
+        androidLayerType="hardware"
+      />
+    </View>
+  );
+}
+export function SkullGroveInlay() { return <GameWebInlay slug="skull-grove" />; }
+export function GrowthShieldInlay() { return <GameWebInlay slug="growth-shield" />; }
+export function SkullPathInlay() { return <GameWebInlay slug="skull-path" />; }
+export function SkullHavenInlay() { return <GameWebInlay slug="skull-haven" />; }
+
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
   arcade_memory: MemoryInlay,
@@ -405,6 +438,11 @@ export const INLAYS: Record<string, React.ComponentType> = {
   arcade_word: WordInlay,
   community: CommunityInlay, // video thumbnails
   community_board: CommunityBoardInlay, // written posts, chalked on the board
+  // The real games (your HTML), live on their cabinet screens.
+  skull_grove: SkullGroveInlay,
+  growth_shield: GrowthShieldInlay,
+  skull_path: SkullPathInlay,
+  skull_haven: SkullHavenInlay,
   messages: MessagesInlay, // recent threads, on the computer / mailslot
   bookshelf: BookshelfInlay, // the book covers lined up on the study shelf
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
@@ -419,11 +457,10 @@ export const INLAYS: Record<string, React.ComponentType> = {
 /** The live previews offered in the editor's inlay picker (label + inlay key).
  *  The sibling-app crests are left out — they're not cabin objects. */
 export const INLAY_OPTIONS: { id: string; label: string }[] = [
-  { id: "arcade", label: "Game — Odd One Out" },
-  { id: "arcade_memory", label: "Game — Memory Match" },
-  { id: "arcade_pattern", label: "Game — Pattern (Simon)" },
-  { id: "arcade_colour", label: "Game — Colour (Stroop)" },
-  { id: "arcade_word", label: "Game — Word Search" },
+  { id: "skull_grove", label: "Game — Skull Grove (live)" },
+  { id: "growth_shield", label: "Game — Growth Shield (live)" },
+  { id: "skull_path", label: "Game — Skull Path (live)" },
+  { id: "skull_haven", label: "Game — Skull Haven (live)" },
   { id: "community", label: "Community — video thumbnails" },
   { id: "community_board", label: "Community — written posts" },
   { id: "messages", label: "Messages — recent threads" },
