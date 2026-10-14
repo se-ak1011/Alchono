@@ -1143,6 +1143,30 @@ export function AdventureHub() {
         </Pressable>
       ) : null}
 
+      {/* The back-door keys. The urge/"need a minute?" hatch, as an object that
+          honestly belongs in every room — not an SOS alarm bolted on. It lives
+          in the SAME reachable spot on every view (muscle memory beats a search
+          when you're in a spike), is always present (an escape hatch must never
+          go missing), and just lets you grab your keys and step out back to the
+          clearing — jump straight there, no path, no decisions. Hidden in the
+          forest (you're already out) and during a design pass. */}
+      {!inForest && !editMode ? (
+        <Pressable
+          onPress={() => {
+            showCaption("Need a minute?");
+            runAction({ kind: "forest", mode: "jump" });
+          }}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Need a minute? Step out to the clearing"
+          className="active:opacity-80"
+          style={{ position: "absolute", right: 14, bottom: 40, flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 22, backgroundColor: "rgba(13,11,18,0.72)", borderWidth: 1, borderColor: "rgba(240,201,135,0.5)" }}
+        >
+          <Feather name="key" size={15} color="#F0C987" />
+          <Text style={{ color: "#F3EEDB", fontSize: 13, fontWeight: "600" }}>Need a minute?</Text>
+        </Pressable>
+      ) : null}
+
       {/* The urge sanctuary carries a quiet shortcut to real human support —
           the crisis-lines book — always a tap away while you ride it out. */}
       {inForest && !editMode ? (
