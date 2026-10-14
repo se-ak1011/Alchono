@@ -74,6 +74,7 @@ export const DESTINATIONS: DestGroup[] = [
   {
     group: "Reading — the 9 books",
     items: [
+      { label: "The bookshelf — all reading", action: { kind: "route", route: "/reading" } },
       { label: "In the moment", action: { kind: "route", route: "/reading/in-the-moment" } },
       { label: "Understand", action: { kind: "route", route: "/reading/understand" } },
       { label: "Triggers", action: { kind: "route", route: "/reading/triggers" } },

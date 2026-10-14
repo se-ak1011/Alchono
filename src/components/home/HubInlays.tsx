@@ -4,6 +4,8 @@ import Svg, { Circle, Line as SvgLine, Defs, LinearGradient, RadialGradient, Sto
 import { useCommunityMoments, useMyMoments } from "@/hooks/useMoments";
 import { useCommunityFeed } from "@/hooks/useCommunity";
 import { useConnections } from "@/hooks/useMessages";
+import { BOOKS } from "@/data/books";
+import type { ToolkitCategory } from "@/lib/toolkit";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { buildSky } from "@/lib/constellation";
@@ -362,6 +364,39 @@ export function MessagesInlay() {
   );
 }
 
+// ————————————————————————————————————————————————————————————————
+// Bookshelf — the hand-drawn book covers lined up like spines on the study
+// shelf, so one ring on the shelf reads as a shelf full of real books (no tacky
+// ring-per-book). Tapping opens the whole library.
+// ————————————————————————————————————————————————————————————————
+const SHELF_BOOKS: ToolkitCategory[] = ["in-the-moment", "understand", "triggers", "stress", "relationships", "sleep"];
+export function BookshelfInlay() {
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", flexDirection: "row", alignItems: "flex-end", justifyContent: "center", paddingHorizontal: "3%", paddingVertical: "4%", gap: 2 }]}>
+      {SHELF_BOOKS.map((cat, i) => {
+        const art = BOOKS[cat];
+        if (!art?.cover) return null;
+        return (
+          <View
+            key={cat}
+            style={{
+              flex: 1,
+              height: `${86 - (i % 3) * 5}%`,
+              maxWidth: "17%",
+              borderRadius: 1,
+              overflow: "hidden",
+              backgroundColor: "#2a2233",
+              transform: [{ rotate: `${(i % 2 ? 1 : -1) * 1.2}deg` }],
+            }}
+          >
+            <Image source={art.cover} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
   arcade_memory: MemoryInlay,
@@ -371,6 +406,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   community: CommunityInlay, // video thumbnails
   community_board: CommunityBoardInlay, // written posts, chalked on the board
   messages: MessagesInlay, // recent threads, on the computer / mailslot
+  bookshelf: BookshelfInlay, // the book covers lined up on the study shelf
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
   sky: SkyInlay,
   zine: ZineInlay, // a zine cover pinned to the café-right corkboard
@@ -391,6 +427,7 @@ export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "community", label: "Community — video thumbnails" },
   { id: "community_board", label: "Community — written posts" },
   { id: "messages", label: "Messages — recent threads" },
+  { id: "bookshelf", label: "Bookshelf — the books" },
   { id: "moments", label: "Your moments — photos" },
   { id: "sky", label: "Your sky (constellation)" },
   { id: "zine", label: "Zine cover" },
