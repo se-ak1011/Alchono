@@ -407,6 +407,29 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "sl_trusted", caption: "Trusted person", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.296, y: 0.569, w: 0.162, h: 0.077, action: { kind: "route", route: "/profile/trusted" } },
       { id: "sl_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.632, y: 0.650, w: 0.184, h: 0.080, action: { kind: "route", route: "/support/coach" } },
       { id: "sl_door_room", caption: "Your room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.021, y: 0.424, w: 0.160, h: 0.077, action: { kind: "node", node: "me_room_right" } },
+      { id: "sl_bookshelf", caption: "The bookshelf", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.37, y: 0.26, w: 0.31, h: 0.33, action: { kind: "node", node: "reading_shelf" } },
+    ],
+  },
+  // A CLOSE-UP of the bookshelf (reached from the study) — tap a spine to open
+  // that book's real pages (/reading/[cat], its open spread unchanged). Each
+  // book is an invisible tap zone (plain + noRing) so there's no ring per spine,
+  // just the drawn shelf. Coords are first-pass estimates — nudge onto the
+  // spines in the editor. Back returns to the reading nook.
+  reading_shelf: {
+    id: "reading_shelf", title: "The bookshelf",
+    image: require("../../assets/scenes/reading_shelf.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    back: "study_left",
+    hotspots: [
+      { id: "rsh_in_the_moment", caption: "In the moment", kind: "plain", noRing: true, x: 0.075, y: 0.11, w: 0.10, h: 0.20, action: { kind: "route", route: "/reading/in-the-moment" } },
+      { id: "rsh_understand", caption: "Understand", kind: "plain", noRing: true, x: 0.175, y: 0.11, w: 0.10, h: 0.20, action: { kind: "route", route: "/reading/understand" } },
+      { id: "rsh_triggers", caption: "Triggers", kind: "plain", noRing: true, x: 0.275, y: 0.11, w: 0.10, h: 0.20, action: { kind: "route", route: "/reading/triggers" } },
+      { id: "rsh_planning", caption: "Planning ahead", kind: "plain", noRing: true, x: 0.52, y: 0.42, w: 0.10, h: 0.22, action: { kind: "route", route: "/reading/planning-ahead" } },
+      { id: "rsh_stress", caption: "Stress", kind: "plain", noRing: true, x: 0.63, y: 0.42, w: 0.09, h: 0.22, action: { kind: "route", route: "/reading/stress" } },
+      { id: "rsh_sleep", caption: "Sleep", kind: "plain", noRing: true, x: 0.72, y: 0.42, w: 0.10, h: 0.22, action: { kind: "route", route: "/reading/sleep" } },
+      { id: "rsh_relationships", caption: "Relationships", kind: "plain", noRing: true, x: 0.20, y: 0.69, w: 0.10, h: 0.22, action: { kind: "route", route: "/reading/relationships" } },
+      { id: "rsh_identity", caption: "Identity", kind: "plain", noRing: true, x: 0.31, y: 0.69, w: 0.09, h: 0.22, action: { kind: "route", route: "/reading/identity" } },
+      { id: "rsh_after_a_slip", caption: "After a slip", kind: "plain", noRing: true, x: 0.40, y: 0.69, w: 0.11, h: 0.22, action: { kind: "route", route: "/reading/after-a-slip" } },
     ],
   },
   study_front: {
