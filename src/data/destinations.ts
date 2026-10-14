@@ -84,6 +84,18 @@ export const DESTINATIONS: DestGroup[] = [
     ],
   },
   {
+    // The per-room resources magazine close-ups — link a room's magazine to the
+    // one that matches that room (the background scene differs; the lines are
+    // the same, wired via "Crisis lines" below).
+    group: "Resources (close-ups)",
+    items: [
+      { label: "Resources — Entertainment", action: { kind: "node", node: "resources_entertainment" } },
+      { label: "Resources — Study", action: { kind: "node", node: "resources_study" } },
+      { label: "Resources — Kitchen", action: { kind: "node", node: "resources_kitchen" } },
+      { label: "Resources — Outdoors", action: { kind: "node", node: "resources_outdoors" } },
+    ],
+  },
+  {
     // Each tappable LINE of a resources magazine close-up — wire a tap zone over
     // the line to the matching one of these (they open the phone/text/website
     // directly). Numbers + links mirror src/lib/resources.ts.

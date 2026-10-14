@@ -289,7 +289,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "el_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.322, y: 0.250, w: 0.135, h: 0.129, action: { kind: "forest", mode: "jump" } },
       { id: "el_woods", caption: "Forest walk", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.012, y: 0.355, w: 0.146, h: 0.071, action: { kind: "node", node: "forest_canopy" } },
       { id: "el_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", x: 0.086, y: 0.135, w: 0.200, h: 0.080 },
-      { id: "el_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.541, y: 0.744, w: 0.467, h: 0.151, action: { kind: "route", route: "/resources/home" } },
+      { id: "el_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.541, y: 0.744, w: 0.467, h: 0.151, action: { kind: "node", node: "resources_entertainment" } },
       { id: "el_gameboy", caption: "Skull Path", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.869, y: 0.410, w: 0.134, h: 0.074, action: { kind: "route", route: "/arcade/skull-path" } },
     ],
   },
@@ -301,7 +301,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       { id: "ef_ps1", caption: "Skull Haven", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.372, y: 0.360, w: 0.284, h: 0.084, action: { kind: "route", route: "/arcade/skull-haven" } },
       { id: "ef_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.226, y: 0.257, w: 0.138, h: 0.116, action: { kind: "forest", mode: "jump" } },
-      { id: "ef_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.397, y: 0.741, w: 0.556, h: 0.139, action: { kind: "route", route: "/resources/home" } },
+      { id: "ef_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.397, y: 0.741, w: 0.556, h: 0.139, action: { kind: "node", node: "resources_entertainment" } },
       { id: "ef_livingroom", caption: "Living room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.806, y: 0.327, w: 0.162, h: 0.082, action: { kind: "node", node: "living_room_right" } },
     ],
   },
@@ -311,7 +311,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     left: "entertainment_front", back: "entertainment_front",
     hotspots: [
-      { id: "er_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.091, y: 0.713, w: 0.481, h: 0.145, action: { kind: "route", route: "/resources/home" } },
+      { id: "er_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.091, y: 0.713, w: 0.481, h: 0.145, action: { kind: "node", node: "resources_entertainment" } },
       { id: "er_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.488, y: 0.240, w: 0.143, h: 0.134, action: { kind: "forest", mode: "jump" } },
       { id: "er_gameboy", caption: "Skull Path", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.672, y: 0.412, w: 0.194, h: 0.091, action: { kind: "route", route: "/arcade/skull-path" } },
       { id: "er_saved", caption: "Saved", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.591, y: 0.584, w: 0.310, h: 0.080, action: { kind: "route", route: "/saved" } },
@@ -329,7 +329,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "kl_zine", caption: "The zine", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "zine", x: 0.466, y: 0.273, w: 0.166, h: 0.110 },
       { id: "kl_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.325, y: 0.337, w: 0.119, h: 0.103, action: { kind: "forest", mode: "jump" } },
       { id: "kl_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", x: 0.072, y: 0.098, w: 0.200, h: 0.080, action: { kind: "node", node: "forest_canopy" } },
-      { id: "kl_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.426, y: 0.785, w: 0.529, h: 0.140, action: { kind: "route", route: "/resources/home" } },
+      { id: "kl_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.426, y: 0.785, w: 0.529, h: 0.140, action: { kind: "node", node: "resources_kitchen" } },
       { id: "kl_coach", caption: "AI Coach", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.375, y: 0.577, w: 0.167, h: 0.090, action: { kind: "route", route: "/support/coach" } },
     ],
   },
@@ -340,7 +340,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "kitchen_left", right: "kitchen_right", back: "living_room_right",
     hotspots: [
       { id: "kf_zine", caption: "The zine", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "zine", rotateX: -6, rotateY: -4, x: -0.055, y: 0.278, w: 0.194, h: 0.105 },
-      { id: "kf_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.446, y: 0.744, w: 0.538, h: 0.172, action: { kind: "route", route: "/resources/home" } },
+      { id: "kf_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.446, y: 0.744, w: 0.538, h: 0.172, action: { kind: "node", node: "resources_kitchen" } },
       { id: "kf_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.737, y: 0.234, w: 0.207, h: 0.138, action: { kind: "forest", mode: "jump" } },
       { id: "kf_recovery", caption: "Recovery", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.757, y: 0.462, w: 0.189, h: 0.141, action: { kind: "route", route: "/support/recovery" } },
       { id: "kf_track", caption: "Tonight", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.085, y: 0.468, w: 0.163, h: 0.087, action: { kind: "route", route: "/session/track" } },
@@ -358,7 +358,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "kr_mocktails", caption: "Mocktails", kind: "label", label: "Mocktails", labelSize: 11, rotate: -50, x: 0.771, y: 0.385, w: 0.114, h: 0.073, action: { kind: "route", route: "/bar/menu" } },
       { id: "kr_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", rotate: -25, rotateY: -28, x: 0.420, y: 0.108, w: 0.200, h: 0.080 },
       { id: "kr_connections", caption: "Your people", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.291, y: 0.459, w: 0.141, h: 0.127, action: { kind: "route", route: "/profile/connections" } },
-      { id: "kr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.038, y: 0.826, w: 0.457, h: 0.114, action: { kind: "route", route: "/resources/home" } },
+      { id: "kr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.038, y: 0.826, w: 0.457, h: 0.114, action: { kind: "node", node: "resources_kitchen" } },
       { id: "kr_saved", caption: "Saved", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.591, y: 0.480, w: 0.173, h: 0.077, action: { kind: "route", route: "/saved" } },
     ],
   },
@@ -443,7 +443,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     left: "study_left", right: "study_right", back: "landing_front",
     hotspots: [
       { id: "sf_computer", caption: "Messages", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "messages", rotateX: 8, x: 0.506, y: 0.480, w: 0.274, h: 0.103, action: { kind: "route", route: "/messages" } },
-      { id: "sf_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.687, y: 0.667, w: 0.355, h: 0.117, action: { kind: "route", route: "/resources/home" } },
+      { id: "sf_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.687, y: 0.667, w: 0.355, h: 0.117, action: { kind: "node", node: "resources_study" } },
       { id: "sf_recovery", caption: "Recovery", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.124, y: 0.653, w: 0.416, h: 0.114, action: { kind: "route", route: "/support/recovery" } },
       { id: "sf_track", caption: "Tonight", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.100, y: 0.427, w: 0.252, h: 0.119, action: { kind: "route", route: "/session/track" } },
       { id: "sf_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.788, y: 0.228, w: 0.193, h: 0.183, action: { kind: "forest", mode: "jump" } },
@@ -459,7 +459,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "sr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.054, y: 0.222, w: 0.218, h: 0.220, action: { kind: "forest", mode: "jump" } },
       { id: "sr_community", caption: "Community", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "community_board", x: 0.295, y: 0.234, w: 0.514, h: 0.244, action: { kind: "route", route: "/community" } },
       { id: "sr_community2", caption: "Community", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "community", rotate: -1, x: 0.873, y: 0.288, w: 0.108, h: 0.091, action: { kind: "route", route: "/community" } },
-      { id: "sr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.564, y: 0.512, w: 0.254, h: 0.115, action: { kind: "route", route: "/resources/home" } },
+      { id: "sr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.564, y: 0.512, w: 0.254, h: 0.115, action: { kind: "node", node: "resources_study" } },
       { id: "sr_mentors", caption: "Mentors", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.334, y: 0.517, w: 0.226, h: 0.110, action: { kind: "route", route: "/support/mentors" } },
     ],
   },
@@ -510,4 +510,83 @@ export const HUB_NODES: Record<string, HubNode> = {
     back: "landing_left",
     hotspots: [],
   },
+
+  // === RESOURCES CLOSE-UPS (magazine ad pages) ============================
+  // Resources close-up (ent) — each line links out directly. Tap
+  // positions are first-pass estimates; nudge onto the lines in the editor.
+  resources_entertainment: {
+    id: "resources_entertainment", title: "Resources",
+    image: require("../../assets/scenes/resources_entertainment.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    hotspots: [
+      { id: "res_ent_999", caption: "999", kind: "plain", noRing: true, x: 0.050, y: 0.335, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:999" } },
+      { id: "res_ent_sam", caption: "Samaritans", kind: "plain", noRing: true, x: 0.050, y: 0.420, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:116123" } },
+      { id: "res_ent_111", caption: "111", kind: "plain", noRing: true, x: 0.050, y: 0.505, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:111" } },
+      { id: "res_ent_drink", caption: "Drinkline", kind: "plain", noRing: true, x: 0.050, y: 0.590, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:03001231110" } },
+      { id: "res_ent_aa", caption: "AA helpline", kind: "plain", noRing: true, x: 0.050, y: 0.675, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:08009177650" } },
+      { id: "res_ent_shout", caption: "Shout", kind: "plain", noRing: true, x: 0.530, y: 0.355, w: 0.420, h: 0.070, action: { kind: "link", url: "sms:85258" } },
+      { id: "res_ent_nhs", caption: "NHS advice", kind: "plain", noRing: true, x: 0.530, y: 0.440, w: 0.420, h: 0.070, action: { kind: "link", url: "https://www.nhs.uk/live-well/alcohol-advice/" } },
+      { id: "res_ent_7cups", caption: "7 Cups", kind: "plain", noRing: true, x: 0.530, y: 0.525, w: 0.420, h: 0.070, action: { kind: "link", url: "https://www.7cups.com" } },
+      { id: "res_ent_aameet", caption: "AA meetings", kind: "plain", noRing: true, x: 0.530, y: 0.630, w: 0.420, h: 0.070, action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
+      { id: "res_ent_smart", caption: "SMART Recovery", kind: "plain", noRing: true, x: 0.530, y: 0.715, w: 0.420, h: 0.070, action: { kind: "link", url: "https://smartrecovery.org.uk" } },
+    ],
+  },
+  // Resources close-up (std) — each line links out directly. Tap
+  // positions are first-pass estimates; nudge onto the lines in the editor.
+  resources_study: {
+    id: "resources_study", title: "Resources",
+    image: require("../../assets/scenes/resources_study.png"),
+    imgW: 934, imgH: 1684, fit: "screen",
+    hotspots: [
+      { id: "res_std_999", caption: "999", kind: "plain", noRing: true, x: 0.050, y: 0.425, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:999" } },
+      { id: "res_std_sam", caption: "Samaritans", kind: "plain", noRing: true, x: 0.050, y: 0.515, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:116123" } },
+      { id: "res_std_111", caption: "111", kind: "plain", noRing: true, x: 0.050, y: 0.595, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:111" } },
+      { id: "res_std_drink", caption: "Drinkline", kind: "plain", noRing: true, x: 0.050, y: 0.665, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:03001231110" } },
+      { id: "res_std_aa", caption: "AA helpline", kind: "plain", noRing: true, x: 0.050, y: 0.735, w: 0.420, h: 0.070, action: { kind: "link", url: "tel:08009177650" } },
+      { id: "res_std_shout", caption: "Shout", kind: "plain", noRing: true, x: 0.530, y: 0.425, w: 0.420, h: 0.070, action: { kind: "link", url: "sms:85258" } },
+      { id: "res_std_nhs", caption: "NHS advice", kind: "plain", noRing: true, x: 0.530, y: 0.515, w: 0.420, h: 0.070, action: { kind: "link", url: "https://www.nhs.uk/live-well/alcohol-advice/" } },
+      { id: "res_std_7cups", caption: "7 Cups", kind: "plain", noRing: true, x: 0.530, y: 0.595, w: 0.420, h: 0.070, action: { kind: "link", url: "https://www.7cups.com" } },
+      { id: "res_std_aameet", caption: "AA meetings", kind: "plain", noRing: true, x: 0.530, y: 0.685, w: 0.420, h: 0.070, action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
+      { id: "res_std_smart", caption: "SMART Recovery", kind: "plain", noRing: true, x: 0.530, y: 0.765, w: 0.420, h: 0.070, action: { kind: "link", url: "https://smartrecovery.org.uk" } },
+    ],
+  },
+  // Resources close-up (kit) — each line links out directly. Tap
+  // positions are first-pass estimates; nudge onto the lines in the editor.
+  resources_kitchen: {
+    id: "resources_kitchen", title: "Resources",
+    image: require("../../assets/scenes/resources_kitchen.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    hotspots: [
+      { id: "res_kit_999", caption: "999", kind: "plain", noRing: true, x: 0.050, y: 0.348, w: 0.420, h: 0.075, action: { kind: "link", url: "tel:999" } },
+      { id: "res_kit_sam", caption: "Samaritans", kind: "plain", noRing: true, x: 0.050, y: 0.453, w: 0.420, h: 0.075, action: { kind: "link", url: "tel:116123" } },
+      { id: "res_kit_111", caption: "111", kind: "plain", noRing: true, x: 0.050, y: 0.552, w: 0.420, h: 0.075, action: { kind: "link", url: "tel:111" } },
+      { id: "res_kit_drink", caption: "Drinkline", kind: "plain", noRing: true, x: 0.050, y: 0.652, w: 0.420, h: 0.075, action: { kind: "link", url: "tel:03001231110" } },
+      { id: "res_kit_aa", caption: "AA helpline", kind: "plain", noRing: true, x: 0.050, y: 0.753, w: 0.420, h: 0.075, action: { kind: "link", url: "tel:08009177650" } },
+      { id: "res_kit_shout", caption: "Shout", kind: "plain", noRing: true, x: 0.530, y: 0.348, w: 0.420, h: 0.075, action: { kind: "link", url: "sms:85258" } },
+      { id: "res_kit_nhs", caption: "NHS advice", kind: "plain", noRing: true, x: 0.530, y: 0.453, w: 0.420, h: 0.075, action: { kind: "link", url: "https://www.nhs.uk/live-well/alcohol-advice/" } },
+      { id: "res_kit_7cups", caption: "7 Cups", kind: "plain", noRing: true, x: 0.530, y: 0.552, w: 0.420, h: 0.075, action: { kind: "link", url: "https://www.7cups.com" } },
+      { id: "res_kit_aameet", caption: "AA meetings", kind: "plain", noRing: true, x: 0.530, y: 0.662, w: 0.420, h: 0.075, action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
+      { id: "res_kit_smart", caption: "SMART Recovery", kind: "plain", noRing: true, x: 0.530, y: 0.753, w: 0.420, h: 0.075, action: { kind: "link", url: "https://smartrecovery.org.uk" } },
+    ],
+  },
+  // Resources close-up (out) — each line links out directly. Tap
+  // positions are first-pass estimates; nudge onto the lines in the editor.
+  resources_outdoors: {
+    id: "resources_outdoors", title: "Resources",
+    image: require("../../assets/scenes/resources_outdoors.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    hotspots: [
+      { id: "res_out_999", caption: "999", kind: "plain", noRing: true, x: 0.080, y: 0.415, w: 0.380, h: 0.050, action: { kind: "link", url: "tel:999" } },
+      { id: "res_out_sam", caption: "Samaritans", kind: "plain", noRing: true, x: 0.080, y: 0.465, w: 0.380, h: 0.050, action: { kind: "link", url: "tel:116123" } },
+      { id: "res_out_111", caption: "111", kind: "plain", noRing: true, x: 0.080, y: 0.510, w: 0.380, h: 0.050, action: { kind: "link", url: "tel:111" } },
+      { id: "res_out_drink", caption: "Drinkline", kind: "plain", noRing: true, x: 0.080, y: 0.550, w: 0.380, h: 0.050, action: { kind: "link", url: "tel:03001231110" } },
+      { id: "res_out_aa", caption: "AA helpline", kind: "plain", noRing: true, x: 0.080, y: 0.590, w: 0.380, h: 0.050, action: { kind: "link", url: "tel:08009177650" } },
+      { id: "res_out_shout", caption: "Shout", kind: "plain", noRing: true, x: 0.520, y: 0.415, w: 0.420, h: 0.050, action: { kind: "link", url: "sms:85258" } },
+      { id: "res_out_nhs", caption: "NHS advice", kind: "plain", noRing: true, x: 0.520, y: 0.465, w: 0.420, h: 0.050, action: { kind: "link", url: "https://www.nhs.uk/live-well/alcohol-advice/" } },
+      { id: "res_out_7cups", caption: "7 Cups", kind: "plain", noRing: true, x: 0.520, y: 0.510, w: 0.420, h: 0.050, action: { kind: "link", url: "https://www.7cups.com" } },
+      { id: "res_out_aameet", caption: "AA meetings", kind: "plain", noRing: true, x: 0.520, y: 0.595, w: 0.420, h: 0.050, action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
+      { id: "res_out_smart", caption: "SMART Recovery", kind: "plain", noRing: true, x: 0.520, y: 0.640, w: 0.420, h: 0.050, action: { kind: "link", url: "https://smartrecovery.org.uk" } },
+    ],
+  },
+
 };
