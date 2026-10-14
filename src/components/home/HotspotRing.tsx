@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Animated, Easing } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import type { GlowTint } from "@/data/hubScene";
 
 /**
  * A hand-drawn "pencil ring" that circles a tappable object — the replacement
@@ -21,7 +20,11 @@ import type { GlowTint } from "@/data/hubScene";
  * reduce-motion on, the ring holds still at a middle brightness.
  */
 
-const RING_COLORS: Record<GlowTint, string> = { warm: "#F4C078", purple: "#C9B8F0" };
+// Graphite — it's a pencil line, so it's (near) black. A whisper of pale lift
+// sits under it so the line still reads on near-black cabin wood instead of
+// vanishing into it; the dark stroke on top keeps it reading as pencil, not glow.
+const INK = "#121016";
+const LIFT = "#E9E3F3";
 
 // Deterministic 0..1 from a string seed, so a ring's wobble + phase are stable
 // across renders (no flicker) but differ per hotspot.
@@ -60,12 +63,10 @@ function roughRingPath(seed: number) {
 
 export function HotspotRing({
   tier,
-  tint = "purple",
   seed,
   animate = true,
 }: {
   tier: "loud" | "faint";
-  tint?: GlowTint;
   seed: string;
   animate?: boolean;
 }) {
@@ -91,8 +92,7 @@ export function HotspotRing({
   }, [p, animate, r]);
 
   const loud = tier === "loud";
-  const color = RING_COLORS[tint] ?? RING_COLORS.purple;
-  const opacity = p.interpolate({ inputRange: [0, 1], outputRange: loud ? [0.5, 0.9] : [0.09, 0.22] });
+  const opacity = p.interpolate({ inputRange: [0, 1], outputRange: loud ? [0.6, 1] : [0.12, 0.3] });
   const scale = p.interpolate({ inputRange: [0, 1], outputRange: loud ? [0.97, 1.06] : [1.0, 1.04] });
 
   return (
@@ -101,7 +101,10 @@ export function HotspotRing({
       style={{ position: "absolute", left: "-10%", top: "-10%", width: "120%", height: "120%", opacity, transform: [{ scale }] }}
     >
       <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <Path d={d} stroke={color} strokeWidth={loud ? 2.6 : 1.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* Pale lift underneath so a dark graphite line still reads on dark wood. */}
+        <Path d={d} stroke={LIFT} strokeOpacity={loud ? 0.22 : 0.14} strokeWidth={loud ? 4.4 : 3} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* The pencil line itself. */}
+        <Path d={d} stroke={INK} strokeWidth={loud ? 2.6 : 1.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
       </Svg>
     </Animated.View>
   );

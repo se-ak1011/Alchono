@@ -475,7 +475,7 @@ export function AdventureHub() {
     const spot: Hotspot =
       kind === "label"
         ? { id, caption: "New label", kind: "label", label: "New label", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
-        : { id, caption: "New spot", kind: "glow", tint: "purple", x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
+        : { id, caption: "New ring", kind: "glow", tint: "purple", x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
     setAdded((a) => ({ ...a, [nodeId]: [...(a[nodeId] ?? []), spot] }));
     setSelected(id);
   };
@@ -630,7 +630,7 @@ export function AdventureHub() {
   // its own treatment, so it's never ringed.
   const ringFor = (h: Hotspot) => {
     if (!ringTier || (h.kind ?? "plain") === "primary") return null;
-    return <HotspotRing tier={ringTier} tint={editsOf(h).tint ?? "purple"} seed={h.id} animate={!reduceMotion} />;
+    return <HotspotRing tier={ringTier} seed={h.id} animate={!reduceMotion} />;
   };
 
   const renderHotspots = () =>
@@ -785,9 +785,6 @@ export function AdventureHub() {
     const kind = sel.kind ?? "plain";
     const hasInlay = !!inlayOf(sel);
     const isText = kind === "label" || kind === "primary" || kind === "board" || kind === "sign";
-    // A glow's colour/size controls are meaningless once an inlay replaces the
-    // bloom; inlays get the rotate control instead so they sit on the object.
-    const isGlow = kind === "glow" && !hasInlay;
     const canRotate = isText || hasInlay;
     const e = editsOf(sel);
     const size = e.labelSize ?? defaultSize(sel);
@@ -795,9 +792,6 @@ export function AdventureHub() {
     const rotY = e.rotateY ?? 0;
     const rotX = e.rotateX ?? 0;
     const op = e.opacity ?? 1;
-    const gscale = e.glowScale ?? 1;
-    const gmax = e.glowMax ?? 0.5;
-    const tint = e.tint ?? "purple";
 
     const row = (label: string, value: string, onDec: () => void, onInc: () => void) => (
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
@@ -895,32 +889,6 @@ export function AdventureHub() {
         {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
         {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
         {isText || hasInlay ? row(hasInlay ? "Brightness" : "Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
-        {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
-        {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
-        {isGlow ? (
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-            <Text style={{ color: "#CFC8DE", fontSize: 13 }}>Colour</Text>
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              {(["warm", "purple"] as const).map((t) => (
-                <Pressable
-                  key={t}
-                  onPress={() => setProp("tint", t)}
-                  hitSlop={6}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 8,
-                    backgroundColor: tint === t ? GLOW_COLORS[t] : "rgba(255,255,255,0.06)",
-                    borderWidth: 1,
-                    borderColor: tint === t ? "#FFFFFF" : "rgba(236,233,241,0.14)",
-                  }}
-                >
-                  <Text style={{ color: tint === t ? "#1a1622" : "#CFC8DE", fontSize: 12, fontWeight: "700" }}>{t}</Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        ) : null}
         <Text style={{ color: "#6f6880", fontSize: 10.5, marginTop: 10 }}>drag to move · corner handle to resize</Text>
       </View>
     );
@@ -1109,10 +1077,10 @@ export function AdventureHub() {
             accessibilityRole="button"
             accessibilityLabel="Extra support — help and crisis lines"
             className="active:opacity-80"
-            style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 22, backgroundColor: "rgba(13,11,18,0.72)", borderWidth: 1, borderColor: "rgba(240,201,135,0.5)" }}
+            style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 22, backgroundColor: "rgba(13,11,18,0.72)", borderWidth: 1, borderColor: "rgba(126,96,186,0.6)" }}
           >
-            <Feather name="life-buoy" size={16} color="#F0C987" />
-            <Text style={{ color: "#F3EEDB", fontSize: 13.5, fontWeight: "600" }}>Extra support</Text>
+            <Feather name="life-buoy" size={16} color="#B79CEA" />
+            <Text style={{ color: "#EAE2F7", fontSize: 13.5, fontWeight: "600" }}>Extra support</Text>
           </Pressable>
         </View>
       ) : null}
@@ -1213,8 +1181,8 @@ export function AdventureHub() {
               }}
               className="active:opacity-80"
             >
-              <Feather name={k === "label" ? "type" : "target"} size={15} color="#EFEAF5" />
-              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add label" : "Add spot"}</Text>
+              <Feather name={k === "label" ? "type" : "circle"} size={15} color="#EFEAF5" />
+              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add title" : "Add ring"}</Text>
             </Pressable>
           ))}
         </View>
