@@ -98,6 +98,10 @@ export type Hotspot = {
    *  Pointer-transparent like an inlay, so a tap still routes via `action`. Used
    *  for hand-drawn wayfinding near doors/stairs. */
   sticker?: string;
+  /** Suppress the pencil ring on this hotspot — a purely invisible tap zone, for
+   *  covering a drawn title/article in a close-up where a ring per item is noise.
+   *  Still tappable; just draws nothing. (`kind: "plain"` implies this too.) */
+  noRing?: boolean;
 };
 
 export type HubNode = {

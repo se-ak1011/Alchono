@@ -43,6 +43,7 @@ type Edits = Coords & {
   opacity?: number;
   tint?: GlowTint;
   label?: string;
+  noRing?: boolean;
 };
 
 const clampI = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
@@ -455,12 +456,13 @@ export function AdventureHub() {
       opacity: o?.opacity ?? h.opacity,
       tint: o?.tint ?? h.tint,
       label: o?.label ?? h.label,
+      noRing: o?.noRing ?? h.noRing,
     };
   };
 
   // Write one editor property for the selected hotspot, seeding x/y/w/h so the
   // export always carries a full record.
-  const setProp = (key: keyof Edits, val: number | GlowTint | string) => {
+  const setProp = (key: keyof Edits, val: number | GlowTint | string | boolean) => {
     if (!selected) return;
     const base = hotspots.find((h) => h.id === selected);
     if (!base) return;
@@ -472,12 +474,14 @@ export function AdventureHub() {
 
   // Create a new hotspot in the middle of the screen and select it. Its
   // destination is wired when baked (the export tags it NEW).
-  const addHotspot = (kind: "label" | "glow") => {
-    const prefix = kind === "label" ? "lbl" : "glow";
+  const addHotspot = (kind: "label" | "glow" | "plain") => {
+    const prefix = kind === "label" ? "lbl" : kind === "plain" ? "tap" : "glow";
     const id = `${prefix}_new_${Date.now().toString().slice(-4)}`;
     const spot: Hotspot =
       kind === "label"
         ? { id, caption: "New label", kind: "label", label: "New label", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
+        : kind === "plain"
+        ? { id, caption: "New tap zone", kind: "plain", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
         : { id, caption: "New ring", kind: "glow", tint: "purple", x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
     setAdded((a) => ({ ...a, [nodeId]: [...(a[nodeId] ?? []), spot] }));
     setSelected(id);
@@ -632,7 +636,10 @@ export function AdventureHub() {
   // The pencil ring that circles a tappable object. The urge/primary sign keeps
   // its own treatment, so it's never ringed.
   const ringFor = (h: Hotspot) => {
-    if (!ringTier || (h.kind ?? "plain") === "primary") return null;
+    const kind = h.kind ?? "plain";
+    // No ring on: the urge/primary sign (its own cue), a plain tap zone, or any
+    // hotspot flagged noRing — the "transparent link" for close-up titles.
+    if (!ringTier || kind === "primary" || kind === "plain" || editsOf(h).noRing) return null;
     return <HotspotRing tier={ringTier} seed={h.id} animate={!reduceMotion} strength={ringStrength} />;
   };
 
@@ -892,6 +899,20 @@ export function AdventureHub() {
         {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
         {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
         {isText || hasInlay ? row(hasInlay ? "Brightness" : "Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
+        {/* Ring on/off — turn it off for an invisible tap zone (e.g. over a drawn
+            title in a close-up, where a ring per item would be noise). */}
+        {kind !== "primary" && kind !== "plain" ? (
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+            <Text style={{ color: "#CFC8DE", fontSize: 13 }}>Ring</Text>
+            <Pressable
+              onPress={() => setProp("noRing", !e.noRing)}
+              hitSlop={8}
+              style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, backgroundColor: e.noRing ? "rgba(255,255,255,0.06)" : "rgba(164,137,222,0.22)", borderWidth: 1, borderColor: e.noRing ? "rgba(236,233,241,0.14)" : "rgba(164,137,222,0.5)" }}
+            >
+              <Text style={{ color: e.noRing ? "#CFC8DE" : "#E9DEFF", fontSize: 12, fontWeight: "700" }}>{e.noRing ? "Off — invisible" : "On"}</Text>
+            </Pressable>
+          </View>
+        ) : null}
         <Text style={{ color: "#6f6880", fontSize: 10.5, marginTop: 10 }}>drag to move · corner handle to resize</Text>
       </View>
     );
@@ -950,6 +971,7 @@ export function AdventureHub() {
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
       if (e.tint) extra.push(`tint ${e.tint}`);
+      if (e.noRing) extra.push(`noRing`);
       if (h.id in inlayMap) extra.push(`inlay ${inlayMap[h.id]}`);
       const newItem = isAdded(h.id);
       // New items carry their kind + text so they can be baked from scratch (and
@@ -1167,7 +1189,7 @@ export function AdventureHub() {
 
       {editMode && !selected ? (
         <View style={{ position: "absolute", left: 12, right: 12, bottom: 158, flexDirection: "row", gap: 10, justifyContent: "center" }}>
-          {(["label", "glow"] as const).map((k) => (
+          {(["label", "glow", "plain"] as const).map((k) => (
             <Pressable
               key={k}
               onPress={() => addHotspot(k)}
@@ -1184,8 +1206,8 @@ export function AdventureHub() {
               }}
               className="active:opacity-80"
             >
-              <Feather name={k === "label" ? "type" : "circle"} size={15} color="#EFEAF5" />
-              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add title" : "Add ring"}</Text>
+              <Feather name={k === "label" ? "type" : k === "glow" ? "circle" : "square"} size={15} color="#EFEAF5" />
+              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add title" : k === "glow" ? "Add ring" : "Add tap"}</Text>
             </Pressable>
           ))}
         </View>
