@@ -89,6 +89,7 @@ export const DESTINATIONS: DestGroup[] = [
     // the same, wired via "Crisis lines" below).
     group: "Resources (close-ups)",
     items: [
+      { label: "Resources — Living room", action: { kind: "node", node: "resources_living" } },
       { label: "Resources — Entertainment", action: { kind: "node", node: "resources_entertainment" } },
       { label: "Resources — Study", action: { kind: "node", node: "resources_study" } },
       { label: "Resources — Kitchen", action: { kind: "node", node: "resources_kitchen" } },

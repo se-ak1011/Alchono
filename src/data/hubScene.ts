@@ -240,7 +240,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       { id: "lrf_door_entertainment", caption: "Games room", kind: "glow", interaction: "destination", haptic: "medium", x: 0.146, y: 0.254, w: 0.172, h: 0.096, action: { kind: "node", node: "entertainment_front" } },
       { id: "lrf_door_kitchen", caption: "Kitchen", kind: "glow", interaction: "destination", haptic: "medium", x: 0.771, y: 0.259, w: 0.180, h: 0.091, action: { kind: "node", node: "kitchen_front" } },
-      { id: "lrf_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.150, y: 0.593, w: 0.363, h: 0.154, action: { kind: "route", route: "/resources/home" } },
+      { id: "lrf_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.150, y: 0.593, w: 0.363, h: 0.154, action: { kind: "node", node: "resources_living" } },
       { id: "lrf_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.340, y: 0.243, w: 0.122, h: 0.140, action: { kind: "forest", mode: "jump" } },
       { id: "lrf_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "moments", x: 0.461, y: 0.251, w: 0.242, h: 0.121, action: { kind: "route", route: "/moments" } },
     ],
@@ -273,7 +273,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "lrr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.099, y: 0.242, w: 0.160, h: 0.160, action: { kind: "forest", mode: "jump" } },
       { id: "lrr_stairs", caption: "Upstairs", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.653, y: 0.471, w: 0.213, h: 0.106, action: { kind: "node", node: "landing_front" } },
       { id: "lrr_room", caption: "Your room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.696, y: 0.057, w: 0.210, h: 0.099, action: { kind: "node", node: "me_room_front" } },
-      { id: "lrr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: -0.038, y: 0.653, w: 0.225, h: 0.113, action: { kind: "route", route: "/resources/home" } },
+      { id: "lrr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: -0.038, y: 0.653, w: 0.225, h: 0.113, action: { kind: "node", node: "resources_living" } },
     ],
   },
 
@@ -514,6 +514,24 @@ export const HUB_NODES: Record<string, HubNode> = {
   // === RESOURCES CLOSE-UPS (magazine ad pages) ============================
   // Resources close-up (ent) — each line links out directly. Tap
   // positions are first-pass estimates; nudge onto the lines in the editor.
+  // Resources close-up (living room).
+  resources_living: {
+    id: "resources_living", title: "Resources",
+    image: require("../../assets/scenes/resources_living.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    hotspots: [
+      { id: "res_liv_999", caption: "999", kind: "plain", noRing: true, x: 0.050, y: 0.440, w: 0.420, h: 0.060, action: { kind: "link", url: "tel:999" } },
+      { id: "res_liv_sam", caption: "Samaritans", kind: "plain", noRing: true, x: 0.050, y: 0.530, w: 0.420, h: 0.060, action: { kind: "link", url: "tel:116123" } },
+      { id: "res_liv_111", caption: "111", kind: "plain", noRing: true, x: 0.050, y: 0.620, w: 0.420, h: 0.060, action: { kind: "link", url: "tel:111" } },
+      { id: "res_liv_drink", caption: "Drinkline", kind: "plain", noRing: true, x: 0.050, y: 0.700, w: 0.420, h: 0.060, action: { kind: "link", url: "tel:03001231110" } },
+      { id: "res_liv_aa", caption: "AA helpline", kind: "plain", noRing: true, x: 0.050, y: 0.770, w: 0.420, h: 0.060, action: { kind: "link", url: "tel:08009177650" } },
+      { id: "res_liv_shout", caption: "Shout", kind: "plain", noRing: true, x: 0.530, y: 0.440, w: 0.420, h: 0.060, action: { kind: "link", url: "sms:85258" } },
+      { id: "res_liv_nhs", caption: "NHS advice", kind: "plain", noRing: true, x: 0.530, y: 0.530, w: 0.420, h: 0.060, action: { kind: "link", url: "https://www.nhs.uk/live-well/alcohol-advice/" } },
+      { id: "res_liv_7cups", caption: "7 Cups", kind: "plain", noRing: true, x: 0.530, y: 0.620, w: 0.420, h: 0.060, action: { kind: "link", url: "https://www.7cups.com" } },
+      { id: "res_liv_aameet", caption: "AA meetings", kind: "plain", noRing: true, x: 0.530, y: 0.720, w: 0.420, h: 0.060, action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
+      { id: "res_liv_smart", caption: "SMART Recovery", kind: "plain", noRing: true, x: 0.530, y: 0.790, w: 0.420, h: 0.060, action: { kind: "link", url: "https://smartrecovery.org.uk" } },
+    ],
+  },
   resources_entertainment: {
     id: "resources_entertainment", title: "Resources",
     image: require("../../assets/scenes/resources_entertainment.png"),
