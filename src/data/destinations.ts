@@ -25,12 +25,9 @@ export const DESTINATIONS: DestGroup[] = [
   {
     group: "Support & people",
     items: [
-      // The resources book = the crisis-lines directory (999, Samaritans, NHS 111,
-      // Drinkline, AA, Shout…). "home" dims the lobby behind the book; "arcade"
-      // the Games Room. The forest "Extra support" pill already opens /resources/home.
-      { label: "Resources book — crisis lines & meetings", action: { kind: "route", route: "/resources/home" } },
-      { label: "Resources book — Games Room version", action: { kind: "route", route: "/resources/arcade" } },
-      { label: "Resources book — outdoors (forest/clearing)", action: { kind: "route", route: "/resources/outdoors" } },
+      // (The old "Resources book" screens were removed from the picker — resources
+      // are now per-room magazine close-ups whose lines link out directly. See the
+      // "Crisis lines" group below.)
       { label: "AI Coach", action: { kind: "route", route: "/support/coach" } },
       { label: "Recovery", action: { kind: "route", route: "/support/recovery" } },
       { label: "Mentors", action: { kind: "route", route: "/support/mentors" } },
@@ -87,6 +84,26 @@ export const DESTINATIONS: DestGroup[] = [
     ],
   },
   {
+    // Each tappable LINE of a resources magazine close-up — wire a tap zone over
+    // the line to the matching one of these (they open the phone/text/website
+    // directly). Numbers + links mirror src/lib/resources.ts.
+    group: "Crisis lines (resources)",
+    items: [
+      { label: "999 (call)", action: { kind: "link", url: "tel:999" } },
+      { label: "Samaritans — 116 123 (call)", action: { kind: "link", url: "tel:116123" } },
+      { label: "NHS 111 (call)", action: { kind: "link", url: "tel:111" } },
+      { label: "Drinkline — 0300 123 1110 (call)", action: { kind: "link", url: "tel:03001231110" } },
+      { label: "AA helpline — 0800 9177 650 (call)", action: { kind: "link", url: "tel:08009177650" } },
+      { label: "Al-Anon — 0800 0086 811 (call)", action: { kind: "link", url: "tel:08000086811" } },
+      { label: "NACOA — 0800 358 3456 (call)", action: { kind: "link", url: "tel:08003583456" } },
+      { label: "Shout — text 85258", action: { kind: "link", url: "sms:85258" } },
+      { label: "NHS alcohol advice (web)", action: { kind: "link", url: "https://www.nhs.uk/live-well/alcohol-advice/" } },
+      { label: "7 Cups (web)", action: { kind: "link", url: "https://www.7cups.com" } },
+      { label: "AA meeting finder (web)", action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
+      { label: "SMART Recovery UK (web)", action: { kind: "link", url: "https://smartrecovery.org.uk" } },
+    ],
+  },
+  {
     group: "Other",
     items: [
       { label: "Bar / drinks menu", action: { kind: "route", route: "/bar/menu" } },
@@ -100,6 +117,7 @@ export function labelForAction(a?: HubAction): string {
   if (!a) return "— not linked —";
   if (a.kind === "forest") return a.mode === "walk" ? "Forest (walk)" : "Forest (jump)";
   if (a.kind === "node") return `Room → ${HUB_NODES[a.node]?.title ?? a.node}`;
+  if (a.kind === "link") return a.url;
   return a.route;
 }
 
@@ -108,5 +126,6 @@ export function actionExport(a?: HubAction): string {
   if (!a) return "(not linked)";
   if (a.kind === "forest") return `forest ${a.mode}`;
   if (a.kind === "node") return `node ${a.node}`;
+  if (a.kind === "link") return `link ${a.url}`;
   return `route ${a.route}`;
 }

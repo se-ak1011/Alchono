@@ -27,6 +27,10 @@ import type { ImageSourcePropType } from "react-native";
 export type HubAction =
   | { kind: "route"; route: string; warn?: boolean; returnNode?: string }
   | { kind: "node"; node: string }
+  // An external action from a hotspot: a phone call (tel:), a text (sms:) or a
+  // website (https:). Used for the tappable lines on a resources close-up (999,
+  // Samaritans, Shout…). `internal:/path` instead routes in-app, like a route.
+  | { kind: "link"; url: string }
   // The urge sanctuary. "walk" steps you in through the fire-exit canopy and
   // lets you stroll the path (a hard day); "jump" fades you straight through
   // the canopy to the clearing, no decisions (a craving). Both from any screen.
@@ -236,7 +240,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       { id: "lrf_door_entertainment", caption: "Games room", kind: "glow", interaction: "destination", haptic: "medium", x: 0.146, y: 0.254, w: 0.172, h: 0.096, action: { kind: "node", node: "entertainment_front" } },
       { id: "lrf_door_kitchen", caption: "Kitchen", kind: "glow", interaction: "destination", haptic: "medium", x: 0.771, y: 0.259, w: 0.180, h: 0.091, action: { kind: "node", node: "kitchen_front" } },
-      { id: "lrf_goals", caption: "Looking forward to", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.150, y: 0.593, w: 0.363, h: 0.154, action: { kind: "route", route: "/goals" } },
+      { id: "lrf_resources", caption: "Resources", kind: "glow", tint: "warm", interaction: "object", haptic: "light", x: 0.150, y: 0.593, w: 0.363, h: 0.154, action: { kind: "route", route: "/resources/home" } },
       { id: "lrf_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.340, y: 0.243, w: 0.122, h: 0.140, action: { kind: "forest", mode: "jump" } },
       { id: "lrf_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "object", haptic: "light", inlay: "moments", x: 0.461, y: 0.251, w: 0.242, h: 0.121, action: { kind: "route", route: "/moments" } },
     ],

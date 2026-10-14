@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, AccessibilityInfo, type ImageStyle } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, AccessibilityInfo, Linking, type ImageStyle } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -397,6 +397,20 @@ export function AdventureHub() {
         // clearing — no path, no walking, no decisions.
         forestJump.current = setTimeout(() => navigateNode("clearing_front", false), 1000);
       }
+      return;
+    }
+    // An external link — a resources line (call / text / website). `internal:`
+    // routes in-app instead of leaving the app.
+    if (action.kind === "link") {
+      const style =
+        haptic === "heavy"
+          ? Haptics.ImpactFeedbackStyle.Heavy
+          : haptic === "medium"
+          ? Haptics.ImpactFeedbackStyle.Medium
+          : Haptics.ImpactFeedbackStyle.Light;
+      Haptics.impactAsync(style);
+      if (action.url.startsWith("internal:")) router.push(action.url.slice("internal:".length) as any);
+      else Linking.openURL(action.url).catch(() => {});
       return;
     }
     if (action.warn) {
