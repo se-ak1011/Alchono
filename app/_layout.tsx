@@ -95,7 +95,6 @@ function RootLayoutNav() {
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/app-lock" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="profile/file" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="saved" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="letters/write"
@@ -123,13 +122,6 @@ function RootLayoutNav() {
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/good-feed" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/odd-one-out" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/word-search" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/games" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/memory-match" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/simon" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/stroop" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/post-game" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/track" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="checkin"

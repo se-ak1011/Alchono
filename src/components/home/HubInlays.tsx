@@ -10,8 +10,6 @@ import { WebView } from "react-native-webview";
 import { ARCADE_GAMES } from "@/data/arcadeGames";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
-import { buildSky } from "@/lib/constellation";
-import { ConstellationSky } from "@/components/constellation/ConstellationSky";
 
 /**
  * "Inlays" — live content painted straight onto an object in the scene, so the
@@ -170,25 +168,6 @@ export function MomentsBoardInlay() {
 }
 
 // ————————————————————————————————————————————————————————————————
-// Sky — the REAL My Sky, rendered from the same ConstellationSky component the
-// full room uses, so the window preview IS your actual sky (one source of
-// truth, no separate re-draw that could drift from it). The inlay wrapper is
-// pointerEvents="none", so the sky's own gestures never fire here — tapping the
-// object opens the full room. Dim/brighten it per scene with the hotspot's
-// opacity (the editor's "Brightness" control).
-// ————————————————————————————————————————————————————————————————
-export function SkyInlay() {
-  const { data: dates = [] } = useAfDays();
-  const userId = useAuthStore((s) => s.user?.id) ?? "anon";
-  const sky = useMemo(() => buildSky(dates, userId), [dates, userId]);
-  return (
-    <View style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}>
-      <ConstellationSky sky={sky} onSelectStar={() => {}} />
-    </View>
-  );
-}
-
-// ————————————————————————————————————————————————————————————————
 // Arcade cabinets — one tiny self-running demo per game, for the screens in the
 // arcade room. All translucent, so they read as a game glowing on the glass.
 // (Odd One Out reuses ArcadeInlay above.)
@@ -279,29 +258,6 @@ export function WordInlay() {
             </View>
           );
         })}
-      </View>
-    </View>
-  );
-}
-
-// ————————————————————————————————————————————————————————————————
-// The Zine — a little cover pinned to the corkboard, like a paper on a board.
-// Static (a pinned paper, not a live screen): a masthead, a line, faux columns.
-// ————————————————————————————————————————————————————————————————
-export function ZineInlay() {
-  return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#efe6d2", overflow: "hidden", paddingHorizontal: "9%", paddingVertical: "8%" }]}>
-      <Text style={{ fontFamily: "PatrickHand", fontSize: 13, color: "#2b2320", textAlign: "center", letterSpacing: 1 }} numberOfLines={1}>
-        THE ZINE
-      </Text>
-      <View style={{ height: 1, backgroundColor: "rgba(43,35,32,0.4)", marginVertical: "5%" }} />
-      <Text style={{ fontFamily: "PatrickHand", fontSize: 9, color: "#2b2320", lineHeight: 11 }} numberOfLines={2}>
-        Stories · a puzzle · a recipe
-      </Text>
-      <View style={{ gap: 3, marginTop: "7%" }}>
-        {[1, 0.82, 0.93, 0.68].map((w, i) => (
-          <View key={i} style={{ height: 2.5, width: `${w * 100}%`, backgroundColor: "rgba(43,35,32,0.22)", borderRadius: 1 }} />
-        ))}
       </View>
     </View>
   );
@@ -456,8 +412,6 @@ export const INLAYS: Record<string, React.ComponentType> = {
   messages: MessagesInlay, // recent threads, on the computer / mailslot
   bookshelf: BookshelfInlay, // the book covers lined up on the study shelf
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
-  sky: SkyInlay,
-  zine: ZineInlay, // a zine cover pinned to the café-right corkboard
   cannano_logo: CannanoLogoInlay, // sibling-app crests on the reception doors
   cocano_logo: CocanoLogoInlay,
   medano_logo: MedanoLogoInlay,

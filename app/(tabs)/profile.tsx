@@ -5,10 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { MiniSky } from '@/components/constellation/MiniSky';
-import { useAfDays } from '@/hooks/useVictories';
 import { useCompanion } from '@/hooks/useCompanion';
-import { useAuthStore } from '@/store/authStore';
 
 /**
  * Me — no longer a menu, but a *room you're in*: your companion in a dark 90s
@@ -88,8 +85,6 @@ export default function MeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { companion } = useCompanion();
-  const { data: dates = [] } = useAfDays();
-  const userId = useAuthStore((s) => s.user?.id) ?? 'anon';
 
   const room = ROOMS[companion.id] ?? ROOMS.kai;
   const imgH = SCREEN_W * (room.h / room.w);
@@ -106,29 +101,11 @@ export default function MeScreen() {
     else router.navigate('/(tabs)' as any);
   };
 
-  const winW = room.window.w * SCREEN_W;
-  const winH = room.window.h * imgH;
-
   return (
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
         <View style={{ width: SCREEN_W, height: imgH, position: 'relative' }}>
           <Image source={room.src} style={{ width: SCREEN_W, height: imgH }} resizeMode="cover" />
-
-          {/* The live constellation, dropped into the window glass. */}
-          <View
-            pointerEvents="none"
-            style={{
-              position: 'absolute',
-              left: room.window.x * SCREEN_W,
-              top: room.window.y * imgH,
-              width: winW,
-              height: winH,
-              overflow: 'hidden',
-            }}
-          >
-            <MiniSky dates={dates} userSeed={userId} width={winW} height={winH} />
-          </View>
 
           {/* The objects, hand-lettered — each a way through. */}
           {room.labels.map((l) => (

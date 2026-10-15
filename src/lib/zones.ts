@@ -12,7 +12,6 @@ export type ZoneKey =
   | 'reading'
   | 'writing'
   | 'community'
-  | 'games'
   | 'support'
   | 'me'
   | 'urge';
@@ -59,15 +58,6 @@ export const ZONES: Record<ZoneKey, Zone> = {
     tint: 'rgba(140,180,132,0.20)',
     edge: 'rgba(169,209,158,0.46)',
   },
-  games: {
-    key: 'games',
-    label: 'Games Arcade',
-    monogram: 'G',
-    route: '/session/games',
-    accent: '#E6C56A', // amber — brighter, more golden (was reading brown)
-    tint: 'rgba(214,184,108,0.20)',
-    edge: 'rgba(230,197,106,0.48)',
-  },
   support: {
     key: 'support',
     label: 'Support',
@@ -104,7 +94,6 @@ export const HOME_ORBIT_ZONES: Zone[] = [
   ZONES.reading,
   ZONES.writing,
   ZONES.community,
-  ZONES.games,
   ZONES.support,
   ZONES.me,
   ZONES.urge,
@@ -115,7 +104,6 @@ export const DRAWER_ZONES: Zone[] = [
   ZONES.reading,
   ZONES.writing,
   ZONES.community,
-  ZONES.games,
   ZONES.support,
   ZONES.me,
   ZONES.urge,

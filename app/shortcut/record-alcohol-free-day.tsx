@@ -45,11 +45,6 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
     router.replace('/(tabs)');
   };
 
-  const openSky = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.replace('/constellation');
-  };
-
   const retry = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     startedRef.current = false;
@@ -104,15 +99,7 @@ export default function RecordAlcoholFreeDayShortcutScreen() {
                 />
               </>
             ) : (
-              <>
-                <Button title="Open Alchono" onPress={openHome} fullWidth />
-                <Button
-                  title="Open Your Sky"
-                  variant="secondary"
-                  onPress={openSky}
-                  fullWidth
-                />
-              </>
+              <Button title="Open Alchono" onPress={openHome} fullWidth />
             )}
           </View>
         </View>
