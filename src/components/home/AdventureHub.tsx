@@ -122,6 +122,18 @@ function Bloom({
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
+  // First ever open → start outside the cabin for a look around before going in;
+  // every open after that lands inside on the living room. One-time per install.
+  useEffect(() => {
+    AsyncStorage.getItem("alchono.openedBefore")
+      .then((v) => {
+        if (!v) {
+          setNodeId("exterior_front");
+          AsyncStorage.setItem("alchono.openedBefore", "1").catch(() => {});
+        }
+      })
+      .catch(() => {});
+  }, []);
   // Smart back: the trail of rooms you came through (via doors, not pans). Back
   // pops it, so you always return to wherever you actually came from — even for
   // a room with several doors. Falls back to the node's static `back` when the

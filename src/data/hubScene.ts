@@ -245,6 +245,7 @@ export const HUB_NODES: Record<string, HubNode> = {
       { id: "lrf_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "object", haptic: "light", noRing: true, x: 0.476, y: 0.265, w: 0.206, h: 0.106, action: { kind: "route", route: "/moments" } },
       { id: "lrf_hobby", caption: "Hobbies", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.172, y: 0.119, w: 0.194, h: 0.078, action: { kind: "node", node: "hobby_room" } },
       { id: "lrf_track", caption: "Tonight", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.516, y: 0.190, w: 0.153, h: 0.059, action: { kind: "route", route: "/session/track" } },
+      { id: "lrf_exit", caption: "Out the front door", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", noRing: true, x: 0.440, y: 0.420, w: 0.150, h: 0.260, action: { kind: "node", node: "exterior_front" } },
     ],
   },
   living_room_left: {
@@ -542,6 +543,57 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     hotspots: [
       { id: "hob_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.05, y: 0.20, w: 0.16, h: 0.16, action: { kind: "forest", mode: "jump" } },
+    ],
+  },
+
+  // === OUTSIDE — the 360 walk around the cabin (first-run start) ===========
+  // Pan left/right to circle the cabin; doors lead inside; the archway into the
+  // forest. Door rects are rough — reposition in the editor and Export.
+  exterior_front: {
+    id: "exterior_front", title: "Outside",
+    image: require("../../assets/scenes/exterior_front.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    left: "exterior_left", right: "exterior_right",
+    hotspots: [
+      { id: "exf_door", caption: "Front door", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.380, y: 0.450, w: 0.240, h: 0.320, action: { kind: "node", node: "living_room_front" } },
+    ],
+  },
+  exterior_right: {
+    id: "exterior_right", title: "Outside",
+    image: require("../../assets/scenes/exterior_right.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    left: "exterior_front", right: "exterior_back",
+    hotspots: [
+      { id: "exr_kitchen", caption: "Kitchen door", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.280, y: 0.520, w: 0.220, h: 0.280, action: { kind: "node", node: "kitchen_right" } },
+      { id: "exr_bedroom", caption: "Upstairs — your room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.580, y: 0.240, w: 0.185, h: 0.220, action: { kind: "node", node: "me_room_front" } },
+    ],
+  },
+  exterior_back: {
+    id: "exterior_back", title: "Outside",
+    image: require("../../assets/scenes/exterior_back.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    left: "exterior_right", right: "exterior_left",
+    hotspots: [
+      { id: "exb_hobby", caption: "Hobbies annex", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.360, y: 0.460, w: 0.240, h: 0.300, action: { kind: "node", node: "hobby_room" } },
+      { id: "exb_archway", caption: "The archway", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.720, y: 0.400, w: 0.200, h: 0.360, action: { kind: "node", node: "exterior_forest" } },
+    ],
+  },
+  exterior_left: {
+    id: "exterior_left", title: "Outside",
+    image: require("../../assets/scenes/exterior_left.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    left: "exterior_back", right: "exterior_front",
+    hotspots: [
+      { id: "exl_arcade", caption: "Games room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.340, y: 0.500, w: 0.220, h: 0.280, action: { kind: "node", node: "entertainment_left" } },
+    ],
+  },
+  exterior_forest: {
+    id: "exterior_forest", title: "The archway",
+    image: require("../../assets/scenes/exterior_forest.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    back: "exterior_back",
+    hotspots: [
+      { id: "exf_walk", caption: "Into the woods", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.340, y: 0.340, w: 0.320, h: 0.460, action: { kind: "node", node: "forest_canopy" } },
     ],
   },
 
