@@ -18,15 +18,15 @@ const drinksDiary = require('../../assets/folder/drinks-diary.png');
 const fmtDate = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
 const R = {
-  t_date: { x: 0.225, y: 0.262, w: 0.24, h: 0.026 } as Rect,
-  t_had: { x: 0.085, y: 0.312, w: 0.055, h: 0.028 } as Rect,
-  t_none: { x: 0.085, y: 0.348, w: 0.055, h: 0.028 } as Rect,
-  t_what: { x: 0.07, y: 0.430, w: 0.34, h: 0.070 } as Rect,
-  t_amount: { x: 0.07, y: 0.565, w: 0.34, h: 0.070 } as Rect,
-  t_when: { x: 0.07, y: 0.700, w: 0.34, h: 0.050 } as Rect,
-  t_else: { x: 0.55, y: 0.250, w: 0.38, h: 0.190 } as Rect,
-  t_unsure: { x: 0.535, y: 0.735, w: 0.055, h: 0.028 } as Rect,
-  t_add: { x: 0.60, y: 0.760, w: 0.33, h: 0.040 } as Rect,
+  t_date: { x: 0.208, y: 0.240, w: 0.296, h: 0.044 } as Rect,
+  t_had: { x: 0.072, y: 0.280, w: 0.075, h: 0.035 } as Rect,
+  t_none: { x: 0.071, y: 0.317, w: 0.075, h: 0.037 } as Rect,
+  t_what: { x: 0.075, y: 0.421, w: 0.340, h: 0.070 } as Rect,
+  t_amount: { x: 0.084, y: 0.579, w: 0.340, h: 0.070 } as Rect,
+  t_when: { x: 0.082, y: 0.707, w: 0.340, h: 0.050 } as Rect,
+  t_else: { x: 0.548, y: 0.236, w: 0.380, h: 0.190 } as Rect,
+  t_unsure: { x: 0.576, y: 0.736, w: 0.067, h: 0.044 } as Rect,
+  t_add: { x: 0.595, y: 0.785, w: 0.330, h: 0.040 } as Rect,
 } as const;
 
 export default function TrackScreen() {

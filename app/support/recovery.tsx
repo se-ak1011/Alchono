@@ -66,9 +66,9 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', mon
 // Rough default rects — drag + Export exact positions in the editor.
 const R = {
   // drawer
-  rec_plan: { x: 0.04, y: 0.31, w: 0.55, h: 0.40 } as Rect,
-  rec_resources: { x: 0.55, y: 0.22, w: 0.38, h: 0.28 } as Rect,
-  rec_gp: { x: 0.33, y: 0.52, w: 0.62, h: 0.21 } as Rect,
+  rec_plan: { x: 0.079, y: 0.299, w: 0.495, h: 0.347 } as Rect,
+  rec_resources: { x: 0.595, y: 0.206, w: 0.326, h: 0.264 } as Rect,
+  rec_gp: { x: 0.590, y: 0.518, w: 0.374, h: 0.216 } as Rect,
   // my plan — four quadrants
   pl_reasons: { x: 0.08, y: 0.30, w: 0.34, h: 0.16 } as Rect,
   pl_people: { x: 0.56, y: 0.32, w: 0.36, h: 0.16 } as Rect,
