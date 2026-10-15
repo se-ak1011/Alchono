@@ -1,73 +1,49 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { View, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
-import { headingShadow } from '@/styles';
-
-const PLUM = '#A082BE';
-
-// The kinds of thing that will be savable — shown as the empty-state promise
-// until the save system is wired. Keeping it here documents the intent.
-const KINDS: ReadonlyArray<{ icon: keyof typeof Feather.glyphMap; label: string }> = [
-  { icon: 'book-open', label: 'Articles from the Reading Corner' },
-  { icon: 'cpu', label: 'Games from the Arcade' },
-  { icon: 'image', label: 'Moments & community posts' },
-  { icon: 'coffee', label: 'Drinks & recommendations' },
-];
+import { DrawnForm, TickZone, type Rect } from '@/components/paper/DrawnForm';
 
 /**
- * Saved — the bedside drawer in the Me room. A personal stash of favourites so
- * you never have to leave your room to reach the thing that helps: favourite a
- * game, an article, a moment, a drink anywhere in the app and it gathers here.
+ * Saved — Marta's hand-drawn filing drawer in the Me room. A personal stash of
+ * favourites, one folder per kind: Articles, Games, Moments & posts, Drinks &
+ * recommendations. Favourite anything anywhere in the app and it gathers in its
+ * folder here, so the thing that helps is one tap away without leaving the room.
  *
- * NOTE: this is the shell. The save/favourite system (a toggle on each savable
- * item + a store, then real rows here) is the next feature — see docs/roadmap.md.
+ * The save/favourite system (a toggle on each savable item + real rows) is the
+ * next feature; until then each folder gives a gentle empty-state. Zones carry
+ * rough default rects — position with the pencil editor + Export.
  */
+
+const savedDrawer = require('../assets/folder/saved-drawer.png');
+
+const R = {
+  sv_articles: { x: 0.20, y: 0.325, w: 0.46, h: 0.055 } as Rect,
+  sv_games: { x: 0.20, y: 0.405, w: 0.46, h: 0.055 } as Rect,
+  sv_moments: { x: 0.20, y: 0.480, w: 0.50, h: 0.055 } as Rect,
+  sv_drinks: { x: 0.20, y: 0.555, w: 0.54, h: 0.060 } as Rect,
+} as const;
+
 export default function SavedScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const empty = (kind: string) =>
+    Alert.alert('Nothing saved here yet', `Favourite ${kind} anywhere in the app and it’ll gather in this folder.`);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#201D28', paddingTop: insets.top, paddingBottom: insets.bottom }}>
-      <Animated.View entering={FadeIn.duration(300)} className="flex-row items-center gap-4 px-6 pt-4 pb-1">
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={{ color: '#817B91', fontSize: 18 }}>←</Text>
-        </Pressable>
-        <Text className="text-text-primary text-2xl font-semibold tracking-tight" style={headingShadow}>
-          Saved
-        </Text>
-      </Animated.View>
-
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-        <Text className="text-text-secondary text-base leading-relaxed mb-2">
-          Your drawer. Everything you keep gathers here — so the thing that helps is
-          always one tap away, without leaving your room.
-        </Text>
-        <Text className="text-text-muted text-sm leading-relaxed mb-8">
-          Favourite anything as you go, and find it waiting here later.
-        </Text>
-
-        <View style={{ gap: 12 }}>
-          {KINDS.map((k, i) => (
-            <Animated.View
-              key={k.label}
-              entering={FadeInDown.duration(360).delay(120 + i * 70)}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: 'rgba(20,18,24,0.6)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(236,233,241,0.1)', paddingHorizontal: 16, paddingVertical: 14 }}
-            >
-              <View style={{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(160,130,190,0.16)' }}>
-                <Feather name={k.icon} size={18} color={PLUM} />
-              </View>
-              <Text className="flex-1 text-text-secondary text-sm">{k.label}</Text>
-            </Animated.View>
-          ))}
-        </View>
-
-        <Text className="text-text-muted text-xs leading-relaxed mt-8 text-center">
-          Nothing saved yet — start favouriting and your drawer fills up.
-        </Text>
-      </ScrollView>
+    <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
+      <DrawnForm source={savedDrawer} label="saved-drawer" onBack={() => router.back()}>
+        <LinkZone id="sv_articles" rect={R.sv_articles} onPress={() => empty('an article from the Reading Corner')} />
+        <LinkZone id="sv_games" rect={R.sv_games} onPress={() => empty('a game from the Arcade')} />
+        <LinkZone id="sv_moments" rect={R.sv_moments} onPress={() => empty('a moment or a community post')} />
+        <LinkZone id="sv_drinks" rect={R.sv_drinks} onPress={() => empty('a drink or a recommendation')} />
+      </DrawnForm>
     </View>
+  );
+}
+
+/** A tappable folder tab — invisible over the drawn label. */
+function LinkZone({ id, rect, onPress }: { id: string; rect: Rect; onPress: () => void }) {
+  return (
+    <TickZone id={id} rect={rect} value={false} onToggle={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }} />
   );
 }

@@ -26,11 +26,13 @@ const planNote = require('../../assets/folder/recovery-plan.png');
 const gpNote = require('../../assets/folder/recovery-gp.png');
 const resCall = require('../../assets/folder/recovery-res-call.png');
 const resText = require('../../assets/folder/recovery-res-text.png');
+const resMeetings = require('../../assets/folder/recovery-res-meetings.png');
 
-// The "Useful People" notebook — one tabbed close-up (Call / Text / Meetings).
-// Meetings art is still coming; its tab opens the AA meeting finder for now.
-const AA_MEETINGS = 'https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting';
-const RES_LINES: Record<'call' | 'text', { id: string; url: string; y: number }[]> = {
+type ResTab = 'call' | 'text' | 'meetings';
+
+// The "Useful People" notebook — one tabbed close-up (Call / Text / Meetings),
+// each line a tap to call / text / open.
+const RES_LINES: Record<ResTab, { id: string; url: string; y: number }[]> = {
   call: [
     { id: 'res_999', url: 'tel:999', y: 0.300 },
     { id: 'res_samaritans', url: 'tel:116123', y: 0.372 },
@@ -43,7 +45,12 @@ const RES_LINES: Record<'call' | 'text', { id: string; url: string; y: number }[
     { id: 'res_nhs', url: 'https://www.nhs.uk/live-well/alcohol-advice/', y: 0.375 },
     { id: 'res_7cups', url: 'https://www.7cups.com', y: 0.448 },
   ],
+  meetings: [
+    { id: 'res_aameet', url: 'https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting', y: 0.300 },
+    { id: 'res_smart', url: 'https://smartrecovery.org.uk', y: 0.375 },
+  ],
 };
+const RES_IMG: Record<ResTab, number> = { call: resCall, text: resText, meetings: resMeetings };
 // Tab bookmarks drawn down the right edge.
 const RES_TABS = {
   call: { x: 0.87, y: 0.255, w: 0.12, h: 0.11 } as Rect,
@@ -88,7 +95,7 @@ export default function RecoveryScreen() {
   const router = useRouter();
   const { user, profile, setProfile } = useAuthStore();
   const [phase, setPhase] = useState<'drawer' | 'plan' | 'gp' | 'resources'>('drawer');
-  const [resTab, setResTab] = useState<'call' | 'text'>('call');
+  const [resTab, setResTab] = useState<ResTab>('call');
 
   // ---- My Plan (recovery_plan column) --------------------------------------
   const existingPlan = ((profile as any)?.recovery_plan ?? {}) as RecoveryPlan;
@@ -203,7 +210,7 @@ export default function RecoveryScreen() {
 
       {phase === 'resources' && (
         <DrawnForm
-          source={resTab === 'call' ? resCall : resText}
+          source={RES_IMG[resTab]}
           label={`recovery-res-${resTab}`}
           onBack={() => setPhase('drawer')}
         >
@@ -218,7 +225,7 @@ export default function RecoveryScreen() {
           {/* Tab bookmarks down the right edge. */}
           <LinkZone id="res_tab_call" rect={RES_TABS.call} onPress={() => setResTab('call')} />
           <LinkZone id="res_tab_text" rect={RES_TABS.text} onPress={() => setResTab('text')} />
-          <LinkZone id="res_tab_meetings" rect={RES_TABS.meetings} onPress={() => Linking.openURL(AA_MEETINGS)} />
+          <LinkZone id="res_tab_meetings" rect={RES_TABS.meetings} onPress={() => setResTab('meetings')} />
         </DrawnForm>
       )}
     </View>
