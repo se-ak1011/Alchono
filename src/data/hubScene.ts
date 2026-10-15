@@ -511,6 +511,20 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [],
   },
 
+  // --- Hobbies (placeholder room — the feature itself comes later) ---------
+  // A different room you walk into, linked from the motorbike drawings in the
+  // cabin. Empty for now beyond the "need a minute?" fob; the hobbies feature
+  // is a later build. Appears in the editor's destination picker as
+  // "Hobbies · hobby_room", so a hotspot can be wired straight to it.
+  hobby_room: {
+    id: "hobby_room", title: "Hobbies",
+    image: require("../../assets/scenes/hobby_room.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    hotspots: [
+      { id: "hob_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.05, y: 0.20, w: 0.16, h: 0.16, action: { kind: "forest", mode: "jump" } },
+    ],
+  },
+
   // === RESOURCES CLOSE-UPS (magazine ad pages) ============================
   // Resources close-up (ent) — each line links out directly. Tap
   // positions are first-pass estimates; nudge onto the lines in the editor.
