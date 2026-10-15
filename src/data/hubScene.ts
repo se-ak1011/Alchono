@@ -354,8 +354,8 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       { id: "kr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.219, y: 0.202, w: 0.185, h: 0.195, action: { kind: "forest", mode: "jump" } },
       { id: "kr_woods", caption: "Forest walk", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.524, y: 0.374, w: 0.133, h: 0.059, action: { kind: "node", node: "forest_canopy" } },
-      { id: "kr_recommendations", caption: "Recommendations", kind: "label", label: "0,0", rotate: -50, x: 0.679, y: 0.381, w: 0.108, h: 0.082, action: { kind: "route", route: "/support/recommendations" } },
-      { id: "kr_mocktails", caption: "Mocktails", kind: "label", label: "Mocktails", labelSize: 11, rotate: -50, x: 0.771, y: 0.385, w: 0.114, h: 0.073, action: { kind: "route", route: "/bar/menu" } },
+      { id: "kr_recommendations", caption: "0.0 favourites", kind: "label", label: "0,0", inlay: "note_0_0_beer", rotate: -50, x: 0.679, y: 0.381, w: 0.108, h: 0.082, action: { kind: "route", route: "/support/recommendations" } },
+      { id: "kr_mocktails", caption: "Mocktails", kind: "label", label: "Mocktails", inlay: "note_mocktails", labelSize: 11, rotate: -50, x: 0.771, y: 0.385, w: 0.114, h: 0.073, action: { kind: "route", route: "/bar/menu" } },
       { id: "kr_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", rotate: -25, rotateY: -28, x: 0.420, y: 0.108, w: 0.200, h: 0.080 },
       { id: "kr_connections", caption: "Your people", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.291, y: 0.459, w: 0.141, h: 0.127, action: { kind: "route", route: "/profile/connections" } },
       { id: "kr_resources", caption: "Extra support", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.038, y: 0.826, w: 0.457, h: 0.114, action: { kind: "node", node: "resources_kitchen" } },

@@ -334,6 +334,16 @@ export function MedanoLogoInlay() { return <LogoInlay source={MEDANO_LOGO} />; }
 export function NiconoLogoInlay() { return <LogoInlay source={NICONO_LOGO} />; }
 
 // ————————————————————————————————————————————————————————————————
+// Handwritten drink notes — the preview of a kitchen counter card (the mocktails
+// list, the 0.0 beer list). A contained image, so rotate / tilt / resize /
+// brightness in the editor all apply (sit it onto the angled card).
+// ————————————————————————————————————————————————————————————————
+const NOTE_MOCKTAILS = require("../../../assets/scenes/note_mocktails.png");
+const NOTE_00_BEER = require("../../../assets/scenes/note_0_0_beer.png");
+export function NoteMocktailsInlay() { return <LogoInlay source={NOTE_MOCKTAILS} />; }
+export function Note00BeerInlay() { return <LogoInlay source={NOTE_00_BEER} />; }
+
+// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 // ————————————————————————————————————————————————————————————————
@@ -452,6 +462,8 @@ export const INLAYS: Record<string, React.ComponentType> = {
   cocano_logo: CocanoLogoInlay,
   medano_logo: MedanoLogoInlay,
   nicono_logo: NiconoLogoInlay,
+  note_mocktails: NoteMocktailsInlay, // the mocktails card on the kitchen counter
+  note_0_0_beer: Note00BeerInlay, // the 0.0 beer card on the kitchen counter
 };
 
 /** The live previews offered in the editor's inlay picker (label + inlay key).
@@ -465,6 +477,8 @@ export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "community_board", label: "Community — written posts" },
   { id: "messages", label: "Messages — recent threads" },
   { id: "bookshelf", label: "Bookshelf — the books" },
+  { id: "note_mocktails", label: "Note — Mocktails card" },
+  { id: "note_0_0_beer", label: "Note — 0.0 Beer card" },
   { id: "moments", label: "Your moments — photos" },
   { id: "sky", label: "Your sky (constellation)" },
   { id: "zine", label: "Zine cover" },
