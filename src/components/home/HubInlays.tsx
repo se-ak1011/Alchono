@@ -10,6 +10,8 @@ import { WebView } from "react-native-webview";
 import { ARCADE_GAMES } from "@/data/arcadeGames";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 /**
  * "Inlays" — live content painted straight onto an object in the scene, so the
@@ -300,6 +302,58 @@ export function NoteMocktailsInlay() { return <LogoInlay source={NOTE_MOCKTAILS}
 export function Note00BeerInlay() { return <LogoInlay source={NOTE_00_BEER} />; }
 
 // ————————————————————————————————————————————————————————————————
+// Preferences — the PDA on the profile desk, showing your REAL notification
+// settings (the same notification_preferences the Preferences & Permissions
+// screen reads). A light paper screen, each row ticked to its live state, so
+// the device mirrors your actual choices. Transparent to taps — the hotspot it
+// sits in opens the full Preferences screen. Defaults to on when nothing's
+// saved yet, matching the settings screen.
+// ————————————————————————————————————————————————————————————————
+const PREF_ROWS: { key: string; label: string }[] = [
+  { key: "daily_checkin", label: "Daily check-in" },
+  { key: "morning_reflection", label: "Morning reflection" },
+  { key: "drinking_reminders", label: "Pause reminders" },
+  { key: "session_nudges", label: "Slow-down nudges" },
+  { key: "milestone_alerts", label: "Milestones" },
+  { key: "community_updates", label: "Community" },
+];
+export function PreferencesInlay() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const { data: prefs } = useQuery({
+    queryKey: ["notification-prefs", userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("notification_preferences")
+        .select("*")
+        .eq("user_id", userId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#efe7d4", overflow: "hidden", paddingHorizontal: "9%", paddingVertical: "8%" }]}>
+      <Text style={{ fontFamily: "PatrickHand", fontSize: 10, color: "#4a3f6a", letterSpacing: 0.5, marginBottom: "5%" }} numberOfLines={1}>
+        PREFERENCES
+      </Text>
+      <View style={{ gap: 3 }}>
+        {PREF_ROWS.map((row) => {
+          const on = (prefs as any)?.[row.key] ?? true;
+          return (
+            <View key={row.key} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 4 }}>
+              <Text numberOfLines={1} style={{ fontFamily: "PatrickHand", fontSize: 9.5, color: "#2b2435", flex: 1 }}>{row.label}</Text>
+              <View style={{ width: 9, height: 9, borderRadius: 2, borderWidth: 1.1, borderColor: "#6b5f8f", backgroundColor: on ? "#7b5fc0" : "transparent", alignItems: "center", justifyContent: "center" }}>
+                {on ? <Text style={{ color: "#fff", fontSize: 7, lineHeight: 7.5 }}>✓</Text> : null}
+              </View>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+// ————————————————————————————————————————————————————————————————
 // Registry — keyed by a hotspot's `inlay` id (set in hubScene.ts).
 // ————————————————————————————————————————————————————————————————
 // ————————————————————————————————————————————————————————————————
@@ -418,6 +472,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   nicono_logo: NiconoLogoInlay,
   note_mocktails: NoteMocktailsInlay, // the mocktails card on the kitchen counter
   note_0_0_beer: Note00BeerInlay, // the 0.0 beer card on the kitchen counter
+  prefs_pda: PreferencesInlay, // live notification settings on the profile PDA
 };
 
 /** The live previews offered in the editor's inlay picker (label + inlay key).
@@ -434,4 +489,5 @@ export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "note_mocktails", label: "Note — Mocktails card" },
   { id: "note_0_0_beer", label: "Note — 0.0 Beer card" },
   { id: "moments", label: "Your moments — photos" },
+  { id: "prefs_pda", label: "Preferences — PDA (live)" },
 ];
