@@ -242,6 +242,9 @@ export interface Database {
           created_at: string;
           recovery_level: string;
           bio: string | null;
+          offer: string | null;
+          comfortable: string | null;
+          around: string | null;
           is_available: boolean;
           is_rural: boolean;
           total_sessions: number;
@@ -252,6 +255,9 @@ export interface Database {
           created_at?: string;
           recovery_level: string;
           bio?: string | null;
+          offer?: string | null;
+          comfortable?: string | null;
+          around?: string | null;
           is_available?: boolean;
           is_rural?: boolean;
           total_sessions?: number;
@@ -259,6 +265,9 @@ export interface Database {
         Update: {
           recovery_level?: string;
           bio?: string | null;
+          offer?: string | null;
+          comfortable?: string | null;
+          around?: string | null;
           is_available?: boolean;
           is_rural?: boolean;
           total_sessions?: number;

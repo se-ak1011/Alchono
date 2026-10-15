@@ -78,10 +78,16 @@ export function useSaveMentorProfile() {
     mutationFn: async ({
       recoveryLevel,
       bio,
+      offer,
+      comfortable,
+      around,
       isAvailable,
     }: {
       recoveryLevel: string;
       bio: string;
+      offer?: string;
+      comfortable?: string;
+      around?: string;
       isAvailable: boolean;
     }) => {
       const { data, error } = await supabase
@@ -91,6 +97,9 @@ export function useSaveMentorProfile() {
             user_id: userId!,
             recovery_level: recoveryLevel,
             bio: bio.trim() || null,
+            offer: offer?.trim() || null,
+            comfortable: comfortable?.trim() || null,
+            around: around?.trim() || null,
             is_available: isAvailable,
             is_rural:
               ((useAuthStore.getState().profile?.preferences as any)
@@ -117,6 +126,54 @@ export function useSaveMentorProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-mentor-profile', userId] });
       queryClient.invalidateQueries({ queryKey: ['mentors'] });
+    },
+  });
+}
+
+/**
+ * My OUTGOING mentor requests (I'm the requester), keyed by mentor user_id →
+ * { id, status }. Drives the per-mentor state in the directory (pending /
+ * accepted / declined), prevents duplicate requests, and lets me cancel.
+ */
+export function useMyMentorRequests() {
+  const userId = useAuthStore((s) => s.user?.id);
+
+  return useQuery({
+    queryKey: ['my-requests', userId],
+    queryFn: async (): Promise<Record<string, { id: string; status: string }>> => {
+      const { data, error } = await supabase
+        .from('mentor_requests')
+        .select('id, mentor_id, status, created_at')
+        .eq('requester_id', userId!)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const byMentor: Record<string, { id: string; status: string }> = {};
+      for (const r of (data ?? []) as any[]) {
+        // Most recent per mentor wins (ordered desc above).
+        if (!byMentor[r.mentor_id]) byMentor[r.mentor_id] = { id: r.id, status: r.status };
+      }
+      return byMentor;
+    },
+    enabled: !!userId,
+    refetchInterval: 30_000,
+  });
+}
+
+/** Cancel a pending request I sent (removes it so I can ask again later). */
+export function useCancelMentorRequest() {
+  const userId = useAuthStore((s) => s.user?.id);
+
+  return useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await supabase
+        .from('mentor_requests')
+        .delete()
+        .eq('id', requestId)
+        .eq('requester_id', userId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-requests', userId] });
     },
   });
 }
