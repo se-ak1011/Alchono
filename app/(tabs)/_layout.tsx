@@ -18,10 +18,7 @@ export default function TabLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="support" />
-      <Stack.Screen name="journal" />
       <Stack.Screen name="insights" />
-      <Stack.Screen name="profile" />
     </Stack>
   );
 }

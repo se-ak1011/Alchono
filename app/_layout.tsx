@@ -108,9 +108,6 @@ function RootLayoutNav() {
         <Stack.Screen name="recipe/[id]" options={{ presentation: 'transparentModal', animation: 'fade' }} />
         <Stack.Screen name="bar/menu" options={{ presentation: 'transparentModal', animation: 'fade' }} />
         <Stack.Screen name="arcade/[game]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
-        <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="toolkit/c/[cat]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/help-now" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/recovery" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/coach" options={{ animation: 'slide_from_right' }} />
@@ -123,14 +120,6 @@ function RootLayoutNav() {
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/good-feed" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/track" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen
-          name="checkin"
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen name="soul" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="giggles" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="thought" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="thought/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="moments/play"
           options={{ presentation: 'fullScreenModal', animation: 'fade' }}
