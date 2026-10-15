@@ -46,7 +46,6 @@ export const DESTINATIONS: DestGroup[] = [
       { label: "Looking forward to (goals)", action: { kind: "route", route: "/goals" } },
       { label: "Saved", action: { kind: "route", route: "/saved" } },
       { label: "Personal file", action: { kind: "route", route: "/profile/file" } },
-      { label: "My Sky (constellation)", action: { kind: "route", route: "/constellation" } },
       { label: "Your moments", action: { kind: "route", route: "/moments" } },
     ],
   },

@@ -480,6 +480,4 @@ export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "note_mocktails", label: "Note — Mocktails card" },
   { id: "note_0_0_beer", label: "Note — 0.0 Beer card" },
   { id: "moments", label: "Your moments — photos" },
-  { id: "sky", label: "Your sky (constellation)" },
-  { id: "zine", label: "Zine cover" },
 ];
