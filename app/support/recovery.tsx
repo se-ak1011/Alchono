@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as Haptics from 'expo-haptics';
-import { View, Alert, Share } from 'react-native';
+import { View, Alert, Share, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { DrawnForm, FieldZone, TickZone, UsernameZone, ValueZone, type Rect } from '@/components/paper/DrawnForm';
 import { useAuthStore } from '@/store/authStore';
@@ -24,6 +24,32 @@ import { buildSummaryHtml, exportSummaryPdf } from '@/lib/summaryPdf';
 const recoveryDrawer = require('../../assets/folder/recovery-drawer.png');
 const planNote = require('../../assets/folder/recovery-plan.png');
 const gpNote = require('../../assets/folder/recovery-gp.png');
+const resCall = require('../../assets/folder/recovery-res-call.png');
+const resText = require('../../assets/folder/recovery-res-text.png');
+
+// The "Useful People" notebook — one tabbed close-up (Call / Text / Meetings).
+// Meetings art is still coming; its tab opens the AA meeting finder for now.
+const AA_MEETINGS = 'https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting';
+const RES_LINES: Record<'call' | 'text', { id: string; url: string; y: number }[]> = {
+  call: [
+    { id: 'res_999', url: 'tel:999', y: 0.300 },
+    { id: 'res_samaritans', url: 'tel:116123', y: 0.372 },
+    { id: 'res_111', url: 'tel:111', y: 0.444 },
+    { id: 'res_drinkline', url: 'tel:03001231110', y: 0.516 },
+    { id: 'res_aa', url: 'tel:08009177650', y: 0.588 },
+  ],
+  text: [
+    { id: 'res_shout', url: 'sms:85258', y: 0.300 },
+    { id: 'res_nhs', url: 'https://www.nhs.uk/live-well/alcohol-advice/', y: 0.375 },
+    { id: 'res_7cups', url: 'https://www.7cups.com', y: 0.448 },
+  ],
+};
+// Tab bookmarks drawn down the right edge.
+const RES_TABS = {
+  call: { x: 0.87, y: 0.255, w: 0.12, h: 0.11 } as Rect,
+  text: { x: 0.87, y: 0.400, w: 0.12, h: 0.11 } as Rect,
+  meetings: { x: 0.87, y: 0.555, w: 0.12, h: 0.11 } as Rect,
+};
 
 type RecoveryPlan = { reasons?: string; people?: string; goTo?: string; warningSigns?: string };
 
@@ -61,7 +87,8 @@ const R = {
 export default function RecoveryScreen() {
   const router = useRouter();
   const { user, profile, setProfile } = useAuthStore();
-  const [phase, setPhase] = useState<'drawer' | 'plan' | 'gp'>('drawer');
+  const [phase, setPhase] = useState<'drawer' | 'plan' | 'gp' | 'resources'>('drawer');
+  const [resTab, setResTab] = useState<'call' | 'text'>('call');
 
   // ---- My Plan (recovery_plan column) --------------------------------------
   const existingPlan = ((profile as any)?.recovery_plan ?? {}) as RecoveryPlan;
@@ -141,7 +168,7 @@ export default function RecoveryScreen() {
       {phase === 'drawer' && (
         <DrawnForm source={recoveryDrawer} label="recovery-drawer" onBack={() => router.back()}>
           <LinkZone id="rec_plan" rect={R.rec_plan} onPress={() => setPhase('plan')} />
-          <LinkZone id="rec_resources" rect={R.rec_resources} onPress={() => router.push('/resources/home' as any)} />
+          <LinkZone id="rec_resources" rect={R.rec_resources} onPress={() => { setResTab('call'); setPhase('resources'); }} />
           <LinkZone id="rec_gp" rect={R.rec_gp} onPress={() => setPhase('gp')} />
         </DrawnForm>
       )}
@@ -171,6 +198,27 @@ export default function RecoveryScreen() {
           <ValueZone id="gp_v_checkin" rect={R.gp_v_checkin} text={rows[5].value} />
           <LinkZone id="gp_pdf" rect={R.gp_pdf} onPress={handleExportPdf} />
           <LinkZone id="gp_share" rect={R.gp_share} onPress={handleShareText} />
+        </DrawnForm>
+      )}
+
+      {phase === 'resources' && (
+        <DrawnForm
+          source={resTab === 'call' ? resCall : resText}
+          label={`recovery-res-${resTab}`}
+          onBack={() => setPhase('drawer')}
+        >
+          {RES_LINES[resTab].map((line) => (
+            <LinkZone
+              key={line.id}
+              id={line.id}
+              rect={{ x: 0.07, y: line.y, w: 0.42, h: 0.05 }}
+              onPress={() => Linking.openURL(line.url)}
+            />
+          ))}
+          {/* Tab bookmarks down the right edge. */}
+          <LinkZone id="res_tab_call" rect={RES_TABS.call} onPress={() => setResTab('call')} />
+          <LinkZone id="res_tab_text" rect={RES_TABS.text} onPress={() => setResTab('text')} />
+          <LinkZone id="res_tab_meetings" rect={RES_TABS.meetings} onPress={() => Linking.openURL(AA_MEETINGS)} />
         </DrawnForm>
       )}
     </View>
