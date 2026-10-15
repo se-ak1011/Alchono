@@ -1,75 +1,46 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
-import { PaperBackground } from '@/components/ui/PaperBackground';
-import { PaperCanvas, Placeable } from '@/components/paper/PaperCanvas';
+import { DrawnForm, TickZone, type Rect } from '@/components/paper/DrawnForm';
 
-const INK = '#332a24';
-const INK_SOFT = 'rgba(51,42,36,0.55)';
+/**
+ * Recovery — Marta's hand-drawn drawer, opened from the drawers around the
+ * house. The steady, not-a-crisis corner, laid out as objects you reach for:
+ *   • the folded "For when it gets hard" note  → My Plan (its own close-up)
+ *   • the "Useful People" notebook (Call/Text/Meetings) → the resources
+ *   • the "Take to GP" envelope → the shareable summary / export
+ * Zones carry rough default rects; position them with the pencil editor and
+ * Export, same art→coordinates workflow as the rooms and the Personal File.
+ */
 
-type Row = { title: string; subtitle: string; route: string; icon: keyof typeof Feather.glyphMap; accent: string };
+const recoveryDrawer = require('../../assets/folder/recovery-drawer.png');
 
-// Steady, not-a-crisis support. Deliberately NOT the things that now live
-// elsewhere (progress in Me, milestones in the timeline, mentors in Community) —
-// this slot is the proactive, plan-ahead corner.
-const ROWS: Row[] = [
-  { title: 'My plan', subtitle: 'Your reasons, people and go-to moves — written calmly, for a harder moment later.', route: '/plan', icon: 'clipboard', accent: '#7b5fc0' },
-  { title: 'Share with your GP', subtitle: 'A clean summary and drinks diary to print or email to a professional.', route: '/summary', icon: 'file-text', accent: '#8a7440' },
-  { title: 'Resources', subtitle: 'Helplines, meetings, and support services.', route: '/resources/home', icon: 'life-buoy', accent: '#6b4f8f' },
-];
+// Rough default rects — drag + Export exact positions in the editor.
+const R = {
+  rec_plan: { x: 0.04, y: 0.31, w: 0.55, h: 0.40 } as Rect,      // folded "For when it gets hard"
+  rec_resources: { x: 0.55, y: 0.22, w: 0.38, h: 0.28 } as Rect, // "Useful People" notebook
+  rec_gp: { x: 0.33, y: 0.52, w: 0.62, h: 0.21 } as Rect,        // "Take to GP" envelope
+} as const;
 
 export default function RecoveryScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
-
   return (
-    <PaperBackground>
-      <PaperCanvas label="Recovery">
-        <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 26, paddingTop: 6, paddingBottom: 2 }}>
-            <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
-              <Feather name="chevron-left" size={26} color={INK} />
-            </Pressable>
-          </View>
+    <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
+      <DrawnForm source={recoveryDrawer} label="recovery-drawer" onBack={() => router.back()}>
+        {/* My Plan — routes to the existing screen for now; becomes a nested
+            close-up (4 FieldZones over recovery_plan) when its art lands. */}
+        <LinkZone id="rec_plan" rect={R.rec_plan} onPress={() => router.push('/plan')} />
+        <LinkZone id="rec_resources" rect={R.rec_resources} onPress={() => router.push('/resources/home' as any)} />
+        <LinkZone id="rec_gp" rect={R.rec_gp} onPress={() => router.push('/summary' as any)} />
+      </DrawnForm>
+    </View>
+  );
+}
 
-          <ScrollView contentContainerStyle={{ paddingHorizontal: 30, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-            <Placeable id="title" def={{ dx: 0.234, dy: -0.002 }}>
-              <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK, marginTop: 6, marginBottom: 1 }}>Recovery</Text>
-            </Placeable>
-            <Placeable id="subtitle" def={{ dx: 0.034, dy: 0.015 }}>
-              <Text style={{ color: INK_SOFT, fontSize: 15, lineHeight: 21, marginBottom: 16 }}>
-                Not a hard moment — just here. Take your time.
-              </Text>
-            </Placeable>
-
-            <Placeable id="list">
-              <View>
-                {ROWS.map((r, i) => (
-                  <Animated.View key={r.title} entering={FadeInDown.duration(400).delay(80 + i * 60)}>
-                    <Pressable
-                      onPress={() => router.push(r.route as any)}
-                      className="active:opacity-70"
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(51,42,36,0.14)' }}
-                    >
-                      <View style={{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(51,42,36,0.06)' }}>
-                        <Feather name={r.icon} size={18} color={r.accent} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: 'PatrickHand', fontSize: 19, color: INK }}>{r.title}</Text>
-                        <Text style={{ color: INK_SOFT, fontSize: 12.5, lineHeight: 17 }}>{r.subtitle}</Text>
-                      </View>
-                      <Feather name="chevron-right" size={16} color={INK_SOFT} />
-                    </Pressable>
-                  </Animated.View>
-                ))}
-              </View>
-            </Placeable>
-          </ScrollView>
-        </View>
-      </PaperCanvas>
-    </PaperBackground>
+/** A tappable object — invisible over the drawn note / notebook / envelope. */
+function LinkZone({ id, rect, onPress }: { id: string; rect: Rect; onPress: () => void }) {
+  return (
+    <TickZone id={id} rect={rect} value={false} onToggle={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }} />
   );
 }
