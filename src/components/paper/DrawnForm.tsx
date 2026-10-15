@@ -227,6 +227,35 @@ export function UsernameZone({
   );
 }
 
+/** A read-only value painted onto a drawn line — a stat, a date range, a name. */
+export function ValueZone({
+  id,
+  rect,
+  text,
+  fontSize = 18,
+  align = 'left',
+  color = INK,
+  numberOfLines = 2,
+}: {
+  id: string;
+  rect: Rect;
+  text: string;
+  fontSize?: number;
+  align?: 'left' | 'center' | 'right';
+  color?: string;
+  numberOfLines?: number;
+}) {
+  return (
+    <Zone id={id} def={rect}>
+      <View pointerEvents="none" style={{ flex: 1, justifyContent: 'center' }}>
+        <Text numberOfLines={numberOfLines} adjustsFontSizeToFit style={{ fontFamily: 'PatrickHand', fontSize, color, textAlign: align }}>
+          {text}
+        </Text>
+      </View>
+    </Zone>
+  );
+}
+
 /** The drawn paper + the zone overlay + the placement editor. */
 export function DrawnForm({
   source,
