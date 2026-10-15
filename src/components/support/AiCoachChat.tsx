@@ -13,11 +13,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CompanionArt } from "@/components/ui/CompanionArt";
-import { ContactShadow } from "@/components/ui/RoomBackdrop";
-import { CompanionMenu } from "@/components/ui/CompanionMenu";
 import { useAiCoach } from "@/hooks/useAiCoach";
-import { useCompanion } from "@/hooks/useCompanion";
 import type { ChatMessage } from "@/types";
 
 interface AiCoachChatProps {
@@ -53,11 +49,8 @@ const QUICK_ACTIONS: { label: string; message: string; urge?: boolean }[] = [
 
 export function AiCoachChat({ sessionType = "general", hideCompanion = false }: AiCoachChatProps) {
   const router = useRouter();
-  const { pose } = useCompanion();
   const { messages, isTyping, sendMessage } = useAiCoach(sessionType);
   const [input, setInput] = useState("");
-  const [companionMenuOpen, setCompanionMenuOpen] = useState(false);
-  const [quietCompanionSignal, setQuietCompanionSignal] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
   const { height: winH } = useWindowDimensions();
@@ -113,26 +106,9 @@ export function AiCoachChat({ sessionType = "general", hideCompanion = false }: 
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => <ChatBubble message={item} />}
         ListHeaderComponent={
-          hideCompanion ? (
-            // The room is the backdrop — reserve the top space so the
-            // conversation begins below it.
-            <View style={{ height: winH * 0.4 }} />
-          ) : showQuickActions ? (
-            <View className="pt-2 pb-1 items-center">
-              <CompanionArt
-                source={pose("armchair")}
-                width={200}
-                height={244}
-                onPress={() => setCompanionMenuOpen(true)}
-                onLongPress={() => {
-                  if (!companionMenuOpen)
-                    setQuietCompanionSignal((signal) => signal + 1);
-                }}
-              />
-              {/* Sits the armchair on the room's floor, not floating in chat. */}
-              <ContactShadow width={196} height={26} opacity={0.3} style={{ marginTop: -14 }} />
-            </View>
-          ) : null
+          // The room illustration is the backdrop — reserve the top space so
+          // the conversation begins below it.
+          <View style={{ height: winH * 0.4 }} />
         }
         ListFooterComponent={
           isTyping ? (
@@ -222,12 +198,6 @@ export function AiCoachChat({ sessionType = "general", hideCompanion = false }: 
           <Text className="text-white text-lg">↑</Text>
         </Pressable>
       </View>
-      <CompanionMenu
-        visible={companionMenuOpen}
-        onClose={() => setCompanionMenuOpen(false)}
-        context="support"
-        quietSignal={quietCompanionSignal}
-      />
     </KeyboardAvoidingView>
   );
 }
