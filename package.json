@@ -55,12 +55,14 @@
     "react-native-screens": "~4.4.0",
     "react-native-svg": "15.8.0",
     "react-native-url-polyfill": "^2.0.0",
+    "react-native-webview": "^13.12.5",
     "tailwindcss": "^3.4.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@types/react": "~18.3.12",
+    "babel-plugin-inline-import": "^3.0.0",
     "typescript": "^5.3.3"
   }
 }

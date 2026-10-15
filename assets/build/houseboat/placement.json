@@ -1,0 +1,103 @@
+{
+  "canvas": [
+    851,
+    1847
+  ],
+  "source_scene": [
+    708,
+    1536
+  ],
+  "status": "first fitting draft; shallow rocky river requires review of mooring and waterline",
+  "assets": {
+    "plank-cabin": {
+      "file": "plank-cabin.png",
+      "visible_bounds": [
+        360,
+        822,
+        460,
+        253
+      ],
+      "alpha_verified": true
+    },
+    "curved-roof": {
+      "file": "curved-roof.png",
+      "visible_bounds": [
+        360,
+        838,
+        460,
+        237
+      ],
+      "alpha_verified": true
+    },
+    "flat-roof": {
+      "file": "flat-roof.png",
+      "visible_bounds": [
+        360,
+        840,
+        460,
+        235
+      ],
+      "alpha_verified": true
+    },
+    "gangplank": {
+      "file": "gangplank.png",
+      "visible_bounds": [
+        348,
+        965,
+        88,
+        55
+      ],
+      "alpha_verified": true
+    },
+    "mooring-rope": {
+      "file": "mooring-rope.png",
+      "visible_bounds": [
+        322,
+        950,
+        36,
+        25
+      ],
+      "alpha_verified": true
+    },
+    "rope-fender": {
+      "file": "rope-fender.png",
+      "visible_bounds": [
+        436,
+        990,
+        16,
+        50
+      ],
+      "alpha_verified": true
+    },
+    "deck-chair": {
+      "file": "deck-chair.png",
+      "visible_bounds": [
+        420,
+        914,
+        55,
+        61
+      ],
+      "alpha_verified": true
+    },
+    "deck-planter": {
+      "file": "deck-planter.png",
+      "visible_bounds": [
+        460,
+        933,
+        55,
+        42
+      ],
+      "alpha_verified": true
+    },
+    "lantern": {
+      "file": "lantern.png",
+      "visible_bounds": [
+        540,
+        845,
+        21,
+        55
+      ],
+      "alpha_verified": true
+    }
+  }
+}

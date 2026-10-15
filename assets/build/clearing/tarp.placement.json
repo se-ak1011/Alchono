@@ -1,0 +1,63 @@
+{
+  "canvas": [
+    851,
+    1847
+  ],
+  "source_scene": [
+    708,
+    1536
+  ],
+  "status": "first fitting draft; shelter edges, ground contact and accessory placements need integration review",
+  "assets": {
+    "tarp": {
+      "file": "tarp.png",
+      "visible_bounds": [
+        90,
+        774,
+        390,
+        216
+      ],
+      "alpha_verified": true
+    },
+    "camp-chair": {
+      "file": "camp-chair.png",
+      "visible_bounds": [
+        600,
+        1061,
+        95,
+        99
+      ],
+      "alpha_verified": true
+    },
+    "bedroll": {
+      "file": "bedroll.png",
+      "visible_bounds": [
+        190,
+        1011,
+        85,
+        44
+      ],
+      "alpha_verified": true
+    },
+    "camp-mat": {
+      "file": "camp-mat.png",
+      "visible_bounds": [
+        110,
+        1034,
+        185,
+        76
+      ],
+      "alpha_verified": true
+    },
+    "lantern": {
+      "file": "lantern.png",
+      "visible_bounds": [
+        287,
+        1010,
+        24,
+        65
+      ],
+      "alpha_verified": true
+    }
+  }
+}

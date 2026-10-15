@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Growth Shield</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Courier New',monospace;}
+body{background:#2a1b3d;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+canvas{background:linear-gradient(180deg,#3d2a5c,#1f1430);border-radius:16px;box-shadow:0 0 60px rgba(168,85,247,0.25), inset 0 0 40px rgba(0,0,0,0.5);border:4px solid #9333ea;max-width:100%;max-height:90vh;image-rendering:pixelated;}
+.ui{position:absolute;color:#e9d5ff;pointer-events:none;}
+.score{top:1rem;left:50%;transform:translateX(-50%);font-size:1.1rem;font-weight:bold;text-shadow:0 0 10px #a855f7;}
+.bar{bottom:7rem;left:50%;transform:translateX(-50%);width:280px;height:12px;background:#1f1430;border-radius:6px;border:2px solid #7e22ce;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,#22c55e,#86efac);width:100%;transition:width 0.2s;}
+.ctrl{position:absolute;bottom:1rem;width:100%;display:flex;justify-content:space-between;padding:0 1rem;pointer-events:auto;}
+.btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#7e22ce,#5b21b6);border:3px solid #c084fc;color:#e9d5ff;font-size:1.4rem;touch-action:manipulation;box-shadow:0 4px 15px rgba(124,58,237,0.4);}
+</style>
+</head>
+<body>
+<canvas id="c" width="420" height="720"></canvas>
+<div class="ui score" id="score">RESILIENCE: 0 💀🌱</div>
+<div class="ui bar"><div class="bar-fill" id="bar"></div></div>
+<div class="ctrl">
+  <button class="btn" id="left">◀</button>
+  <button class="btn" id="up">▲</button>
+  <button class="btn" id="down">▼</button>
+  <button class="btn" id="right">▶</button>
+</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),S=document.getElementById('score'),B=document.getElementById('bar');
+let p={x:210,y:360,size:30,s:5},score=0,shield=100,keys={u:0,d:0,l:0,r:0},things=[],frame=0;
+document.onkeydown=e=>{if(e.key==='ArrowUp')keys.u=1;if(e.key==='ArrowDown')keys.d=1;if(e.key==='ArrowLeft')keys.l=1;if(e.key==='ArrowRight')keys.r=1;};
+document.onkeyup=e=>{if(e.key==='ArrowUp')keys.u=0;if(e.key==='ArrowDown')keys.d=0;if(e.key==='ArrowLeft')keys.l=0;if(e.key==='ArrowRight')keys.r=0;};
+const set=(id,k)=>{const b=document.getElementById(id);b.onpointerdown=()=>keys[k]=1;b.onpointerup=b.onpointerleave=()=>keys[k]=0;};
+set('up','u');set('down','d');set('left','l');set('right','r');
+function spawn(){const g=Math.random()<0.35;things.push({x:35+Math.random()*350,y:-35,w:g?22:32,h:g?22:32,s:1.5+Math.random()*2.5,good:g});}
+function drawSkull(px,py,sz){x.save();x.translate(px,py);x.fillStyle='#e8e5e0';x.shadowColor='#a855f7';x.shadowBlur=8;x.beginPath();x.ellipse(0,0,sz*0.45,sz*0.5,0,0,Math.PI*2);x.fill();x.fillStyle='#1f1430';x.beginPath();x.ellipse(-sz*0.18,-sz*0.05,sz*0.11,sz*0.14,0,0,Math.PI*2);x.fill();x.beginPath();x.ellipse(sz*0.18,-sz*0.05,sz*0.11,sz*0.14,0,0,Math.PI*2);x.fill();x.fillStyle='#22c55e';x.beginPath();x.ellipse(-sz*0.3,sz*0.25,10,5,-0.5,0,Math.PI*2);x.fill();x.beginPath();x.ellipse(sz*0.25,sz*0.2,8,4,0.4,0,Math.PI*2);x.fill();x.restore();}
+function loop(){frame++;keys.u&&(p.y-=p.s);keys.d&&(p.y+=p.s);keys.l&&(p.x-=p.s);keys.r&&(p.x+=p.s);p.x=Math.max(45,Math.min(375,p.x));p.y=Math.max(45,Math.min(675,p.y));frame%35===0&&spawn();things=things.filter(t=>{t.y+=t.s;const d=Math.hypot(p.x-t.x,p.y-t.y);if(d<(p.size+t.w)/2){if(t.good){score+=12;S.textContent=`RESILIENCE: ${score} 💀🌱`;shield=Math.min(100,shield+15);}else{shield-=12;if(shield<=0){alert(`RESILIENCE: ${score}\n\nRestart when you're ready. 💀🌱`);score=0;shield=100;things=[];S.textContent='RESILIENCE: 0 💀🌱';}}return false;}return t.y<780;});B.style.width=shield+'%';x.clearRect(0,0,420,720);drawSkull(p.x,p.y,p.size);things.forEach(t=>{x.fillStyle=t.good?'#86efac':'rgba(139,69,69,0.6)';x.shadowColor=t.good?'#22c55e':'#8b4513';x.shadowBlur=6;x.beginPath();x.arc(t.x,t.y,t.w/2,0,Math.PI*2);x.fill();});requestAnimationFrame(loop);}loop();
+</script>
+</body>
+</html>

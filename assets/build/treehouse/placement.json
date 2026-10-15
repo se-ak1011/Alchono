@@ -1,0 +1,123 @@
+{
+  "canvas": [
+    851,
+    1847
+  ],
+  "source_scene": [
+    707,
+    1536
+  ],
+  "placement_status": "first fitted draft; review trunk attachments before integration",
+  "assets": {
+    "platform": {
+      "file": "platform.png",
+      "visible_bounds": [
+        120,
+        602,
+        420,
+        228
+      ],
+      "alpha_verified": true
+    },
+    "shelter": {
+      "file": "shelter.png",
+      "visible_bounds": [
+        120,
+        486,
+        420,
+        344
+      ],
+      "alpha_verified": true
+    },
+    "cabin": {
+      "file": "cabin.png",
+      "visible_bounds": [
+        120,
+        466,
+        420,
+        364
+      ],
+      "alpha_verified": true
+    },
+    "wooden-ladder": {
+      "file": "wooden-ladder.png",
+      "visible_bounds": [
+        186,
+        710,
+        157,
+        355
+      ],
+      "alpha_verified": true
+    },
+    "rope-ladder": {
+      "file": "rope-ladder.png",
+      "visible_bounds": [
+        205,
+        710,
+        99,
+        355
+      ],
+      "alpha_verified": true
+    },
+    "curtain": {
+      "file": "curtain.png",
+      "visible_bounds": [
+        265,
+        577,
+        75,
+        123
+      ],
+      "alpha_verified": true
+    },
+    "blanket-stool": {
+      "file": "blanket-stool.png",
+      "visible_bounds": [
+        365,
+        708,
+        70,
+        62
+      ],
+      "alpha_verified": true
+    },
+    "hammock": {
+      "file": "hammock.png",
+      "visible_bounds": [
+        170,
+        830,
+        220,
+        130
+      ],
+      "alpha_verified": true
+    },
+    "planter": {
+      "file": "planter.png",
+      "visible_bounds": [
+        440,
+        722,
+        65,
+        53
+      ],
+      "alpha_verified": true
+    },
+    "name-plaque": {
+      "file": "name-plaque.png",
+      "visible_bounds": [
+        344,
+        565,
+        56,
+        40
+      ],
+      "alpha_verified": true
+    },
+    "lantern": {
+      "file": "lantern.png",
+      "visible_bounds": [
+        460,
+        585,
+        24,
+        65
+      ],
+      "alpha_verified": true
+    }
+  }
+}

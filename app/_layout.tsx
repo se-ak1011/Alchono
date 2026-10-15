@@ -49,7 +49,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     ) {
       // Professionals live in their own portal, not the member app.
       router.replace('/pro' as any);
-    } else if (session && !profile?.onboarding_completed && !inOnboarding) {
+    } else if (session && profile && !profile.onboarding_completed && !inOnboarding) {
       router.replace('/onboarding');
     } else if (session && profile?.onboarding_completed && (inAuth || inOnboarding)) {
       router.replace('/(tabs)');
@@ -95,7 +95,6 @@ function RootLayoutNav() {
         <Stack.Screen name="settings/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="settings/app-lock" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="profile/file" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="constellation" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="saved" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="letters/write"
@@ -107,9 +106,8 @@ function RootLayoutNav() {
         />
         <Stack.Screen name="ecosystem" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="recipe/[id]" options={{ presentation: 'transparentModal', animation: 'fade' }} />
-        <Stack.Screen name="toolkit/index" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="toolkit/[id]" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="toolkit/c/[cat]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="bar/menu" options={{ presentation: 'transparentModal', animation: 'fade' }} />
+        <Stack.Screen name="arcade/[game]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
         <Stack.Screen name="support/help-now" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/recovery" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="support/coach" options={{ animation: 'slide_from_right' }} />
@@ -121,22 +119,7 @@ function RootLayoutNav() {
         <Stack.Screen name="admin/professionals" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="admin/accounts" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/good-feed" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/odd-one-out" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/word-search" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/games" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/memory-match" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/simon" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/stroop" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="session/post-game" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="session/track" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen
-          name="checkin"
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen name="soul" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="giggles" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="thought" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="thought/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="moments/play"
           options={{ presentation: 'fullScreenModal', animation: 'fade' }}
@@ -186,8 +169,8 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#201D28' }}>
-            <StatusBar style="light" backgroundColor="#201D28" />
+          <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0E0A16' }}>
+            <StatusBar style="light" backgroundColor="#0E0A16" />
             <RootLayoutNav />
             <LockGate />
             {!splashReady && <AppSplash width={width} height={height} />}

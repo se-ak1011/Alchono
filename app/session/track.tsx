@@ -1,49 +1,95 @@
-import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
-import { PaperBackground } from '@/components/ui/PaperBackground';
-import { PaperCanvas, Placeable } from '@/components/paper/PaperCanvas';
-import { DrinkingSession } from '@/components/home/DrinkingSession';
-
-const INK = '#332a24';
-const INK_SOFT = 'rgba(51,42,36,0.55)';
+import { DrawnForm, FieldZone, TickZone, ValueZone, type Rect } from '@/components/paper/DrawnForm';
+import { useLogDrinkDiary } from '@/hooks/useDrinkEntries';
+import { useToggleAlcoholFree } from '@/hooks/useVictories';
 
 /**
- * "Tonight" — day-to-day drink awareness (the alcohol-free marker, starting /
- * managing a session, live harm-reduction nudges), written on the notebook
- * page like the other quiet screens. When a session is live the tracker's card
- * stays deliberately dark — the one stark object on the page.
+ * Tonight — the drinks diary, written straight into the handwritten notebook.
+ * Awareness, not judgement: tick whether you drank, then (if you did) jot what
+ * you drank, roughly how much, when, and anything else — free text, no
+ * unit-counting. "I didn't drink today" marks the alcohol-free day. Zones carry
+ * rough default rects; position with the pencil editor + Export.
  */
+
+const drinksDiary = require('../../assets/folder/drinks-diary.png');
+const fmtDate = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const R = {
+  t_date: { x: 0.208, y: 0.240, w: 0.296, h: 0.044 } as Rect,
+  t_had: { x: 0.072, y: 0.280, w: 0.075, h: 0.035 } as Rect,
+  t_none: { x: 0.071, y: 0.317, w: 0.075, h: 0.037 } as Rect,
+  t_what: { x: 0.075, y: 0.421, w: 0.340, h: 0.070 } as Rect,
+  t_amount: { x: 0.084, y: 0.579, w: 0.340, h: 0.070 } as Rect,
+  t_when: { x: 0.082, y: 0.707, w: 0.340, h: 0.050 } as Rect,
+  t_else: { x: 0.548, y: 0.236, w: 0.380, h: 0.190 } as Rect,
+  t_unsure: { x: 0.576, y: 0.736, w: 0.067, h: 0.044 } as Rect,
+  t_add: { x: 0.595, y: 0.785, w: 0.330, h: 0.040 } as Rect,
+} as const;
+
 export default function TrackScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
-  return (
-    <PaperBackground>
-      <PaperCanvas label="Tonight">
-        <View style={{ flex: 1, paddingTop: insets.top }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 22, paddingTop: 8 }}>
-            <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
-              <Feather name="chevron-left" size={26} color={INK} />
-            </Pressable>
-            <Placeable id="title" def={{ dx: 0.226, dy: 0.029 }}>
-              <Text style={{ fontFamily: 'PatrickHand', fontSize: 34, color: INK }}>Tonight</Text>
-            </Placeable>
-          </View>
-          <Placeable id="subtitle" def={{ dx: 0.184, dy: 0.028 }}>
-            <Text style={{ color: INK_SOFT, fontSize: 14, paddingHorizontal: 24, marginTop: 1 }}>
-              Awareness, not judgement.
-            </Text>
-          </Placeable>
+  const { mutate: logDrink } = useLogDrinkDiary();
+  const { mutate: toggleAf } = useToggleAlcoholFree();
 
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
-            <Placeable id="today" def={{ dx: 0.061, dy: 0.015, scale: 0.9 }}>
-              <DrinkingSession />
-            </Placeable>
-          </ScrollView>
-        </View>
-      </PaperCanvas>
-    </PaperBackground>
+  const [drank, setDrank] = useState<null | 'yes' | 'no'>(null);
+  const [what, setWhat] = useState('');
+  const [amount, setAmount] = useState('');
+  const [when, setWhen] = useState('');
+  const [note, setNote] = useState('');
+  const [unsure, setUnsure] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const add = () => {
+    if (saving) return;
+    if (drank === null) {
+      Alert.alert('Did you drink today?', 'Tick “I had a drink” or “I didn’t drink today”.');
+      return;
+    }
+    setSaving(true);
+    if (drank === 'no') {
+      toggleAf(true, {
+        onSuccess: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          Alert.alert('Marked alcohol-free', 'Today’s logged. That counts.', [{ text: 'Done', onPress: () => router.back() }]);
+        },
+        onError: () => { setSaving(false); Alert.alert('Couldn’t save', 'Please try again.'); },
+      });
+    } else {
+      logDrink({ what, amount, when, note, unsure }, {
+        onSuccess: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          Alert.alert('Added to your diary', 'Noticing is the whole point. No judgement.', [{ text: 'Done', onPress: () => router.back() }]);
+        },
+        onError: () => { setSaving(false); Alert.alert('Couldn’t save', 'Please try again.'); },
+      });
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
+      <DrawnForm source={drinksDiary} label="drinks-diary" onBack={() => router.back()}>
+        <ValueZone id="t_date" rect={R.t_date} text={fmtDate(new Date())} fontSize={15} numberOfLines={1} />
+        {/* Radio: drank / didn't — mutually exclusive. */}
+        <TickZone id="t_had" rect={R.t_had} mark="ring" value={drank === 'yes'} onToggle={() => setDrank((d) => (d === 'yes' ? null : 'yes'))} />
+        <TickZone id="t_none" rect={R.t_none} mark="ring" value={drank === 'no'} onToggle={() => setDrank((d) => (d === 'no' ? null : 'no'))} />
+        {/* The drink details — only meaningful when "I had a drink". */}
+        <FieldZone id="t_what" rect={R.t_what} value={what} onChangeText={setWhat} placeholder="Beer, wine, a couple of G&Ts…" multiline fontSize={16} />
+        <FieldZone id="t_amount" rect={R.t_amount} value={amount} onChangeText={setAmount} placeholder="A few, half a bottle…" multiline fontSize={16} />
+        <FieldZone id="t_when" rect={R.t_when} value={when} onChangeText={setWhen} placeholder="After work, with dinner…" fontSize={16} />
+        <FieldZone id="t_else" rect={R.t_else} value={note} onChangeText={setNote} placeholder="How it felt, what led to it, anything…" multiline fontSize={16} />
+        <TickZone id="t_unsure" rect={R.t_unsure} mark="check" value={unsure} onToggle={() => setUnsure((v) => !v)} />
+        <LinkZone id="t_add" rect={R.t_add} onPress={add} />
+      </DrawnForm>
+    </View>
+  );
+}
+
+/** A tappable row — invisible over the drawn "Add to diary" underline. */
+function LinkZone({ id, rect, onPress }: { id: string; rect: Rect; onPress: () => void }) {
+  return (
+    <TickZone id={id} rect={rect} value={false} onToggle={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }} />
   );
 }

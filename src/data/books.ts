@@ -24,6 +24,8 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   "in-the-moment": {
     cover: require("../../assets/books/in-the-moment-cover.png"),
     open: require("../../assets/books/in-the-moment-open.png"),
+    page: { left: 0.097, top: 0.395, width: 0.834, height: 0.222 },
+    fontScale: 0.8,
   },
   understand: {
     cover: require("../../assets/books/understand-cover.png"),
@@ -40,14 +42,14 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   "planning-ahead": {
     cover: require("../../assets/books/planning-ahead-cover.png"),
     open: require("../../assets/books/planning-ahead-open.png"),
-    page: { left: 0.135, top: 0.366, width: 0.771, height: 0.357 },
+    page: { left: 0.146, top: 0.385, width: 0.726, height: 0.240 },
     fontScale: 0.6,
   },
   stress: {
     cover: require("../../assets/books/stress-cover.png"),
     open: require("../../assets/books/stress-open.png"),
-    page: { left: 0.143, top: 0.384, width: 0.724, height: 0.195 },
-    fontScale: 0.8,
+    page: { left: 0.126, top: 0.380, width: 0.761, height: 0.258 },
+    fontScale: 0.6,
   },
   sleep: {
     cover: require("../../assets/books/sleep-cover.png"),
@@ -64,7 +66,7 @@ export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   identity: {
     cover: require("../../assets/books/identity-cover.png"),
     open: require("../../assets/books/identity-open.png"),
-    page: { left: 0.112, top: 0.327, width: 0.785, height: 0.274 },
+    page: { left: 0.106, top: 0.351, width: 0.785, height: 0.274 },
     fontScale: 0.65,
   },
   "after-a-slip": {

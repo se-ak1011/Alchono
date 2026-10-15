@@ -73,7 +73,7 @@ export default function ProfileScreen() {
           <ZoneChip
             icon="shield"
             accent="#B9A4EC"
-            title="Trusted person"
+            title="Sponsor"
             subtitle="Someone who gets a quiet heads-up on a hard day."
             onPress={() => router.push('/profile/trusted')}
           />
@@ -102,8 +102,8 @@ export default function ProfileScreen() {
             icon="smile"
             accent="#E6C56A"
             title="Things I enjoy"
-            subtitle="Hobbies and interests — helps personalise your experience over time."
-            onPress={() => router.push('/profile/hobbies')}
+            subtitle="Hobbies and interests — kept in your Personal File."
+            onPress={() => router.push('/profile/file')}
           />
           <ZoneChip
             icon="compass"
@@ -111,13 +111,6 @@ export default function ProfileScreen() {
             title="Struggling with something else too?"
             subtitle="Other things that can travel alongside drinking."
             onPress={() => router.push('/ecosystem' as any)}
-          />
-          <ZoneChip
-            icon="mail"
-            accent="#C7B58A"
-            title="The Zine"
-            subtitle="A small something in your inbox every couple of months — stories, a puzzle, a recipe. Opt in or out anytime."
-            onPress={() => router.push('/newsletter' as any)}
           />
         </View>
       </ScrollView>

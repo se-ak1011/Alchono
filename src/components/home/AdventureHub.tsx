@@ -1,16 +1,35 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, type ImageStyle } from "react-native";
+import { View, ScrollView, Image, Pressable, Text, TextInput, Dimensions, Animated, PanResponder, AccessibilityInfo, Linking, type ImageStyle } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Defs, RadialGradient, Stop, Rect as SvgRect } from "react-native-svg";
 import { HUB_NODES, HUB_START, type HubAction, type Hotspot, type GlowTint, type Haptic } from "@/data/hubScene";
+import { DESTINATIONS, labelForAction, actionExport } from "@/data/destinations";
+import { AMBIENT_LIFE } from "@/data/ambientLife";
+import { AmbientLife } from "./AmbientLife";
+import { HotspotRing } from "./HotspotRing";
 import { CaptionBar } from "@/components/home/CaptionBar";
-import { INLAYS } from "@/components/home/HubInlays";
+import { INLAYS, INLAY_OPTIONS } from "@/components/home/HubInlays";
 import { useHubStore } from "@/store/hubStore";
 
-const SCREEN_W = Dimensions.get("window").width;
-const SCREEN_H = Dimensions.get("window").height;
+// Full PHYSICAL display size — "screen", NOT "window". The window can shrink to
+// exclude the Android nav bar (and when edge-to-edge gets switched on by a newer
+// Android / a display setting, it does). A short window makes cover-fit draw
+// every scene into a box shorter than the display and clip the top. "screen" is
+// the whole display, so the art always covers it ceiling-to-floor; cover then
+// shaves a sliver off the sides (invisible) instead of clipping the ceiling.
+const SCREEN_W = Dimensions.get("screen").width;
+const SCREEN_H = Dimensions.get("screen").height;
+
+// The world mirrors the real time of day: night art loads from 7pm to 7am, day
+// art the rest. A craving at 2am shouldn't land you on a sunlit porch — the
+// scene should be the one you're actually living in.
+const isNight = () => {
+  const h = new Date().getHours();
+  return h < 7 || h >= 19;
+};
 
 type Coords = { x: number; y: number; w: number; h: number };
 // The full set of things the in-app editor can override per hotspot.
@@ -24,6 +43,7 @@ type Edits = Coords & {
   opacity?: number;
   tint?: GlowTint;
   label?: string;
+  noRing?: boolean;
 };
 
 const clampI = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
@@ -102,6 +122,23 @@ function Bloom({
 export function AdventureHub() {
   const router = useRouter();
   const [nodeId, setNodeId] = useState(HUB_START);
+  // First ever open → start outside the cabin for a look around before going in;
+  // every open after that lands inside on the living room. One-time per install.
+  useEffect(() => {
+    AsyncStorage.getItem("alchono.openedBefore")
+      .then((v) => {
+        if (!v) {
+          setNodeId("exterior_front");
+          AsyncStorage.setItem("alchono.openedBefore", "1").catch(() => {});
+        }
+      })
+      .catch(() => {});
+  }, []);
+  // Smart back: the trail of rooms you came through (via doors, not pans). Back
+  // pops it, so you always return to wherever you actually came from — even for
+  // a room with several doors. Falls back to the node's static `back` when the
+  // trail is empty (e.g. a fresh cross-scene jump).
+  const [history, setHistory] = useState<string[]>([]);
   const [caption, setCaption] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [overrides, setOverrides] = useState<Record<string, Edits>>({});
@@ -110,10 +147,51 @@ export function AdventureHub() {
   // Hotspots created in-app with the editor, keyed by node id. They're exported
   // with a NEW tag so their destinations can be wired when baked into hubScene.
   const [added, setAdded] = useState<Record<string, Hotspot[]>>({});
+  // Base hotspots the editor has removed from a view (ids, per node). Exported
+  // as a REMOVED list so the deletions get baked back into hubScene.ts.
+  const [removed, setRemoved] = useState<Record<string, string[]>>({});
+  // In-app wiring: a chosen destination (action) per hotspot id. For an added
+  // hotspot it's its only action; for a baked one it rewires. Lets the whole
+  // interactive layer be authored in the editor, then exported. Reused for the
+  // grounds. Persisted (with the other edits) so a long session survives.
+  const [actions, setActions] = useState<Record<string, HubAction>>({});
+  const [picking, setPicking] = useState(false);
+  // In-app navigation editing: per-node overrides for the pan arrows (left,
+  // right) and Back. `null` for a direction means "no arrow here". Authored in
+  // edit mode, persisted + exported with the rest so you can wire the whole
+  // floorplan yourself, not just hotspots.
+  const [nav, setNav] = useState<Record<string, { left?: string | null; right?: string | null; back?: string | null }>>({});
+  const [navDir, setNavDir] = useState<null | "left" | "right" | "back">(null);
+  // In-app live-preview (inlay) choice per hotspot id. "none" explicitly clears
+  // a baked inlay. Persisted + exported with the rest.
+  const [inlayMap, setInlayMap] = useState<Record<string, string>>({});
+  const [inlayPicking, setInlayPicking] = useState(false);
+  const hydrated = useRef(false);
+
+  // Whether the one-time forest intro (haptic + "extra support is here" hint)
+  // has been shown. Persisted so it only ever happens once, not once a launch.
+  const [forestIntroSeen, setForestIntroSeen] = useState<boolean | null>(null);
+  const [forestHint, setForestHint] = useState(false);
+
+  // Hotspot hints — the pencil rings that circle tappable objects. The arc:
+  // loud the FIRST time you're in a room (so you learn where everything is),
+  // faint every visit after (a whisper, not a signpost), and off entirely once
+  // you turn them off in Settings ("I know my house now"). `hintsEnabled` is the
+  // settings switch; `visited` is the set of rooms you've already learned. Both
+  // persist, and reload on focus so a Settings change takes effect on return.
+  const [hintsEnabled, setHintsEnabled] = useState(true);
+  const [ringStrength, setRingStrength] = useState(1);
+  const [visited, setVisited] = useState<Set<string>>(new Set());
+  // Honour Reduce Motion: a static ring instead of a breathing one.
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   const fade = useRef(new Animated.Value(1)).current;
   const glint = useRef(new Animated.Value(0)).current;
   const captionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The SOS "jump": we show the canopy for a beat, then this timer soft-fades
+  // on to the clearing. Held in a ref so any manual navigation can cancel it.
+  const forestJump = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const forestHintShown = useRef(false);
 
   // Refs the pan responders read at gesture time so they stay current.
   const geomRef = useRef({ dispW: 1, dispH: 1, offX: 0, offY: 0 });
@@ -122,12 +200,25 @@ export function AdventureHub() {
   const respondersRef = useRef<Record<string, ReturnType<typeof PanResponder.create>>>({});
 
   const node = HUB_NODES[nodeId];
-  // Base hotspots from the scene map, plus any added in-app for this node.
-  const hotspots = [...node.hotspots, ...(added[nodeId] ?? [])];
+  // In the urge sanctuary (any forest/clearing view): the engine rides a
+  // resources shortcut alongside, and shows a one-time "support is here" hint.
+  const inForest = nodeId.startsWith("forest_") || nodeId.startsWith("clearing_");
+  const removedHere = removed[nodeId] ?? [];
+  // Base hotspots from the scene map (minus any removed in-app), plus any added.
+  const hotspots = [...node.hotspots.filter((h) => !removedHere.includes(h.id)), ...(added[nodeId] ?? [])];
   const isAdded = (id: string) => (added[nodeId] ?? []).some((h) => h.id === id);
   const hotspotsRef = useRef(hotspots);
   hotspotsRef.current = hotspots;
   overridesRef.current = overrides;
+
+  // Effective pan/back navigation for the current view, honoring in-app nav
+  // overrides (a set direction wins; `null` hides that arrow; unset falls back
+  // to the baked node).
+  const navTarget = (dir: "left" | "right" | "back"): string | undefined => {
+    const o = nav[nodeId];
+    if (o && dir in o) return o[dir] ?? undefined;
+    return (node as any)[dir] as string | undefined;
+  };
 
   useEffect(() => {
     const loop = Animated.loop(
@@ -143,8 +234,108 @@ export function AdventureHub() {
   useEffect(() => {
     return () => {
       if (captionTimer.current) clearTimeout(captionTimer.current);
+      if (forestJump.current) clearTimeout(forestJump.current);
     };
   }, []);
+
+  // Load the once-ever forest-intro flag.
+  useEffect(() => {
+    AsyncStorage.getItem("alchono.forestIntroSeen")
+      .then((v) => setForestIntroSeen(v === "1"))
+      .catch(() => setForestIntroSeen(true));
+  }, []);
+
+  // Track the OS Reduce Motion setting so the rings hold still for anyone who
+  // asked the system not to animate.
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion).catch(() => {});
+    const sub = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduceMotion);
+    return () => sub.remove();
+  }, []);
+
+  // (Re)load the hint settings whenever the hub regains focus — so toggling
+  // "Hotspot hints" or "Show me around again" in Settings takes effect the
+  // moment you come back, not only on a cold start.
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      AsyncStorage.multiGet(["alchono.hints.enabled", "alchono.hints.visited", "alchono.hints.strength"])
+        .then((pairs) => {
+          if (!active) return;
+          const map = Object.fromEntries(pairs) as Record<string, string | null>;
+          setHintsEnabled(map["alchono.hints.enabled"] !== "0");
+          const s = parseFloat(map["alchono.hints.strength"] ?? "1");
+          setRingStrength(Number.isFinite(s) && s > 0 ? s : 1);
+          try {
+            const arr = JSON.parse(map["alchono.hints.visited"] ?? "[]");
+            if (Array.isArray(arr)) setVisited(new Set(arr));
+          } catch {}
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
+
+  // Mark a room as learned — once seen, its rings drop from loud to faint, and
+  // it stays that way (persisted) until "Show me around again" clears it.
+  const markVisited = useCallback((id: string) => {
+    setVisited((v) => {
+      if (v.has(id)) return v;
+      const nv = new Set(v);
+      nv.add(id);
+      AsyncStorage.setItem("alchono.hints.visited", JSON.stringify([...nv])).catch(() => {});
+      return nv;
+    });
+  }, []);
+
+  // Even if you never leave the first room, count it as learned after a good
+  // long look, so the loud rings don't greet you forever on relaunch.
+  useEffect(() => {
+    if (!hintsEnabled || visited.has(nodeId)) return;
+    const t = setTimeout(() => markVisited(nodeId), 9000);
+    return () => clearTimeout(t);
+  }, [nodeId, hintsEnabled, visited, markVisited]);
+
+  // Resume the editor working-state (placements, wiring, deletions) so a long
+  // placing session survives an app restart. Loaded once; saved on every change
+  // after hydration so we never clobber stored work with the initial empty.
+  useEffect(() => {
+    AsyncStorage.getItem("alchono.editorState")
+      .then((raw) => {
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        if (s.overrides) setOverrides(s.overrides);
+        if (s.added) setAdded(s.added);
+        if (s.removed) setRemoved(s.removed);
+        if (s.actions) setActions(s.actions);
+        if (s.nav) setNav(s.nav);
+        if (s.inlays) setInlayMap(s.inlays);
+      })
+      .catch(() => {})
+      .finally(() => { hydrated.current = true; });
+  }, []);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    AsyncStorage.setItem(
+      "alchono.editorState",
+      JSON.stringify({ overrides, added, removed, actions, nav, inlays: inlayMap }),
+    ).catch(() => {});
+  }, [overrides, added, removed, actions, nav, inlayMap]);
+
+  // First time you ever reach the forest: a soft haptic + a hint that extra
+  // support (a real person) is one tap away. Shown once, then persisted off.
+  useEffect(() => {
+    if (!inForest || forestIntroSeen !== false || forestHintShown.current) return;
+    forestHintShown.current = true;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setForestHint(true);
+    setForestIntroSeen(true);
+    AsyncStorage.setItem("alchono.forestIntroSeen", "1").catch(() => {});
+    const t = setTimeout(() => setForestHint(false), 7000);
+    return () => clearTimeout(t);
+  }, [inForest, forestIntroSeen]);
 
   const showCaption = (text: string) => {
     if (captionTimer.current) clearTimeout(captionTimer.current);
@@ -165,12 +356,25 @@ export function AdventureHub() {
       if (pending && HUB_NODES[pending]) {
         setNodeId(pending);
         setCaption(null);
+        // A deliberate cross-scene jump starts a fresh back-trail.
+        setHistory([]);
       }
       useHubStore.getState().setPendingNode(null);
     }, []),
   );
 
-  const navigateNode = (next: string) => {
+  // `push` records the current room on the back-trail (true for doors, false for
+  // pans and for Back itself, which is unwinding the trail).
+  const navigateNode = (next: string, push = false) => {
+    // Any deliberate move cancels a pending SOS auto-advance, so tapping around
+    // the canopy during the jump never yanks you onward unexpectedly.
+    if (forestJump.current) {
+      clearTimeout(forestJump.current);
+      forestJump.current = null;
+    }
+    // Leaving a room counts as having learned it — its rings go faint next time.
+    markVisited(nodeId);
+    if (push) setHistory((h) => [...h, nodeId]);
     Animated.timing(fade, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
       setNodeId(next);
       setCaption(null);
@@ -178,9 +382,47 @@ export function AdventureHub() {
     });
   };
 
+  // Back: unwind the trail to the room you came from; fall back to static `back`.
+  const goBack = () => {
+    if (history.length) {
+      const prev = history[history.length - 1];
+      setHistory((h) => h.slice(0, -1));
+      navigateNode(prev, false);
+    } else {
+      const b = navTarget("back");
+      if (b) navigateNode(b, false);
+    }
+  };
+
   const runAction = (action: HubAction, haptic?: Haptic) => {
     if (action.kind === "node") {
-      navigateNode(action.node);
+      navigateNode(action.node, true);
+      return;
+    }
+    // The urge sanctuary. Both modes get the strong "I've got you" warning
+    // haptic and push the room you came from, so Back returns you there.
+    if (action.kind === "forest") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      navigateNode("forest_canopy", true);
+      if (action.mode === "jump") {
+        // Hold on the canopy for a beat, then soft-fade straight to the
+        // clearing — no path, no walking, no decisions.
+        forestJump.current = setTimeout(() => navigateNode("clearing_front", false), 1000);
+      }
+      return;
+    }
+    // An external link — a resources line (call / text / website). `internal:`
+    // routes in-app instead of leaving the app.
+    if (action.kind === "link") {
+      const style =
+        haptic === "heavy"
+          ? Haptics.ImpactFeedbackStyle.Heavy
+          : haptic === "medium"
+          ? Haptics.ImpactFeedbackStyle.Medium
+          : Haptics.ImpactFeedbackStyle.Light;
+      Haptics.impactAsync(style);
+      if (action.url.startsWith("internal:")) router.push(action.url.slice("internal:".length) as any);
+      else Linking.openURL(action.url).catch(() => {});
       return;
     }
     if (action.warn) {
@@ -209,6 +451,12 @@ export function AdventureHub() {
   geomRef.current = { dispW, dispH, offX, offY };
 
   const coordsOf = (h: Hotspot): Coords => overrides[h.id] ?? { x: h.x, y: h.y, w: h.w, h: h.h };
+  // The live destination for a hotspot: the editor-wired one wins, else baked.
+  const actionOf = (h: Hotspot): HubAction | undefined => actions[h.id] ?? h.action;
+  const inlayOf = (h: Hotspot): string | undefined => {
+    const v = inlayMap[h.id] ?? h.inlay;
+    return v === "none" ? undefined : v;
+  };
   const rectOf = (c: Coords) => ({
     position: "absolute" as const,
     left: offX + c.x * dispW,
@@ -234,12 +482,13 @@ export function AdventureHub() {
       opacity: o?.opacity ?? h.opacity,
       tint: o?.tint ?? h.tint,
       label: o?.label ?? h.label,
+      noRing: o?.noRing ?? h.noRing,
     };
   };
 
   // Write one editor property for the selected hotspot, seeding x/y/w/h so the
   // export always carries a full record.
-  const setProp = (key: keyof Edits, val: number | GlowTint | string) => {
+  const setProp = (key: keyof Edits, val: number | GlowTint | string | boolean) => {
     if (!selected) return;
     const base = hotspots.find((h) => h.id === selected);
     if (!base) return;
@@ -251,25 +500,59 @@ export function AdventureHub() {
 
   // Create a new hotspot in the middle of the screen and select it. Its
   // destination is wired when baked (the export tags it NEW).
-  const addHotspot = (kind: "label" | "glow") => {
-    const id = `${kind === "label" ? "lbl" : "glow"}_new_${Date.now().toString().slice(-4)}`;
+  const addHotspot = (kind: "label" | "glow" | "plain") => {
+    const prefix = kind === "label" ? "lbl" : kind === "plain" ? "tap" : "glow";
+    const id = `${prefix}_new_${Date.now().toString().slice(-4)}`;
     const spot: Hotspot =
       kind === "label"
         ? { id, caption: "New label", kind: "label", label: "New label", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
-        : { id, caption: "New glow", kind: "glow", tint: "purple", glowScale: 0.8, glowMax: 0.5, x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
+        : kind === "plain"
+        ? { id, caption: "New tap zone", kind: "plain", x: 0.4, y: 0.45, w: 0.2, h: 0.08 }
+        : { id, caption: "New ring", kind: "glow", tint: "purple", x: 0.42, y: 0.42, w: 0.16, h: 0.16 };
     setAdded((a) => ({ ...a, [nodeId]: [...(a[nodeId] ?? []), spot] }));
     setSelected(id);
   };
 
+  // Delete any hotspot. Ones added in-app just vanish; base ones (baked into
+  // hubScene.ts) are recorded in `removed` so the export can tell me to delete
+  // them too. "Reset view" (below) brings everything back if you bin one by
+  // mistake.
   const deleteSelected = () => {
     if (!selected) return;
     const id = selected;
-    setAdded((a) => ({ ...a, [nodeId]: (a[nodeId] ?? []).filter((h) => h.id !== id) }));
+    if (isAdded(id)) {
+      setAdded((a) => ({ ...a, [nodeId]: (a[nodeId] ?? []).filter((h) => h.id !== id) }));
+    } else {
+      setRemoved((r) => ({ ...r, [nodeId]: [...(r[nodeId] ?? []), id] }));
+    }
     setOverrides((o) => {
       const next = { ...o };
       delete next[id];
       return next;
     });
+    setSelected(null);
+  };
+
+  // Undo all edits for the current view — restores deleted base hotspots, drops
+  // added ones, clears position/style overrides. A safety net, not a save.
+  const resetView = () => {
+    setRemoved((r) => ({ ...r, [nodeId]: [] }));
+    setAdded((a) => ({ ...a, [nodeId]: [] }));
+    setOverrides((o) => {
+      const next = { ...o };
+      for (const h of node.hotspots) delete next[h.id];
+      return next;
+    });
+    setNav((n) => { const next = { ...n }; delete next[nodeId]; return next; });
+    setSelected(null);
+  };
+
+  // Empty this view to a clean slate — removes every baked hotspot (recorded so
+  // the export tells me to delete them) and drops any added ones, so you can
+  // place the room fresh. "Reset view" brings the originals back.
+  const clearView = () => {
+    setRemoved((r) => ({ ...r, [nodeId]: node.hotspots.map((h) => h.id) }));
+    setAdded((a) => ({ ...a, [nodeId]: [] }));
     setSelected(null);
   };
 
@@ -280,8 +563,9 @@ export function AdventureHub() {
     // Live inlay: real content painted onto the object (arcade screen, community
     // board, papers on the rack), always on and clipped to the object's box. It's
     // pointer-transparent so the tap still routes via the hotspot's action.
-    if (h.inlay && INLAYS[h.inlay]) {
-      const Inlay = INLAYS[h.inlay];
+    const inlayKey = inlayOf(h);
+    if (inlayKey && INLAYS[inlayKey]) {
+      const Inlay = INLAYS[inlayKey];
       return (
         <View
           pointerEvents="none"
@@ -304,12 +588,13 @@ export function AdventureHub() {
       );
     }
 
-    // Interactive objects: when the node has a painted glow layer, the art
-    // carries the affordance and the hotspot is just an invisible tap target.
-    // Otherwise fall back to a soft engine-drawn light bloom.
+    // Interactive objects carry NO affordance of their own any more — the
+    // pencil ring (drawn per-hotspot in renderHotspots, tier-controlled) is the
+    // cue. A light bloom read as modern UI stuck on a dark room; a ring is a
+    // drawn line, part of the scene. The legacy painted glow layer still wins
+    // where a node has one.
     if (kind === "glow") {
-      if (node.glowImage) return null;
-      return <Bloom tint={e.tint ?? "purple"} anchor={h.anchor} scale={e.glowScale} glint={glint} max={e.glowMax ?? 0.5} />;
+      return null;
     }
 
     // Text: environmental signage (label) and the dominant urge action (primary),
@@ -370,20 +655,34 @@ export function AdventureHub() {
     return null;
   };
 
+  // The ring tier for the room you're in: loud the first time (learn it), faint
+  // after (a whisper), or nothing at all once hints are switched off.
+  const ringTier: "loud" | "faint" | null = !hintsEnabled ? null : visited.has(nodeId) ? "faint" : "loud";
+
+  // The pencil ring that circles a tappable object. The urge/primary sign keeps
+  // its own treatment, so it's never ringed.
+  const ringFor = (h: Hotspot) => {
+    const kind = h.kind ?? "plain";
+    // No ring on: the urge/primary sign (its own cue), a plain tap zone, or any
+    // hotspot flagged noRing — the "transparent link" for close-up titles.
+    if (!ringTier || kind === "primary" || kind === "plain" || editsOf(h).noRing) return null;
+    return <HotspotRing tier={ringTier} seed={h.id} animate={!reduceMotion} strength={ringStrength} />;
+  };
+
   const renderHotspots = () =>
     hotspots.map((h) => {
       // Pure signage (no action) isn't tappable — taps fall through so it never
       // behaves like a button. A label WITH an action IS tappable, so a text
-      // label (e.g. "My Sky" over the window) can be the tap target on its own,
-      // with no glow blob needed to catch the press.
-      if (!h.action) {
+      // label (e.g. a name over a window) can be the tap target on its own,
+      // with the ring to say it's touchable.
+      const action = actionOf(h);
+      if (!action) {
         return (
           <View key={h.id} pointerEvents="none" style={rectOf(coordsOf(h))}>
             {affordance(h)}
           </View>
         );
       }
-      const action = h.action;
       return (
         <Pressable
           key={h.id}
@@ -398,6 +697,7 @@ export function AdventureHub() {
           hitSlop={12}
           style={rectOf(coordsOf(h))}
         >
+          {ringFor(h)}
           {affordance(h)}
         </Pressable>
       );
@@ -519,11 +819,8 @@ export function AdventureHub() {
     const sel = selected ? hotspots.find((h) => h.id === selected) : null;
     if (!sel) return null;
     const kind = sel.kind ?? "plain";
-    const hasInlay = !!sel.inlay;
+    const hasInlay = !!inlayOf(sel);
     const isText = kind === "label" || kind === "primary" || kind === "board" || kind === "sign";
-    // A glow's colour/size controls are meaningless once an inlay replaces the
-    // bloom; inlays get the rotate control instead so they sit on the object.
-    const isGlow = kind === "glow" && !hasInlay;
     const canRotate = isText || hasInlay;
     const e = editsOf(sel);
     const size = e.labelSize ?? defaultSize(sel);
@@ -531,9 +828,6 @@ export function AdventureHub() {
     const rotY = e.rotateY ?? 0;
     const rotX = e.rotateX ?? 0;
     const op = e.opacity ?? 1;
-    const gscale = e.glowScale ?? 1;
-    const gmax = e.glowMax ?? 0.5;
-    const tint = e.tint ?? "purple";
 
     const row = (label: string, value: string, onDec: () => void, onInc: () => void) => (
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
@@ -568,16 +862,41 @@ export function AdventureHub() {
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "700" }}>Editing: {sel.id}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            {isAdded(sel.id) ? (
-              <Pressable onPress={deleteSelected} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.22)", borderWidth: 1, borderColor: "rgba(220,120,130,0.5)" }}>
-                <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "600" }}>Delete</Text>
-              </Pressable>
-            ) : null}
+            <Pressable onPress={deleteSelected} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.22)", borderWidth: 1, borderColor: "rgba(220,120,130,0.5)" }}>
+              <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "600" }}>Delete</Text>
+            </Pressable>
             <Pressable onPress={() => setSelected(null)} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)" }}>
               <Text style={{ color: "#CFC8DE", fontSize: 12, fontWeight: "600" }}>Done</Text>
             </Pressable>
           </View>
         </View>
+
+        {/* Wire where this hotspot goes — the whole point of in-app authoring. */}
+        <Pressable
+          onPress={() => setPicking(true)}
+          style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, backgroundColor: "rgba(164,137,222,0.12)", borderWidth: 1, borderColor: "rgba(164,137,222,0.45)" }}
+          className="active:opacity-80"
+        >
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <Text style={{ color: "#8b849b", fontSize: 11 }}>Opens</Text>
+            <Text style={{ color: "#ECE9F1", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>{labelForAction(actionOf(sel))}</Text>
+          </View>
+          <Feather name="link" size={16} color="#C9B8F0" />
+        </Pressable>
+
+        {/* Live preview (inlay) painted onto this object — a game screen, messages,
+            the community board, your moments. Pointer-transparent; tap still opens. */}
+        <Pressable
+          onPress={() => setInlayPicking(true)}
+          style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 10, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, backgroundColor: "rgba(130,200,170,0.1)", borderWidth: 1, borderColor: "rgba(130,200,170,0.4)" }}
+          className="active:opacity-80"
+        >
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <Text style={{ color: "#8b849b", fontSize: 11 }}>Live preview</Text>
+            <Text style={{ color: "#ECE9F1", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>{INLAY_OPTIONS.find((o) => o.id === inlayOf(sel))?.label ?? "— none —"}</Text>
+          </View>
+          <Feather name="monitor" size={16} color="#8fd3b4" />
+        </Pressable>
 
         {isText ? (
           <View style={{ marginTop: 10 }}>
@@ -606,30 +925,18 @@ export function AdventureHub() {
         {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
         {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
         {isText || hasInlay ? row(hasInlay ? "Brightness" : "Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
-        {isGlow ? row("Glow size", gscale.toFixed(2), () => setProp("glowScale", clampF(gscale - 0.05, 0.2, 1.6)), () => setProp("glowScale", clampF(gscale + 0.05, 0.2, 1.6))) : null}
-        {isGlow ? row("Glow strength", gmax.toFixed(2), () => setProp("glowMax", clampF(gmax - 0.05, 0.1, 0.95)), () => setProp("glowMax", clampF(gmax + 0.05, 0.1, 0.95))) : null}
-        {isGlow ? (
+        {/* Ring on/off — turn it off for an invisible tap zone (e.g. over a drawn
+            title in a close-up, where a ring per item would be noise). */}
+        {kind !== "primary" && kind !== "plain" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-            <Text style={{ color: "#CFC8DE", fontSize: 13 }}>Colour</Text>
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              {(["warm", "purple"] as const).map((t) => (
-                <Pressable
-                  key={t}
-                  onPress={() => setProp("tint", t)}
-                  hitSlop={6}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 8,
-                    backgroundColor: tint === t ? GLOW_COLORS[t] : "rgba(255,255,255,0.06)",
-                    borderWidth: 1,
-                    borderColor: tint === t ? "#FFFFFF" : "rgba(236,233,241,0.14)",
-                  }}
-                >
-                  <Text style={{ color: tint === t ? "#1a1622" : "#CFC8DE", fontSize: 12, fontWeight: "700" }}>{t}</Text>
-                </Pressable>
-              ))}
-            </View>
+            <Text style={{ color: "#CFC8DE", fontSize: 13 }}>Ring</Text>
+            <Pressable
+              onPress={() => setProp("noRing", !e.noRing)}
+              hitSlop={8}
+              style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, backgroundColor: e.noRing ? "rgba(255,255,255,0.06)" : "rgba(164,137,222,0.22)", borderWidth: 1, borderColor: e.noRing ? "rgba(236,233,241,0.14)" : "rgba(164,137,222,0.5)" }}
+            >
+              <Text style={{ color: e.noRing ? "#CFC8DE" : "#E9DEFF", fontSize: 12, fontWeight: "700" }}>{e.noRing ? "Off — invisible" : "On"}</Text>
+            </Pressable>
           </View>
         ) : null}
         <Text style={{ color: "#6f6880", fontSize: 10.5, marginTop: 10 }}>drag to move · corner handle to resize</Text>
@@ -638,7 +945,7 @@ export function AdventureHub() {
   };
 
   const turnArrow = (dir: "left" | "right" | "back", target: string) => {
-    const cap = dir === "back" ? "Back to the café" : dir === "left" ? "Turn left" : "Turn right";
+    const cap = dir === "back" ? "Back" : dir === "left" ? "Turn left" : "Turn right";
     const icon = dir === "back" ? "corner-up-left" : dir === "left" ? "chevron-left" : "chevron-right";
     const pos =
       dir === "back"
@@ -654,7 +961,8 @@ export function AdventureHub() {
         onPressOut={clearCaptionSoon}
         onPress={() => {
           showCaption(cap);
-          navigateNode(target);
+          if (dir === "back") goBack();
+          else navigateNode(target);
         }}
         hitSlop={12}
         style={{
@@ -689,6 +997,8 @@ export function AdventureHub() {
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
       if (e.tint) extra.push(`tint ${e.tint}`);
+      if (e.noRing) extra.push(`noRing`);
+      if (h.id in inlayMap) extra.push(`inlay ${inlayMap[h.id]}`);
       const newItem = isAdded(h.id);
       // New items carry their kind + text so they can be baked from scratch (and
       // their destination wired), not just matched to an existing hotspot.
@@ -700,18 +1010,41 @@ export function AdventureHub() {
         extra.push(`text "${e.label}"`);
       }
       const prefix = newItem ? "NEW " : "";
-      const base = `${prefix}${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)}`;
+      const wired = actionExport(actionOf(h));
+      const base = `${prefix}${h.id}: x ${c.x.toFixed(3)}, y ${c.y.toFixed(3)}, w ${c.w.toFixed(3)}, h ${c.h.toFixed(3)} → ${wired}`;
       return extra.length ? `${base}, ${extra.join(", ")}` : base;
     })
-    .join("\n");
+    .join("\n") +
+    (removedHere.length ? `\n\nREMOVED (delete these from ${node.id} when baking):\n${removedHere.join(", ")}` : "") +
+    (nav[node.id]
+      ? `\n\nNAV (set these arrows on ${node.id} when baking):\n` +
+        (["left", "right", "back"] as const)
+          .filter((d) => d in nav[node.id]!)
+          .map((d) => `${d} → ${nav[node.id]![d] ?? "(none)"}`)
+          .join("\n")
+      : "");
 
+  // Screen-fit: the image fills the full screen (captured SCREEN_W × SCREEN_H)
+  // and cover-fit crops the overflow. This is the sizing that rendered the old
+  // café art correctly — full height, no clip.
   const imgStyle: ImageStyle = isScreenFit
     ? { position: "absolute", left: 0, top: 0, width: SCREEN_W, height: SCREEN_H }
     : { width: SCREEN_W, height: dispH };
 
   const sceneInner = (
     <>
-      <Image source={node.image} style={imgStyle} resizeMode="cover" />
+      <Image source={isNight() && node.nightImage ? node.nightImage : node.image} style={imgStyle} resizeMode="cover" />
+      {/* Quiet bioluminescence — registered night effects (a vein, embers, a
+          water-glimpse) that bloom and vanish one at a time on a random timer.
+          Night only, below the hotspots, ignores taps. */}
+      {AMBIENT_LIFE[node.id]?.length ? (
+        <AmbientLife
+          key={node.id}
+          effects={AMBIENT_LIFE[node.id]}
+          active={isNight() && !editMode}
+          imageStyle={imgStyle}
+        />
+      ) : null}
       {/* The painted glow layer, breathing 0→1→0 over the base so every object's
           glow pulses together. When present, glow hotspots draw no engine bloom.
           It sits below the hotspots (rendered next), so taps still reach them. */}
@@ -719,9 +1052,9 @@ export function AdventureHub() {
         <Animated.Image source={node.glowImage} style={[imgStyle, { opacity: glint }]} resizeMode="cover" />
       ) : null}
       {editMode ? renderEditBoxes() : renderHotspots()}
-      {!editMode && node.left ? turnArrow("left", node.left) : null}
-      {!editMode && node.right ? turnArrow("right", node.right) : null}
-      {!editMode && node.back ? turnArrow("back", node.back) : null}
+      {!editMode && navTarget("left") ? turnArrow("left", navTarget("left")!) : null}
+      {!editMode && navTarget("right") ? turnArrow("right", navTarget("right")!) : null}
+      {!editMode && (history.length > 0 || navTarget("back")) ? turnArrow("back", navTarget("back") ?? "") : null}
     </>
   );
 
@@ -779,6 +1112,42 @@ export function AdventureHub() {
         </Pressable>
       ) : null}
 
+      {/* The urge sanctuary carries a quiet shortcut to real human support —
+          the crisis-lines book — always a tap away while you ride it out. */}
+      {inForest && !editMode ? (
+        <View pointerEvents="box-none" style={{ position: "absolute", left: 0, right: 0, bottom: 40, alignItems: "center" }}>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              // Outdoors resources close-up — you're in the woods, so the
+              // directory's background matches. Pushes history, so Back returns
+              // to the forest you were in.
+              navigateNode("resources_outdoors", true);
+            }}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Extra support — help and crisis lines"
+            className="active:opacity-80"
+            style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 22, backgroundColor: "rgba(13,11,18,0.72)", borderWidth: 1, borderColor: "rgba(126,96,186,0.6)" }}
+          >
+            <Feather name="life-buoy" size={16} color="#B79CEA" />
+            <Text style={{ color: "#EAE2F7", fontSize: 13.5, fontWeight: "600" }}>Extra support</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {/* First-ever visit: point out that a real person is one tap away, so the
+          escape hatch is learned here in the calm, before it's ever needed. */}
+      {forestHint && !editMode ? (
+        <View pointerEvents="none" style={{ position: "absolute", left: 24, right: 24, bottom: 96, alignItems: "center" }}>
+          <View style={{ backgroundColor: "rgba(13,11,18,0.88)", borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1, borderColor: "rgba(240,201,135,0.45)" }}>
+            <Text style={{ color: "#F3EEDB", fontSize: 13.5, textAlign: "center", lineHeight: 19 }}>
+              If the urge gets too big, extra support is right here ↓{"\n"}You can always reach a real person.
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
       {editMode ? (
         <Pressable
           onPress={() => setShowExport(true)}
@@ -799,9 +1168,54 @@ export function AdventureHub() {
         </Pressable>
       ) : null}
 
+      {/* Undo everything on this view — restores deleted spots, drops added ones,
+          clears position/style tweaks. Safety net if you bin one by mistake. */}
+      {editMode ? (
+        <Pressable
+          onPress={resetView}
+          hitSlop={8}
+          style={{
+            position: "absolute",
+            bottom: 104,
+            left: 14,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "rgba(20,17,28,0.92)",
+            borderWidth: 1,
+            borderColor: "rgba(190,160,210,0.4)",
+          }}
+          className="active:opacity-80"
+        >
+          <Text style={{ color: "#CFC8DE", fontSize: 12.5, fontWeight: "600" }}>Reset view</Text>
+        </Pressable>
+      ) : null}
+
+      {/* Empty this view to a clean slate so you can place it fresh. */}
+      {editMode ? (
+        <Pressable
+          onPress={clearView}
+          hitSlop={8}
+          style={{
+            position: "absolute",
+            bottom: 104,
+            right: 14,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "rgba(40,20,28,0.92)",
+            borderWidth: 1,
+            borderColor: "rgba(210,150,160,0.4)",
+          }}
+          className="active:opacity-80"
+        >
+          <Text style={{ color: "#F0C4C8", fontSize: 12.5, fontWeight: "600" }}>Clear view</Text>
+        </Pressable>
+      ) : null}
+
       {editMode && !selected ? (
         <View style={{ position: "absolute", left: 12, right: 12, bottom: 158, flexDirection: "row", gap: 10, justifyContent: "center" }}>
-          {(["label", "glow"] as const).map((k) => (
+          {(["label", "glow", "plain"] as const).map((k) => (
             <Pressable
               key={k}
               onPress={() => addHotspot(k)}
@@ -818,14 +1232,131 @@ export function AdventureHub() {
               }}
               className="active:opacity-80"
             >
-              <Feather name={k === "label" ? "type" : "sun"} size={15} color="#EFEAF5" />
-              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add label" : "Add glow"}</Text>
+              <Feather name={k === "label" ? "type" : k === "glow" ? "circle" : "square"} size={15} color="#EFEAF5" />
+              <Text style={{ color: "#F0EBF5", fontSize: 13, fontWeight: "600" }}>{k === "label" ? "Add title" : k === "glow" ? "Add ring" : "Add tap"}</Text>
             </Pressable>
           ))}
         </View>
       ) : null}
 
+      {/* Edit this view's pan arrows + Back (the structural navigation). Tap a
+          slot to pick where it goes, or hide it. Exports with the hotspots. */}
+      {editMode && !selected && !picking && !navDir ? (
+        <View style={{ position: "absolute", top: 100, left: 12, gap: 6 }}>
+          {(["left", "right", "back"] as const).map((dir) => {
+            const t = navTarget(dir);
+            const lbl = dir === "left" ? "← Left" : dir === "right" ? "Right →" : "↩ Back";
+            return (
+              <Pressable
+                key={dir}
+                onPress={() => { setSelected(null); setPicking(false); setNavDir(dir); }}
+                style={{ flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 10, paddingVertical: 7, borderRadius: 8, backgroundColor: "rgba(20,17,28,0.9)", borderWidth: 1, borderColor: "rgba(190,160,210,0.4)", maxWidth: 230 }}
+                className="active:opacity-80"
+              >
+                <Text style={{ color: "#C9B8F0", fontSize: 11, fontWeight: "700", width: 46 }}>{lbl}</Text>
+                <Text style={{ color: "#ECE9F1", fontSize: 11.5, flex: 1 }} numberOfLines={1}>{t ? (HUB_NODES[t]?.title ?? t) : "— none —"}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+
       {editMode ? renderInspector() : null}
+
+      {editMode && (picking || navDir) ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.97)", paddingTop: 80 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 8 }}>
+            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>{navDir ? `Where does ${navDir === "back" ? "Back" : navDir === "left" ? "the ← arrow" : "the → arrow"} go?` : `Where does “${selected}” open?`}</Text>
+            <Pressable onPress={() => { setPicking(false); setNavDir(null); }} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+              <Feather name="x" size={18} color="#ECE9F1" />
+            </Pressable>
+          </View>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
+            <Pressable
+              onPress={() => {
+                if (navDir) setNav((n) => ({ ...n, [nodeId]: { ...(n[nodeId] ?? {}), [navDir]: null } }));
+                else if (selected) setActions((a) => { const n = { ...a }; delete n[selected]; return n; });
+                setPicking(false); setNavDir(null);
+              }}
+              style={{ paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.05)", borderWidth: 1, borderColor: "rgba(236,233,241,0.12)", marginBottom: 14 }}
+              className="active:opacity-70"
+            >
+              <Text style={{ color: "#CFC8DE", fontSize: 14 }}>{navDir ? "— No arrow (hide it) —" : "— Not linked (clear) —"}</Text>
+            </Pressable>
+            {DESTINATIONS.map((g) => {
+              const items = navDir ? g.items.filter((it) => it.action.kind === "node") : g.items;
+              if (!items.length) return null;
+              return (
+              <View key={g.group} style={{ marginBottom: 16 }}>
+                <Text style={{ color: "#8b849b", fontSize: 11, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{g.group}</Text>
+                {items.map((it) => {
+                  const chosen = navDir
+                    ? (it.action.kind === "node" && navTarget(navDir) === it.action.node)
+                    : (selected ? actionExport(actions[selected]) === actionExport(it.action) : false);
+                  return (
+                    <Pressable
+                      key={it.label}
+                      onPress={() => {
+                        if (navDir && it.action.kind === "node") {
+                          const target = it.action.node;
+                          setNav((n) => ({ ...n, [nodeId]: { ...(n[nodeId] ?? {}), [navDir]: target } }));
+                        } else if (!navDir && selected) {
+                          setActions((a) => ({ ...a, [selected]: it.action }));
+                        }
+                        setPicking(false); setNavDir(null);
+                      }}
+                      style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 9, backgroundColor: chosen ? "rgba(164,137,222,0.18)" : "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: chosen ? "rgba(164,137,222,0.5)" : "rgba(236,233,241,0.08)", marginBottom: 6 }}
+                      className="active:opacity-70"
+                    >
+                      <Text style={{ color: "#ECE9F1", fontSize: 14, flex: 1, paddingRight: 8 }}>{it.label}</Text>
+                      {chosen ? <Feather name="check" size={16} color="#C9B8F0" /> : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
+
+      {editMode && inlayPicking ? (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.97)", paddingTop: 80 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 8 }}>
+            <Text style={{ color: "#ECE9F1", fontSize: 15, fontWeight: "700", flex: 1, paddingRight: 8 }} numberOfLines={1}>Live preview on this object</Text>
+            <Pressable onPress={() => setInlayPicking(false)} hitSlop={12} style={{ backgroundColor: "rgba(255,255,255,0.08)", width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+              <Feather name="x" size={18} color="#ECE9F1" />
+            </Pressable>
+          </View>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
+            <Pressable
+              onPress={() => { if (selected) setInlayMap((m) => ({ ...m, [selected]: "none" })); setInlayPicking(false); }}
+              style={{ paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.05)", borderWidth: 1, borderColor: "rgba(236,233,241,0.12)", marginBottom: 14 }}
+              className="active:opacity-70"
+            >
+              <Text style={{ color: "#CFC8DE", fontSize: 14 }}>— None (no preview) —</Text>
+            </Pressable>
+            {(() => {
+              const selHot = selected ? hotspots.find((h) => h.id === selected) : null;
+              const cur = selHot ? inlayOf(selHot) : undefined;
+              return INLAY_OPTIONS.map((o) => {
+                const chosen = cur === o.id;
+                return (
+                  <Pressable
+                    key={o.id}
+                    onPress={() => { if (selected) setInlayMap((m) => ({ ...m, [selected]: o.id })); setInlayPicking(false); }}
+                    style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 9, backgroundColor: chosen ? "rgba(143,211,180,0.16)" : "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: chosen ? "rgba(143,211,180,0.5)" : "rgba(236,233,241,0.08)", marginBottom: 6 }}
+                    className="active:opacity-70"
+                  >
+                    <Text style={{ color: "#ECE9F1", fontSize: 14, flex: 1, paddingRight: 8 }}>{o.label}</Text>
+                    {chosen ? <Feather name="check" size={16} color="#8fd3b4" /> : null}
+                  </Pressable>
+                );
+              });
+            })()}
+          </ScrollView>
+        </View>
+      ) : null}
 
       {showExport ? (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(6,5,10,0.96)", paddingTop: 90, paddingHorizontal: 20 }}>

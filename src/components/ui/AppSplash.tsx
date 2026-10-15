@@ -49,7 +49,7 @@ export function AppSplash({ width, height }: { width: number; height: number }) 
   const barWidth = progress.interpolate({ inputRange: [0, 1], outputRange: ["6%", "92%"] });
 
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#201D28" }]}>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#0E0A16" }]}>
       {/* Full-bleed brand image */}
       <Image source={SPLASH} style={{ width, height }} resizeMode="cover" />
 
@@ -73,7 +73,7 @@ export function AppSplash({ width, height }: { width: number; height: number }) 
               height: 68,
               borderRadius: 34,
               borderWidth: 2,
-              borderColor: "rgba(216,204,244,0.85)",
+              borderColor: "#141414",
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 20,
@@ -82,7 +82,7 @@ export function AppSplash({ width, height }: { width: number; height: number }) 
             SHADOW,
           ]}
         >
-          <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "rgba(216,204,244,0.85)" }} />
+          <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "#141414" }} />
           <View style={{ position: "absolute", top: 8, width: 2, height: 15, backgroundColor: "rgba(255,255,255,0.7)" }} />
         </Animated.View>
 
@@ -91,10 +91,10 @@ export function AppSplash({ width, height }: { width: number; height: number }) 
             fontFamily: "PatrickHand",
             fontSize: 34,
             lineHeight: 42,
-            color: "#F4EFFA",
+            color: "#141414",
             letterSpacing: 2,
             marginBottom: 18,
-            textShadowColor: "rgba(0,0,0,0.85)",
+            textShadowColor: "rgba(255,255,255,0.8)",
             textShadowOffset: { width: 0, height: 2 },
             textShadowRadius: 8,
           }}
@@ -109,26 +109,26 @@ export function AppSplash({ width, height }: { width: number; height: number }) 
               maxWidth: 260,
               height: 12,
               borderWidth: 1,
-              borderColor: "rgba(216,204,244,0.8)",
+              borderColor: "#141414",
               borderRadius: 3,
               padding: 2,
-              backgroundColor: "rgba(13,11,18,0.45)",
+              backgroundColor: "rgba(255,255,255,0.3)",
               overflow: "hidden",
             },
             SHADOW,
           ]}
         >
-          <Animated.View style={{ height: "100%", width: barWidth, backgroundColor: "#B197E4", borderRadius: 1 }} />
+          <Animated.View style={{ height: "100%", width: barWidth, backgroundColor: "#141414", borderRadius: 1 }} />
         </View>
 
         <Text
           style={{
             marginTop: 12,
-            color: "#EDE7F5",
+            color: "#141414",
             fontFamily: MONO,
             fontSize: 11,
             letterSpacing: 2,
-            textShadowColor: "rgba(0,0,0,0.85)",
+            textShadowColor: "rgba(255,255,255,0.8)",
             textShadowOffset: { width: 0, height: 1 },
             textShadowRadius: 5,
           }}

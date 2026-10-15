@@ -31,4 +31,18 @@ export const RESOURCE_BOOKS: Record<string, ResourceBookArt> = {
       meetings: require("../../assets/books/resources-arcade-meetings.png"),
     },
   },
+  // Outdoors version — opened from the forest/clearing "Extra support" pill, so
+  // the directory's background is the woods, not an indoor room. Until the art is
+  // dropped in here, /resources/outdoors falls back to the plain resources screen.
+  // Drop the four PNGs in assets/books/ as: resources-outdoors-cover.png,
+  // resources-outdoors-call.png, resources-outdoors-text.png,
+  // resources-outdoors-meetings.png, then uncomment:
+  // outdoors: {
+  //   cover: require("../../assets/books/resources-outdoors-cover.png"),
+  //   tabs: {
+  //     call: require("../../assets/books/resources-outdoors-call.png"),
+  //     text: require("../../assets/books/resources-outdoors-text.png"),
+  //     meetings: require("../../assets/books/resources-outdoors-meetings.png"),
+  //   },
+  // },
 };

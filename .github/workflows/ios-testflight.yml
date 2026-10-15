@@ -1,0 +1,94 @@
+name: iOS TestFlight
+
+# Ports the Codemagic `expo-ios` workflow to GitHub Actions so we don't need
+# Codemagic. Same tools (codemagic-cli-tools: keychain / app-store-connect /
+# xcode-project), same steps: expo prebuild -> sign -> build IPA -> TestFlight.
+#
+# Add these as GitHub repo secrets (Settings -> Secrets and variables ->
+# Actions). You already have them in Codemagic's Ios_signing group / integration:
+#   APP_STORE_CONNECT_ISSUER_ID       - App Store Connect API key issuer id (UUID)
+#   APP_STORE_CONNECT_KEY_IDENTIFIER  - the key id (e.g. ABCD1234EF)
+#   APP_STORE_CONNECT_PRIVATE_KEY     - the .p8 file contents (paste the whole key)
+#   CERTIFICATE_PRIVATE_KEY           - your iOS distribution certificate's PRIVATE
+#                                       KEY (PEM). Lets it reuse your existing
+#                                       distribution cert instead of making a new
+#                                       one each run. (Optional — without it, a
+#                                       cert is created on the fly.)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios:
+    runs-on: macos-14
+    timeout-minutes: 75
+    env:
+      RCT_NEW_ARCH_ENABLED: "1"
+      EXPO_PUBLIC_SUPABASE_URL: https://kvvzygcndijxboyslirt.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_psLdYjZEQ4cs_JDTdlAYCg_wpdHVAWv
+      IOS_BUNDLE_IDENTIFIER: com.alchono.app
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install codemagic-cli-tools
+        run: pip3 install --break-system-packages codemagic-cli-tools
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Unique build number
+        run: echo "ALCHONO_BUILD_NUMBER=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Expo prebuild (iOS)
+        run: npx expo prebuild --platform ios --clean
+
+      - name: Set iOS build number
+        run: cd ios && agvtool new-version -all "$ALCHONO_BUILD_NUMBER"
+
+      - name: Set up code signing
+        run: |
+          keychain initialize
+          CERT_FLAG=()
+          if [ -n "$CERTIFICATE_PRIVATE_KEY" ]; then CERT_FLAG=(--certificate-key "@env:CERTIFICATE_PRIVATE_KEY"); fi
+          # Main app
+          app-store-connect fetch-signing-files "$IOS_BUNDLE_IDENTIFIER" \
+            --type IOS_APP_STORE --create "${CERT_FLAG[@]}"
+          # Widget extension (second target with its own bundle id + profile)
+          app-store-connect fetch-signing-files "${IOS_BUNDLE_IDENTIFIER}.widget" \
+            --type IOS_APP_STORE --create "${CERT_FLAG[@]}" || true
+          keychain add-certificates
+          cd ios && xcode-project use-profiles
+
+      - name: Install pods
+        run: cd ios && pod install --repo-update
+
+      - name: Build IPA
+        run: |
+          xcode-project build-ipa \
+            --workspace ios/*.xcworkspace \
+            --scheme Alchono \
+            --config Release
+
+      - name: Publish to TestFlight
+        run: |
+          app-store-connect publish \
+            --path "build/ios/ipa/*.ipa" \
+            --testflight
+
+      - name: Upload build artifacts (ipa + logs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alchono-ios
+          path: |
+            build/ios/ipa/*.ipa
+            /tmp/xcodebuild_logs/*.log
+          if-no-files-found: ignore

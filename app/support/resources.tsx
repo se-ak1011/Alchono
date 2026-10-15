@@ -5,12 +5,9 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { ZoneGlow } from '@/components/ui/ZoneGlow';
-import { CompanionArt } from '@/components/ui/CompanionArt';
-import { useCompanion } from '@/hooks/useCompanion';
 import * as Haptics from 'expo-haptics';
 import { RESOURCE_SECTIONS, type Resource } from '@/lib/resources';
 import { headingShadow } from '@/styles';
-import type { CompanionPose } from '@/lib/companions';
 
 const PLUM = '#A082BE';
 
@@ -105,29 +102,23 @@ function MeetingSheet({ r, onClose }: { r: Resource; onClose: () => void }) {
 }
 
 function Scene({
-  pose, eyebrow, items, flip, delay, onMeeting,
+  eyebrow, items, delay, onMeeting,
 }: {
-  pose: CompanionPose; eyebrow: string; items: Resource[]; flip: boolean; delay: number;
+  eyebrow: string; items: Resource[]; delay: number;
   onMeeting?: (r: Resource) => void;
 }) {
-  const { pose: poseSrc } = useCompanion();
   const router = useRouter();
   return (
     <Animated.View
       entering={FadeInDown.duration(400).delay(delay)}
-      style={{ flexDirection: flip ? 'row-reverse' : 'row', alignItems: 'center', gap: 6, marginBottom: 24 }}
+      style={{ gap: 9, marginBottom: 24 }}
     >
-      <View style={{ width: 150, alignItems: 'center' }} pointerEvents="none">
-        <CompanionArt source={poseSrc(pose)} width={148} height={172} />
-      </View>
-      <View style={{ flex: 1, gap: 9, alignItems: flip ? 'flex-end' : 'flex-start' }}>
-        <Text className="text-xs font-semibold tracking-widest uppercase" style={{ color: PLUM, marginBottom: 2 }}>
-          {eyebrow}
-        </Text>
-        {items.map((r) => (
-          <Chip key={r.title} r={r} arrow={!!onMeeting} onPress={() => (onMeeting ? onMeeting(r) : openResource(r, router))} />
-        ))}
-      </View>
+      <Text className="text-xs font-semibold tracking-widest uppercase" style={{ color: PLUM, marginBottom: 2 }}>
+        {eyebrow}
+      </Text>
+      {items.map((r) => (
+        <Chip key={r.title} r={r} arrow={!!onMeeting} onPress={() => (onMeeting ? onMeeting(r) : openResource(r, router))} />
+      ))}
     </Animated.View>
   );
 }
@@ -142,8 +133,8 @@ export default function ResourcesScreen() {
   const pick = (titles: string[]) => titles.map((t) => byTitle[t]).filter(Boolean) as Resource[];
 
   const scenes = [
-    { pose: 'call' as CompanionPose, eyebrow: 'Call', titles: ['Emergency — 999', 'Samaritans', 'NHS 111', 'Drinkline', 'Alcoholics Anonymous'] },
-    { pose: 'text' as CompanionPose, eyebrow: 'Text', titles: ['Shout', 'NHS alcohol advice', '7 Cups'] },
+    { eyebrow: 'Call', titles: ['Emergency — 999', 'Samaritans', 'NHS 111', 'Drinkline', 'Alcoholics Anonymous'] },
+    { eyebrow: 'Text', titles: ['Shout', 'NHS alcohol advice', '7 Cups'] },
   ];
   const meetings = pick(['AA meeting finder', 'SMART Recovery UK']);
 
@@ -165,11 +156,11 @@ export default function ResourcesScreen() {
         </Text>
 
         {scenes.map((s, i) => (
-          <Scene key={s.eyebrow} pose={s.pose} eyebrow={s.eyebrow} items={pick(s.titles)} flip={i % 2 === 1} delay={100 + i * 90} />
+          <Scene key={s.eyebrow} eyebrow={s.eyebrow} items={pick(s.titles)} delay={100 + i * 90} />
         ))}
 
         {meetings.length > 0 ? (
-          <Scene pose="door" eyebrow="Meetings" items={meetings} flip={false} delay={280} onMeeting={setMeeting} />
+          <Scene eyebrow="Meetings" items={meetings} delay={280} onMeeting={setMeeting} />
         ) : null}
       </ScrollView>
 

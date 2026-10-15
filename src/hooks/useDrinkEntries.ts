@@ -51,6 +51,36 @@ export function useLogDrinkEntry() {
   });
 }
 
+/** Log a gentle, qualitative diary entry from the "Tonight" notebook —
+ *  free text, no unit-counting required. Units stay 0 (unknown). */
+export function useLogDrinkDiary() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useMutation({
+    mutationFn: async (entry: {
+      what: string;
+      amount: string;
+      when: string;
+      note: string;
+      unsure: boolean;
+    }) => {
+      const { error } = await (supabase as any).from('drink_entries').insert({
+        user_id: userId!,
+        drink_type: 'freeform',
+        drink_label: entry.what.trim() || null,
+        units: 0,
+        amount_text: entry.amount.trim() || null,
+        when_text: entry.when.trim() || null,
+        note: entry.note.trim() || null,
+        amount_unsure: entry.unsure,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['drinks-diary'] });
+    },
+  });
+}
+
 /**
  * The weekly drinks diary, shaped like the GP's paper form: one row per day
  * (empty days included), each drink type with number of drinks, units each and

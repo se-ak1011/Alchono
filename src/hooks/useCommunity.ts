@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -102,9 +102,14 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
     enabled: !!userId,
   });
 
+  // A unique topic per hook instance. Two subscribers to the same topic (e.g.
+  // the community page AND the study's written-posts preview mounted at once)
+  // would make the second .on() fire after the first .subscribe() — the
+  // "cannot add postgres_changes callbacks ... after subscribe()" crash.
+  const channelName = useRef(`community-talk-posts-${Math.random().toString(36).slice(2)}`).current;
   useEffect(() => {
     if (!userId) return;
-    const channel = supabase.channel(`community-talk-posts-${pageSize}`)
+    const channel = supabase.channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'community_posts' }, () => {
         queryClient.invalidateQueries({ queryKey: ['community-feed'] });
       }).subscribe();
@@ -112,16 +117,17 @@ export function useCommunityFeed(pageSize = PAGE_SIZE) {
       if (state === 'active') queryClient.invalidateQueries({ queryKey: ['community-feed'] });
     });
     return () => { appState.remove(); supabase.removeChannel(channel); };
-  }, [pageSize, userId]);
+  }, [userId, channelName]);
   return query;
 }
 
 export function usePostComments(postId: string | null) {
   const userId = useAuthStore((s) => s.user?.id);
   const databasePostId = postId && /^[0-9a-f-]{36}$/i.test(postId) ? postId : null;
+  const commentsChannelName = useRef(`community-comments-${Math.random().toString(36).slice(2)}`).current;
   useEffect(() => {
     if (!userId || !databasePostId) return;
-    const channel = supabase.channel(`community-comments-${databasePostId}`)
+    const channel = supabase.channel(commentsChannelName)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_comments', filter: `post_id=eq.${databasePostId}` }, () => {
         queryClient.invalidateQueries({ queryKey: ['community-comments', databasePostId] });
       }).subscribe();
