@@ -613,7 +613,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   zerozero_beer: {
     id: "zerozero_beer", title: "0.0 — Beer",
     image: require("../../assets/scenes/zerozero_beer.png"),
-    imgW: 1024, imgH: 1536, fit: "screen",
+    imgW: 851, imgH: 1847, fit: "screen",
     right: "zerozero_cider",
     hotspots: [
       { id: "zzb_becks", caption: "Beck's Blue", kind: "plain", noRing: true, x: 0.060, y: 0.320, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.becks.com" } },
@@ -626,7 +626,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   zerozero_cider: {
     id: "zerozero_cider", title: "0.0 — Cider",
     image: require("../../assets/scenes/zerozero_cider.png"),
-    imgW: 934, imgH: 1684, fit: "screen",
+    imgW: 851, imgH: 1847, fit: "screen",
     left: "zerozero_beer", right: "zerozero_spirits",
     hotspots: [
       { id: "zzc_thatchers_zero", caption: "Thatchers Zero", kind: "plain", noRing: true, x: 0.060, y: 0.230, w: 0.820, h: 0.110, action: { kind: "link", url: "https://www.thatcherscider.co.uk" } },
@@ -639,7 +639,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   zerozero_spirits: {
     id: "zerozero_spirits", title: "0.0 — Spirits",
     image: require("../../assets/scenes/zerozero_spirits.png"),
-    imgW: 934, imgH: 1684, fit: "screen",
+    imgW: 851, imgH: 1847, fit: "screen",
     left: "zerozero_cider", right: "zerozero_wine",
     hotspots: [
       { id: "zzs_tanqueray", caption: "Tanqueray 0.0", kind: "plain", noRing: true, x: 0.060, y: 0.250, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.tanqueray.com" } },
@@ -652,7 +652,7 @@ export const HUB_NODES: Record<string, HubNode> = {
   zerozero_wine: {
     id: "zerozero_wine", title: "0.0 — Wine",
     image: require("../../assets/scenes/zerozero_wine.png"),
-    imgW: 934, imgH: 1684, fit: "screen",
+    imgW: 851, imgH: 1847, fit: "screen",
     left: "zerozero_spirits",
     hotspots: [
       { id: "zzw_shiraz", caption: "McGuigan Zero Shiraz", kind: "plain", noRing: true, x: 0.060, y: 0.250, w: 0.860, h: 0.110, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
