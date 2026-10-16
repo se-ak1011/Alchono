@@ -275,12 +275,12 @@ export const HUB_NODES: Record<string, HubNode> = {
     hotspots: [
       { id: "lrr_woods_title", caption: "Forest walk", kind: "label", label: "Forest Walk", x: 0.305, y: 0.142, w: 0.200, h: 0.080 },
       { id: "lrr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.113, y: 0.266, w: 0.136, h: 0.140, action: { kind: "forest", mode: "jump" } },
-      { id: "lrr_stairs", caption: "Upstairs", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", noRing: true, x: 0.653, y: 0.471, w: 0.213, h: 0.106, action: { kind: "node", node: "landing_front" } },
+      { id: "lrr_stairs", caption: "Upstairs", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", noRing: true, x: 0.653, y: 0.471, w: 0.213, h: 0.106, action: { kind: "node", node: "loft_bedroom" } },
       { id: "lrr_room", caption: "Your room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.699, y: 0.062, w: 0.210, h: 0.099, action: { kind: "node", node: "me_room_front" } },
       { id: "lrr_woods", caption: "Out to the woods", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.418, y: 0.340, w: 0.179, h: 0.090, action: { kind: "node", node: "forest_canopy" } },
       { id: "lrr_track", caption: "Tonight", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.118, y: 0.186, w: 0.154, h: 0.068, action: { kind: "route", route: "/session/track" } },
       { id: "lrr_kitchen", caption: "Kitchen", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: -0.038, y: 0.205, w: 0.127, h: 0.110, action: { kind: "node", node: "kitchen_right" } },
-      { id: "lrr_stairs_tap", caption: "Upstairs", kind: "plain", noRing: true, x: 0.766, y: 0.176, w: 0.218, h: 0.430, action: { kind: "node", node: "landing_front" } },
+      { id: "lrr_stairs_tap", caption: "Upstairs", kind: "plain", noRing: true, x: 0.766, y: 0.176, w: 0.218, h: 0.430, action: { kind: "node", node: "loft_bedroom" } },
     ],
   },
 
@@ -543,6 +543,47 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     hotspots: [
       { id: "hob_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.05, y: 0.20, w: 0.16, h: 0.16, action: { kind: "forest", mode: "jump" } },
+    ],
+  },
+
+  // === UPSTAIRS — the loft (one space, three walls). Stairs arrive from
+  // living_room_right. Hotspot rects are ROUGH placeholders — reposition each
+  // on the new art with the pencil editor and Export. Old landing/study/
+  // me_room nodes are now unreachable (kept until the new wiring is final).
+  loft_bedroom: {
+    id: "loft_bedroom", title: "The Loft",
+    image: require("../../assets/scenes/loft_bedroom.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    left: "loft_reading", right: "loft_office",
+    hotspots: [
+      { id: "lb_stairs", caption: "Downstairs", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", noRing: true, x: 0.700, y: 0.450, w: 0.220, h: 0.300, action: { kind: "node", node: "living_room_right" } },
+      { id: "lb_file", caption: "Personal file", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.200, y: 0.450, w: 0.200, h: 0.120, action: { kind: "route", route: "/profile/file" } },
+      { id: "lb_moments", caption: "Your moments", kind: "glow", tint: "purple", interaction: "object", haptic: "light", noRing: true, x: 0.420, y: 0.300, w: 0.180, h: 0.100, action: { kind: "route", route: "/moments" } },
+      { id: "lb_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.100, y: 0.280, w: 0.140, h: 0.120, action: { kind: "forest", mode: "jump" } },
+    ],
+  },
+  loft_reading: {
+    id: "loft_reading", title: "The Loft",
+    image: require("../../assets/scenes/loft_reading.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    right: "loft_bedroom", back: "loft_bedroom",
+    hotspots: [
+      { id: "lr_read", caption: "Reading", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.300, y: 0.350, w: 0.220, h: 0.140, action: { kind: "route", route: "/reading" } },
+      { id: "lr_write", caption: "Write", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.550, y: 0.500, w: 0.220, h: 0.120, action: { kind: "route", route: "/journal/write" } },
+      { id: "lr_notes", caption: "Your notes", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.300, y: 0.560, w: 0.180, h: 0.100, action: { kind: "route", route: "/journal/notes" } },
+      { id: "lr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.100, y: 0.280, w: 0.140, h: 0.120, action: { kind: "forest", mode: "jump" } },
+    ],
+  },
+  loft_office: {
+    id: "loft_office", title: "The Loft",
+    image: require("../../assets/scenes/loft_office.png"),
+    imgW: 851, imgH: 1847, fit: "screen",
+    left: "loft_bedroom", back: "loft_bedroom",
+    hotspots: [
+      { id: "lo_community", caption: "Community", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.350, y: 0.400, w: 0.220, h: 0.140, action: { kind: "route", route: "/community" } },
+      { id: "lo_mentors", caption: "Mentors", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.600, y: 0.450, w: 0.180, h: 0.100, action: { kind: "route", route: "/support/mentors" } },
+      { id: "lo_messages", caption: "Messages", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.350, y: 0.560, w: 0.180, h: 0.100, action: { kind: "route", route: "/messages" } },
+      { id: "lo_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.100, y: 0.280, w: 0.140, h: 0.120, action: { kind: "forest", mode: "jump" } },
     ],
   },
 
