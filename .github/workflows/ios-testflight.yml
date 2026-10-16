@@ -69,7 +69,16 @@ jobs:
 
       - name: Install pods
         run: cd ios && pod install --repo-update
-
+        
+      - name: Diagnose Xcode project
+        run: |
+          xcodebuild -version
+          xcodebuild -list -workspace ios/Alchono.xcworkspace
+          xcodebuild -showBuildSettings \
+            -workspace ios/Alchono.xcworkspace \
+            -scheme Alchono \
+            -configuration Release
+            
       - name: Build IPA
         run: |
           xcode-project build-ipa \
