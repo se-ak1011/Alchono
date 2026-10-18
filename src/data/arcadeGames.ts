@@ -6,7 +6,16 @@ import growthShield from '../../assets/arcade-games/skull-defense-2.html';
 import skullPath from '../../assets/arcade-games/growth-journey.html';
 import skullHaven from '../../assets/arcade-games/haven-builder.html';
 
+// Looped idle previews — lighter auto-playing loops shown on a cabinet screen
+// (an editor inlay option), separate from the full playable games above.
+import skullPathPreview from '../../assets/arcade-games/skull-path-preview.html';
+
 export type ArcadeGame = { title: string; html: string };
+
+/** Looped preview HTML, keyed by the same slug as the playable game. */
+export const ARCADE_PREVIEWS: Record<string, string> = {
+  'skull-path': skullPathPreview,
+};
 
 export const ARCADE_GAMES: Record<string, ArcadeGame> = {
   'skull-grove': { title: 'Skull Grove', html: skullGrove },

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Skull Path — Preview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;image-rendering:pixelated;font-family:monospace;}
+body{background:#1A1419;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+canvas{background:#2B2332;border:4px solid #6B4F8C;border-radius:8px;box-shadow:0 0 20px rgba(107,79,140,0.2);max-width:100%;max-height:90vh;}
+.tap-hint{position:absolute;color:#8C7A6B;font-size:12px;bottom:15px;opacity:0.7;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:0.8;}}
+</style>
+</head>
+<body>
+<canvas id="c" width="320" height="480"></canvas>
+<div class="tap-hint">tap to play</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+
+// Preview state
+let t=0, skullX=120, skullY=120, dir=0, markersCollected=0;
+const msgs=[
+  'You are still growing. 🌱',
+  'Rest is part of healing. 💤',
+  'Progress > perfection. 💀',
+  'Every step counts. ✨'
+];
+let showMsg='', msgFade=0;
+
+// Map: same as game
+const map=[
+  [2,2,2,2,2,2,2,2],
+  [2,0,0,1,0,0,1,2],
+  [2,0,0,0,0,0,0,2],
+  [2,1,0,0,0,0,0,2],
+  [2,0,0,0,0,1,0,2],
+  [2,0,0,0,0,0,0,2],
+  [2,1,0,0,0,0,1,2],
+  [2,2,2,2,2,2,2,2]
+];
+
+// Marker positions for preview path
+const markers=[
+  {x:140,y:60,got:false},
+  {x:260,y:60,got:false},
+  {x:60,y:140,got:false},
+  {x:220,y:180,got:false},
+  {x:60,y:300,got:false},
+  {x:260,y:300,got:false}
+];
+
+// Auto-path points
+const path=[
+  {x:120,y:60},{x:260,y:60},{x:260,y:140},{x:60,y:140},
+  {x:60,y:220},{x:220,y:220},{x:220,y:300},{x:60,y:300},{x:60,y:380},{x:160,y:380}
+];
+let pathIdx=0;
+
+// Tap to play — replace with your link!
+document.body.onclick=document.body.ontouchstart=()=>{
+  // window.location.href='skullpath-game.html';
+  console.log('Open full game here');
+};
+
+function drawSkull(sx,sy,scale=1){
+  x.save();x.translate(sx,sy);x.scale(scale,scale);
+  x.fillStyle='#D4CEDC';x.shadowColor='#6B4F8C';x.shadowBlur=8;
+  x.beginPath();x.ellipse(0,0,12,14,0,0,Math.PI*2);x.fill();
+  x.fillStyle='#1A1419';
+  x.beginPath();x.ellipse(-5,-3,3,4,0,0,Math.PI*2);x.fill();
+  x.beginPath();x.ellipse(5,-3,3,4,0,0,Math.PI*2);x.fill();
+  x.fillStyle='#7A997A';
+  x.beginPath();x.ellipse(-8,6,6,3,-0.5,0,Math.PI*2);x.fill();
+  x.beginPath();x.ellipse(9,4,5,2.5,0.4,0,Math.PI*2);x.fill();
+  x.restore();
+}
+
+function loop(){
+  t++;
+
+  // Auto-follow path
+  const target=path[pathIdx];
+  const dx=target.x-skullX, dy=target.y-skullY;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist<3){
+    pathIdx=(pathIdx+1)%path.length;
+    // Show message at certain points
+    if(pathIdx===2||pathIdx===5||pathIdx===8){
+      showMsg=msgs[Math.floor(Math.random()*msgs.length)];
+      msgFade=120;
+    }
+  }else{
+    skullX+=(dx/dist)*0.8;
+    skullY+=(dy/dist)*0.8;
+  }
+
+  // Draw background
+  x.fillStyle='#2B2332';x.fillRect(0,0,320,480);
+
+  // Draw map
+  for(let y=0;y<8;y++){
+    for(let cx=0;cx<8;cx++){
+      const tile=map[y][cx];
+      if(tile===2){
+        x.fillStyle='#241C2C';
+        x.fillRect(cx*40,y*40,40,40);
+        x.fillStyle='#4A3566';
+        x.fillRect(cx*40+2,y*40+2,36,36);
+      }
+    }
+  }
+
+  // Draw markers
+  markers.forEach(m=>{
+    if(!m.got){
+      x.fillStyle='#8C7A6B';x.shadowColor='#6B4F8C';x.shadowBlur=4+Math.sin(t/20)*2;
+      x.beginPath();x.arc(m.x,m.y,10,0,Math.PI*2);x.fill();
+      x.shadowBlur=0;
+    }
+  });
+
+  // Draw skull
+  drawSkull(skullX,skullY);
+
+  // Draw floating message
+  if(msgFade>0){
+    msgFade--;
+    const alpha=Math.min(1,msgFade/30);
+    x.fillStyle=`rgba(26,20,25,${alpha*0.85})`;
+    x.fillRect(20,400,280,50);
+    x.strokeStyle=`rgba(107,79,140,${alpha})`;
+    x.lineWidth=2;
+    x.strokeRect(20,400,280,50);
+    x.fillStyle=`rgba(212,206,220,${alpha})`;
+    x.font='12px monospace';
+    x.textAlign='center';
+    x.fillText(showMsg,160,430);
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

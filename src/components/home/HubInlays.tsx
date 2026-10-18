@@ -7,7 +7,7 @@ import { useConnections } from "@/hooks/useMessages";
 import { BOOKS } from "@/data/books";
 import type { ToolkitCategory } from "@/lib/toolkit";
 import { WebView } from "react-native-webview";
-import { ARCADE_GAMES } from "@/data/arcadeGames";
+import { ARCADE_GAMES, ARCADE_PREVIEWS } from "@/data/arcadeGames";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
@@ -450,6 +450,30 @@ export function GrowthShieldInlay() { return <GameWebInlay slug="growth-shield" 
 export function SkullPathInlay() { return <GameWebInlay slug="skull-path" />; }
 export function SkullHavenInlay() { return <GameWebInlay slug="skull-haven" />; }
 
+// Looped idle previews — the same WebView treatment, but running the lighter
+// auto-playing preview HTML instead of the full game. Nicer as a resting screen.
+function PreviewWebInlay({ slug }: { slug: string }) {
+  const html = ARCADE_PREVIEWS[slug];
+  if (!html) return null;
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#1f1430" }]}>
+      <WebView
+        originWhitelist={["*"]}
+        source={{ html }}
+        style={{ flex: 1, backgroundColor: "#1f1430" }}
+        pointerEvents="none"
+        scrollEnabled={false}
+        scalesPageToFit
+        javaScriptEnabled
+        domStorageEnabled
+        setSupportMultipleWindows={false}
+        androidLayerType="hardware"
+      />
+    </View>
+  );
+}
+export function SkullPathPreviewInlay() { return <PreviewWebInlay slug="skull-path" />; }
+
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
   arcade_memory: MemoryInlay,
@@ -463,6 +487,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   growth_shield: GrowthShieldInlay,
   skull_path: SkullPathInlay,
   skull_haven: SkullHavenInlay,
+  skull_path_preview: SkullPathPreviewInlay, // looped idle preview (lighter)
   messages: MessagesInlay, // recent threads, on the computer / mailslot
   bookshelf: BookshelfInlay, // the book covers lined up on the study shelf
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
@@ -481,6 +506,7 @@ export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "skull_grove", label: "Game — Skull Grove (live)" },
   { id: "growth_shield", label: "Game — Growth Shield (live)" },
   { id: "skull_path", label: "Game — Skull Path (live)" },
+  { id: "skull_path_preview", label: "Game — Skull Path (loop preview)" },
   { id: "skull_haven", label: "Game — Skull Haven (live)" },
   { id: "community", label: "Community — video thumbnails" },
   { id: "community_board", label: "Community — written posts" },
