@@ -57,10 +57,10 @@ const path=[
 ];
 let pathIdx=0;
 
-// Tap to play — replace with your link!
+// Tap to play — opens the full game (used when the preview runs standalone).
+// NOTE: in the app the cabinet's hotspot handles the tap, so this won't fire.
 document.body.onclick=document.body.ontouchstart=()=>{
-  // window.location.href='skullpath-game.html';
-  console.log('Open full game here');
+  window.location.href='skullpath-game.html';
 };
 
 function drawSkull(sx,sy,scale=1){
