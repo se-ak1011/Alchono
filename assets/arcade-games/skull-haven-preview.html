@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skull Haven — Preview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:#1a1226;overflow:hidden;}
+canvas{width:100%;height:100%;display:block;cursor:pointer;}
+</style>
+</head>
+<body onclick="window.location.href='skullhaven.html'">
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+function resize(){c.width=c.clientWidth*2;c.height=c.clientHeight*2;}
+resize();window.onresize=resize;
+
+let p={x:c.width/2,y:c.height/2+80,angle:0},garden=[],time=0;
+
+function drawSkullFlower(px,py,scale){
+  x.save();x.translate(px,py);x.scale(scale,scale);
+  x.shadowColor='#7c3aed';x.shadowBlur=10;
+
+  x.strokeStyle='#4d7c0f';x.lineWidth=5;
+  x.beginPath();
+  x.moveTo(0,35);
+  x.quadraticCurveTo(-6,15,0,-5);
+  x.stroke();
+
+  x.fillStyle='#65a30d';
+  x.beginPath();
+  x.ellipse(-14,25,16,8,-0.6,0,Math.PI*2);x.fill();
+  x.beginPath();
+  x.ellipse(16,20,14,7,0.5,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#e4e4e7';
+  x.beginPath();
+  x.ellipse(0,-15,22,25,0,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#1a1226';
+  x.beginPath();
+  x.ellipse(-10,-18,6,9,-0.1,0,Math.PI*2);x.fill();
+  x.beginPath();
+  x.ellipse(10,-18,6,9,0.1,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#f59e0b';
+  x.beginPath();
+  x.arc(0,-10,3,0,Math.PI*2);x.fill();
+
+  x.fillStyle='#d4d4d8';
+  for(let i=-2;i<=2;i++)x.fillRect(i*6-2,2,4,5);
+
+  x.restore();
+}
+
+function loop(){
+  time++;
+
+  p.angle=Math.sin(time/200)*0.05;
+  p.x+=Math.sin(p.angle)*2.2;
+  p.y+=Math.cos(p.angle)*1.2;
+  p.x=Math.max(100,Math.min(c.width-100,p.x));
+  p.y=Math.max(120,Math.min(c.height-80,p.y));
+
+  if(time%90===0){
+    garden.push({
+      x:p.x+(Math.random()-0.5)*100,
+      y:p.y+(Math.random()-0.5)*50,
+      size:0,
+      maxSize:0.5+Math.random()*0.5,
+      growth:0.005+Math.random()*0.004,
+      type:Math.random()<0.35?'skull':'leaf'
+    });
+  }
+
+  if(time>1400){
+    garden=[];
+    time=0;
+  }
+
+  garden.forEach(g=>{if(g.size<g.maxSize)g.size+=g.growth;});
+
+  const sky=x.createLinearGradient(0,0,0,c.height/2);
+  sky.addColorStop(0,'#1a1226');
+  sky.addColorStop(1,'#2e1b4a');
+  x.fillStyle=sky;x.fillRect(0,0,c.width,c.height);
+
+  const ground=x.createLinearGradient(0,c.height/2,0,c.height);
+  ground.addColorStop(0,'#372554');
+  ground.addColorStop(1,'#1e1b4b');
+  x.fillStyle=ground;x.fillRect(0,c.height/2,c.width,c.height/2);
+
+  x.fillStyle='#a78bfa';x.shadowColor='#7c3aed';x.shadowBlur=25;x.globalAlpha=0.4;
+  x.beginPath();x.arc(c.width-140,140,50,0,Math.PI*2);x.fill();
+  x.globalAlpha=1;x.shadowBlur=0;
+
+  garden.forEach(g=>{
+    if(g.type==='skull')drawSkullFlower(g.x,g.y,g.size);
+    else {
+      x.fillStyle='#65a30d';x.shadowColor='#84cc16';x.shadowBlur=5;
+      x.beginPath();
+      x.moveTo(g.x,g.y-35*g.size);
+      x.lineTo(g.x-10*g.size,g.y);
+      x.lineTo(g.x+10*g.size,g.y);
+      x.closePath();x.fill();
+    }
+  });
+
+  x.save();x.translate(p.x,p.y-10);
+  x.fillStyle='#5b21b6';x.shadowColor='#7c3aed';x.shadowBlur=12;
+  x.beginPath();x.arc(0,0,20,0,Math.PI*2);x.fill();
+  x.fillStyle='#ddd6fe';
+  x.beginPath();x.arc(-6,-4,4,0,Math.PI*2);x.fill();
+  x.beginPath();x.arc(6,-4,4,0,Math.PI*2);x.fill();
+  x.restore();
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

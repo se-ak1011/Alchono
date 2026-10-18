@@ -473,6 +473,7 @@ function PreviewWebInlay({ slug }: { slug: string }) {
   );
 }
 export function SkullPathPreviewInlay() { return <PreviewWebInlay slug="skull-path" />; }
+export function SkullHavenPreviewInlay() { return <PreviewWebInlay slug="skull-haven" />; }
 
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
@@ -488,6 +489,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   skull_path: SkullPathInlay,
   skull_haven: SkullHavenInlay,
   skull_path_preview: SkullPathPreviewInlay, // looped idle preview (lighter)
+  skull_haven_preview: SkullHavenPreviewInlay,
   messages: MessagesInlay, // recent threads, on the computer / mailslot
   bookshelf: BookshelfInlay, // the book covers lined up on the study shelf
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
@@ -508,6 +510,7 @@ export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "skull_path", label: "Game — Skull Path (live)" },
   { id: "skull_path_preview", label: "Game — Skull Path (loop preview)" },
   { id: "skull_haven", label: "Game — Skull Haven (live)" },
+  { id: "skull_haven_preview", label: "Game — Skull Haven (loop preview)" },
   { id: "community", label: "Community — video thumbnails" },
   { id: "community_board", label: "Community — written posts" },
   { id: "messages", label: "Messages — recent threads" },
