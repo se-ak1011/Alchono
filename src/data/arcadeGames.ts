@@ -10,6 +10,7 @@ import skullHaven from '../../assets/arcade-games/haven-builder.html';
 // (an editor inlay option), separate from the full playable games above.
 import skullPathPreview from '../../assets/arcade-games/skull-path-preview.html';
 import skullHavenPreview from '../../assets/arcade-games/skull-haven-preview.html';
+import skullGrovePreview from '../../assets/arcade-games/skull-grove-preview.html';
 
 export type ArcadeGame = { title: string; html: string };
 
@@ -17,6 +18,7 @@ export type ArcadeGame = { title: string; html: string };
 export const ARCADE_PREVIEWS: Record<string, string> = {
   'skull-path': skullPathPreview,
   'skull-haven': skullHavenPreview,
+  'skull-grove': skullGrovePreview,
 };
 
 export const ARCADE_GAMES: Record<string, ArcadeGame> = {

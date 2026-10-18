@@ -474,6 +474,7 @@ function PreviewWebInlay({ slug }: { slug: string }) {
 }
 export function SkullPathPreviewInlay() { return <PreviewWebInlay slug="skull-path" />; }
 export function SkullHavenPreviewInlay() { return <PreviewWebInlay slug="skull-haven" />; }
+export function SkullGrovePreviewInlay() { return <PreviewWebInlay slug="skull-grove" />; }
 
 export const INLAYS: Record<string, React.ComponentType> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
@@ -490,6 +491,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
   skull_haven: SkullHavenInlay,
   skull_path_preview: SkullPathPreviewInlay, // looped idle preview (lighter)
   skull_haven_preview: SkullHavenPreviewInlay,
+  skull_grove_preview: SkullGrovePreviewInlay,
   messages: MessagesInlay, // recent threads, on the computer / mailslot
   bookshelf: BookshelfInlay, // the book covers lined up on the study shelf
   moments: MomentsBoardInlay, // your photos, pinned to the Me-room corkboard
@@ -506,6 +508,7 @@ export const INLAYS: Record<string, React.ComponentType> = {
  *  The sibling-app crests are left out — they're not cabin objects. */
 export const INLAY_OPTIONS: { id: string; label: string }[] = [
   { id: "skull_grove", label: "Game — Skull Grove (live)" },
+  { id: "skull_grove_preview", label: "Game — Skull Grove (loop preview)" },
   { id: "growth_shield", label: "Game — Growth Shield (live)" },
   { id: "skull_path", label: "Game — Skull Path (live)" },
   { id: "skull_path_preview", label: "Game — Skull Path (loop preview)" },
