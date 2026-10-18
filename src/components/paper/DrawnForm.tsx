@@ -39,13 +39,14 @@ type Ctx = {
   register: (id: string, def: Rect) => void;
   selected: string | null;
   select: (id: string | null) => void;
+  setDragging: (b: boolean) => void;
   W: number;
   H: number;
 };
 const FormCtx = createContext<Ctx | null>(null);
 
 /** Positioned, draggable/resizable wrapper every zone sits in. */
-function Zone({ id, def, children }: { id: string; def: Rect; children: React.ReactNode }) {
+function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; children: React.ReactNode; pin?: 'tl' | 'center' }) {
   const ctx = useContext(FormCtx);
   if (!ctx) return <>{children}</>;
 
@@ -62,7 +63,7 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
       onStartShouldSetPanResponder: () => ctx.editingRef.current,
       onMoveShouldSetPanResponder: () => ctx.editingRef.current && !resizing.current,
       onMoveShouldSetPanResponderCapture: () => ctx.editingRef.current && !resizing.current,
-      onPanResponderGrant: () => { ctx.select(id); start.current = rectRef.current; },
+      onPanResponderGrant: () => { ctx.select(id); ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
         ctx.set(id, {
           ...rectRef.current,
@@ -70,6 +71,8 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
           y: clamp(start.current.y + g.dy / dim.current.H, 0, 0.97),
         });
       },
+      onPanResponderRelease: () => { ctx.setDragging(false); },
+      onPanResponderTerminate: () => { ctx.setDragging(false); },
     }),
   ).current;
 
@@ -80,16 +83,20 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: () => { resizing.current = true; start.current = rectRef.current; },
+      onPanResponderGrant: () => { resizing.current = true; ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
-        ctx.set(id, {
-          ...rectRef.current,
-          w: clamp(start.current.w + g.dx / dim.current.W, 0.04, 1),
-          h: clamp(start.current.h + g.dy / dim.current.H, 0.02, 0.7),
-        });
+        const nw = clamp(start.current.w + g.dx / dim.current.W, 0.04, 1);
+        const nh = clamp(start.current.h + g.dy / dim.current.H, 0.02, 0.7);
+        // Ticks resize from their centre so the (fixed-size, centred) mark stays
+        // put; everything else grows from its top-left as before.
+        if (pin === 'center') {
+          ctx.set(id, { ...rectRef.current, w: nw, h: nh, x: start.current.x - (nw - start.current.w) / 2, y: start.current.y - (nh - start.current.h) / 2 });
+        } else {
+          ctx.set(id, { ...rectRef.current, w: nw, h: nh });
+        }
       },
-      onPanResponderRelease: () => { resizing.current = false; },
-      onPanResponderTerminate: () => { resizing.current = false; },
+      onPanResponderRelease: () => { resizing.current = false; ctx.setDragging(false); },
+      onPanResponderTerminate: () => { resizing.current = false; ctx.setDragging(false); },
     }),
   ).current;
 
@@ -102,7 +109,7 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: () => { resizing.current = true; start.current = rectRef.current; },
+      onPanResponderGrant: () => { resizing.current = true; ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
         const cx = (rectRef.current.x + rectRef.current.w / 2) * dim.current.W;
         const cy = (rectRef.current.y + rectRef.current.h / 2) * dim.current.H;
@@ -110,8 +117,8 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
         deg = (((deg + 180) % 360) + 360) % 360 - 180;
         ctx.set(id, { ...rectRef.current, rot: Math.round(deg) });
       },
-      onPanResponderRelease: () => { resizing.current = false; },
-      onPanResponderTerminate: () => { resizing.current = false; },
+      onPanResponderRelease: () => { resizing.current = false; ctx.setDragging(false); },
+      onPanResponderTerminate: () => { resizing.current = false; ctx.setDragging(false); },
     }),
   ).current;
 
@@ -207,7 +214,7 @@ export function TickZone({
   const ctx = useContext(FormCtx);
   const editing = ctx?.editing ?? false;
   return (
-    <Zone id={id} def={rect}>
+    <Zone id={id} def={rect} pin="center">
       <Pressable
         onPress={() => {
           if (editing) { ctx?.select(id); return; }
@@ -216,11 +223,12 @@ export function TickZone({
         }}
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
       >
+        {/* Fixed-size, centred mark — stays small however big the tap box is. */}
         {value ? (
           mark === 'ring' ? (
-            <View pointerEvents="none" style={{ position: 'absolute', top: -2, left: -2, right: -2, bottom: -2, borderWidth: 2.5, borderColor: '#3a2f28', borderRadius: 999 }} />
+            <View pointerEvents="none" style={{ width: 26, height: 26, borderWidth: 2.5, borderColor: '#3a2f28', borderRadius: 999 }} />
           ) : (
-            <Feather name={mark === 'cross' ? 'x' : 'check'} size={22} color="#3a2f28" />
+            <Feather name={mark === 'cross' ? 'x' : 'check'} size={24} color="#3a2f28" />
           )
         ) : null}
       </Pressable>
@@ -302,6 +310,7 @@ export function DrawnForm({
   const [ids, setIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const get = (id: string) => map[id];
   const set = (id: string, r: Rect) => setMap((m) => ({ ...m, [id]: r }));
@@ -310,7 +319,7 @@ export function DrawnForm({
     setMap((m) => (id in m ? m : { ...m, [id]: def }));
   };
 
-  const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, W: width, H: height };
+  const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, setDragging, W: width, H: height };
 
   const exportText = ids.length
     ? ids.map((id) => { const r = get(id) ?? { x: 0, y: 0, w: 0, h: 0 }; return `  ${id}: x ${r.x.toFixed(3)}, y ${r.y.toFixed(3)}, w ${r.w.toFixed(3)}, h ${r.h.toFixed(3)}${r.rot ? `, rot ${Math.round(r.rot)}` : ''}`; }).join('\n')
@@ -338,7 +347,7 @@ export function DrawnForm({
         </Pressable>
 
         {editing ? (
-          <View style={{ position: 'absolute', left: 12, right: 12, bottom: 30, backgroundColor: 'rgba(20,17,28,0.97)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 12, gap: 10 }}>
+          <View pointerEvents={dragging ? 'none' : 'box-none'} style={{ position: 'absolute', left: 12, right: 12, bottom: 30, backgroundColor: 'rgba(20,17,28,0.82)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 12, gap: 10, opacity: dragging ? 0 : 1 }}>
             <Text style={{ color: '#ECE9F1', fontSize: 12.5 }}>
               {selected ? `"${selected}" selected — drag to move, corner to resize, top handle to rotate.` : 'Tap a zone to select, then drag / resize / rotate.'}
             </Text>
