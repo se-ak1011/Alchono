@@ -29,7 +29,7 @@ const INK_SOFT = 'rgba(51,42,36,0.5)';
 const EDIT_UI = 'rgba(164,137,222,0.98)';
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
-export type Rect = { x: number; y: number; w: number; h: number };
+export type Rect = { x: number; y: number; w: number; h: number; rot?: number };
 
 type Ctx = {
   editing: boolean;
@@ -93,12 +93,34 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
     }),
   ).current;
 
+  // Rotate: drag the top handle around the zone's centre to spin it (degrees),
+  // so text can sit angled on a handwritten surface — like the hub editor.
+  const rotate = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: () => { resizing.current = true; start.current = rectRef.current; },
+      onPanResponderMove: (_, g) => {
+        const cx = (rectRef.current.x + rectRef.current.w / 2) * dim.current.W;
+        const cy = (rectRef.current.y + rectRef.current.h / 2) * dim.current.H;
+        let deg = (Math.atan2(g.moveY - cy, g.moveX - cx) * 180) / Math.PI + 90;
+        deg = (((deg + 180) % 360) + 360) % 360 - 180;
+        ctx.set(id, { ...rectRef.current, rot: Math.round(deg) });
+      },
+      onPanResponderRelease: () => { resizing.current = false; },
+      onPanResponderTerminate: () => { resizing.current = false; },
+    }),
+  ).current;
+
   const sel = ctx.selected === id && ctx.editing;
 
   return (
     <View
       {...(ctx.editing ? move.panHandlers : {})}
-      style={{ position: 'absolute', left: rect.x * ctx.W, top: rect.y * ctx.H, width: rect.w * ctx.W, height: rect.h * ctx.H }}
+      style={{ position: 'absolute', left: rect.x * ctx.W, top: rect.y * ctx.H, width: rect.w * ctx.W, height: rect.h * ctx.H, transform: [{ rotate: `${rect.rot ?? 0}deg` }] }}
     >
       {/* In edit mode the content must not intercept touches, or the field's
           TextInput / tick Pressable steals the drag and only the pointer-none
@@ -110,9 +132,14 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
         <>
           <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderWidth: 1, borderColor: sel ? EDIT_UI : 'rgba(164,137,222,0.4)', borderStyle: 'dashed', backgroundColor: sel ? 'rgba(164,137,222,0.10)' : 'transparent' }} />
           {sel ? (
-            <View {...resize.panHandlers} style={{ position: 'absolute', right: -13, bottom: -13, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>
-              <Feather name="maximize-2" size={13} color="#141019" />
-            </View>
+            <>
+              <View {...resize.panHandlers} style={{ position: 'absolute', right: -13, bottom: -13, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>
+                <Feather name="maximize-2" size={13} color="#141019" />
+              </View>
+              <View {...rotate.panHandlers} style={{ position: 'absolute', top: -34, left: '50%', marginLeft: -15, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>
+                <Feather name="rotate-cw" size={13} color="#141019" />
+              </View>
+            </>
           ) : null}
         </>
       ) : null}
@@ -286,7 +313,7 @@ export function DrawnForm({
   const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, W: width, H: height };
 
   const exportText = ids.length
-    ? ids.map((id) => { const r = get(id) ?? { x: 0, y: 0, w: 0, h: 0 }; return `  ${id}: x ${r.x.toFixed(3)}, y ${r.y.toFixed(3)}, w ${r.w.toFixed(3)}, h ${r.h.toFixed(3)}`; }).join('\n')
+    ? ids.map((id) => { const r = get(id) ?? { x: 0, y: 0, w: 0, h: 0 }; return `  ${id}: x ${r.x.toFixed(3)}, y ${r.y.toFixed(3)}, w ${r.w.toFixed(3)}, h ${r.h.toFixed(3)}${r.rot ? `, rot ${Math.round(r.rot)}` : ''}`; }).join('\n')
     : '  (nothing placed yet)';
 
   return (
@@ -313,7 +340,7 @@ export function DrawnForm({
         {editing ? (
           <View style={{ position: 'absolute', left: 12, right: 12, bottom: 30, backgroundColor: 'rgba(20,17,28,0.97)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 12, gap: 10 }}>
             <Text style={{ color: '#ECE9F1', fontSize: 12.5 }}>
-              {selected ? `"${selected}" selected — drag to move, corner to resize.` : 'Tap a zone to select, then drag / resize.'}
+              {selected ? `"${selected}" selected — drag to move, corner to resize, top handle to rotate.` : 'Tap a zone to select, then drag / resize / rotate.'}
             </Text>
             <Pressable onPress={() => setShowExport((v) => !v)} style={{ borderRadius: 8, paddingVertical: 9, alignItems: 'center', backgroundColor: EDIT_UI }}>
               <Text style={{ color: '#141019', fontSize: 13, fontWeight: '700' }}>{showExport ? 'Hide' : 'Export coordinates'}</Text>
