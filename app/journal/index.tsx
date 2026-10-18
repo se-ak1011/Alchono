@@ -15,7 +15,11 @@ const desk = require('../../assets/folder/writing-desk.png');
 
 const R = {
   d_journal: { x: 0.08, y: 0.06, w: 0.84, h: 0.3 } as Rect, // the open journal on the desktop
-  d_letters: { x: 0.08, y: 0.52, w: 0.33, h: 0.2 } as Rect, // the 30/90/6mo/1yr index box
+  // the four envelopes in the index box = the letter's delivery time
+  d_env_30d: { x: 0.1, y: 0.52, w: 0.28, h: 0.045 } as Rect,
+  d_env_90d: { x: 0.1, y: 0.57, w: 0.28, h: 0.045 } as Rect,
+  d_env_6m: { x: 0.1, y: 0.62, w: 0.28, h: 0.045 } as Rect,
+  d_env_1y: { x: 0.1, y: 0.67, w: 0.28, h: 0.045 } as Rect,
   d_notes: { x: 0.42, y: 0.52, w: 0.3, h: 0.2 } as Rect, // the "My notes" wallet
   d_voice: { x: 0.74, y: 0.52, w: 0.2, h: 0.2 } as Rect, // the dictaphone
 } as const;
@@ -26,12 +30,20 @@ export default function WritingDeskScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push(r as never);
   };
+  // Pick a delivery time (envelope), then write the letter on the paper.
+  const goLetter = (choice: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push({ pathname: '/letters/write', params: { choice } } as never);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <DrawnForm source={desk} label="writing-desk" onBack={() => router.back()}>
         <LinkZone id="d_journal" rect={R.d_journal} onPress={() => go('/journal/write')} />
-        <LinkZone id="d_letters" rect={R.d_letters} onPress={() => go('/letters/write')} />
+        <LinkZone id="d_env_30d" rect={R.d_env_30d} onPress={() => goLetter('30d')} />
+        <LinkZone id="d_env_90d" rect={R.d_env_90d} onPress={() => goLetter('90d')} />
+        <LinkZone id="d_env_6m" rect={R.d_env_6m} onPress={() => goLetter('6m')} />
+        <LinkZone id="d_env_1y" rect={R.d_env_1y} onPress={() => goLetter('1y')} />
         <LinkZone id="d_notes" rect={R.d_notes} onPress={() => go('/journal/notes')} />
         <LinkZone id="d_voice" rect={R.d_voice} onPress={() => go('/journal/voice')} />
       </DrawnForm>

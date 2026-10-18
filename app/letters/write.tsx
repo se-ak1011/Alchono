@@ -12,12 +12,18 @@ import {
   PanResponder,
   useWindowDimensions,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
-import { useWriteLetter, type DeliveryChoice } from '@/hooks/useLetters';
+import { useWriteLetter, DELIVERY_OPTIONS, type DeliveryChoice } from '@/hooks/useLetters';
 
-// Ink colour for writing on the cream paper/envelopes.
+/**
+ * The letter paper — just the letter to your future self. The delivery time is
+ * now chosen on the writing desk (the envelopes in the index box) and arrives
+ * here as the `choice` param; this screen is only the writing + sealing. The
+ * paper area is positionable in the pencil editor (move / resize / text size),
+ * then exported + baked.
+ */
 const INK = '#3a2f28';
 const INK_SOFT = 'rgba(58,47,40,0.42)';
 const SELECT = '#5b3fa0';
@@ -25,112 +31,26 @@ const EDIT_UI = 'rgba(164,137,222,0.98)';
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
-type EnvPos = { x: number; y: number; rot: number };
-
-// The four envelopes on the desk = the delivery timing. x/y are the label's
-// top-left as a fraction of the screen; rot is degrees. Placed roughly — use the
-// in-app editor (pencil) to drag + rotate onto the drawn envelopes, then Export.
-const ENVELOPES: { key: DeliveryChoice; label: string; init: EnvPos }[] = [
-  { key: '30d', label: '30 days', init: { x: 0.047, y: 0.464, rot: -9 } },
-  { key: '90d', label: '90 days', init: { x: 0.303, y: 0.443, rot: -3 } },
-  { key: '6m', label: '6 months', init: { x: 0.553, y: 0.439, rot: 6 } },
-  { key: '1y', label: '1 year', init: { x: 0.814, y: 0.464, rot: 9 } },
-];
-
 type PaperZone = { left: number; top: number; width: number; height: number };
-const PAPER_INIT: PaperZone = { left: 0.233, top: 0.59, width: 0.72, height: 0.25 };
-
-/** One envelope label. Self-contained so its drag reads live props via refs. */
-function EnvelopeLabel({
-  label,
-  pos,
-  editing,
-  active,
-  selected,
-  width,
-  height,
-  onSelect,
-  onMove,
-  onTap,
-}: {
-  label: string;
-  pos: EnvPos;
-  editing: boolean;
-  active: boolean;
-  selected: boolean;
-  width: number;
-  height: number;
-  onSelect: () => void;
-  onMove: (p: EnvPos) => void;
-  onTap: () => void;
-}) {
-  const editingRef = useRef(editing); editingRef.current = editing;
-  const dimRef = useRef({ width, height }); dimRef.current = { width, height };
-  const posRef = useRef(pos); posRef.current = pos;
-  const start = useRef(pos);
-
-  const pan = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => editingRef.current,
-      onMoveShouldSetPanResponder: () => editingRef.current,
-      onMoveShouldSetPanResponderCapture: () => editingRef.current,
-      onPanResponderGrant: () => { onSelect(); start.current = posRef.current; },
-      onPanResponderMove: (_, g) => {
-        onMove({
-          rot: posRef.current.rot,
-          x: clamp(start.current.x + g.dx / dimRef.current.width, -0.1, 0.96),
-          y: clamp(start.current.y + g.dy / dimRef.current.height, 0.02, 0.96),
-        });
-      },
-    }),
-  ).current;
-
-  return (
-    <View
-      {...(editing ? pan.panHandlers : {})}
-      style={{
-        position: 'absolute',
-        left: pos.x * width,
-        top: pos.y * height,
-        transform: [{ rotate: `${pos.rot}deg` }],
-      }}
-    >
-      <Pressable
-        onPress={editing ? onSelect : onTap}
-        style={{ paddingHorizontal: 8, paddingVertical: 6 }}
-      >
-        <Text style={{ fontFamily: 'PatrickHand', fontSize: 14, color: active && !editing ? SELECT : INK }}>
-          {label}
-        </Text>
-      </Pressable>
-      {editing && selected ? (
-        <View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderWidth: 1.5, borderColor: EDIT_UI, borderStyle: 'dashed', borderRadius: 6 }} />
-      ) : null}
-      {active && !editing ? (
-        <View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderWidth: 2, borderColor: SELECT, borderRadius: 6 }} />
-      ) : null}
-    </View>
-  );
-}
+const PAPER_INIT: PaperZone = { left: 0.14, top: 0.22, width: 0.72, height: 0.52 };
 
 export default function WriteLetterScreen() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
+  const { choice: choiceParam } = useLocalSearchParams<{ choice?: string }>();
+  const choice = (DELIVERY_OPTIONS.find((o) => o.key === choiceParam)?.key ?? null) as DeliveryChoice | null;
+  const choiceLabel = DELIVERY_OPTIONS.find((o) => o.key === choice)?.label;
+
   const [body, setBody] = useState('');
-  const [choice, setChoice] = useState<DeliveryChoice | null>(null);
   const { mutate: write, isPending } = useWriteLetter();
 
-  // ----- editor state -----
+  // ----- paper editor state -----
   const [editing, setEditing] = useState(false);
-  const [envs, setEnvs] = useState<Record<string, EnvPos>>(
-    () => Object.fromEntries(ENVELOPES.map((e) => [e.key, e.init])),
-  );
   const [paper, setPaper] = useState<PaperZone>(PAPER_INIT);
   const [fontScale, setFontScale] = useState(1);
-  const [selected, setSelected] = useState<string | 'paper' | null>(null);
+  const [selected, setSelected] = useState<'paper' | null>(null);
   const [showExport, setShowExport] = useState(false);
 
-  // refs for the paper move/resize PanResponders (created once).
   const editingRef = useRef(editing); editingRef.current = editing;
   const dimRef = useRef({ width, height }); dimRef.current = { width, height };
   const paperRef = useRef(paper); paperRef.current = paper;
@@ -173,12 +93,6 @@ export default function WriteLetterScreen() {
     }),
   ).current;
 
-  const rotateSelected = (delta: number) => {
-    if (!selected || selected === 'paper') return;
-    Haptics.selectionAsync();
-    setEnvs((prev) => ({ ...prev, [selected]: { ...prev[selected], rot: +(prev[selected].rot + delta).toFixed(1) } }));
-  };
-
   const canSend = body.trim().length > 0 && !!choice && !isPending && !editing;
 
   const handleSend = () => {
@@ -196,33 +110,12 @@ export default function WriteLetterScreen() {
     );
   };
 
-  const exportText = [
-    'ENVELOPES:',
-    ...ENVELOPES.map((e) => `  ${e.key}: x ${envs[e.key].x.toFixed(3)}, y ${envs[e.key].y.toFixed(3)}, rot ${envs[e.key].rot}`),
-    `PAPER: left ${paper.left.toFixed(3)}, top ${paper.top.toFixed(3)}, w ${paper.width.toFixed(3)}, h ${paper.height.toFixed(3)}, font ${fontScale.toFixed(2)}`,
-  ].join('\n');
+  const exportText = `PAPER: left ${paper.left.toFixed(3)}, top ${paper.top.toFixed(3)}, w ${paper.width.toFixed(3)}, h ${paper.height.toFixed(3)}, font ${fontScale.toFixed(2)}`;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'position' : undefined} style={{ flex: 1 }}>
         <ImageBackground source={require('../../assets/folder/writing-letter.png')} style={{ width, height }} resizeMode="cover">
-          {/* Envelopes = when it's delivered (drag + rotate in edit mode). */}
-          {ENVELOPES.map((e) => (
-            <EnvelopeLabel
-              key={e.key}
-              label={e.label}
-              pos={envs[e.key]}
-              editing={editing}
-              active={choice === e.key}
-              selected={selected === e.key}
-              width={width}
-              height={height}
-              onSelect={() => setSelected(e.key)}
-              onMove={(p) => setEnvs((prev) => ({ ...prev, [e.key]: p }))}
-              onTap={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setChoice(e.key); }}
-            />
-          ))}
-
           {/* The paper = the letter body. */}
           <TextInput
             value={body}
@@ -285,37 +178,19 @@ export default function WriteLetterScreen() {
         </Pressable>
       ) : null}
 
-      {/* Quiet hint until they've picked a time (view mode only). */}
-      {!choice && !editing ? (
-        <View pointerEvents="none" style={{ position: 'absolute', top: height * 0.53, left: 0, right: 0, alignItems: 'center' }}>
-          <Text style={{ color: 'rgba(236,233,241,0.6)', fontFamily: 'PatrickHand', fontSize: 13 }}>
-            pick an envelope for when it arrives
+      {/* Which future it's bound for (from the desk). */}
+      {!editing ? (
+        <View pointerEvents="none" style={{ position: 'absolute', top: 60, left: 0, right: 0, alignItems: 'center' }}>
+          <Text style={{ color: 'rgba(236,233,241,0.65)', fontFamily: 'PatrickHand', fontSize: 13 }}>
+            {choiceLabel ? `arrives in ${choiceLabel}` : 'pick a time on the desk first'}
           </Text>
         </View>
       ) : null}
 
-      {/* Editor controls — rotate the selected envelope, resize hint, export. */}
+      {/* Editor controls — paper move/resize/text-size + export. */}
       {editing ? (
         <View style={{ position: 'absolute', left: 12, right: 12, bottom: 30, backgroundColor: 'rgba(20,17,28,0.97)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 12, gap: 10 }}>
-          <Text style={{ color: '#ECE9F1', fontSize: 12.5 }}>
-            {selected === 'paper'
-              ? 'Paper selected — drag to move, corner to resize.'
-              : selected
-                ? `${ENVELOPES.find((e) => e.key === selected)?.label} selected — drag to move, rotate below.`
-                : 'Tap an envelope or the paper to select. Drag to place.'}
-          </Text>
-
-          {/* Rotate — envelope only. */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: selected && selected !== 'paper' ? 1 : 0.35 }}>
-            <Text style={{ color: '#ECE9F1', fontSize: 13, fontWeight: '600' }}>Rotate</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {[-15, -3, 3, 15].map((d) => (
-                <Pressable key={d} onPress={() => rotateSelected(d)} hitSlop={6} style={{ paddingHorizontal: 10, height: 34, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' }}>
-                  <Text style={{ color: '#ECE9F1', fontSize: 13 }}>{d > 0 ? `+${d}` : d}°</Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
+          <Text style={{ color: '#ECE9F1', fontSize: 12.5 }}>Drag the paper to move, corner to resize.</Text>
 
           {/* Text size — paper. */}
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
