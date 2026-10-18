@@ -291,6 +291,13 @@ export function ValueZone({
   );
 }
 
+/** A positionable/resizable region for arbitrary content — a list, a recorder,
+ *  anything that isn't a single field/tick/value. Draggable in the pencil
+ *  editor like the other zones; its content scrolls/taps normally in use. */
+export function AreaZone({ id, rect, children }: { id: string; rect: Rect; children: React.ReactNode }) {
+  return <Zone id={id} def={rect}>{children}</Zone>;
+}
+
 /** The drawn paper + the zone overlay + the placement editor. */
 export function DrawnForm({
   source,

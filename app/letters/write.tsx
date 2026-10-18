@@ -205,7 +205,7 @@ export default function WriteLetterScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'position' : undefined} style={{ flex: 1 }}>
-        <ImageBackground source={require('../../assets/scenes/letters_desk.png')} style={{ width, height }} resizeMode="cover">
+        <ImageBackground source={require('../../assets/folder/writing-letter.png')} style={{ width, height }} resizeMode="cover">
           {/* Envelopes = when it's delivered (drag + rotate in edit mode). */}
           {ENVELOPES.map((e) => (
             <EnvelopeLabel
