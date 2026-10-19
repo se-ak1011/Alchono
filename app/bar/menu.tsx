@@ -17,7 +17,7 @@ export default function BarMenu() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fbfbfa' }}>
-      <ImageBackground source={mocktails} style={{ width, height }} resizeMode="contain" />
+      <ImageBackground source={mocktails} style={{ width, height }} resizeMode="cover" />
       <Pressable
         onPress={() => router.back()}
         hitSlop={12}
