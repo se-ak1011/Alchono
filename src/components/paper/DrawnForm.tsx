@@ -304,13 +304,18 @@ export function DrawnForm({
   label,
   onBack,
   children,
+  tint = 'dark',
 }: {
   source: ImageSourcePropType;
   label: string;
   onBack?: () => void;
   children: React.ReactNode;
+  tint?: 'dark' | 'light';
 }) {
   const { width, height } = useWindowDimensions();
+  // Chrome (back / pencil) colours: dark on light paper, light on dark/velvet.
+  const CHROME = tint === 'light' ? '#ECE6D6' : '#3a2f28';
+  const CHROME_BG = tint === 'light' ? 'rgba(236,230,214,0.14)' : 'rgba(13,11,18,0.4)';
   const [editing, setEditing] = useState(false);
   const editingRef = useRef(editing); editingRef.current = editing;
   const [map, setMap] = useState<Record<string, Rect>>({});
@@ -340,17 +345,17 @@ export function DrawnForm({
         </ImageBackground>
 
         {onBack ? (
-          <Pressable onPress={onBack} hitSlop={12} style={{ position: 'absolute', top: 52, left: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(13,11,18,0.4)', borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}>
-            <Feather name="chevron-left" size={24} color="#3a2f28" />
+          <Pressable onPress={onBack} hitSlop={12} style={{ position: 'absolute', top: 52, left: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: CHROME_BG, borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}>
+            <Feather name="chevron-left" size={24} color={CHROME} />
           </Pressable>
         ) : null}
 
         <Pressable
           onPress={() => { setEditing((v) => !v); setSelected(null); setShowExport(false); }}
           hitSlop={10}
-          style={{ position: 'absolute', top: 52, right: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: editing ? EDIT_UI : 'rgba(13,11,18,0.4)', borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}
+          style={{ position: 'absolute', top: 52, right: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: editing ? EDIT_UI : CHROME_BG, borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}
         >
-          <Feather name={editing ? 'check' : 'edit-2'} size={19} color={editing ? '#141019' : '#3a2f28'} />
+          <Feather name={editing ? 'check' : 'edit-2'} size={19} color={editing ? '#141019' : CHROME} />
         </Pressable>
 
         {editing ? (
