@@ -69,7 +69,7 @@ function paginate(sections: ToolSection[], titleWeight: number): [ToolSection[],
 }
 
 export default function BookReaderScreen() {
-  const { cat } = useLocalSearchParams<{ cat: string }>();
+  const { cat, start } = useLocalSearchParams<{ cat: string; start?: string }>();
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const category = cat as ToolkitCategory;
@@ -77,7 +77,8 @@ export default function BookReaderScreen() {
   const meta = CATEGORY_META[category];
   const articles = TOOLKIT.filter((t) => t.category === category);
 
-  const [phase, setPhase] = useState<"cover" | "contents" | "article">("cover");
+  // From the carousel the cover was already shown, so open straight to contents.
+  const [phase, setPhase] = useState<"cover" | "contents" | "article">(start === "contents" ? "contents" : "cover");
   const [idx, setIdx] = useState(0);
 
   // No drawn book yet for this category — behave exactly as the old shelf did.

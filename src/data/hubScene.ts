@@ -568,7 +568,7 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     right: "loft_bedroom", back: "loft_bedroom",
     hotspots: [
-      { id: "lr_read", caption: "Reading", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.300, y: 0.350, w: 0.220, h: 0.140, action: { kind: "route", route: "/reading" } },
+      { id: "lr_read", caption: "Reading", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.300, y: 0.350, w: 0.220, h: 0.140, action: { kind: "route", route: "/reading/table" } },
       { id: "lr_write", caption: "Write", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.550, y: 0.500, w: 0.220, h: 0.120, action: { kind: "route", route: "/journal/write" } },
       { id: "lr_notes", caption: "Your notes", kind: "glow", tint: "purple", interaction: "object", haptic: "light", x: 0.300, y: 0.560, w: 0.180, h: 0.100, action: { kind: "route", route: "/journal/notes" } },
       { id: "lr_keys", caption: "Need a minute?", kind: "glow", tint: "purple", interaction: "destination", haptic: "heavy", x: 0.100, y: 0.280, w: 0.140, h: 0.120, action: { kind: "forest", mode: "jump" } },

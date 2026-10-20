@@ -15,8 +15,7 @@ export type ToolkitCategory =
   | 'identity'
   | 'stress'
   | 'sleep'
-  | 'after-a-slip'
-  | 'motivation';
+  | 'after-a-slip';
 
 export const CATEGORY_META: Record<
   ToolkitCategory,
@@ -31,7 +30,6 @@ export const CATEGORY_META: Record<
   stress: { label: 'Stress', blurb: 'When the day is a lot.' },
   sleep: { label: 'Sleep', blurb: 'Rest, without the nightcap.' },
   'after-a-slip': { label: 'After a slip', blurb: 'Get back up, no shame.' },
-  motivation: { label: 'Motivation', blurb: 'Why you started.' },
 };
 
 // Order the category grid is shown in.
@@ -45,7 +43,6 @@ export const CATEGORY_ORDER: ToolkitCategory[] = [
   'relationships',
   'identity',
   'after-a-slip',
-  'motivation',
 ];
 
 /** A skimmable, phone-first content block. */
@@ -422,42 +419,6 @@ export const TOOLKIT: ToolkitTool[] = [
     action: { label: 'Talk it through', route: '/support/coach' },
   },
 
-  // ── Motivation ──────────────────────────────────────────────────────────
-  {
-    id: 'decisional-balance',
-    category: 'motivation',
-    title: 'What it gives you, what it costs',
-    teaser: 'Both are real. Look at them honestly, no lecture.',
-    minutes: 3,
-    sections: [
-      {
-        type: 'paragraph',
-        text: 'Nobody drinks for no reason. Alcohol does something for you — that’s not a moral failing, it’s the whole point. Change gets easier when you’re honest about both sides instead of pretending the good side doesn’t exist.',
-      },
-      { type: 'heading', text: 'What drinking gives you' },
-      {
-        type: 'list',
-        items: [
-          'Takes the edge off fast.',
-          'Feels like a reward, or a full stop on the day.',
-          'Makes rooms and people easier.',
-        ],
-      },
-      { type: 'heading', text: 'What it quietly costs' },
-      {
-        type: 'list',
-        items: [
-          'The 3am wake-up and the flat next day.',
-          'Money, and time you don’t get back.',
-          'The version of you your people miss.',
-        ],
-      },
-      {
-        type: 'callout',
-        text: 'You’re not weak for wanting the good bits. Noticing the costs — without beating yourself up — is how the balance slowly tips.',
-      },
-    ],
-  },
 ];
 
 export function toolById(id: string): ToolkitTool | undefined {

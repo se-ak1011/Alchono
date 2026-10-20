@@ -2,15 +2,12 @@ import type { ImageSourcePropType } from "react-native";
 import type { ToolkitCategory } from "@/lib/toolkit";
 
 /**
- * Hand-drawn book art per toolkit category — a closed cover and an open spread.
- * Added in pairs as Marta draws them. A category with no entry here falls back
- * to the plain toolkit list (the reader redirects), so half-drawn shelves still
- * work: every book opens something, the drawn ones just open the real book.
- *
- * Each open spread is a DIFFERENT drawing, so the page area sits in a slightly
- * different spot per book. `page`/`fontScale` let each book carry its own text
- * zone (fractions of the screen + font multiplier); left off, the reader's shared
- * default is used. Bake per book from the in-app editor Export.
+ * Magazine art per toolkit category — a cover (shown in the reading-corner
+ * carousel) and an open spread (the article pages). The article text renders on
+ * the open spread via the reader's tunable page zone; `page`/`fontScale` carry
+ * each magazine's text zone (fractions of the screen + font multiplier), tuned
+ * in-app with the pencil editor and Exported. Left off, the reader's shared
+ * default is used.
  */
 export type BookZone = { left: number; top: number; width: number; height: number };
 export type BookArt = {
@@ -20,59 +17,63 @@ export type BookArt = {
   fontScale?: number;
 };
 
+// Shared starting text zone over the open magazine spread — tune per magazine
+// in the editor, then paste the Exported values in here.
+const PAGE: BookZone = { left: 0.08, top: 0.35, width: 0.84, height: 0.3 };
+
 export const BOOKS: Partial<Record<ToolkitCategory, BookArt>> = {
   "in-the-moment": {
-    cover: require("../../assets/books/in-the-moment-cover.png"),
-    open: require("../../assets/books/in-the-moment-open.png"),
-    page: { left: 0.097, top: 0.395, width: 0.834, height: 0.222 },
-    fontScale: 0.8,
+    cover: require("../../assets/reading/cover-in-the-moment.png"),
+    open: require("../../assets/reading/open-in-the-moment.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   understand: {
-    cover: require("../../assets/books/understand-cover.png"),
-    open: require("../../assets/books/understand-open.png"),
-    page: { left: 0.132, top: 0.37, width: 0.76, height: 0.205 },
+    cover: require("../../assets/reading/cover-understand.png"),
+    open: require("../../assets/reading/open-understand.png"),
+    page: PAGE,
     fontScale: 0.7,
   },
   triggers: {
-    cover: require("../../assets/books/triggers-cover.png"),
-    open: require("../../assets/books/triggers-open.png"),
-    page: { left: 0.126, top: 0.375, width: 0.76, height: 0.241 },
-    fontScale: 0.6,
+    cover: require("../../assets/reading/cover-triggers.png"),
+    open: require("../../assets/reading/open-triggers.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   "planning-ahead": {
-    cover: require("../../assets/books/planning-ahead-cover.png"),
-    open: require("../../assets/books/planning-ahead-open.png"),
-    page: { left: 0.146, top: 0.385, width: 0.726, height: 0.240 },
-    fontScale: 0.6,
+    cover: require("../../assets/reading/cover-planning-ahead.png"),
+    open: require("../../assets/reading/open-planning-ahead.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   stress: {
-    cover: require("../../assets/books/stress-cover.png"),
-    open: require("../../assets/books/stress-open.png"),
-    page: { left: 0.126, top: 0.380, width: 0.761, height: 0.258 },
-    fontScale: 0.6,
+    cover: require("../../assets/reading/cover-stress.png"),
+    open: require("../../assets/reading/open-stress.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   sleep: {
-    cover: require("../../assets/books/sleep-cover.png"),
-    open: require("../../assets/books/sleep-open.png"),
-    page: { left: 0.134, top: 0.366, width: 0.734, height: 0.246 },
-    fontScale: 0.6,
+    cover: require("../../assets/reading/cover-sleep.png"),
+    open: require("../../assets/reading/open-sleep.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   relationships: {
-    cover: require("../../assets/books/relationships-cover.png"),
-    open: require("../../assets/books/relationships-open.png"),
-    page: { left: 0.125, top: 0.369, width: 0.763, height: 0.223 },
-    fontScale: 0.65,
+    cover: require("../../assets/reading/cover-relationships.png"),
+    open: require("../../assets/reading/open-relationships.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   identity: {
-    cover: require("../../assets/books/identity-cover.png"),
-    open: require("../../assets/books/identity-open.png"),
-    page: { left: 0.106, top: 0.351, width: 0.785, height: 0.274 },
-    fontScale: 0.65,
+    cover: require("../../assets/reading/cover-identity.png"),
+    open: require("../../assets/reading/open-identity.png"),
+    page: PAGE,
+    fontScale: 0.7,
   },
   "after-a-slip": {
-    cover: require("../../assets/books/after-a-slip-cover.png"),
-    open: require("../../assets/books/after-a-slip-open.png"),
-    page: { left: 0.08, top: 0.341, width: 0.847, height: 0.238 },
+    cover: require("../../assets/reading/cover-after-a-slip.png"),
+    open: require("../../assets/reading/open-after-a-slip.png"),
+    page: PAGE,
     fontScale: 0.7,
   },
 };
