@@ -4,6 +4,7 @@ import {
   Text,
   Pressable,
   TextInput,
+  Image,
   ImageBackground,
   PanResponder,
   useWindowDimensions,
@@ -40,8 +41,12 @@ type Ctx = {
   selected: string | null;
   select: (id: string | null) => void;
   setDragging: (b: boolean) => void;
-  W: number;
-  H: number;
+  // Displayed-image geometry (cover transform) so zones anchor to the ART, not
+  // the screen — one baked set of coords then works on any phone size/shape.
+  offX: number;
+  offY: number;
+  dispW: number;
+  dispH: number;
 };
 const FormCtx = createContext<Ctx | null>(null);
 
@@ -54,7 +59,8 @@ function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; childr
   const rectRef = useRef(rect); rectRef.current = rect;
   const start = useRef(rect);
   const resizing = useRef(false);
-  const dim = useRef({ W: ctx.W, H: ctx.H }); dim.current = { W: ctx.W, H: ctx.H };
+  const dim = useRef({ dispW: ctx.dispW, dispH: ctx.dispH, offX: ctx.offX, offY: ctx.offY });
+  dim.current = { dispW: ctx.dispW, dispH: ctx.dispH, offX: ctx.offX, offY: ctx.offY };
 
   useEffect(() => { ctx.register(id, def); }, [id]);
 
@@ -67,8 +73,8 @@ function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; childr
       onPanResponderMove: (_, g) => {
         ctx.set(id, {
           ...rectRef.current,
-          x: clamp(start.current.x + g.dx / dim.current.W, -0.1, 0.96),
-          y: clamp(start.current.y + g.dy / dim.current.H, 0, 0.97),
+          x: clamp(start.current.x + g.dx / dim.current.dispW, -0.1, 0.96),
+          y: clamp(start.current.y + g.dy / dim.current.dispH, 0, 0.97),
         });
       },
       onPanResponderRelease: () => { ctx.setDragging(false); },
@@ -85,8 +91,8 @@ function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; childr
       onPanResponderTerminationRequest: () => false,
       onPanResponderGrant: () => { resizing.current = true; ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
-        const nw = clamp(start.current.w + g.dx / dim.current.W, 0.04, 1);
-        const nh = clamp(start.current.h + g.dy / dim.current.H, 0.02, 0.7);
+        const nw = clamp(start.current.w + g.dx / dim.current.dispW, 0.04, 1);
+        const nh = clamp(start.current.h + g.dy / dim.current.dispH, 0.02, 0.7);
         // Ticks resize from their centre so the (fixed-size, centred) mark stays
         // put; everything else grows from its top-left as before.
         if (pin === 'center') {
@@ -111,8 +117,8 @@ function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; childr
       onPanResponderTerminationRequest: () => false,
       onPanResponderGrant: () => { resizing.current = true; ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
-        const cx = (rectRef.current.x + rectRef.current.w / 2) * dim.current.W;
-        const cy = (rectRef.current.y + rectRef.current.h / 2) * dim.current.H;
+        const cx = dim.current.offX + (rectRef.current.x + rectRef.current.w / 2) * dim.current.dispW;
+        const cy = dim.current.offY + (rectRef.current.y + rectRef.current.h / 2) * dim.current.dispH;
         let deg = (Math.atan2(g.moveY - cy, g.moveX - cx) * 180) / Math.PI + 90;
         deg = (((deg + 180) % 360) + 360) % 360 - 180;
         ctx.set(id, { ...rectRef.current, rot: Math.round(deg) });
@@ -127,7 +133,7 @@ function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; childr
   return (
     <View
       {...(ctx.editing ? move.panHandlers : {})}
-      style={{ position: 'absolute', left: rect.x * ctx.W, top: rect.y * ctx.H, width: rect.w * ctx.W, height: rect.h * ctx.H, transform: [{ rotate: `${rect.rot ?? 0}deg` }] }}
+      style={{ position: 'absolute', left: ctx.offX + rect.x * ctx.dispW, top: ctx.offY + rect.y * ctx.dispH, width: rect.w * ctx.dispW, height: rect.h * ctx.dispH, transform: [{ rotate: `${rect.rot ?? 0}deg` }] }}
     >
       {/* In edit mode the content must not intercept touches, or the field's
           TextInput / tick Pressable steals the drag and only the pointer-none
@@ -313,6 +319,16 @@ export function DrawnForm({
   tint?: 'dark' | 'light';
 }) {
   const { width, height } = useWindowDimensions();
+  // Cover-fit geometry: scale the art to fill the screen (centred), so zones are
+  // placed relative to the DRAWING and land correctly on any phone size/shape.
+  const _src = Image.resolveAssetSource(source);
+  const imgW = _src?.width || width;
+  const imgH = _src?.height || height;
+  const _scale = Math.max(width / imgW, height / imgH);
+  const dispW = imgW * _scale;
+  const dispH = imgH * _scale;
+  const offX = (width - dispW) / 2;
+  const offY = (height - dispH) / 2;
   // Chrome (back / pencil) colours: dark on light paper, light on dark/velvet.
   const CHROME = tint === 'light' ? '#ECE6D6' : '#3a2f28';
   const CHROME_BG = tint === 'light' ? 'rgba(236,230,214,0.14)' : 'rgba(13,11,18,0.4)';
@@ -331,7 +347,7 @@ export function DrawnForm({
     setMap((m) => (id in m ? m : { ...m, [id]: def }));
   };
 
-  const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, setDragging, W: width, H: height };
+  const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, setDragging, offX, offY, dispW, dispH };
 
   const exportText = ids.length
     ? ids.map((id) => { const r = get(id) ?? { x: 0, y: 0, w: 0, h: 0 }; return `  ${id}: x ${r.x.toFixed(3)}, y ${r.y.toFixed(3)}, w ${r.w.toFixed(3)}, h ${r.h.toFixed(3)}${r.rot ? `, rot ${Math.round(r.rot)}` : ''}`; }).join('\n')
