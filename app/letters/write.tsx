@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   Pressable,
+  Image,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
@@ -33,10 +34,20 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 
 type PaperZone = { left: number; top: number; width: number; height: number };
 const PAPER_INIT: PaperZone = { left: 0.14, top: 0.22, width: 0.72, height: 0.52 };
+const LETTER = require('../../assets/folder/writing-letter.png');
 
 export default function WriteLetterScreen() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
+  // Cover-fit geometry so the paper zone anchors to the drawing, not the screen.
+  const _src = Image.resolveAssetSource(LETTER);
+  const imgW = _src?.width || width;
+  const imgH = _src?.height || height;
+  const _scale = Math.max(width / imgW, height / imgH);
+  const dispW = imgW * _scale;
+  const dispH = imgH * _scale;
+  const offX = (width - dispW) / 2;
+  const offY = (height - dispH) / 2;
   const { choice: choiceParam } = useLocalSearchParams<{ choice?: string }>();
   const choice = (DELIVERY_OPTIONS.find((o) => o.key === choiceParam)?.key ?? null) as DeliveryChoice | null;
   const choiceLabel = DELIVERY_OPTIONS.find((o) => o.key === choice)?.label;
@@ -52,7 +63,7 @@ export default function WriteLetterScreen() {
   const [showExport, setShowExport] = useState(false);
 
   const editingRef = useRef(editing); editingRef.current = editing;
-  const dimRef = useRef({ width, height }); dimRef.current = { width, height };
+  const dimRef = useRef({ dispW, dispH }); dimRef.current = { dispW, dispH };
   const paperRef = useRef(paper); paperRef.current = paper;
   const paperStart = useRef(paper);
   const resizingRef = useRef(false);
@@ -66,8 +77,8 @@ export default function WriteLetterScreen() {
       onPanResponderMove: (_, g) => {
         setPaper({
           ...paperRef.current,
-          left: clamp(paperStart.current.left + g.dx / dimRef.current.width, -0.1, 0.9),
-          top: clamp(paperStart.current.top + g.dy / dimRef.current.height, 0.04, 0.92),
+          left: clamp(paperStart.current.left + g.dx / dimRef.current.dispW, -0.1, 0.9),
+          top: clamp(paperStart.current.top + g.dy / dimRef.current.dispH, 0.04, 0.92),
         });
       },
     }),
@@ -84,8 +95,8 @@ export default function WriteLetterScreen() {
       onPanResponderMove: (_, g) => {
         setPaper({
           ...paperRef.current,
-          width: clamp(paperStart.current.width + g.dx / dimRef.current.width, 0.15, 1),
-          height: clamp(paperStart.current.height + g.dy / dimRef.current.height, 0.08, 0.9),
+          width: clamp(paperStart.current.width + g.dx / dimRef.current.dispW, 0.15, 1),
+          height: clamp(paperStart.current.height + g.dy / dimRef.current.dispH, 0.08, 0.9),
         });
       },
       onPanResponderRelease: () => { resizingRef.current = false; },
@@ -115,7 +126,7 @@ export default function WriteLetterScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'position' : undefined} style={{ flex: 1 }}>
-        <ImageBackground source={require('../../assets/folder/writing-letter.png')} style={{ width, height }} resizeMode="cover">
+        <ImageBackground source={LETTER} style={{ width, height }} resizeMode="cover">
           {/* The paper = the letter body. */}
           <TextInput
             value={body}
@@ -127,14 +138,14 @@ export default function WriteLetterScreen() {
             maxLength={4000}
             selectionColor={SELECT}
             textAlignVertical="top"
-            style={{ position: 'absolute', left: paper.left * width, top: paper.top * height, width: paper.width * width, height: paper.height * height, color: INK, fontFamily: 'PatrickHand', fontSize: 18 * fontScale, lineHeight: 24 * fontScale }}
+            style={{ position: 'absolute', left: offX + paper.left * dispW, top: offY + paper.top * dispH, width: paper.width * dispW, height: paper.height * dispH, color: INK, fontFamily: 'PatrickHand', fontSize: 18 * fontScale, lineHeight: 24 * fontScale }}
           />
 
           {/* Paper drag/resize overlay — only in edit mode. */}
           {editing ? (
             <View
               {...paperMove.panHandlers}
-              style={{ position: 'absolute', left: paper.left * width, top: paper.top * height, width: paper.width * width, height: paper.height * height }}
+              style={{ position: 'absolute', left: offX + paper.left * dispW, top: offY + paper.top * dispH, width: paper.width * dispW, height: paper.height * dispH }}
             >
               <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderWidth: 1, borderColor: EDIT_UI, borderStyle: 'dashed', backgroundColor: selected === 'paper' ? 'rgba(164,137,222,0.10)' : 'transparent' }} />
               <View {...paperResize.panHandlers} style={{ position: 'absolute', right: -14, bottom: -14, width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>

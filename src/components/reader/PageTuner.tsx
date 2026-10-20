@@ -20,12 +20,18 @@ export function PageTuner({
   defaultRotate = 0,
   contentKey,
   scroll = true,
+  imgW,
+  imgH,
   children,
 }: {
   label: string;
   defaultZone: PageZone;
   defaultFontScale?: number;
   defaultRotate?: number;
+  /** The spread art's real pixel size — lets the zone anchor to the DRAWING
+   *  (cover-fit), so one baked zone works on any phone size/shape. */
+  imgW?: number;
+  imgH?: number;
   /** Changing this re-mounts the scroll content (e.g. new article/tab). */
   contentKey?: string;
   /** false = the children manage their own layout/scroll (e.g. two page columns);
@@ -34,6 +40,12 @@ export function PageTuner({
   children: (fontScale: number) => React.ReactNode;
 }) {
   const { width, height } = useWindowDimensions();
+  // Cover-fit geometry so the text zone anchors to the spread art, not the screen.
+  const _scale = imgW && imgH ? Math.max(width / imgW, height / imgH) : 1;
+  const dispW = imgW && imgH ? imgW * _scale : width;
+  const dispH = imgW && imgH ? imgH * _scale : height;
+  const offX = (width - dispW) / 2;
+  const offY = (height - dispH) / 2;
   const [editing, setEditing] = useState(false);
   const [zone, setZone] = useState<PageZone>(defaultZone);
   const [fontScale, setFontScale] = useState(defaultFontScale);
@@ -43,7 +55,7 @@ export function PageTuner({
   // Refs mirror state so the PanResponders (created once) read live values.
   const zoneRef = useRef(zone); zoneRef.current = zone;
   const editingRef = useRef(editing); editingRef.current = editing;
-  const dim = useRef({ width, height }); dim.current = { width, height };
+  const dim = useRef({ dispW, dispH }); dim.current = { dispW, dispH };
   const startZone = useRef<PageZone>(zone);
   // True while the corner handle is being dragged, so the box's move responder
   // stops capturing and lets the resize gesture through.
@@ -59,8 +71,8 @@ export function PageTuner({
       onPanResponderMove: (_, g) => {
         setZone({
           ...zoneRef.current,
-          left: clamp(startZone.current.left + g.dx / dim.current.width, -0.2, 0.9),
-          top: clamp(startZone.current.top + g.dy / dim.current.height, 0.04, 0.92),
+          left: clamp(startZone.current.left + g.dx / dim.current.dispW, -0.2, 0.9),
+          top: clamp(startZone.current.top + g.dy / dim.current.dispH, 0.04, 0.92),
         });
       },
     }),
@@ -79,8 +91,8 @@ export function PageTuner({
       onPanResponderMove: (_, g) => {
         setZone({
           ...zoneRef.current,
-          width: clamp(startZone.current.width + g.dx / dim.current.width, 0.15, 1),
-          height: clamp(startZone.current.height + g.dy / dim.current.height, 0.08, 0.9),
+          width: clamp(startZone.current.width + g.dx / dim.current.dispW, 0.15, 1),
+          height: clamp(startZone.current.height + g.dy / dim.current.dispH, 0.08, 0.9),
         });
       },
       onPanResponderRelease: () => { resizingRef.current = false; },
@@ -90,10 +102,10 @@ export function PageTuner({
 
   const box = {
     position: "absolute" as const,
-    left: zone.left * width,
-    top: zone.top * height,
-    width: zone.width * width,
-    height: zone.height * height,
+    left: offX + zone.left * dispW,
+    top: offY + zone.top * dispH,
+    width: zone.width * dispW,
+    height: zone.height * dispH,
     transform: [{ rotate: `${rot}deg` }],
   };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ScrollView, ImageBackground, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, ScrollView, Image, ImageBackground, useWindowDimensions } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
@@ -123,6 +123,8 @@ export default function BookReaderScreen() {
               label={`reading (${category})`}
               defaultZone={art.page ?? PAGE}
               defaultFontScale={art.fontScale ?? 0.8}
+              imgW={Image.resolveAssetSource(art.open)?.width}
+              imgH={Image.resolveAssetSource(art.open)?.height}
               contentKey={`${phase}-${idx}`}
               scroll={phase === "contents"}
             >
