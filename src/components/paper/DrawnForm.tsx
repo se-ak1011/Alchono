@@ -29,7 +29,7 @@ const INK_SOFT = 'rgba(51,42,36,0.5)';
 const EDIT_UI = 'rgba(164,137,222,0.98)';
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
-export type Rect = { x: number; y: number; w: number; h: number };
+export type Rect = { x: number; y: number; w: number; h: number; rot?: number };
 
 type Ctx = {
   editing: boolean;
@@ -39,13 +39,14 @@ type Ctx = {
   register: (id: string, def: Rect) => void;
   selected: string | null;
   select: (id: string | null) => void;
+  setDragging: (b: boolean) => void;
   W: number;
   H: number;
 };
 const FormCtx = createContext<Ctx | null>(null);
 
 /** Positioned, draggable/resizable wrapper every zone sits in. */
-function Zone({ id, def, children }: { id: string; def: Rect; children: React.ReactNode }) {
+function Zone({ id, def, children, pin = 'tl' }: { id: string; def: Rect; children: React.ReactNode; pin?: 'tl' | 'center' }) {
   const ctx = useContext(FormCtx);
   if (!ctx) return <>{children}</>;
 
@@ -62,7 +63,7 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
       onStartShouldSetPanResponder: () => ctx.editingRef.current,
       onMoveShouldSetPanResponder: () => ctx.editingRef.current && !resizing.current,
       onMoveShouldSetPanResponderCapture: () => ctx.editingRef.current && !resizing.current,
-      onPanResponderGrant: () => { ctx.select(id); start.current = rectRef.current; },
+      onPanResponderGrant: () => { ctx.select(id); ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
         ctx.set(id, {
           ...rectRef.current,
@@ -70,6 +71,8 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
           y: clamp(start.current.y + g.dy / dim.current.H, 0, 0.97),
         });
       },
+      onPanResponderRelease: () => { ctx.setDragging(false); },
+      onPanResponderTerminate: () => { ctx.setDragging(false); },
     }),
   ).current;
 
@@ -80,16 +83,42 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: () => { resizing.current = true; start.current = rectRef.current; },
+      onPanResponderGrant: () => { resizing.current = true; ctx.setDragging(true); start.current = rectRef.current; },
       onPanResponderMove: (_, g) => {
-        ctx.set(id, {
-          ...rectRef.current,
-          w: clamp(start.current.w + g.dx / dim.current.W, 0.04, 1),
-          h: clamp(start.current.h + g.dy / dim.current.H, 0.02, 0.7),
-        });
+        const nw = clamp(start.current.w + g.dx / dim.current.W, 0.04, 1);
+        const nh = clamp(start.current.h + g.dy / dim.current.H, 0.02, 0.7);
+        // Ticks resize from their centre so the (fixed-size, centred) mark stays
+        // put; everything else grows from its top-left as before.
+        if (pin === 'center') {
+          ctx.set(id, { ...rectRef.current, w: nw, h: nh, x: start.current.x - (nw - start.current.w) / 2, y: start.current.y - (nh - start.current.h) / 2 });
+        } else {
+          ctx.set(id, { ...rectRef.current, w: nw, h: nh });
+        }
       },
-      onPanResponderRelease: () => { resizing.current = false; },
-      onPanResponderTerminate: () => { resizing.current = false; },
+      onPanResponderRelease: () => { resizing.current = false; ctx.setDragging(false); },
+      onPanResponderTerminate: () => { resizing.current = false; ctx.setDragging(false); },
+    }),
+  ).current;
+
+  // Rotate: drag the top handle around the zone's centre to spin it (degrees),
+  // so text can sit angled on a handwritten surface — like the hub editor.
+  const rotate = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: () => { resizing.current = true; ctx.setDragging(true); start.current = rectRef.current; },
+      onPanResponderMove: (_, g) => {
+        const cx = (rectRef.current.x + rectRef.current.w / 2) * dim.current.W;
+        const cy = (rectRef.current.y + rectRef.current.h / 2) * dim.current.H;
+        let deg = (Math.atan2(g.moveY - cy, g.moveX - cx) * 180) / Math.PI + 90;
+        deg = (((deg + 180) % 360) + 360) % 360 - 180;
+        ctx.set(id, { ...rectRef.current, rot: Math.round(deg) });
+      },
+      onPanResponderRelease: () => { resizing.current = false; ctx.setDragging(false); },
+      onPanResponderTerminate: () => { resizing.current = false; ctx.setDragging(false); },
     }),
   ).current;
 
@@ -98,7 +127,7 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
   return (
     <View
       {...(ctx.editing ? move.panHandlers : {})}
-      style={{ position: 'absolute', left: rect.x * ctx.W, top: rect.y * ctx.H, width: rect.w * ctx.W, height: rect.h * ctx.H }}
+      style={{ position: 'absolute', left: rect.x * ctx.W, top: rect.y * ctx.H, width: rect.w * ctx.W, height: rect.h * ctx.H, transform: [{ rotate: `${rect.rot ?? 0}deg` }] }}
     >
       {/* In edit mode the content must not intercept touches, or the field's
           TextInput / tick Pressable steals the drag and only the pointer-none
@@ -110,9 +139,14 @@ function Zone({ id, def, children }: { id: string; def: Rect; children: React.Re
         <>
           <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderWidth: 1, borderColor: sel ? EDIT_UI : 'rgba(164,137,222,0.4)', borderStyle: 'dashed', backgroundColor: sel ? 'rgba(164,137,222,0.10)' : 'transparent' }} />
           {sel ? (
-            <View {...resize.panHandlers} style={{ position: 'absolute', right: -13, bottom: -13, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>
-              <Feather name="maximize-2" size={13} color="#141019" />
-            </View>
+            <>
+              <View {...resize.panHandlers} style={{ position: 'absolute', right: -13, bottom: -13, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>
+                <Feather name="maximize-2" size={13} color="#141019" />
+              </View>
+              <View {...rotate.panHandlers} style={{ position: 'absolute', top: -34, left: '50%', marginLeft: -15, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: EDIT_UI }}>
+                <Feather name="rotate-cw" size={13} color="#141019" />
+              </View>
+            </>
           ) : null}
         </>
       ) : null}
@@ -180,7 +214,7 @@ export function TickZone({
   const ctx = useContext(FormCtx);
   const editing = ctx?.editing ?? false;
   return (
-    <Zone id={id} def={rect}>
+    <Zone id={id} def={rect} pin="center">
       <Pressable
         onPress={() => {
           if (editing) { ctx?.select(id); return; }
@@ -189,11 +223,12 @@ export function TickZone({
         }}
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
       >
+        {/* Fixed-size, centred mark — stays small however big the tap box is. */}
         {value ? (
           mark === 'ring' ? (
-            <View pointerEvents="none" style={{ position: 'absolute', top: -2, left: -2, right: -2, bottom: -2, borderWidth: 2.5, borderColor: '#3a2f28', borderRadius: 999 }} />
+            <View pointerEvents="none" style={{ width: 26, height: 26, borderWidth: 2.5, borderColor: '#3a2f28', borderRadius: 999 }} />
           ) : (
-            <Feather name={mark === 'cross' ? 'x' : 'check'} size={22} color="#3a2f28" />
+            <Feather name={mark === 'cross' ? 'x' : 'check'} size={24} color="#3a2f28" />
           )
         ) : null}
       </Pressable>
@@ -256,25 +291,38 @@ export function ValueZone({
   );
 }
 
+/** A positionable/resizable region for arbitrary content — a list, a recorder,
+ *  anything that isn't a single field/tick/value. Draggable in the pencil
+ *  editor like the other zones; its content scrolls/taps normally in use. */
+export function AreaZone({ id, rect, children }: { id: string; rect: Rect; children: React.ReactNode }) {
+  return <Zone id={id} def={rect}>{children}</Zone>;
+}
+
 /** The drawn paper + the zone overlay + the placement editor. */
 export function DrawnForm({
   source,
   label,
   onBack,
   children,
+  tint = 'dark',
 }: {
   source: ImageSourcePropType;
   label: string;
   onBack?: () => void;
   children: React.ReactNode;
+  tint?: 'dark' | 'light';
 }) {
   const { width, height } = useWindowDimensions();
+  // Chrome (back / pencil) colours: dark on light paper, light on dark/velvet.
+  const CHROME = tint === 'light' ? '#ECE6D6' : '#3a2f28';
+  const CHROME_BG = tint === 'light' ? 'rgba(236,230,214,0.14)' : 'rgba(13,11,18,0.4)';
   const [editing, setEditing] = useState(false);
   const editingRef = useRef(editing); editingRef.current = editing;
   const [map, setMap] = useState<Record<string, Rect>>({});
   const [ids, setIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const get = (id: string) => map[id];
   const set = (id: string, r: Rect) => setMap((m) => ({ ...m, [id]: r }));
@@ -283,10 +331,10 @@ export function DrawnForm({
     setMap((m) => (id in m ? m : { ...m, [id]: def }));
   };
 
-  const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, W: width, H: height };
+  const ctx: Ctx = { editing, editingRef, get, set, register, selected, select: setSelected, setDragging, W: width, H: height };
 
   const exportText = ids.length
-    ? ids.map((id) => { const r = get(id) ?? { x: 0, y: 0, w: 0, h: 0 }; return `  ${id}: x ${r.x.toFixed(3)}, y ${r.y.toFixed(3)}, w ${r.w.toFixed(3)}, h ${r.h.toFixed(3)}`; }).join('\n')
+    ? ids.map((id) => { const r = get(id) ?? { x: 0, y: 0, w: 0, h: 0 }; return `  ${id}: x ${r.x.toFixed(3)}, y ${r.y.toFixed(3)}, w ${r.w.toFixed(3)}, h ${r.h.toFixed(3)}${r.rot ? `, rot ${Math.round(r.rot)}` : ''}`; }).join('\n')
     : '  (nothing placed yet)';
 
   return (
@@ -297,23 +345,23 @@ export function DrawnForm({
         </ImageBackground>
 
         {onBack ? (
-          <Pressable onPress={onBack} hitSlop={12} style={{ position: 'absolute', top: 52, left: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(13,11,18,0.4)', borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}>
-            <Feather name="chevron-left" size={24} color="#3a2f28" />
+          <Pressable onPress={onBack} hitSlop={12} style={{ position: 'absolute', top: 52, left: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: CHROME_BG, borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}>
+            <Feather name="chevron-left" size={24} color={CHROME} />
           </Pressable>
         ) : null}
 
         <Pressable
           onPress={() => { setEditing((v) => !v); setSelected(null); setShowExport(false); }}
           hitSlop={10}
-          style={{ position: 'absolute', top: 52, right: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: editing ? EDIT_UI : 'rgba(13,11,18,0.4)', borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}
+          style={{ position: 'absolute', top: 52, right: 16, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: editing ? EDIT_UI : CHROME_BG, borderWidth: 1, borderColor: 'rgba(20,17,28,0.25)' }}
         >
-          <Feather name={editing ? 'check' : 'edit-2'} size={19} color={editing ? '#141019' : '#3a2f28'} />
+          <Feather name={editing ? 'check' : 'edit-2'} size={19} color={editing ? '#141019' : CHROME} />
         </Pressable>
 
         {editing ? (
-          <View style={{ position: 'absolute', left: 12, right: 12, bottom: 30, backgroundColor: 'rgba(20,17,28,0.97)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 12, gap: 10 }}>
+          <View pointerEvents={dragging ? 'none' : 'box-none'} style={{ position: 'absolute', left: 12, right: 12, bottom: 30, backgroundColor: 'rgba(20,17,28,0.82)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 12, gap: 10, opacity: dragging ? 0 : 1 }}>
             <Text style={{ color: '#ECE9F1', fontSize: 12.5 }}>
-              {selected ? `"${selected}" selected — drag to move, corner to resize.` : 'Tap a zone to select, then drag / resize.'}
+              {selected ? `"${selected}" selected — drag to move, corner to resize, top handle to rotate.` : 'Tap a zone to select, then drag / resize / rotate.'}
             </Text>
             <Pressable onPress={() => setShowExport((v) => !v)} style={{ borderRadius: 8, paddingVertical: 9, alignItems: 'center', backgroundColor: EDIT_UI }}>
               <Text style={{ color: '#141019', fontSize: 13, fontWeight: '700' }}>{showExport ? 'Hide' : 'Export coordinates'}</Text>

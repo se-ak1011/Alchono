@@ -1,32 +1,24 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { PaperBackground } from '@/components/ui/PaperBackground';
-import { PaperCanvas, Placeable } from '@/components/paper/PaperCanvas';
+import { DrawnForm, FieldZone, TickZone, type Rect } from '@/components/paper/DrawnForm';
 import { useAddTextNote } from '@/hooks/useJournalNotes';
 
-const INK = '#332a24';
-const INK_SOFT = 'rgba(51,42,36,0.4)';
-
 /**
- * A note — written in ink on the notebook page. Text-compose surface, lifted
- * out of the Writing Room launcher onto its own paper.
+ * A note — written in ink on the drawn notebook page. Re-skinned onto the
+ * hand-drawn writing paper as a DrawnForm close-up: the body field and the save
+ * tap are positionable in the pencil editor, then exported + baked like the rest.
  */
+const writingNote = require('../../assets/folder/writing-note.png');
+
+const R = {
+  w_body: { x: 0.1, y: 0.18, w: 0.8, h: 0.55 } as Rect,
+  w_save: { x: 0.62, y: 0.8, w: 0.3, h: 0.06 } as Rect,
+} as const;
+
 export default function WriteNoteScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState('');
   const { mutate: addText, isPending } = useAddTextNote();
 
@@ -35,60 +27,29 @@ export default function WriteNoteScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addText(draft, {
       onSuccess: () => router.back(),
-      onError: (e) =>
-        Alert.alert('Could not save', e instanceof Error ? e.message : 'Try again.'),
+      onError: (e) => Alert.alert('Could not save', e instanceof Error ? e.message : 'Try again.'),
     });
   };
 
-  const canSave = !!draft.trim() && !isPending;
-
   return (
-    <PaperBackground>
-      <PaperCanvas label="A note" pencilTop={104}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1, paddingTop: insets.top }}
-          keyboardVerticalOffset={0}
-        >
-          <View style={{ paddingHorizontal: 22, paddingTop: 8, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Pressable onPress={() => router.back()} hitSlop={12} className="active:opacity-60">
-                <Feather name="chevron-left" size={26} color={INK} />
-              </Pressable>
-              <Placeable id="title" def={{ dx: 0.245, dy: 0.042 }}>
-                <Text style={{ fontFamily: 'PatrickHand', fontSize: 30, color: INK }}>A note</Text>
-              </Placeable>
-            </View>
-            <Pressable
-              onPress={save}
-              disabled={!canSave}
-              style={{ paddingHorizontal: 18, paddingVertical: 9, borderRadius: 16, backgroundColor: canSave ? '#A489DE' : 'rgba(51,42,36,0.12)' }}
-            >
-              {isPending ? (
-                <ActivityIndicator size="small" color="#201D28" />
-              ) : (
-                <Text style={{ fontSize: 14, fontWeight: '700', color: canSave ? '#201D28' : INK_SOFT }}>Save</Text>
-              )}
-            </Pressable>
-          </View>
-
-          <Placeable id="body" def={{ dx: 0.115, dy: 0.054 }}>
-            <TextInput
-              value={draft}
-              onChangeText={setDraft}
-              placeholder="What's on your mind? Tap the mic on your keyboard to just talk…"
-              placeholderTextColor={INK_SOFT}
-              multiline
-              autoFocus
-              maxLength={2000}
-              selectionColor="#A489DE"
-              textAlignVertical="top"
-              style={{ minHeight: 220, marginHorizontal: 30, marginTop: 4, color: INK, fontFamily: 'PatrickHand', fontSize: 19, lineHeight: 26 }}
-            />
-          </Placeable>
-          <View style={{ height: 24 }} />
-        </KeyboardAvoidingView>
-      </PaperCanvas>
-    </PaperBackground>
+    <View style={{ flex: 1, backgroundColor: '#0d0b12' }}>
+      <DrawnForm source={writingNote} label="writing-note" onBack={() => router.back()}>
+        <FieldZone
+          id="w_body"
+          rect={R.w_body}
+          value={draft}
+          onChangeText={setDraft}
+          placeholder="What's on your mind? Tap the mic on your keyboard to just talk…"
+          multiline
+          fontSize={18}
+        />
+        <LinkZone id="w_save" rect={R.w_save} onPress={save} />
+      </DrawnForm>
+    </View>
   );
+}
+
+/** An invisible tap over the drawn "save" mark. */
+function LinkZone({ id, rect, onPress }: { id: string; rect: Rect; onPress: () => void }) {
+  return <TickZone id={id} rect={rect} value={false} onToggle={onPress} />;
 }

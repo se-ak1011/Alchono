@@ -6,12 +6,12 @@
 <title>Skull Haven</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#1f1430;overflow:hidden;}
+body{background:#1a1226;overflow:hidden;}
 canvas{width:100vw;height:100vh;display:block;}
-.ui{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#e9d5ff;text-align:center;pointer-events:none;font-family:'Courier New',monospace;text-shadow:0 0 8px #a855f7;}
+.ui{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#d8c8f0;text-align:center;pointer-events:none;font-family:'Courier New',monospace;text-shadow:0 0 8px #7c3aed;}
 .ctrl{position:absolute;bottom:80px;width:100%;display:flex;justify-content:space-between;padding:0 20px;pointer-events:auto;}
-.btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#5b21b6,#3b0764);border:3px solid #c084fc;color:#e9d5ff;font-size:20px;touch-action:manipulation;box-shadow:0 4px 15px rgba(124,58,237,0.3);}
-.act{width:110px;height:55px;border-radius:30px;background:linear-gradient(145deg,#22c55e,#15803d);border:2px solid #86efac;color:#e9d5ff;font-size:14px;font-weight:bold;touch-action:manipulation;box-shadow:0 4px 15px rgba(34,197,94,0.3);}
+.btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#4c1d95,#2e1065);border:3px solid #a78bfa;color:#ddd6fe;font-size:20px;touch-action:manipulation;box-shadow:0 4px 15px rgba(124,58,237,0.25);}
+.act{width:110px;height:55px;border-radius:30px;background:linear-gradient(145deg,#4d7c0f,#2f4f0a);border:2px solid #84cc16;color:#ecfccb;font-size:14px;font-weight:bold;touch-action:manipulation;box-shadow:0 4px 15px rgba(132,204,22,0.18);}
 </style>
 </head>
 <body>
@@ -43,7 +43,6 @@ function addPlant(){
   S.textContent='Growing... take your time 💀🌿';
 }
 
-// Input
 document.getElementById('l').onpointerdown=()=>keys.l=1;
 document.getElementById('l').onpointerup=document.getElementById('l').onpointerleave=()=>keys.l=0;
 document.getElementById('r').onpointerdown=()=>keys.r=1;
@@ -61,45 +60,41 @@ document.onkeyup=e=>{
 
 function drawSkullFlower(px,py,scale){
   x.save();x.translate(px,py);x.scale(scale,scale);
-  x.shadowColor='#a855f7';x.shadowBlur=12;
+  x.shadowColor='#7c3aed';x.shadowBlur=10;
 
-  // Stem
-  x.strokeStyle='#4ade80';x.lineWidth=5;
+  x.strokeStyle='#4d7c0f';x.lineWidth=5;
   x.beginPath();
   x.moveTo(0,35);
   x.quadraticCurveTo(-6,15,0,-5);
   x.stroke();
 
-  // Leaves
-  x.fillStyle='#22c55e';
+  x.fillStyle='#65a30d';
   x.beginPath();
   x.ellipse(-14,25,16,8,-0.6,0,Math.PI*2);x.fill();
   x.beginPath();
   x.ellipse(16,20,14,7,0.5,0,Math.PI*2);x.fill();
 
-  // Skull bloom
-  x.fillStyle='#e8e5e0';
+  x.fillStyle='#e4e4e7';
   x.beginPath();
   x.ellipse(0,-15,22,25,0,0,Math.PI*2);x.fill();
 
-  x.fillStyle='#1f1430';
+  x.fillStyle='#1a1226';
   x.beginPath();
   x.ellipse(-10,-18,6,9,-0.1,0,Math.PI*2);x.fill();
   x.beginPath();
   x.ellipse(10,-18,6,9,0.1,0,Math.PI*2);x.fill();
 
-  x.fillStyle='#fbbf24';
+  x.fillStyle='#f59e0b';
   x.beginPath();
   x.arc(0,-10,3,0,Math.PI*2);x.fill();
 
-  x.fillStyle='#d4cfc8';
+  x.fillStyle='#d4d4d8';
   for(let i=-2;i<=2;i++)x.fillRect(i*6-2,2,4,5);
 
   x.restore();
 }
 
 function loop(){
-  // Move
   keys.l&&(p.angle-=0.04);
   keys.r&&(p.angle+=0.04);
   p.x+=Math.sin(p.angle)*2.2;
@@ -107,31 +102,26 @@ function loop(){
   p.x=Math.max(100,Math.min(c.width-100,p.x));
   p.y=Math.max(120,Math.min(c.height-80,p.y));
 
-  // Grow plants
   garden.forEach(g=>{if(g.size<g.maxSize)g.size+=g.growth;});
 
-  // Sky gradient
   const sky=x.createLinearGradient(0,0,0,c.height/2);
-  sky.addColorStop(0,'#2a1b3d');
-  sky.addColorStop(1,'#3d2a5c');
+  sky.addColorStop(0,'#1a1226');
+  sky.addColorStop(1,'#2e1b4a');
   x.fillStyle=sky;x.fillRect(0,0,c.width,c.height);
 
-  // Ground
   const ground=x.createLinearGradient(0,c.height/2,0,c.height);
-  ground.addColorStop(0,'#3d2a4a');
-  ground.addColorStop(1,'#2a1b3d');
+  ground.addColorStop(0,'#372554');
+  ground.addColorStop(1,'#1e1b4b');
   x.fillStyle=ground;x.fillRect(0,c.height/2,c.width,c.height/2);
 
-  // Sun
-  x.fillStyle='#fef3c7';x.shadowColor='#fcd34d';x.shadowBlur=40;
+  x.fillStyle='#a78bfa';x.shadowColor='#7c3aed';x.shadowBlur=25;x.globalAlpha=0.4;
   x.beginPath();x.arc(c.width-140,140,50,0,Math.PI*2);x.fill();
-  x.shadowBlur=0;
+  x.globalAlpha=1;x.shadowBlur=0;
 
-  // Plants
   garden.forEach(g=>{
     if(g.type==='skull')drawSkullFlower(g.x,g.y,g.size);
     else {
-      x.fillStyle='#4ade80';x.shadowColor='#22c55e';x.shadowBlur=6;
+      x.fillStyle='#65a30d';x.shadowColor='#84cc16';x.shadowBlur=5;
       x.beginPath();
       x.moveTo(g.x,g.y-35*g.size);
       x.lineTo(g.x-10*g.size,g.y);
@@ -140,11 +130,10 @@ function loop(){
     }
   });
 
-  // Player
   x.save();x.translate(p.x,p.y-10);
-  x.fillStyle='#9333ea';x.shadowColor='#a855f7';x.shadowBlur=15;
+  x.fillStyle='#5b21b6';x.shadowColor='#7c3aed';x.shadowBlur=12;
   x.beginPath();x.arc(0,0,20,0,Math.PI*2);x.fill();
-  x.fillStyle='#e9d5ff';
+  x.fillStyle='#ddd6fe';
   x.beginPath();x.arc(-6,-4,4,0,Math.PI*2);x.fill();
   x.beginPath();x.arc(6,-4,4,0,Math.PI*2);x.fill();
   x.restore();

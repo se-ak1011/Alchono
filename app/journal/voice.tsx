@@ -1,18 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, Easing } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
 import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
-import { SafeArea } from "@/components/ui/SafeArea";
-import { ZoneGlow } from "@/components/ui/ZoneGlow";
-import { RoomBackdrop } from "@/components/ui/RoomBackdrop";
+import { DrawnForm, AreaZone, type Rect } from "@/components/paper/DrawnForm";
 import { useAddVoiceNote } from "@/hooks/useJournalNotes";
-import { ZONES } from "@/lib/zones";
-import { headingShadow } from "@/styles";
 
-const WRITING = ZONES.writing;
+/**
+ * Voice note — the dictaphone from the writing desk. Press the red button to
+ * record, press again (same button) to stop + save; the stop button discards.
+ * The timer shows on the recorder's LCD. The three taps are positionable zones,
+ * placed over the drawn buttons in the pencil editor, then exported + baked.
+ */
+const voiceImg = require("../../assets/folder/writing-voice.png");
+
+const R = {
+  v_screen: { x: 0.3, y: 0.22, w: 0.4, h: 0.12 } as Rect, // over the LCD
+  v_rec: { x: 0.42, y: 0.5, w: 0.16, h: 0.08 } as Rect, // over the red record button
+  v_stop: { x: 0.26, y: 0.48, w: 0.12, h: 0.08 } as Rect, // over the stop button
+} as const;
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -20,12 +27,6 @@ function formatDuration(seconds: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-/**
- * Voice note — the recorder you reach by tapping the little dictaphone on the
- * writing desk. A single big mic: press it to start, press again (or Save) to
- * keep it. Recording lives here so the desk hotspot has somewhere to land, and
- * uses exactly the same capture + save path as the Writing Room orbit chip.
- */
 export default function VoiceNoteScreen() {
   const router = useRouter();
   const { mutate: addVoice } = useAddVoiceNote();
@@ -35,17 +36,7 @@ export default function VoiceNoteScreen() {
   const [saving, setSaving] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // A slow breathing pulse on the idle mic so it reads as "press me".
-  const pulse = useSharedValue(0);
-  useEffect(() => {
-    pulse.value = withRepeat(withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.quad) }), -1, true);
-  }, [pulse]);
-  const idleRing = useAnimatedStyle(() => ({
-    opacity: 0.18 + pulse.value * 0.22,
-    transform: [{ scale: 1 + pulse.value * 0.12 }],
-  }));
-
-  // A faster pulse on the live red dot while recording.
+  // A pulse on the live red dot while recording.
   const rec = useSharedValue(0);
   useEffect(() => {
     if (recording) {
@@ -127,85 +118,44 @@ export default function VoiceNoteScreen() {
   };
 
   const isRecording = !!recording;
+  const onBack = () => (isRecording ? stopRecording(false) : router.back());
 
   return (
-    <SafeArea bottom={false}>
-      <ZoneGlow zone="writing" />
-      <RoomBackdrop warmth={WRITING.accent} floor="#282232" lampTop={150} horizon={0.6} intensity={0.95} />
-
-      <View className="px-6 pt-5 pb-1 flex-row items-start gap-3">
-        <Pressable onPress={() => (isRecording ? stopRecording(false) : router.back())} hitSlop={12} className="p-1 -ml-1 mt-1 active:opacity-60">
-          <Feather name="chevron-left" size={26} color="#B2ACC0" />
-        </Pressable>
-        <View className="flex-1">
-          <Text className="text-text-primary text-4xl tracking-tight" style={headingShadow}>
-            Voice note
-          </Text>
-          <Text className="text-text-secondary text-base mt-1">
-            {isRecording ? "Listening. Speak when you’re ready." : "Press the mic. Say it out loud."}
-          </Text>
-        </View>
-      </View>
-
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 }}>
-        {/* Timer sits above the mic while recording. */}
-        <View style={{ height: 64, alignItems: "center", justifyContent: "flex-end", marginBottom: 22 }}>
-          {isRecording ? (
-            <Animated.View entering={FadeIn.duration(200)} style={{ alignItems: "center" }}>
-              <View className="flex-row items-center gap-2 mb-1">
-                <Animated.View style={[{ width: 12, height: 12, borderRadius: 6, backgroundColor: "#E5646E" }, recDot]} />
-                <Text className="text-text-muted text-sm">Recording…</Text>
-              </View>
-              <Text className="text-text-primary text-5xl font-semibold" style={{ fontVariant: ["tabular-nums"] }}>
-                {formatDuration(recordSeconds)}
-              </Text>
-            </Animated.View>
-          ) : null}
-        </View>
-
-        {/* The mic — press to start. */}
-        <Pressable
-          onPress={() => (isRecording ? stopRecording(true) : startRecording())}
-          disabled={saving}
-          accessibilityRole="button"
-          accessibilityLabel={isRecording ? "Stop and save" : "Start recording"}
-          style={{ width: 168, height: 168, alignItems: "center", justifyContent: "center" }}
-        >
-          {!isRecording ? (
-            <Animated.View
-              pointerEvents="none"
-              style={[{ position: "absolute", width: 168, height: 168, borderRadius: 84, backgroundColor: WRITING.accent }, idleRing]}
-            />
-          ) : null}
-          <View
-            style={{
-              width: 128,
-              height: 128,
-              borderRadius: 64,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: isRecording ? "#E5646E" : WRITING.accent,
-              shadowColor: "#000",
-              shadowOpacity: 0.35,
-              shadowRadius: 16,
-              shadowOffset: { width: 0, height: 8 },
-            }}
-          >
-            <Feather name={isRecording ? "square" : "mic"} size={isRecording ? 44 : 52} color="#141019" />
+    <View style={{ flex: 1, backgroundColor: "#0d0b12" }}>
+      <DrawnForm source={voiceImg} label="writing-voice" onBack={onBack}>
+        {/* The dictaphone's LCD — status + timer. */}
+        <AreaZone id="v_screen" rect={R.v_screen}>
+          <View pointerEvents="none" style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+            {isRecording ? (
+              <>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <Animated.View style={[{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#E5646E" }, recDot]} />
+                  <Text style={{ color: "#2a3326", fontSize: 11, fontFamily: "PatrickHand" }}>REC</Text>
+                </View>
+                <Text style={{ color: "#2a3326", fontSize: 22, fontFamily: "PatrickHand", fontVariant: ["tabular-nums"] }}>{formatDuration(recordSeconds)}</Text>
+              </>
+            ) : (
+              <Text style={{ color: "#2a3326", fontSize: 13, fontFamily: "PatrickHand", textAlign: "center" }}>Press ● to record</Text>
+            )}
           </View>
-        </Pressable>
+        </AreaZone>
 
-        {/* Discard while recording; hint while idle. */}
-        <View style={{ height: 56, marginTop: 28, alignItems: "center", justifyContent: "flex-start" }}>
-          {isRecording ? (
-            <Pressable onPress={() => stopRecording(false)} hitSlop={8} className="px-6 py-3 rounded-xl active:opacity-70" style={{ backgroundColor: "rgba(255,255,255,0.06)", borderWidth: 1, borderColor: "rgba(255,255,255,0.12)" }}>
-              <Text className="text-text-secondary text-sm font-semibold">Discard</Text>
-            </Pressable>
-          ) : (
-            <Text className="text-text-muted text-sm">Tap again to stop and save.</Text>
-          )}
-        </View>
-      </View>
-    </SafeArea>
+        {/* The red record button — start; press again to stop + save. */}
+        <AreaZone id="v_rec" rect={R.v_rec}>
+          <Pressable
+            disabled={saving}
+            onPress={() => (isRecording ? stopRecording(true) : startRecording())}
+            accessibilityRole="button"
+            accessibilityLabel={isRecording ? "Stop and save" : "Start recording"}
+            style={{ flex: 1 }}
+          />
+        </AreaZone>
+
+        {/* The stop button — discard while recording. */}
+        <AreaZone id="v_stop" rect={R.v_stop}>
+          <Pressable onPress={() => isRecording && stopRecording(false)} accessibilityLabel="Discard" style={{ flex: 1 }} />
+        </AreaZone>
+      </DrawnForm>
+    </View>
   );
 }
