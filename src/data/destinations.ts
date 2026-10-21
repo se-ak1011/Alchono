@@ -61,10 +61,9 @@ export const DESTINATIONS: DestGroup[] = [
   {
     group: "Games",
     items: [
-      { label: "Skull Grove", action: { kind: "route", route: "/arcade/skull-grove" } },
-      { label: "Growth Shield", action: { kind: "route", route: "/arcade/growth-shield" } },
-      { label: "Skull Path", action: { kind: "route", route: "/arcade/skull-path" } },
-      { label: "Skull Haven", action: { kind: "route", route: "/arcade/skull-haven" } },
+      { label: "Skull Patrol", action: { kind: "route", route: "/arcade/skull-patrol" } },
+      { label: "Grave Shift", action: { kind: "route", route: "/arcade/grave-shift" } },
+      { label: "Spirit Drift", action: { kind: "route", route: "/arcade/spirit-drift" } },
     ],
   },
   {

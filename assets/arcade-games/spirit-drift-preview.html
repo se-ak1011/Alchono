@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Spirit Drift — Preview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;}
+html,body{background:#000;display:flex;justify-content:center;align-items:center;height:100%;touch-action:manipulation;}
+#preview{width:280px;height:200px;background:#000;border-radius:6px;overflow:hidden;}
+canvas{width:100%;height:100%;display:block;}
+</style>
+</head>
+<body>
+<div id="preview"><canvas id="p"></canvas></div>
+<script>
+const c=document.getElementById('p'),x=c.getContext('2d');
+c.width=280;c.height=200;
+const pal={fog:'#1a0f2e',skull:'#2a1b3d',glow:'#4a2880',light:'#7c3aed'};
+let t=0,camX=0,objs=[];
+
+for(let i=0;i<12;i++)objs.push({x:(Math.random()-0.5)*100,z:i*25+10});
+
+function loop(){
+  t++;
+  camX=Math.sin(t/80)*25;
+  const grad=x.createLinearGradient(0,0,0,200);
+  grad.addColorStop(0,'#000');grad.addColorStop(1,pal.fog);
+  x.fillStyle=grad;x.fillRect(0,0,280,200);
+
+  objs.forEach(o=>{
+    o.z-=1.1;if(o.z<-10){o.z=300;o.x=(Math.random()-0.5)*100;}
+    const sc=90/(o.z+45);
+    const sx=140+(o.x-camX)*sc;
+    const sy=160-(o.z*0.45)*sc+50;
+    const a=Math.min(1,Math.max(0,(o.z-30)/270));
+    x.globalAlpha=a;
+    x.fillStyle=pal.skull;
+    x.fillRect(sx-7*sc,sy-5*sc,14*sc,11*sc);
+    x.fillStyle=pal.glow;
+    x.fillRect(sx-3*sc,sy-2.5*sc,2*sc,2*sc);
+    x.fillRect(sx+1*sc,sy-2.5*sc,2*sc,2*sc);
+  });
+  x.globalAlpha=1;
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

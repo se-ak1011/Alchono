@@ -1,33 +1,30 @@
 // The Alchono arcade games — self-contained HTML pages (in assets/arcade-games),
 // inlined as strings at build time and shown in a WebView "cabinet". Keyed by
 // the slug used in the /arcade/[game] route and by each device's hotspot.
-import skullGrove from '../../assets/arcade-games/skull-defense-1.html';
-import growthShield from '../../assets/arcade-games/skull-defense-2.html';
-import skullPath from '../../assets/arcade-games/growth-journey.html';
-import skullHaven from '../../assets/arcade-games/haven-builder.html';
+// One game per console: Game Boy → Skull Patrol, Arcade → Grave Shift, PS1 → Spirit Drift.
+import skullPatrol from '../../assets/arcade-games/skull-patrol.html';
+import graveShift from '../../assets/arcade-games/grave-shift.html';
+import spiritDrift from '../../assets/arcade-games/spirit-drift.html';
 
 // Looped idle previews — lighter auto-playing loops shown on a cabinet screen
 // (an editor inlay option), separate from the full playable games above.
-import skullPathPreview from '../../assets/arcade-games/skull-path-preview.html';
-import skullHavenPreview from '../../assets/arcade-games/skull-haven-preview.html';
-import skullGrovePreview from '../../assets/arcade-games/skull-grove-preview.html';
-import growthShieldPreview from '../../assets/arcade-games/growth-shield-preview.html';
+import skullPatrolPreview from '../../assets/arcade-games/skull-patrol-preview.html';
+import graveShiftPreview from '../../assets/arcade-games/grave-shift-preview.html';
+import spiritDriftPreview from '../../assets/arcade-games/spirit-drift-preview.html';
 
 export type ArcadeGame = { title: string; html: string };
 
 /** Looped preview HTML, keyed by the same slug as the playable game. */
 export const ARCADE_PREVIEWS: Record<string, string> = {
-  'skull-path': skullPathPreview,
-  'skull-haven': skullHavenPreview,
-  'skull-grove': skullGrovePreview,
-  'growth-shield': growthShieldPreview,
+  'skull-patrol': skullPatrolPreview,
+  'grave-shift': graveShiftPreview,
+  'spirit-drift': spiritDriftPreview,
 };
 
 export const ARCADE_GAMES: Record<string, ArcadeGame> = {
-  'skull-grove': { title: 'Skull Grove', html: skullGrove },
-  'growth-shield': { title: 'Growth Shield', html: growthShield },
-  'skull-path': { title: 'Skull Path', html: skullPath },
-  'skull-haven': { title: 'Skull Haven', html: skullHaven },
+  'skull-patrol': { title: 'Skull Patrol', html: skullPatrol },
+  'grave-shift': { title: 'Grave Shift', html: graveShift },
+  'spirit-drift': { title: 'Spirit Drift', html: spiritDrift },
 };
 
 export const getArcadeGame = (id?: string | null) => (id ? ARCADE_GAMES[id] : undefined);
