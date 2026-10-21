@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Skull Patrol — Preview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}
+html,body{background:#000;display:flex;justify-content:center;align-items:center;height:100%;touch-action:manipulation;}
+#preview{width:280px;height:200px;background:#000;border-radius:6px;overflow:hidden;}
+canvas{width:100%;height:100%;display:block;}
+</style>
+</head>
+<body>
+<div id="preview"><canvas id="p"></canvas></div>
+<script>
+const c=document.getElementById('p'),x=c.getContext('2d');
+c.width=280;c.height=200;
+const pal={ship:'#4a2880',shot:'#7c3aed',skull:'#2a1b3d'};
+let t=0,shipX=140,shots=[],floaters=[];
+
+function SpawnFloater(){floaters.push({x:Math.random()*280,y:-15,s:0.3+Math.random()*0.4});}
+setInterval(SpawnFloater,800);
+
+function loop(){
+  t++;
+  x.fillStyle='#000';x.fillRect(0,0,280,200);
+  shipX=100+Math.sin(t/60)*45;
+  if(t%30===0) shots.push({x:shipX,y:170,v:-3});
+  for(let i=shots.length-1;i>=0;i--){shots[i].y+=shots[i].v;if(shots[i].y<0)shots.splice(i,1);}
+  for(let i=floaters.length-1;i>=0;i--){floaters[i].y+=floaters[i].s;if(floaters[i].y>200)floaters.splice(i,1);}
+
+  x.fillStyle=pal.ship;x.fillRect(shipX-5,165,10,14);
+  x.fillStyle=pal.shot;shots.forEach(s=>x.fillRect(s.x-1,s.y,2,5));
+  x.fillStyle=pal.skull;
+  floaters.forEach(f=>{x.fillRect(f.x-6,f.y-5,12,10);x.fillStyle='#000';x.fillRect(f.x-3,f.y-2,2,2);x.fillRect(f.x+1,f.y-2,2,2);x.fillStyle=pal.skull;});
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
