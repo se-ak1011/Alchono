@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Skull Patrol</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;image-rendering:pixelated;user-select:none;-webkit-user-select:none;}
+html,body{height:100%;width:100%;background:#000;overflow:hidden;touch-action:manipulation;}
+canvas{display:block;background:#000;width:100%;height:100%;}
+</style>
+</head>
+<body>
+<canvas id="gb"></canvas>
+<script>
+const c=document.getElementById('gb'),x=c.getContext('2d');
+c.width=320;c.height=480;
+
+const pal={bg:'#000',ship:'#4a2880',shot:'#7c3aed',skull:'#2a1b3d',glow:'#6b21a8'};
+
+let shipX=160,shipY=420,shots=[],floaters=[],t=0;
+let touchX=null,held=false;
+
+// Input
+document.addEventListener('touchstart',e=>{e.preventDefault();held=true;touchX=e.touches[0].clientX;},{passive:false});
+document.addEventListener('touchmove',e=>{e.preventDefault();touchX=e.touches[0].clientX;},{passive:false});
+document.addEventListener('touchend',e=>{e.preventDefault();held=false;},{passive:false});
+document.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();shipX=(e.clientX-r.left)/r.width*320;});
+
+function SpawnFloater(){floaters.push({x:Math.random()*320,y:-20,w:14,h:14,s:0.2+Math.random()*0.3,wobble:Math.random()*Math.PI*2});}
+setInterval(SpawnFloater,1200);
+
+function loop(){
+  t++;
+  x.fillStyle=pal.bg;x.fillRect(0,0,320,480);
+
+  // Touch move
+  if(touchX!==null){const r=c.getBoundingClientRect();shipX+=(touchX/r.width*320-shipX)*0.12;}
+  shipX=Math.max(16,Math.min(304,shipX));
+
+  // Auto-fire
+  if(t%25===0) shots.push({x:shipX,y:shipY-8,v:-3.5});
+
+  // Update shots
+  for(let i=shots.length-1;i>=0;i--){
+    shots[i].y+=shots[i].v;
+    if(shots[i].y<0) shots.splice(i,1);
+  }
+
+  // Update floaters
+  for(let i=floaters.length-1;i>=0;i--){
+    floaters[i].y+=floaters[i].s;
+    floaters[i].wobble+=0.03;
+    floaters[i].x+=Math.sin(floaters[i].wobble)*0.25;
+    if(floaters[i].y>500) floaters.splice(i,1);
+  }
+
+  // Draw ship
+  x.fillStyle=pal.ship;
+  x.fillRect(shipX-6,shipY-4,12,16);
+  x.fillRect(shipX-10,shipY+4,4,8);
+  x.fillRect(shipX+6,shipY+4,4,8);
+  x.fillStyle=pal.glow;
+  x.fillRect(shipX-4,shipY-8,8,4);
+
+  // Draw shots
+  x.fillStyle=pal.shot;
+  shots.forEach(s=>{x.fillRect(s.x-1,s.y,2,6);});
+
+  // Draw floaters
+  floaters.forEach(f=>{
+    x.fillStyle=pal.skull;
+    x.fillRect(f.x-7,f.y-6,14,12);
+    x.fillStyle=pal.bg;
+    x.fillRect(f.x-4,f.y-3,2,2);
+    x.fillRect(f.x+2,f.y-3,2,2);
+    x.fillRect(f.x-1,f.y+1,2,1);
+    x.fillRect(f.x-4,f.y+3,2,1);
+    x.fillRect(f.x+2,f.y+3,2,1);
+  });
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
