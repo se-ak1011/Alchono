@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Grave Shift — Preview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;}
+html,body{background:#000;display:flex;justify-content:center;align-items:center;height:100%;touch-action:manipulation;}
+#preview{width:280px;height:200px;background:#000;border-radius:6px;overflow:hidden;}
+canvas{width:100%;height:100%;display:block;}
+</style>
+</head>
+<body>
+<div id="preview"><canvas id="p"></canvas></div>
+<script>
+const c=document.getElementById('p'),x=c.getContext('2d');
+c.width=280;c.height=200;
+const pal={paddle:'#4a2880',ball:'#7c3aed',block:'#2a1b3d'};
+let t=0,paddleX=140,ball={x:140,y:120,vx:2,vy:-2.2,r:6};
+let blocks=[{x:20,y:30,w:40,h:18},{x:70,y:30,w:40,h:18},{x:120,y:30,w:40,h:18},{x:170,y:30,w:40,h:18},{x:220,y:30,w:40,h:18}];
+
+function loop(){
+  t++;
+  x.fillStyle='#000';x.fillRect(0,0,280,200);
+  paddleX=70+Math.sin(t/55)*70;
+  ball.x+=ball.vx;ball.y+=ball.vy;
+  if(ball.x<ball.r||ball.x>280-ball.r)ball.vx*=-1;
+  if(ball.y<ball.r)ball.vy*=-1;
+  if(ball.y>180&&Math.abs(ball.x-paddleX)<45){ball.vy*=-1;ball.vx+=(ball.x-paddleX)*0.06;ball.y=178;}
+  if(ball.y>200)ball={x:140,y:100,vx:2,vy:-2,r:6};
+
+  x.fillStyle=pal.block;
+  blocks.forEach(b=>{x.fillRect(b.x,b.y,b.w,b.h);x.fillStyle='#1a102c';x.fillRect(b.x+6,b.y+5,5,4);x.fillRect(b.x+b.w-11,b.y+5,5,4);x.fillStyle=pal.block;});
+  x.fillStyle=pal.paddle;x.fillRect(paddleX-40,185,80,10);
+  x.fillStyle=pal.ball;x.beginPath();x.arc(ball.x,ball.y,ball.r,0,Math.PI*2);x.fill();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
