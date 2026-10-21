@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Grave Shift</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;}
+html,body{height:100%;width:100%;background:#000;overflow:hidden;touch-action:manipulation;}
+canvas{display:block;background:#000;width:100%;height:100%;}
+.scanlines{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);}
+</style>
+</head>
+<body>
+<canvas id="arcade"></canvas>
+<div class="scanlines"></div>
+<script>
+const c=document.getElementById('arcade'),x=c.getContext('2d');
+c.width=480;c.height=720;
+const pal={paddle:'#4a2880',ball:'#7c3aed',orbGlow:'#6b21a8',block:'#2a1b3d',blockLit:'#5b21b6'};
+
+let paddleX=240,paddleW=80,paddleH=14;
+let ball={x:240,y:500,vx:2.5,vy:-2.8,r:8};
+let blocks=[];
+let touchX=null;
+
+// Create floating skull blocks
+for(let r=0;r<4;r++){
+  for(let i=0;i<7;i++){
+    blocks.push({x:35+i*60,y:80+r*35,w:50,h:24,active:true,hue:0});
+  }
+}
+
+// Input
+document.addEventListener('touchstart',e=>{e.preventDefault();touchX=e.touches[0].clientX;},{passive:false});
+document.addEventListener('touchmove',e=>{e.preventDefault();touchX=e.touches[0].clientX;},{passive:false});
+document.addEventListener('touchend',e=>{e.preventDefault();touchX=null;},{passive:false});
+document.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();paddleX=(e.clientX-r.left)/r.width*480;});
+
+function loop(){
+  x.fillStyle='#000';x.fillRect(0,0,480,720);
+
+  // Move paddle
+  if(touchX!==null){const r=c.getBoundingClientRect();paddleX+=(touchX/r.width*480-paddleX)*0.15;}
+  paddleX=Math.max(paddleW/2+4,Math.min(480-paddleW/2-4,paddleX));
+
+  // Ball physics
+  ball.x+=ball.vx;ball.y+=ball.vy;
+  if(ball.x<ball.r||ball.x>480-ball.r)ball.vx*=-1;
+  if(ball.y<ball.r){ball.vy*=-1;ball.y=ball.r;}
+  if(ball.y>720-ball.r){ball.x=240;ball.y=400;ball.vx=2.5*(Math.random()>0.5?1:-1);ball.vy=-2.8;}
+
+  // Paddle hit
+  if(ball.y>720-55-paddleH&&ball.y<720-40&&Math.abs(ball.x-paddleX)<paddleW/2+ball.r){
+    ball.vy*=-1;
+    ball.vx+=(ball.x-paddleX)*0.045;
+    ball.y=720-55-paddleH-1;
+  }
+
+  // Block hit — just bounce, never break
+  blocks.forEach(b=>{
+    if(b.active&&ball.x>b.x&&ball.x<b.x+b.w&&ball.y>b.y&&ball.y<b.y+b.h){
+      ball.vy*=-1;
+      b.hue=120;
+    }
+    if(b.hue>0)b.hue-=1.5;
+  });
+
+  // Draw blocks
+  blocks.forEach(b=>{
+    x.fillStyle=b.hue>0?pal.blockLit:pal.block;
+    x.fillRect(b.x,b.y,b.w,b.h);
+    x.fillStyle=b.hue>0?'#000':'#1a102c';
+    x.fillRect(b.x+8,b.y+6,6,5);
+    x.fillRect(b.x+b.w-14,b.y+6,6,5);
+  });
+
+  // Draw paddle
+  x.fillStyle=pal.paddle;
+  x.beginPath();x.roundRect(paddleX-paddleW/2,720-50,paddleW,paddleH,4);x.fill();
+  x.fillStyle=pal.orbGlow;
+  x.fillRect(paddleX-4,720-50-paddleH-2,8,3);
+
+  // Draw ball
+  x.fillStyle=pal.ball;
+  x.beginPath();x.arc(ball.x,ball.y,ball.r,0,Math.PI*2);x.fill();
+  x.fillStyle=pal.orbGlow+'40';
+  x.beginPath();x.arc(ball.x,ball.y,ball.r+4,0,Math.PI*2);x.fill();
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
