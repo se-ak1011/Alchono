@@ -149,9 +149,12 @@ export function AdventureHub() {
   // True only while a box is actively being dragged/resized — hides the inspector
   // panel so you can see (and reach) where you're placing. Cleared on release.
   const [dragging, setDragging] = useState(false);
+  // Collapse the inspector to a thin bar so the whole canvas is reachable (the
+  // panel otherwise covers the lower half and blocks boxes underneath it).
+  const [panelMin, setPanelMin] = useState(false);
   // Corner-perspective editing for the selected inlay (4 draggable corners).
   const [perspEditing, setPerspEditing] = useState(false);
-  useEffect(() => { setPerspEditing(false); }, [selected]);
+  useEffect(() => { setPerspEditing(false); setPanelMin(false); }, [selected]);
   // Hotspots created in-app with the editor, keyed by node id. They're exported
   // with a NEW tag so their destinations can be wired when baked into hubScene.
   const [added, setAdded] = useState<Record<string, Hotspot[]>>({});
@@ -963,6 +966,9 @@ export function AdventureHub() {
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={{ color: "#ECE9F1", fontSize: 13, fontWeight: "700" }}>Editing: {sel.id}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Pressable onPress={() => setPanelMin((m) => !m)} hitSlop={8} style={{ width: 32, height: 30, borderRadius: 8, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(164,137,222,0.18)", borderWidth: 1, borderColor: "rgba(164,137,222,0.4)" }}>
+              <Feather name={panelMin ? "chevron-up" : "chevron-down"} size={18} color="#C9B8F0" />
+            </Pressable>
             <Pressable onPress={deleteSelected} hitSlop={8} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.22)", borderWidth: 1, borderColor: "rgba(220,120,130,0.5)" }}>
               <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "600" }}>Delete</Text>
             </Pressable>
@@ -971,6 +977,10 @@ export function AdventureHub() {
             </Pressable>
           </View>
         </View>
+        {panelMin ? (
+          <Text style={{ color: "#6f6880", fontSize: 10.5, marginTop: 8 }}>collapsed — drag boxes freely · ⌄ to reopen controls</Text>
+        ) : null}
+        {!panelMin ? (<>
 
         {/* Wire where this hotspot goes — the whole point of in-app authoring. */}
         <Pressable
@@ -1056,6 +1066,7 @@ export function AdventureHub() {
           </View>
         ) : null}
         <Text style={{ color: "#6f6880", fontSize: 10.5, marginTop: 10 }}>drag to move · corner handle to resize</Text>
+        </>) : null}
       </View>
     );
   };

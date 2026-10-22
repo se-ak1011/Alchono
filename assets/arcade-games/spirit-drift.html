@@ -6,90 +6,108 @@
 <title>Spirit Drift</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;}
-html,body{height:100%;width:100%;background:#000;overflow:hidden;touch-action:manipulation;}
+html,body{height:100%;width:100%;background:#000;overflow:hidden;touch-action:none;}
 canvas{display:block;background:#000;width:100%;height:100%;}
 </style>
 </head>
 <body>
 <canvas id="ps1"></canvas>
 <script>
+// Spirit Drift — you're a wisp adrift in the fog. Drag to steer: gather the
+// glowing souls, slip past the skull lanterns. Three lights, then you drift on.
 const c=document.getElementById('ps1'),x=c.getContext('2d');
-c.width=400;c.height=700;
-const pal={fog:'#1a0f2e',skull:'#2a1b3d',glow:'#4a2880',light:'#7c3aed'};
+const W=400,H=700,VPX=200,VPY=250;
+const pal={skull:'#3a2550',skullGlow:'#7c3aed',soul:'#5de0c4',soulGlow:'#a7ffe8',player:'#cbbaf2',fog:'#1a0f2e'};
+c.width=W;c.height=H;
 
-let camX=0,camY=0,targetX=0,targetY=0,depth=0;
-let objs=[];
-let touchX=null,touchY=null;
+let state='play',score=0,best=0,lives=3,speed=0.006;
+let playerLane=0,targetLane=0,objs=[],spawnT=0,flash=0;
 
-// Spawn floating skull lanterns
-function SpawnObject(z){
-  const type=Math.random()>0.7?'post':'skull';
-  objs.push({
-    x:(Math.random()-0.5)*140,
-    y:(Math.random()-0.5)*80,
-    z:z||450,
-    type:type,
-    size:type==='skull'?14:8
-  });
+function reset(){state='play';score=0;lives=3;speed=0.006;objs=[];playerLane=0;targetLane=0;spawnT=0;flash=0;}
+function spawn(){objs.push({lane:(Math.random()*2-1)*0.85,t:0.02,soul:Math.random()>0.45,dead:false});}
+
+// Perspective: t 0 (far, at the vanishing point) -> 1 (near, at the viewer).
+function project(lane,t){
+  const ease=t*t,spread=40+ease*175;
+  return {sx:VPX+lane*spread,sy:VPY+ease*(H-VPY+60),scale:0.15+ease*1.5};
 }
-for(let i=0;i<18;i++)SpawnObject(i*25);
 
-// Input
-document.addEventListener('touchstart',e=>{e.preventDefault();touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;},{passive:false});
-document.addEventListener('touchmove',e=>{e.preventDefault();touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;},{passive:false});
-document.addEventListener('touchend',e=>{e.preventDefault();touchX=null;touchY=null;},{passive:false});
-document.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();targetX=((e.clientX-r.left)/r.width-0.5)*70;targetY=((e.clientY-r.top)/r.height-0.5)*30;});
+function steer(clientX){
+  const r=c.getBoundingClientRect();
+  targetLane=Math.max(-0.85,Math.min(0.85,((clientX-r.left)/r.width)*2-1));
+}
+c.addEventListener('touchstart',e=>{e.preventDefault();if(state==='over'){reset();return;}steer(e.touches[0].clientX);},{passive:false});
+c.addEventListener('touchmove',e=>{e.preventDefault();steer(e.touches[0].clientX);},{passive:false});
+c.addEventListener('mousedown',e=>{if(state==='over'){reset();return;}steer(e.clientX);});
+c.addEventListener('mousemove',e=>{if(e.buttons)steer(e.clientX);});
+
+function drawPlayer(){
+  const p=project(playerLane,0.97),s=p.scale;
+  x.globalAlpha=0.28;x.fillStyle=pal.player;
+  x.beginPath();x.arc(p.sx,p.sy,22*s,0,Math.PI*2);x.fill();
+  x.globalAlpha=0.95;x.fillStyle=pal.player;
+  x.beginPath();
+  x.moveTo(p.sx,p.sy-15*s);x.lineTo(p.sx+10*s,p.sy);x.lineTo(p.sx,p.sy+15*s);x.lineTo(p.sx-10*s,p.sy);
+  x.closePath();x.fill();
+  x.globalAlpha=1;
+}
 
 function loop(){
-  depth+=1.2;
-  camX+=(targetX-camX)*0.06;
-  camY+=(targetY-camY)*0.06;
+  const grad=x.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#05030a');grad.addColorStop(0.5,pal.fog);grad.addColorStop(1,'#0a0616');
+  x.fillStyle=grad;x.fillRect(0,0,W,H);
+  x.globalAlpha=0.5;x.fillStyle='#2a1b4d';
+  x.beginPath();x.ellipse(VPX,VPY,160,40,0,0,Math.PI*2);x.fill();x.globalAlpha=1;
 
-  // Touch steering
-  if(touchX!==null){
-    const r=c.getBoundingClientRect();
-    targetX=((touchX-r.left)/r.width-0.5)*90;
-    targetY=((touchY-r.top)/r.height-0.5)*45;
+  if(state==='play'){
+    playerLane+=(targetLane-playerLane)*0.18;
+    speed+=0.0000012;
+    if(--spawnT<=0){spawn();spawnT=26+Math.random()*26;}
   }
 
-  // Clear with fog gradient
-  const grad=x.createLinearGradient(0,0,0,700);
-  grad.addColorStop(0,'#000');
-  grad.addColorStop(1,pal.fog);
-  x.fillStyle=grad;
-  x.fillRect(0,0,400,700);
-
-  // Update & draw objects — farthest first
-  objs.forEach(o=>{
-    o.z-=1.2;
-    if(o.z<-20){SpawnObject(450);objs.splice(objs.indexOf(o),1);}
-    const scale=160/(o.z+80);
-    const sx=200+(o.x-camX)*scale;
-    const sy=350+(o.y-camY)*scale;
-    const alpha=Math.min(1,Math.max(0,(o.z-60)/350));
-
-    if(sx>-50&&sx<450&&sy>-50&&sy<750){
-      x.globalAlpha=alpha;
-      if(o.type==='skull'){
-        x.fillStyle=pal.skull;
-        x.fillRect(sx-o.size*scale*0.5,sy-o.size*scale*0.4,o.size*scale,o.size*scale*0.7);
-        x.fillStyle=pal.glow;
-        x.fillRect(sx-o.size*scale*0.3,sy-o.size*scale*0.25,2*scale,2*scale);
-        x.fillRect(sx+o.size*scale*0.1,sy-o.size*scale*0.25,2*scale,2*scale);
-        x.fillStyle=pal.light+'20';
-        x.beginPath();x.arc(sx,sy,o.size*scale*0.9,0,Math.PI*2);x.fill();
-      }else{
-        x.fillStyle=pal.glow;
-        x.fillRect(sx-1*scale,sy-o.size*scale,2*scale,o.size*scale*2);
-        x.fillRect(sx-o.size*scale*0.4,sy-o.size*scale*0.5,o.size*scale*0.8,2*scale);
-      }
+  objs.sort((a,b)=>a.t-b.t);
+  for(const o of objs){
+    if(state==='play')o.t+=speed*(1+o.t*2.5);
+    const p=project(o.lane,o.t),s=p.scale,a=Math.min(1,o.t*3);
+    x.globalAlpha=a;
+    if(o.soul){
+      x.fillStyle=pal.soul;x.beginPath();x.arc(p.sx,p.sy,7*s,0,Math.PI*2);x.fill();
+      x.globalAlpha=a*0.3;x.fillStyle=pal.soulGlow;x.beginPath();x.arc(p.sx,p.sy,14*s,0,Math.PI*2);x.fill();
+    }else{
+      x.fillStyle=pal.skull;x.fillRect(p.sx-9*s,p.sy-10*s,18*s,16*s);
+      x.fillStyle=pal.skullGlow;x.fillRect(p.sx-5*s,p.sy-4*s,3*s,3*s);x.fillRect(p.sx+2*s,p.sy-4*s,3*s,3*s);
+      x.globalAlpha=a*0.25;x.beginPath();x.arc(p.sx,p.sy,15*s,0,Math.PI*2);x.fill();
     }
-  });
-  x.globalAlpha=1;
+    x.globalAlpha=1;
+    if(state==='play'&&!o.dead&&o.t>0.9){
+      if(Math.abs(o.lane-playerLane)<0.28){
+        o.dead=true;
+        if(o.soul)score+=10;
+        else{lives--;flash=1;if(lives<=0){state='over';best=Math.max(best,score);}}
+      }else if(o.t>1.08)o.dead=true;
+    }
+    if(o.t>1.2)o.dead=true;
+  }
+  objs=objs.filter(o=>!o.dead);
 
+  drawPlayer();
+
+  if(flash>0){x.globalAlpha=flash*0.5;x.fillStyle='#ff4d6d';x.fillRect(0,0,W,H);x.globalAlpha=1;flash-=0.06;}
+
+  x.fillStyle='#d8cff0';x.font='bold 22px monospace';x.textAlign='left';x.fillText(score,16,36);
+  x.textAlign='right';x.fillStyle='#7c3aed';x.fillText('♦'.repeat(Math.max(0,lives)),W-16,36);
+
+  if(state==='over'){
+    x.globalAlpha=0.72;x.fillStyle='#05030a';x.fillRect(0,0,W,H);x.globalAlpha=1;
+    x.textAlign='center';
+    x.fillStyle='#cbbaf2';x.font='bold 34px monospace';x.fillText('DRIFTED',W/2,H/2-28);
+    x.fillStyle='#8fd3b4';x.font='18px monospace';x.fillText('souls  '+score,W/2,H/2+6);
+    x.fillStyle='#8b849b';x.fillText('best  '+best,W/2,H/2+30);
+    x.fillStyle='#d8cff0';x.font='bold 16px monospace';x.fillText('tap to drift again',W/2,H/2+72);
+  }
   requestAnimationFrame(loop);
 }
-loop();
+reset();loop();
 </script>
 </body>
 </html>
