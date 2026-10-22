@@ -144,6 +144,9 @@ export function AdventureHub() {
   const [overrides, setOverrides] = useState<Record<string, Edits>>({});
   const [showExport, setShowExport] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  // True only while a box is actively being dragged/resized — hides the inspector
+  // panel so you can see (and reach) where you're placing. Cleared on release.
+  const [dragging, setDragging] = useState(false);
   // Hotspots created in-app with the editor, keyed by node id. They're exported
   // with a NEW tag so their destinations can be wired when baked into hubScene.
   const [added, setAdded] = useState<Record<string, Hotspot[]>>({});
@@ -714,6 +717,7 @@ export function AdventureHub() {
           const base = hotspotsRef.current.find((x) => x.id === id);
           if (!base) return;
           setSelected(id);
+          setDragging(true);
           const c = overridesRef.current[id] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
           dragRef.current = { id, mode, x: c.x, y: c.y, w: c.w, h: c.h };
         },
@@ -738,9 +742,11 @@ export function AdventureHub() {
         },
         onPanResponderRelease: () => {
           dragRef.current = null;
+          setDragging(false);
         },
         onPanResponderTerminate: () => {
           dragRef.current = null;
+          setDragging(false);
         },
       });
     }
@@ -846,17 +852,21 @@ export function AdventureHub() {
 
     return (
       <View
+        // While dragging/resizing, get out of the way entirely (invisible + untouchable)
+        // so you can see and reach where you're placing; translucent at rest.
+        pointerEvents={dragging ? "none" : "auto"}
         style={{
           position: "absolute",
           left: 12,
           right: 12,
           bottom: 158,
-          backgroundColor: "rgba(20,17,28,0.97)",
+          backgroundColor: "rgba(20,17,28,0.88)",
           borderRadius: 16,
           borderWidth: 1,
           borderColor: "rgba(190,160,210,0.45)",
           paddingHorizontal: 14,
           paddingVertical: 12,
+          opacity: dragging ? 0 : 1,
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
