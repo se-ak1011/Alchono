@@ -12,7 +12,7 @@ import { AmbientLife } from "./AmbientLife";
 import { HotspotRing } from "./HotspotRing";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS, INLAY_OPTIONS } from "@/components/home/HubInlays";
-import type { Quad } from "@/lib/perspective";
+import { IDENTITY_QUAD, isIdentityQuad, type Quad } from "@/lib/perspective";
 import { useHubStore } from "@/store/hubStore";
 
 // Full PHYSICAL display size — "screen", NOT "window". The window can shrink to
@@ -149,6 +149,9 @@ export function AdventureHub() {
   // True only while a box is actively being dragged/resized — hides the inspector
   // panel so you can see (and reach) where you're placing. Cleared on release.
   const [dragging, setDragging] = useState(false);
+  // Corner-perspective editing for the selected inlay (4 draggable corners).
+  const [perspEditing, setPerspEditing] = useState(false);
+  useEffect(() => { setPerspEditing(false); }, [selected]);
   // Hotspots created in-app with the editor, keyed by node id. They're exported
   // with a NEW tag so their destinations can be wired when baked into hubScene.
   const [added, setAdded] = useState<Record<string, Hotspot[]>>({});
@@ -203,6 +206,9 @@ export function AdventureHub() {
   const overridesRef = useRef(overrides);
   const dragRef = useRef<{ id: string; mode: "move" | "resize"; x: number; y: number; w: number; h: number } | null>(null);
   const respondersRef = useRef<Record<string, ReturnType<typeof PanResponder.create>>>({});
+  const selectedRef = useRef(selected); selectedRef.current = selected;
+  const perspDragRef = useRef<{ i: number; id: string; sx: number; sy: number } | null>(null);
+  const perspRespondersRef = useRef<Record<number, ReturnType<typeof PanResponder.create>>>({});
 
   const node = HUB_NODES[nodeId];
   // In the urge sanctuary (any forest/clearing view): the engine rides a
@@ -823,6 +829,88 @@ export function AdventureHub() {
     return [...boxes, ...handles];
   };
 
+  // ── 4-corner perspective for inlays (arcade screens) ───────────────────
+  const currentPersp = (base: Hotspot): Quad => {
+    const q = overridesRef.current[base.id]?.persp ?? base.persp ?? IDENTITY_QUAD;
+    return q.map((p) => [p[0], p[1]]) as Quad;
+  };
+  const setPerspCorner = (id: string, i: number, x: number, y: number) => {
+    setOverrides((o) => {
+      const base = hotspotsRef.current.find((h) => h.id === id);
+      if (!base) return o;
+      const cur: Edits = o[id] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
+      const q = (cur.persp ?? base.persp ?? IDENTITY_QUAD).map((p) => [p[0], p[1]]) as Quad;
+      q[i] = [x, y];
+      return { ...o, [id]: { ...cur, persp: q } };
+    });
+  };
+  const resetPersp = (id: string) => {
+    setOverrides((o) => {
+      const base = hotspotsRef.current.find((h) => h.id === id);
+      if (!base) return o;
+      const cur: Edits = o[id] ?? { x: base.x, y: base.y, w: base.w, h: base.h };
+      return { ...o, [id]: { ...cur, persp: IDENTITY_QUAD.map((p) => [p[0], p[1]]) as Quad } };
+    });
+  };
+  const getPerspResponder = (i: number) => {
+    if (!perspRespondersRef.current[i]) {
+      perspRespondersRef.current[i] = PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponderCapture: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponderCapture: () => true,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: () => {
+          const id = selectedRef.current;
+          if (!id) return;
+          const base = hotspotsRef.current.find((h) => h.id === id);
+          if (!base) return;
+          const q = currentPersp(base);
+          perspDragRef.current = { i, id, sx: q[i][0], sy: q[i][1] };
+          setDragging(true);
+        },
+        onPanResponderMove: (_e, g) => {
+          const d = perspDragRef.current;
+          if (!d || d.i !== i) return;
+          const base = hotspotsRef.current.find((h) => h.id === d.id);
+          if (!base) return;
+          const c = overridesRef.current[d.id] ?? base;
+          const bw = c.w * geomRef.current.dispW;
+          const bh = c.h * geomRef.current.dispH;
+          setPerspCorner(d.id, i, clampF(d.sx + g.dx / bw, -0.5, 1.5), clampF(d.sy + g.dy / bh, -0.5, 1.5));
+        },
+        onPanResponderRelease: () => { perspDragRef.current = null; setDragging(false); },
+        onPanResponderTerminate: () => { perspDragRef.current = null; setDragging(false); },
+      });
+    }
+    return perspRespondersRef.current[i];
+  };
+  const PERSP_LABELS = ["TL", "TR", "BR", "BL"];
+  const renderPerspHandles = () => {
+    if (!selected || !perspEditing) return null;
+    const sel = hotspots.find((h) => h.id === selected);
+    if (!sel || !inlayOf(sel)) return null;
+    const c = coordsOf(sel);
+    const boxLeft = offX + c.x * dispW;
+    const boxTop = offY + c.y * dispH;
+    const bw = c.w * dispW;
+    const bh = c.h * dispH;
+    const q = overrides[sel.id]?.persp ?? editsOf(sel).persp ?? IDENTITY_QUAD;
+    return (
+      <>
+        {q.map((p, i) => (
+          <View
+            key={"ph" + i}
+            {...getPerspResponder(i).panHandlers}
+            style={{ position: "absolute", left: boxLeft + p[0] * bw - 17, top: boxTop + p[1] * bh - 17, width: 34, height: 34, borderRadius: 17, backgroundColor: "rgba(130,200,170,0.92)", borderWidth: 2, borderColor: "#fff", alignItems: "center", justifyContent: "center" }}
+          >
+            <Text style={{ color: "#0f1e16", fontSize: 10, fontWeight: "800" }}>{PERSP_LABELS[i]}</Text>
+          </View>
+        ))}
+      </>
+    );
+  };
+
   // The little control panel for the currently-selected hotspot.
   const renderInspector = () => {
     const sel = selected ? hotspots.find((h) => h.id === selected) : null;
@@ -937,6 +1025,21 @@ export function AdventureHub() {
         {canRotate ? row("Rotate", `${rot}°`, () => setProp("rotate", clampI(rot - 1, -180, 180)), () => setProp("rotate", clampI(rot + 1, -180, 180))) : null}
         {canRotate ? row("Tilt ↔ (depth)", `${rotY}°`, () => setProp("rotateY", clampI(rotY - 2, -85, 85)), () => setProp("rotateY", clampI(rotY + 2, -85, 85))) : null}
         {canRotate ? row("Tilt ↕ (depth)", `${rotX}°`, () => setProp("rotateX", clampI(rotX - 2, -85, 85)), () => setProp("rotateX", clampI(rotX + 2, -85, 85))) : null}
+        {hasInlay ? (
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+            <Text style={{ color: "#CFC8DE", fontSize: 13 }}>Perspective (4 corners)</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              {perspEditing ? (
+                <Pressable onPress={() => resetPersp(sel.id)} hitSlop={6} style={{ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, backgroundColor: "rgba(200,80,90,0.18)", borderWidth: 1, borderColor: "rgba(220,120,130,0.45)" }}>
+                  <Text style={{ color: "#F0C4C8", fontSize: 12, fontWeight: "700" }}>Reset</Text>
+                </Pressable>
+              ) : null}
+              <Pressable onPress={() => setPerspEditing((v) => !v)} hitSlop={8} style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, backgroundColor: perspEditing ? "rgba(130,200,170,0.25)" : "rgba(255,255,255,0.06)", borderWidth: 1, borderColor: perspEditing ? "rgba(130,200,170,0.6)" : "rgba(236,233,241,0.14)" }}>
+                <Text style={{ color: perspEditing ? "#CFF3E2" : "#CFC8DE", fontSize: 12, fontWeight: "700" }}>{perspEditing ? "Done corners" : "Edit corners"}</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
         {isText || hasInlay ? row(hasInlay ? "Brightness" : "Opacity", op.toFixed(2), () => setProp("opacity", clampF(op - 0.05, 0.1, 1)), () => setProp("opacity", clampF(op + 0.05, 0.1, 1))) : null}
         {/* Ring on/off — turn it off for an invisible tap zone (e.g. over a drawn
             title in a close-up, where a ring per item would be noise). */}
@@ -1006,6 +1109,7 @@ export function AdventureHub() {
       if (e.rotate) extra.push(`rotate ${Math.round(e.rotate)}`);
       if (e.rotateY) extra.push(`rotateY ${Math.round(e.rotateY)}`);
       if (e.rotateX) extra.push(`rotateX ${Math.round(e.rotateX)}`);
+      if (e.persp && !isIdentityQuad(e.persp)) extra.push(`persp ${e.persp.map((p) => `${p[0].toFixed(3)},${p[1].toFixed(3)}`).join(" ")}`);
       if (e.opacity != null && e.opacity !== 1) extra.push(`opacity ${e.opacity.toFixed(2)}`);
       if (e.glowScale != null) extra.push(`glowScale ${e.glowScale.toFixed(2)}`);
       if (e.glowMax != null) extra.push(`glowMax ${e.glowMax.toFixed(2)}`);
@@ -1065,6 +1169,7 @@ export function AdventureHub() {
         <Animated.Image source={node.glowImage} style={[imgStyle, { opacity: glint }]} resizeMode="cover" />
       ) : null}
       {editMode ? renderEditBoxes() : renderHotspots()}
+      {editMode ? renderPerspHandles() : null}
       {!editMode && navTarget("left") ? turnArrow("left", navTarget("left")!) : null}
       {!editMode && navTarget("right") ? turnArrow("right", navTarget("right")!) : null}
       {!editMode && (history.length > 0 || navTarget("back")) ? turnArrow("back", navTarget("back") ?? "") : null}

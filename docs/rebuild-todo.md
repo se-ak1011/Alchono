@@ -85,11 +85,13 @@ but confirm whether it needs a trim too.
 - [x] Approach DECIDED (Marta 👍): apply the warp as **CSS inside the game's WebView**
       (reliable on Android; a native RN projective matrix does NOT warp there). The game
       picture warps *inside* the screen box — drag the 4 corners to fit the cabinet screen.
-- [ ] Rendering: inject the matrix3d into `GameWebInlay` / `PreviewWebInlay` HTML
-      (compute from `window.innerWidth/innerHeight` inside the WebView; store a `persp`
-      quad per hotspot).
-- [ ] Editor UI: "Perspective" toggle + 4 draggable corner handles + export.
-- [ ] Bake exported corners into hubScene.
+- [x] Rendering: matrix3d injected into `GameWebInlay` / `PreviewWebInlay`, applied live
+      via `injectJavaScript` from the WebView's real size. `persp` quad on Hotspot/Edits.
+- [x] Editor UI: inlay panel "Edit corners" toggle → 4 draggable TL/TR/BR/BL handles
+      (game warps live as you drag) + "Reset" + `persp` added to the export string.
+- [ ] **NEEDS A BUILD TO VERIFY** (un-testable here): live warp smoothness, handle
+      placement, and that the WebView warp renders on Android.
+- [ ] Bake exported `persp` corners into hubScene (once Marta positions + exports).
 
 ### 4. Reading room — REVISED SPEC (Marta's new vision, 22 Oct) — waits on her new art
 Magazines are a stack/carousel of covers; the COVER is the index.
