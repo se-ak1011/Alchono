@@ -1,4 +1,5 @@
 import type { ImageSourcePropType } from "react-native";
+import type { Quad } from "../lib/perspective";
 
 /**
  * The 00s CD-ROM adventure hub, described entirely as data.
@@ -88,6 +89,9 @@ export type Hotspot = {
    *  it up/down. Applied through a perspective, for the painted screens/papers. */
   rotateX?: number;
   rotateY?: number;
+  /** 4-corner perspective warp for an inlay (arcade screen): TL,TR,BR,BL as
+   *  fractions 0..1 of the hotspot box. Applied as CSS inside the WebView. */
+  persp?: Quad;
   /** Affordance opacity 0..1 (the editor's "Opacity"). Dim a label or inlay so it
    *  blends as a subtle, discoverable detail rather than bold signage. */
   opacity?: number;

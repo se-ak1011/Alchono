@@ -112,10 +112,11 @@ Magazines are a stack/carousel of covers; the COVER is the index.
   one) or one article per open? How are the cover tap-zones authored (hub vs PageTuner)?
 - Flow: loft table → magazine stack (swipe covers) → tap article on cover → its spread → back.
 
-### 4b. Full in-app TEXT EDITOR (Marta's wish, flagged 😂) — big, future
-- [ ] A proper rich-text editor so article/body text can be written + positioned in-app
+### 4b. Full in-app TEXT EDITOR — ships WITH the reading room (same build)
+- [ ] A proper text editor so article/body text can be written + positioned in-app
       (overlaid on the pre-drawn spreads), instead of hard-coded in `src/lib/toolkit.ts`.
-      Large feature — parked.
+      It exists *because of* the reading pages, so it's built together with §4 and lands in
+      the same build (not a separate parked item). Large, but coupled to reading.
 
 ### 5. Inside coordinates — WAITING ON MARTA
 - [ ] She'll send the interior positioning coords (living room, kitchen, loft, the

@@ -12,6 +12,7 @@ import { AmbientLife } from "./AmbientLife";
 import { HotspotRing } from "./HotspotRing";
 import { CaptionBar } from "@/components/home/CaptionBar";
 import { INLAYS, INLAY_OPTIONS } from "@/components/home/HubInlays";
+import type { Quad } from "@/lib/perspective";
 import { useHubStore } from "@/store/hubStore";
 
 // Full PHYSICAL display size — "screen", NOT "window". The window can shrink to
@@ -40,6 +41,7 @@ type Edits = Coords & {
   rotate?: number;
   rotateX?: number;
   rotateY?: number;
+  persp?: Quad;
   opacity?: number;
   tint?: GlowTint;
   label?: string;
@@ -482,6 +484,7 @@ export function AdventureHub() {
       rotate: o?.rotate ?? h.rotate,
       rotateX: o?.rotateX ?? h.rotateX,
       rotateY: o?.rotateY ?? h.rotateY,
+      persp: o?.persp ?? h.persp,
       opacity: o?.opacity ?? h.opacity,
       tint: o?.tint ?? h.tint,
       label: o?.label ?? h.label,
@@ -586,7 +589,7 @@ export function AdventureHub() {
             ],
           }}
         >
-          <Inlay />
+          <Inlay persp={e.persp} />
         </View>
       );
     }

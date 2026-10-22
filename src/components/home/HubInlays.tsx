@@ -8,6 +8,7 @@ import { BOOKS } from "@/data/books";
 import type { ToolkitCategory } from "@/lib/toolkit";
 import { WebView } from "react-native-webview";
 import { ARCADE_GAMES, ARCADE_PREVIEWS } from "@/data/arcadeGames";
+import { withPerspectiveRuntime, applyQuadScript, type Quad } from "@/lib/perspective";
 import { useAfDays } from "@/hooks/useVictories";
 import { useAuthStore } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
@@ -425,38 +426,18 @@ export function BookshelfInlay() {
 // Pointer-transparent via the wrapper, so a tap still opens the full game.
 // Heavier than the drawn demos — use ONE per screen, sized to the screen.
 // ————————————————————————————————————————————————————————————————
-function GameWebInlay({ slug }: { slug: string }) {
+function GameWebInlay({ slug, persp }: { slug: string; persp?: Quad }) {
   const g = ARCADE_GAMES[slug];
+  const ref = useRef<WebView>(null);
+  const perspRef = useRef(persp); perspRef.current = persp;
+  const html = useMemo(() => (g ? withPerspectiveRuntime(g.html) : ""), [g?.html]);
+  // Apply/clear the warp live (no reload) as the corners change.
+  useEffect(() => { ref.current?.injectJavaScript(applyQuadScript(persp)); }, [persp]);
   if (!g) return null;
   return (
     <View style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#1f1430" }]}>
       <WebView
-        originWhitelist={["*"]}
-        source={{ html: g.html }}
-        style={{ flex: 1, backgroundColor: "#1f1430" }}
-        pointerEvents="none"
-        scrollEnabled={false}
-        scalesPageToFit
-        javaScriptEnabled
-        domStorageEnabled
-        setSupportMultipleWindows={false}
-        androidLayerType="hardware"
-      />
-    </View>
-  );
-}
-export function SkullPatrolInlay() { return <GameWebInlay slug="skull-patrol" />; }
-export function GraveShiftInlay() { return <GameWebInlay slug="grave-shift" />; }
-export function SpiritDriftInlay() { return <GameWebInlay slug="spirit-drift" />; }
-
-// Looped idle previews — the same WebView treatment, but running the lighter
-// auto-playing preview HTML instead of the full game. Nicer as a resting screen.
-function PreviewWebInlay({ slug }: { slug: string }) {
-  const html = ARCADE_PREVIEWS[slug];
-  if (!html) return null;
-  return (
-    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#1f1430" }]}>
-      <WebView
+        ref={ref}
         originWhitelist={["*"]}
         source={{ html }}
         style={{ flex: 1, backgroundColor: "#1f1430" }}
@@ -467,15 +448,48 @@ function PreviewWebInlay({ slug }: { slug: string }) {
         domStorageEnabled
         setSupportMultipleWindows={false}
         androidLayerType="hardware"
+        onLoadEnd={() => ref.current?.injectJavaScript(applyQuadScript(perspRef.current))}
       />
     </View>
   );
 }
-export function SkullPatrolPreviewInlay() { return <PreviewWebInlay slug="skull-patrol" />; }
-export function GraveShiftPreviewInlay() { return <PreviewWebInlay slug="grave-shift" />; }
-export function SpiritDriftPreviewInlay() { return <PreviewWebInlay slug="spirit-drift" />; }
+export function SkullPatrolInlay({ persp }: { persp?: Quad }) { return <GameWebInlay slug="skull-patrol" persp={persp} />; }
+export function GraveShiftInlay({ persp }: { persp?: Quad }) { return <GameWebInlay slug="grave-shift" persp={persp} />; }
+export function SpiritDriftInlay({ persp }: { persp?: Quad }) { return <GameWebInlay slug="spirit-drift" persp={persp} />; }
 
-export const INLAYS: Record<string, React.ComponentType> = {
+// Looped idle previews — the same WebView treatment, but running the lighter
+// auto-playing preview HTML instead of the full game. Nicer as a resting screen.
+function PreviewWebInlay({ slug, persp }: { slug: string; persp?: Quad }) {
+  const raw = ARCADE_PREVIEWS[slug];
+  const ref = useRef<WebView>(null);
+  const perspRef = useRef(persp); perspRef.current = persp;
+  const html = useMemo(() => (raw ? withPerspectiveRuntime(raw) : ""), [raw]);
+  useEffect(() => { ref.current?.injectJavaScript(applyQuadScript(persp)); }, [persp]);
+  if (!raw) return null;
+  return (
+    <View style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#1f1430" }]}>
+      <WebView
+        ref={ref}
+        originWhitelist={["*"]}
+        source={{ html }}
+        style={{ flex: 1, backgroundColor: "#1f1430" }}
+        pointerEvents="none"
+        scrollEnabled={false}
+        scalesPageToFit
+        javaScriptEnabled
+        domStorageEnabled
+        setSupportMultipleWindows={false}
+        androidLayerType="hardware"
+        onLoadEnd={() => ref.current?.injectJavaScript(applyQuadScript(perspRef.current))}
+      />
+    </View>
+  );
+}
+export function SkullPatrolPreviewInlay({ persp }: { persp?: Quad }) { return <PreviewWebInlay slug="skull-patrol" persp={persp} />; }
+export function GraveShiftPreviewInlay({ persp }: { persp?: Quad }) { return <PreviewWebInlay slug="grave-shift" persp={persp} />; }
+export function SpiritDriftPreviewInlay({ persp }: { persp?: Quad }) { return <PreviewWebInlay slug="spirit-drift" persp={persp} />; }
+
+export const INLAYS: Record<string, React.ComponentType<{ persp?: Quad }>> = {
   arcade: ArcadeInlay, // Odd One Out — also the café arcade cabinet
   arcade_memory: MemoryInlay,
   arcade_pattern: PatternInlay,

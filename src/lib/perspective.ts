@@ -60,3 +60,36 @@ export function isIdentityQuad(q?: Quad | null): boolean {
   const id = IDENTITY_QUAD;
   return q.every((p, i) => Math.abs(p[0] - id[i][0]) < 1e-4 && Math.abs(p[1] - id[i][1]) < 1e-4);
 }
+
+// ── WebView runtime ───────────────────────────────────────────────────────
+// The same homography maths, as a plain-ES5 script that lives INSIDE the game's
+// WebView. It exposes window.__applyQuad(quad) — quad = 4 points in 0..1 fractions
+// of the screen box (TL,TR,BR,BL), or null to clear — and warps document.body with
+// a CSS matrix3d computed from the view's real innerWidth/innerHeight. Driven from
+// RN via injectJavaScript, so dragging corners updates live without reloading.
+const PERSP_RUNTIME_JS = `(function(){
+function adj(m){return [m[4]*m[8]-m[5]*m[7],m[2]*m[7]-m[1]*m[8],m[1]*m[5]-m[2]*m[4],m[5]*m[6]-m[3]*m[8],m[0]*m[8]-m[2]*m[6],m[2]*m[3]-m[0]*m[5],m[3]*m[7]-m[4]*m[6],m[1]*m[6]-m[0]*m[7],m[0]*m[4]-m[1]*m[3]];}
+function mm(a,b){var c=[0,0,0,0,0,0,0,0,0];for(var i=0;i<3;i++)for(var j=0;j<3;j++){var s=0;for(var k=0;k<3;k++)s+=a[3*i+k]*b[3*k+j];c[3*i+j]=s;}return c;}
+function mv(m,v){return [m[0]*v[0]+m[1]*v[1]+m[2]*v[2],m[3]*v[0]+m[4]*v[1]+m[5]*v[2],m[6]*v[0]+m[7]*v[1]+m[8]*v[2]];}
+function b2p(p){var m=[p[0][0],p[1][0],p[2][0],p[0][1],p[1][1],p[2][1],1,1,1];var v=mv(adj(m),[p[3][0],p[3][1],1]);return mm(m,[v[0],0,0,0,v[1],0,0,0,v[2]]);}
+var last=null;
+window.__applyQuad=function(Q){last=Q;var b=document.body;if(!b)return;if(!Q){b.style.transform='';return;}
+var w=window.innerWidth||1,h=window.innerHeight||1;
+var d=[[Q[0][0]*w,Q[0][1]*h],[Q[1][0]*w,Q[1][1]*h],[Q[2][0]*w,Q[2][1]*h],[Q[3][0]*w,Q[3][1]*h]];
+var s=[[0,0],[w,0],[w,h],[0,h]];var t=mm(b2p(d),adj(b2p(s)));for(var i=0;i<9;i++)t[i]/=t[8];
+b.style.transformOrigin='0 0';
+b.style.transform='matrix3d('+[t[0],t[3],0,t[6],t[1],t[4],0,t[7],0,0,1,0,t[2],t[5],0,t[8]].join(',')+')';};
+window.addEventListener('resize',function(){if(last)window.__applyQuad(last);});
+})();`;
+
+/** Inject the perspective runtime into a game's HTML (once, at load). */
+export function withPerspectiveRuntime(html: string): string {
+  const inject = `<style>html{overflow:hidden;}body{transform-origin:0 0;}</style><script>${PERSP_RUNTIME_JS}</script>`;
+  return html.includes("</body>") ? html.replace("</body>", inject + "</body>") : html + inject;
+}
+
+/** A one-liner for WebView.injectJavaScript that applies (or clears) the warp live. */
+export function applyQuadScript(quad?: Quad | null): string {
+  const q = quad && !isIdentityQuad(quad) ? quad : null;
+  return `window.__applyQuad && window.__applyQuad(${JSON.stringify(q)}); true;`;
+}
