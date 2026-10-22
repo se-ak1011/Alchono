@@ -93,32 +93,43 @@ but confirm whether it needs a trim too.
       placement, and that the WebView warp renders on Android.
 - [ ] Bake exported `persp` corners into hubScene (once Marta positions + exports).
 
-### 4. Reading room — REVISED SPEC (Marta's new vision, 22 Oct) — waits on her new art
+### 4. Reading room — REVISED SPEC (Marta's new vision, 22 Oct) — IN PROGRESS
 Magazines are a stack/carousel of covers; the COVER is the index.
-- [ ] **Covers carry the article blurbs pre-printed** (she's redrawing them). A
-      **transparent tap over each article blurb on the cover** opens THAT article.
-- [ ] **Remove the contents/chapters menu** — that was a "book" idea; articles are
-      chosen on the cover now.
-- [ ] **Inside-page art = a magazine spread** with the article **titles pre-drawn**
-      (kicker "In the moment" + title + purple rule, one article per page — e.g. the
-      "In the moment" spread shows *Urge surfing* | *The HALT check*). Bodies empty;
-      we **overlay the article text** under each title. No next-page / next-article arrows
-      — articles are independent.
-- [ ] Fix **cropped cover/page images** (image fit).
-- [ ] **Picker:** she needs the individual **articles** as tap targets (not the 9 magazine
-      entries). NOTE: the cover article-taps live in the /reading screen's own editor
-      (it's a route, not a hub node) — confirm how she wants them authored.
-- [ ] Needs a per-article open + reader rework (independent article view, text overlaid on
-      the pre-drawn spread, no contents / no pagination).
-- OPEN Qs: does one spread hold all of a magazine's articles (tap scrolls to the right
-  one) or one article per open? How are the cover tap-zones authored (hub vs PageTuner)?
-- Flow: loft table → magazine stack (swipe covers) → tap article on cover → its spread → back.
+- [x] **New interior art swapped in** (9 spreads, 851×1847) → `assets/reading/open-<cat>.png`.
+      Model confirmed from the art: each spread = **LEFT page = article 1, RIGHT page =
+      article 2** (title + purple rule pre-drawn per page; single-article mags leave the
+      right title blank). Bodies empty → we overlay the article text.
+- [x] **Reader reworked** (`app/reading/[cat].tsx`): dropped cover + contents + pagination
+      + next/prev. Now renders the spread with **two independent text zones** (left/right),
+      seeded from TOOLKIT (article[0] / article[1]), titles NOT re-rendered (drawn on art).
+      One editor: pencil → pick Left/Right page → drag to place, corner to resize, font
+      stepper, Export (both zones' coords). Zones are image-relative (bake-once).
+- [x] **Fixed cropped cover + page images** → `resizeMode="contain"` (carousel + reader),
+      so the whole drawing shows, dark room in the letterbox. Was `cover` (cropped edges).
+- [x] Carousel opens the spread directly (`/reading/<cat>`, no `?start=contents`).
+- [ ] **Bake** the two spread zones once Marta tunes + exports them (one template → one
+      pair of numbers holds for all 9 mags; `PAGE_LEFT` / `PAGE_RIGHT` in `[cat].tsx`).
+- [ ] **Cover article tap-zones** — transparent tap over each article blurb on the cover →
+      its spread. Deferred: both articles are already on the one spread, so tapping the
+      cover anywhere opens it today; per-article taps are navigation flavour (needs a
+      cover-zone editor on the /reading route). Confirm priority with Marta.
+- Flow: loft table → magazine stack (swipe covers) → tap cover → its spread → back.
 
 ### 4b. Full in-app TEXT EDITOR — ships WITH the reading room (same build)
 - [ ] A proper text editor so article/body text can be written + positioned in-app
       (overlaid on the pre-drawn spreads), instead of hard-coded in `src/lib/toolkit.ts`.
       It exists *because of* the reading pages, so it's built together with §4 and lands in
       the same build (not a separate parked item). Large, but coupled to reading.
+
+### 4c. Mocktail / 0.0 note-cards — new art + 4-corner warp (waits on her mocktail art)
+- [ ] **Swap new mocktail art** into `assets/scenes/note_mocktails.png` when Marta sends it.
+- [ ] **CSS-inject (4-corner) on the note-card inlays** (`note_mocktails`, `note_0_0_beer`).
+      They're static `<Image>` today, so `persp` doesn't touch them (the warp only runs
+      inside a WebView). Plan: route them through a WebView wrapper + `withPerspectiveRuntime`
+      like the games. The cards are ~1.3 MB PNGs → **can't** base64-inline (bundle bloat),
+      so it's a `file://`-uri `<img>` in the WebView, which needs a **device build to verify**
+      Android renders it (same Android-asset caution as alpha-webp). → do it WITH the art
+      swap so it's checked on that build, not blind.
 
 ### 5. Inside coordinates — WAITING ON MARTA
 - [ ] She'll send the interior positioning coords (living room, kitchen, loft, the

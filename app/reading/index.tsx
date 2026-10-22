@@ -8,8 +8,8 @@ import { CATEGORY_ORDER, type ToolkitCategory } from "@/lib/toolkit";
 
 /**
  * The magazine carousel — the stack from the reading-corner table. Swipe through
- * the covers (like the drinks); tap one to open its magazine straight to the
- * contents. Reached from /reading/table (the loft round table).
+ * the covers (like the drinks); tap one to open its spread (the articles are
+ * chosen on the cover now — no contents menu). Reached from /reading/table.
  */
 export default function ReadingCarousel() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function ReadingCarousel() {
 
   const open = (c: ToolkitCategory) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push(`/reading/${c}?start=contents` as never);
+    router.push(`/reading/${c}` as never);
   };
 
   return (
@@ -31,7 +31,7 @@ export default function ReadingCarousel() {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <Pressable onPress={() => open(item)} style={{ width, height }}>
-            <ImageBackground source={BOOKS[item]!.cover} style={{ width, height }} resizeMode="cover">
+            <ImageBackground source={BOOKS[item]!.cover} style={{ width, height }} resizeMode="contain">
               <View pointerEvents="none" style={{ position: "absolute", bottom: height * 0.055, left: 0, right: 0, alignItems: "center" }}>
                 <Text style={{ color: "rgba(236,233,241,0.65)", fontSize: 13, fontFamily: "PatrickHand" }}>tap to open · swipe for more</Text>
               </View>
