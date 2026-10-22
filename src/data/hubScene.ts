@@ -744,11 +744,13 @@ export const HUB_NODES: Record<string, HubNode> = {
     image: require("../../assets/scenes/zerozero_beer.png"),
     imgW: 851, imgH: 1847, fit: "screen",
     right: "zerozero_cider",
+    // Taps re-baked to the new wider card (text in the central paper band,
+    // ~x 0.285–0.715, drinks from y≈0.44). Fine-tune in the editor if needed.
     hotspots: [
-      { id: "zzb_becks", caption: "Beck's Blue", kind: "plain", noRing: true, x: 0.081, y: 0.311, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.becks.com" } },
-      { id: "zzb_freedamm", caption: "Free Damm 0.0", kind: "plain", noRing: true, x: 0.081, y: 0.487, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.damm.com" } },
-      { id: "zzb_doombar", caption: "Doom Bar Zero", kind: "plain", noRing: true, x: 0.090, y: 0.641, w: 0.813, h: 0.101, action: { kind: "link", url: "https://www.sharpsbrewery.co.uk" } },
-      { id: "zzb_budweiser", caption: "Budweiser Zero", kind: "plain", noRing: true, x: 0.077, y: 0.795, w: 0.817, h: 0.104, action: { kind: "link", url: "https://www.budweiser.co.uk" } },
+      { id: "zzb_becks", caption: "Beck's Blue", kind: "plain", noRing: true, x: 0.285, y: 0.440, w: 0.430, h: 0.048, action: { kind: "link", url: "https://www.becks.com" } },
+      { id: "zzb_freedamm", caption: "Free Damm 0.0", kind: "plain", noRing: true, x: 0.285, y: 0.489, w: 0.430, h: 0.048, action: { kind: "link", url: "https://www.damm.com" } },
+      { id: "zzb_doombar", caption: "Doom Bar Zero", kind: "plain", noRing: true, x: 0.285, y: 0.538, w: 0.430, h: 0.048, action: { kind: "link", url: "https://www.sharpsbrewery.co.uk" } },
+      { id: "zzb_budweiser", caption: "Budweiser Zero", kind: "plain", noRing: true, x: 0.285, y: 0.587, w: 0.430, h: 0.048, action: { kind: "link", url: "https://www.budweiser.co.uk" } },
     ],
   },
   // 0.0 deck — Cider card. Flip with the arrows; each name taps to its site.
@@ -758,10 +760,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     left: "zerozero_beer", right: "zerozero_spirits",
     hotspots: [
-      { id: "zzc_thatchers_zero", caption: "Thatchers Zero", kind: "plain", noRing: true, x: 0.060, y: 0.230, w: 0.820, h: 0.110, action: { kind: "link", url: "https://www.thatcherscider.co.uk" } },
-      { id: "zzc_thatchers_blood", caption: "Thatchers Blood Orange 0.0", kind: "plain", noRing: true, x: 0.060, y: 0.400, w: 0.900, h: 0.110, action: { kind: "link", url: "https://www.thatcherscider.co.uk" } },
-      { id: "zzc_kopp_straw", caption: "Kopparberg Strawberry & Lime", kind: "plain", noRing: true, x: 0.060, y: 0.560, w: 0.880, h: 0.150, action: { kind: "link", url: "https://www.kopparberg.co.uk" } },
-      { id: "zzc_kopp_mixed", caption: "Kopparberg Mixed Fruit", kind: "plain", noRing: true, x: 0.060, y: 0.780, w: 0.880, h: 0.150, action: { kind: "link", url: "https://www.kopparberg.co.uk" } },
+      { id: "zzc_thatchers_zero", caption: "Thatchers Zero", kind: "plain", noRing: true, x: 0.285, y: 0.415, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.thatcherscider.co.uk" } },
+      { id: "zzc_thatchers_blood", caption: "Thatchers Blood Orange 0.0", kind: "plain", noRing: true, x: 0.285, y: 0.470, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.thatcherscider.co.uk" } },
+      { id: "zzc_kopp_straw", caption: "Kopparberg Strawberry & Lime", kind: "plain", noRing: true, x: 0.285, y: 0.525, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.kopparberg.co.uk" } },
+      { id: "zzc_kopp_mixed", caption: "Kopparberg Mixed Fruit", kind: "plain", noRing: true, x: 0.285, y: 0.580, w: 0.430, h: 0.055, action: { kind: "link", url: "https://www.kopparberg.co.uk" } },
     ],
   },
   // 0.0 deck — Spirits card. Flip with the arrows; each name taps to its site.
@@ -771,10 +773,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     left: "zerozero_cider", right: "zerozero_wine",
     hotspots: [
-      { id: "zzs_tanqueray", caption: "Tanqueray 0.0", kind: "plain", noRing: true, x: 0.060, y: 0.250, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.tanqueray.com" } },
-      { id: "zzs_captain", caption: "Captain Morgan Spiced Gold 0.0", kind: "plain", noRing: true, x: 0.060, y: 0.420, w: 0.820, h: 0.160, action: { kind: "link", url: "https://www.captainmorgan.com/en-gb/our-spirits/captain-morgan-spiced-gold-0-0-alcohol-free-spirit/" } },
-      { id: "zzs_cleanw", caption: "CleanCo Clean W", kind: "plain", noRing: true, x: 0.060, y: 0.660, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.clean.co" } },
-      { id: "zzs_cleant", caption: "CleanCo Clean T", kind: "plain", noRing: true, x: 0.060, y: 0.830, w: 0.720, h: 0.110, action: { kind: "link", url: "https://www.clean.co" } },
+      { id: "zzs_tanqueray", caption: "Tanqueray 0.0", kind: "plain", noRing: true, x: 0.285, y: 0.415, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.tanqueray.com" } },
+      { id: "zzs_captain", caption: "Captain Morgan Spiced Gold 0.0", kind: "plain", noRing: true, x: 0.285, y: 0.470, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.captainmorgan.com/en-gb/our-spirits/captain-morgan-spiced-gold-0-0-alcohol-free-spirit/" } },
+      { id: "zzs_cleanw", caption: "CleanCo Clean W", kind: "plain", noRing: true, x: 0.285, y: 0.525, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.clean.co" } },
+      { id: "zzs_cleant", caption: "CleanCo Clean T", kind: "plain", noRing: true, x: 0.285, y: 0.580, w: 0.430, h: 0.055, action: { kind: "link", url: "https://www.clean.co" } },
     ],
   },
   // 0.0 deck — Wine card. Flip with the arrows; each name taps to its site.
@@ -784,10 +786,10 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     left: "zerozero_spirits",
     hotspots: [
-      { id: "zzw_shiraz", caption: "McGuigan Zero Shiraz", kind: "plain", noRing: true, x: 0.060, y: 0.250, w: 0.860, h: 0.110, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
-      { id: "zzw_sauv", caption: "McGuigan Zero Sauvignon Blanc", kind: "plain", noRing: true, x: 0.060, y: 0.420, w: 0.820, h: 0.160, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
-      { id: "zzw_rose", caption: "McGuigan Zero Rose", kind: "plain", noRing: true, x: 0.060, y: 0.620, w: 0.820, h: 0.110, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
-      { id: "zzw_freixenet", caption: "Freixenet 0.0 Sparkling White", kind: "plain", noRing: true, x: 0.060, y: 0.790, w: 0.860, h: 0.150, action: { kind: "link", url: "https://www.freixenet.com" } },
+      { id: "zzw_shiraz", caption: "McGuigan Zero Shiraz", kind: "plain", noRing: true, x: 0.285, y: 0.415, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
+      { id: "zzw_sauv", caption: "McGuigan Zero Sauvignon Blanc", kind: "plain", noRing: true, x: 0.285, y: 0.470, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
+      { id: "zzw_rose", caption: "McGuigan Zero Rose", kind: "plain", noRing: true, x: 0.285, y: 0.525, w: 0.430, h: 0.054, action: { kind: "link", url: "https://www.mcguiganwines.co.uk" } },
+      { id: "zzw_freixenet", caption: "Freixenet 0.0 Sparkling White", kind: "plain", noRing: true, x: 0.285, y: 0.580, w: 0.430, h: 0.055, action: { kind: "link", url: "https://www.freixenet.com" } },
     ],
   },
 

@@ -121,15 +121,21 @@ Magazines are a stack/carousel of covers; the COVER is the index.
       It exists *because of* the reading pages, so it's built together with §4 and lands in
       the same build (not a separate parked item). Large, but coupled to reading.
 
-### 4c. Mocktail / 0.0 note-cards — new art + 4-corner warp (waits on her mocktail art)
-- [ ] **Swap new mocktail art** into `assets/scenes/note_mocktails.png` when Marta sends it.
-- [ ] **CSS-inject (4-corner) on the note-card inlays** (`note_mocktails`, `note_0_0_beer`).
-      They're static `<Image>` today, so `persp` doesn't touch them (the warp only runs
-      inside a WebView). Plan: route them through a WebView wrapper + `withPerspectiveRuntime`
-      like the games. The cards are ~1.3 MB PNGs → **can't** base64-inline (bundle bloat),
-      so it's a `file://`-uri `<img>` in the WebView, which needs a **device build to verify**
-      Android renders it (same Android-asset caution as alpha-webp). → do it WITH the art
-      swap so it's checked on that build, not blind.
+### 4c. Mocktail / 0.0 deck + note-cards — new transparent art — DONE (needs build to eyeball)
+All 5 new cards are one template: transparent bg, paper footprint x 0.277–0.723,
+y 0.363–0.637 of an 851×1847 canvas, only the text differs.
+- [x] **Deck close-ups** (`zerozero_beer/cider/spirits/wine.png`) ← 466–469, full canvas.
+      The transparent margin IS the "wider view" — paper sits in the central band, so it's
+      no longer in-your-face and the centred `‹ ›` turn arrows fall in the empty margin.
+- [x] **Deck link taps re-baked** to the new layout (central paper band, x 0.285 w 0.43,
+      drinks from y≈0.44 beer / y≈0.415 others, even bands). Approximate — Marta can nudge.
+- [x] **Fridge + counter inlays** (`note_0_0_beer.png` ← 466, `note_mocktails.png` ← 470)
+      **cropped to the paper bbox** (403×530) so the paper fills the small inlay box instead
+      of floating in transparent margin. Transparent now, so no pasted-rectangle look.
+- [ ] On the build: check the inlay **box aspect** on the fridge/frame (old art was ~0.71
+      ratio, new crop is ~0.76 — close, but the `kr_recommendations` box may want a nudge).
+- [ ] 4-corner warp on the cards: try transparent + existing tilt (rotateX/Y) FIRST; only
+      add the WebView warp if the paper still won't key to the angled frame. (Likely unneeded.)
 
 ### 5. Inside coordinates — WAITING ON MARTA
 - [ ] She'll send the interior positioning coords (living room, kitchen, loft, the
