@@ -79,17 +79,43 @@ but confirm whether it needs a trim too.
       translucent / disappear while dragging so you can see where you're placing.
       It isn't. Investigate why and fix. (Blocks the whole positioning pass — do early.)
 
-### 3. Editor TOOL — 4-corner perspective for arcade screens  (real build, scope first)
-- [ ] Add independent **4-corner (corner-pin / perspective warp)** handles so a game
-      screen can be sat onto an angled cabinet face. More than the current rotate/tilt;
-      needs a computed matrix3d-style transform from the 4 points. Non-trivial in
-      React Native — scope a proper approach before building.
+### 3. Editor TOOL — 4-corner perspective for arcade screens  — IN PROGRESS
+- [x] Perspective maths util `src/lib/perspective.ts` — homography (basis-to-points) →
+      CSS matrix3d. Tested (identity / translate / trapezoid: corners map exactly).
+- [x] Approach DECIDED (Marta 👍): apply the warp as **CSS inside the game's WebView**
+      (reliable on Android; a native RN projective matrix does NOT warp there). The game
+      picture warps *inside* the screen box — drag the 4 corners to fit the cabinet screen.
+- [ ] Rendering: inject the matrix3d into `GameWebInlay` / `PreviewWebInlay` HTML
+      (compute from `window.innerWidth/innerHeight` inside the WebView; store a `persp`
+      quad per hotspot).
+- [ ] Editor UI: "Perspective" toggle + 4 draggable corner handles + export.
+- [ ] Bake exported corners into hubScene.
 
-### 4. Reading room — focused rework  (its own job)
-- [ ] Route through the **table close-up** first (currently jumps straight into reading).
-- [ ] Fix **cropped magazine images** (covers cut off, black space below — image fit).
-- [ ] Articles should render **Marta's inside-page art** (she drew inside pages), not the
-      generic procedural text layout. _Re-point me at the inside-page files when we start._
+### 4. Reading room — REVISED SPEC (Marta's new vision, 22 Oct) — waits on her new art
+Magazines are a stack/carousel of covers; the COVER is the index.
+- [ ] **Covers carry the article blurbs pre-printed** (she's redrawing them). A
+      **transparent tap over each article blurb on the cover** opens THAT article.
+- [ ] **Remove the contents/chapters menu** — that was a "book" idea; articles are
+      chosen on the cover now.
+- [ ] **Inside-page art = a magazine spread** with the article **titles pre-drawn**
+      (kicker "In the moment" + title + purple rule, one article per page — e.g. the
+      "In the moment" spread shows *Urge surfing* | *The HALT check*). Bodies empty;
+      we **overlay the article text** under each title. No next-page / next-article arrows
+      — articles are independent.
+- [ ] Fix **cropped cover/page images** (image fit).
+- [ ] **Picker:** she needs the individual **articles** as tap targets (not the 9 magazine
+      entries). NOTE: the cover article-taps live in the /reading screen's own editor
+      (it's a route, not a hub node) — confirm how she wants them authored.
+- [ ] Needs a per-article open + reader rework (independent article view, text overlaid on
+      the pre-drawn spread, no contents / no pagination).
+- OPEN Qs: does one spread hold all of a magazine's articles (tap scrolls to the right
+  one) or one article per open? How are the cover tap-zones authored (hub vs PageTuner)?
+- Flow: loft table → magazine stack (swipe covers) → tap article on cover → its spread → back.
+
+### 4b. Full in-app TEXT EDITOR (Marta's wish, flagged 😂) — big, future
+- [ ] A proper rich-text editor so article/body text can be written + positioned in-app
+      (overlaid on the pre-drawn spreads), instead of hard-coded in `src/lib/toolkit.ts`.
+      Large feature — parked.
 
 ### 5. Inside coordinates — WAITING ON MARTA
 - [ ] She'll send the interior positioning coords (living room, kitchen, loft, the
