@@ -7,17 +7,41 @@ import { HUB_NODES, type HubAction } from "./hubScene";
 export type DestItem = { label: string; action: HubAction };
 export type DestGroup = { group: string; items: DestItem[] };
 
-// Rooms — generated from the hub graph so new rooms show up automatically.
-const roomItems: DestItem[] = Object.values(HUB_NODES).map((n) => ({
-  label: `${n.title} · ${n.id}`,
-  action: { kind: "node", node: n.id },
-}));
+// Nodes hidden from the auto-generated "Rooms" list — legacy/retired views, and
+// close-ups that are reached their own way (carousels + the explicit groups below).
+// The nodes still EXIST in hubScene (not purged yet); this only declutters the picker.
+const HIDDEN_FROM_PICKER = new Set<string>([
+  // old forest entrance option (woods now entered via the front path → forest_hall)
+  "forest_canopy",
+  // retired games room
+  "entertainment_left", "entertainment_front", "entertainment_right",
+  // retired upstairs — replaced by the loft
+  "landing_front", "landing_left", "landing_right",
+  "study_left", "study_front", "study_right", "reading_shelf",
+  "me_room_left", "me_room_front", "me_room_right", "bathroom",
+  // old archway → the (now orphaned) forest exterior
+  "exterior_forest",
+  // resources close-ups — handled by the explicit "Resources" group below
+  "resources_living", "resources_entertainment", "resources_study",
+  "resources_kitchen", "resources_outdoors",
+  // the 0.0 deck is a carousel: only the beer card is the entry (in "Drinks" below);
+  // the rest are swiped to inside, never linked separately
+  "zerozero_beer", "zerozero_cider", "zerozero_spirits", "zerozero_wine",
+]);
+
+// Rooms — generated from the hub graph so new rooms show up automatically,
+// minus the hidden set above.
+const roomItems: DestItem[] = Object.values(HUB_NODES)
+  .filter((n) => !HIDDEN_FROM_PICKER.has(n.id))
+  .map((n) => ({
+    label: `${n.title} · ${n.id}`,
+    action: { kind: "node", node: n.id },
+  }));
 
 export const DESTINATIONS: DestGroup[] = [
   {
     group: "Urge / Forest",
     items: [
-      { label: "Urge — walk into the forest", action: { kind: "forest", mode: "walk" } },
       { label: "Urge — jump to the clearing", action: { kind: "forest", mode: "jump" } },
     ],
   },
@@ -25,17 +49,11 @@ export const DESTINATIONS: DestGroup[] = [
   {
     group: "Support & people",
     items: [
-      // (The old "Resources book" screens were removed from the picker — resources
-      // are now per-room magazine close-ups whose lines link out directly. See the
-      // "Crisis lines" group below.)
       { label: "AI Coach", action: { kind: "route", route: "/support/coach" } },
       { label: "Recovery", action: { kind: "route", route: "/support/recovery" } },
       { label: "Mentors", action: { kind: "route", route: "/support/mentors" } },
       { label: "Messages", action: { kind: "route", route: "/messages" } },
-      { label: "Recommendations (0.0)", action: { kind: "route", route: "/support/recommendations" } },
       { label: "Community", action: { kind: "route", route: "/community" } },
-      { label: "Care team", action: { kind: "route", route: "/profile/care-team" } },
-      { label: "Trusted person", action: { kind: "route", route: "/profile/trusted" } },
       { label: "Connections (care team + trusted)", action: { kind: "route", route: "/profile/connections" } },
     ],
   },
@@ -50,8 +68,11 @@ export const DESTINATIONS: DestGroup[] = [
     ],
   },
   {
+    // The writing-desk close-up is the entry; write/voice/notes/letters are for
+    // wiring the zones INSIDE that close-up.
     group: "Writing",
     items: [
+      { label: "Writing desk (close-up)", action: { kind: "route", route: "/journal" } },
       { label: "Write a note", action: { kind: "route", route: "/journal/write" } },
       { label: "Voice note", action: { kind: "route", route: "/journal/voice" } },
       { label: "Your notes", action: { kind: "route", route: "/journal/notes" } },
@@ -67,37 +88,34 @@ export const DESTINATIONS: DestGroup[] = [
     ],
   },
   {
-    group: "Reading — the 9 books",
+    // Magazines are a carousel now — only the table (close-up) and the shelf (the
+    // carousel itself) are entries; individual articles are swiped to inside.
+    group: "Reading",
     items: [
-      { label: "The bookshelf — all reading", action: { kind: "route", route: "/reading" } },
-      { label: "In the moment", action: { kind: "route", route: "/reading/in-the-moment" } },
-      { label: "Understand", action: { kind: "route", route: "/reading/understand" } },
-      { label: "Triggers", action: { kind: "route", route: "/reading/triggers" } },
-      { label: "Planning ahead", action: { kind: "route", route: "/reading/planning-ahead" } },
-      { label: "Stress", action: { kind: "route", route: "/reading/stress" } },
-      { label: "Sleep", action: { kind: "route", route: "/reading/sleep" } },
-      { label: "Relationships", action: { kind: "route", route: "/reading/relationships" } },
-      { label: "Identity", action: { kind: "route", route: "/reading/identity" } },
-      { label: "After a slip", action: { kind: "route", route: "/reading/after-a-slip" } },
+      { label: "Reading table (close-up)", action: { kind: "route", route: "/reading/table" } },
+      { label: "The magazines — all reading", action: { kind: "route", route: "/reading" } },
     ],
   },
   {
-    // The per-room resources magazine close-ups — link a room's magazine to the
-    // one that matches that room (the background scene differs; the lines are
-    // the same, wired via "Crisis lines" below).
-    group: "Resources (close-ups)",
+    // Resources now = the typewriter Book + the handwritten Note, plus the outdoor
+    // close-up (which stays). Indoor per-room close-ups retired from the picker.
+    group: "Resources",
     items: [
-      { label: "Resources — Living room", action: { kind: "node", node: "resources_living" } },
-      { label: "Resources — Entertainment", action: { kind: "node", node: "resources_entertainment" } },
-      { label: "Resources — Study", action: { kind: "node", node: "resources_study" } },
-      { label: "Resources — Kitchen", action: { kind: "node", node: "resources_kitchen" } },
-      { label: "Resources — Outdoors", action: { kind: "node", node: "resources_outdoors" } },
+      { label: "Resources — Book", action: { kind: "route", route: "/resources/book" } },
+      { label: "Resources — Note", action: { kind: "route", route: "/resources/note" } },
+      { label: "Resources — Outside", action: { kind: "node", node: "resources_outdoors" } },
     ],
   },
   {
-    // Each tappable LINE of a resources magazine close-up — wire a tap zone over
-    // the line to the matching one of these (they open the phone/text/website
-    // directly). Numbers + links mirror src/lib/resources.ts.
+    group: "Drinks (instead-of)",
+    items: [
+      { label: "0.0 drinks deck", action: { kind: "node", node: "zerozero_beer" } },
+      { label: "Mocktails (menu)", action: { kind: "route", route: "/bar/menu" } },
+    ],
+  },
+  {
+    // Each tappable LINE of a resources close-up — wire a tap zone over the line to
+    // the matching one of these (they open the phone/text/website directly).
     group: "Crisis lines (resources)",
     items: [
       { label: "999 (call)", action: { kind: "link", url: "tel:999" } },
@@ -112,13 +130,6 @@ export const DESTINATIONS: DestGroup[] = [
       { label: "7 Cups (web)", action: { kind: "link", url: "https://www.7cups.com" } },
       { label: "AA meeting finder (web)", action: { kind: "link", url: "https://www.alcoholics-anonymous.org.uk/aa-meetings/find-a-meeting" } },
       { label: "SMART Recovery UK (web)", action: { kind: "link", url: "https://smartrecovery.org.uk" } },
-    ],
-  },
-  {
-    group: "Other",
-    items: [
-      { label: "Bar / drinks menu", action: { kind: "route", route: "/bar/menu" } },
-      { label: "The Grounds (ecosystem)", action: { kind: "route", route: "/ecosystem" } },
     ],
   },
 ];
