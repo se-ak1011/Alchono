@@ -596,36 +596,34 @@ export const HUB_NODES: Record<string, HubNode> = {
     imgW: 851, imgH: 1847, fit: "screen",
     left: "exterior_left", right: "exterior_right",
     hotspots: [
-      { id: "exf_door", caption: "Front door", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.380, y: 0.450, w: 0.240, h: 0.320, action: { kind: "node", node: "living_room_front" } },
+      { id: "exf_frontdoor", caption: "Front door", kind: "plain", noRing: true, x: 0.270, y: 0.433, w: 0.172, h: 0.217, action: { kind: "node", node: "living_room_front" } },
+      { id: "exf_path", caption: "Down the path", kind: "plain", noRing: true, x: 0.423, y: 0.750, w: 0.418, h: 0.190, action: { kind: "node", node: "forest_hall" } },
     ],
   },
   exterior_right: {
     id: "exterior_right", title: "Outside",
     image: require("../../assets/scenes/exterior_right.png"),
     imgW: 851, imgH: 1847, fit: "screen",
-    left: "exterior_front", right: "exterior_back",
-    hotspots: [
-      { id: "exr_kitchen", caption: "Kitchen door", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.280, y: 0.520, w: 0.220, h: 0.280, action: { kind: "node", node: "kitchen_right" } },
-      { id: "exr_bedroom", caption: "Upstairs — your room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.580, y: 0.240, w: 0.185, h: 0.220, action: { kind: "node", node: "me_room_front" } },
-    ],
+    left: "exterior_front", right: "exterior_back", back: "exterior_front",
+    hotspots: [],
   },
   exterior_back: {
     id: "exterior_back", title: "Outside",
     image: require("../../assets/scenes/exterior_back.png"),
     imgW: 851, imgH: 1847, fit: "screen",
-    left: "exterior_right", right: "exterior_left",
+    left: "exterior_right", right: "exterior_left", back: "exterior_right",
     hotspots: [
-      { id: "exb_hobby", caption: "Hobbies annex", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.360, y: 0.460, w: 0.240, h: 0.300, action: { kind: "node", node: "hobby_room" } },
-      { id: "exb_archway", caption: "The archway", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.720, y: 0.400, w: 0.200, h: 0.360, action: { kind: "node", node: "exterior_forest" } },
+      { id: "exb_kitchen", caption: "Kitchen door", kind: "plain", noRing: true, x: 0.464, y: 0.420, w: 0.168, h: 0.200, action: { kind: "node", node: "kitchen_front" } },
+      { id: "exb_hobby", caption: "Hobbies", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.194, y: 0.533, w: 0.117, h: 0.057, action: { kind: "node", node: "hobby_room" } },
     ],
   },
   exterior_left: {
     id: "exterior_left", title: "Outside",
     image: require("../../assets/scenes/exterior_left.png"),
     imgW: 851, imgH: 1847, fit: "screen",
-    left: "exterior_back", right: "exterior_front",
+    left: "exterior_back", right: "exterior_front", back: "exterior_back",
     hotspots: [
-      { id: "exl_arcade", caption: "Games room", kind: "glow", tint: "purple", interaction: "destination", haptic: "medium", x: 0.340, y: 0.500, w: 0.220, h: 0.280, action: { kind: "node", node: "entertainment_left" } },
+      { id: "exl_loft", caption: "Up to the loft", kind: "plain", noRing: true, x: 0.133, y: 0.350, w: 0.118, h: 0.135, action: { kind: "node", node: "loft_reading" } },
     ],
   },
   exterior_forest: {
