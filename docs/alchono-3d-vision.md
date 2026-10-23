@@ -146,9 +146,15 @@ Never a month of faith with nothing to look at.
 
 ## 8. Open decisions
 
-- [ ] **Avatar perspective:** third-person (you *see* your character, cosy) vs
-      first-person (you're *in* their eyes — also what VR will be). Shapes
-      everything. _(Marta mulling.)_
+- [x] **Avatar perspective — DECIDED: embodied first-person.** You're in your own
+      eyes; you see your own hands/arms when you interact (open a drawer, hold a
+      thing). "Player 1" feel, and VR-native so the Quest version inherits it.
+      Full-body avatars still exist and are **visible to other players in the
+      community / social spaces** (Ready-Player-One model). Implementation: build
+      the full body, drop the FP camera into its eyes, hide the own-head mesh.
+- [ ] **Community / social presence (networked avatars)** — others see your full
+      avatar and move around shared spaces. A real feature with its own design.
+      _Parked — Marta will detail the community vision ("will be back to this")._
 - [ ] **Art pipeline:** hand-drawn textures on 3D geometry vs modelled/solid. _(Marta mulling.)_
 - [ ] **Engine:** React Three Fiber (lead) vs Babylon.js — lock at Phase-0 spike.
 - [ ] **Shell:** PWA vs Capacitor wrapper vs a thin RN shell hosting the web world.
