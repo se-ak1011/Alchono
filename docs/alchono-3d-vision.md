@@ -7,6 +7,35 @@ This is the map we build from. It will grow as decisions land.
 
 ---
 
+## 0. Direction update — 2.5D first-person (2026-10-23 eve) · SUPERSEDES the 3D-first plan below
+
+After the Phase-0 grey-box we sharpened the direction. We're building **2.5D
+first-person**, not full real-time 3D. (3D/WebXR/Quest becomes the future v2 dream.)
+
+- **Look:** realistic/atmospheric **natural backdrops** (forest → root-arch
+  entrance → root staircase → cave) with Marta's **hand-drawn objects layered on
+  top**. The clash of a raw real cave and cartoony-macabre drawn life is the signature.
+- **Structure — "natural structure, layered life":** nothing is man-made. Every
+  space is a naturally-formed backdrop (caves, roots, rock); rooms and stairs exist
+  only as natural features (like the root entrance), never built. Fiction: you found
+  the cave on a walk during a hard time, and you make it yours by **bringing your
+  life in** and layering it over the bare stone.
+- **Movement:** first-person **node-based** — stand in a location and **pan** (drag
+  to look across a wide plate); tap objects to use them, tap passages to move to the
+  next natural space. Main chamber pans left/right; more areas branch off it.
+- **Engine:** an **evolution of the existing hotspot engine** (scene + layered
+  interactables) — wide pannable backdrops, first-person framing, drawn hands on
+  interaction, and a drawn avatar others see in community. Reuses most of what's
+  built; Supabase/data/features and the HTML arcade games all carry over.
+- **Build in from day one:** organic **wayfinding** (glow on interactables, shimmer
+  on passages, hand reacts) so "all natural" never means "lost."
+- **On the table:** the cave **furnishes over time** — starts bare, fills with your
+  life as you use it / hit milestones. The sanctuary grows more yours as you recover.
+
+The 3D sections below are kept as the **future v2 dream**, not the near path.
+
+---
+
 ## 1. The north star — why
 
 Alchono is being rebuilt as **its creator's own space** — a personal sanctuary,
