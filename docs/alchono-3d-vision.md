@@ -56,9 +56,18 @@ The forest above / cave below split keeps the outdoor world she always wanted
   current palette was right all along; it just needed the dark around it to mean
   something. Earthy browns, wet black, bone, with purple light.
 
-**Art pipeline (pending decision — see §8):** strong candidate is her **hand-drawn
-art as textures** on the 3D geometry (hand-drawn bark, stone, bone) so the world
-stays hers and avoids a generic modelled look, without needing full 3D sculpting.
+**Art pipeline — DECIDED: hand-drawn textures AND objects.** Her hand-drawn work
+becomes both the surfaces (bark, stone, bone) and the objects themselves, so the
+world stays unmistakably hers and avoids a generic modelled look — no 3D sculpting
+required. A **hand-drawn diorama** look is on the table (drawn objects standing in
+real 3D space, pop-up-book / painted-set style; lighter on mobile), with the exact
+technique following the art once concepts land.
+
+**Workflow — concept-driven.** Marta draws the world in **2D first** (the visual
+target), then the 3D is built in code to *reach* that drawing. She's art director;
+the build chases her concept. Most useful inputs: a **scene drawing** per space =
+the composition target; **individual objects/textures on transparent backgrounds**
+(like the deck cards / magazine spreads) = dropped straight into the 3D.
 
 ---
 
@@ -155,7 +164,8 @@ Never a month of faith with nothing to look at.
 - [ ] **Community / social presence (networked avatars)** — others see your full
       avatar and move around shared spaces. A real feature with its own design.
       _Parked — Marta will detail the community vision ("will be back to this")._
-- [ ] **Art pipeline:** hand-drawn textures on 3D geometry vs modelled/solid. _(Marta mulling.)_
+- [x] **Art pipeline — DECIDED:** hand-drawn textures AND objects; 2D-concept-first
+      workflow (she draws the target, code reaches it). Diorama look likely. See §3.
 - [ ] **Engine:** React Three Fiber (lead) vs Babylon.js — lock at Phase-0 spike.
 - [ ] **Shell:** PWA vs Capacitor wrapper vs a thin RN shell hosting the web world.
 - [ ] **How much is "game" vs "calm space":** is the forest a thing you *play*, or
